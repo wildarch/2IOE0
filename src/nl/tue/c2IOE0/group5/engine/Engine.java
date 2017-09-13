@@ -7,9 +7,7 @@ import nl.tue.c2IOE0.group5.engine.provider.Provider;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Jorren Hendriks.
@@ -28,17 +26,15 @@ public class Engine {
     private InputHandler inputHandler;
     private Timer timer;
 
-    private Map<String, Provider> providers;
+    private List<Provider> providers;
     private List<Controller> controllers;
-
-
 
     public Engine() {
         window = new Window("Tower Defence", 960, 720, false, false);
         inputHandler = new InputHandler();
         timer = new Timer();
 
-        providers = new HashMap<>();
+        providers = new ArrayList<>();
         controllers = new ArrayList<>();
     }
 
@@ -62,7 +58,7 @@ public class Engine {
         timer.init();
         window.init();
         inputHandler.init(window);
-        providers.values().forEach(provider -> provider.init(this));
+        providers.forEach(provider -> provider.init(this));
         controllers.forEach(controller -> controller.init(this));
     }
 
@@ -92,7 +88,7 @@ public class Engine {
 
                 // update all controllers and providers
                 controllers.forEach(Controller::update);
-                providers.values().forEach(Provider::update);
+                providers.forEach(Provider::update);
 
                 // tick has been processed, remove 1 interval from tick timer
                 tickTimer -= TPS_INTERVAL;
@@ -100,7 +96,7 @@ public class Engine {
 
             // render
             if (window.update()) {
-                providers.values().forEach(provider -> provider.render(window));
+                providers.forEach(provider -> provider.render(window));
             }
 
             // sync up frame rate as desired
@@ -155,15 +151,15 @@ public class Engine {
 
     /**
      * Add a {@link Provider} to the Engine to keep track of. Providers should provide their own rendering and
-     * update logic. Furthermore, a Provider can be retreived from the Engine by invoking
-     * {@link #getProvider(String)} using it's name defined in {@link Provider#getName()}.
+     * update logic. Furthermore, a Provider can be retrieved from the Engine by invoking {@link #getProvider(Class)}
+     * using it's class as identifier (each provider class can only run once on the engine).
      *
      * @param provider The Provider to attach to the engine
      */
     public void addProvider(Provider provider) {
         if (isRunning()) return;
 
-        providers.put(provider.getName(), provider);
+        providers.add(provider);
     }
 
     /**
@@ -178,19 +174,21 @@ public class Engine {
     }
 
     /**
-     * Get an active {@link Provider} by name. If at a certain point you don't have a reference to a certain Provider
-     * but you do know it's name, you can get said Provider using this method.
+     * Get an active {@link Provider} by class type. If at a certain point you don't have a reference to a certain
+     * Provider you can get said Provider using this method.
      *
-     * @param name The name of the provider
+     * @param type The class type of the provider
      * @return An instance of the attached provider
      * @throws IllegalArgumentException if the provider is not currently an active provider
+     * @throws ClassCastException if the provider is of a different class type as requested.
      */
-    public Provider getProvider(String name) {
-        if (providers.containsKey(name)) {
-            return providers.get(name);
-        } else {
-            throw new IllegalArgumentException("Requested Provider does not exist");
+    public <T extends Provider> T getProvider(Class<T> type) {
+        for (Provider provider : providers) {
+            if (type.isInstance(provider)) {
+                return type.cast(provider);
+            }
         }
+        throw new IllegalArgumentException("Requested Provider does not exist");
     }
 
     /**

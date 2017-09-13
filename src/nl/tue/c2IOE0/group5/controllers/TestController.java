@@ -21,13 +21,13 @@ public class TestController implements Controller,Listener {
     @Override
     public void init(Engine engine) {
         // you can initialize resources here, e.g.
-        this.testProvider = (TestProvider) engine.getProvider("Test");
+        this.testProvider = engine.getProvider(TestProvider.class);
     }
 
     @Override
     public void update() {
         // you can use resources here, e.g.
-        String testProviderName = this.testProvider.getName();
+        String testProviderName = this.testProvider.getClass().getName();
     }
 
     @Override

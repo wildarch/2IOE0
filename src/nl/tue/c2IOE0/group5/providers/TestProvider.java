@@ -13,12 +13,6 @@ public class TestProvider implements Provider {
     private int updatecounter;
 
     @Override
-    public String getName() {
-        // set the name (identifier) of the provider here.
-        return "Test";
-    }
-
-    @Override
     public void init(Engine engine) {
         // initialize resources here, e.g.
         updatecounter = 0;

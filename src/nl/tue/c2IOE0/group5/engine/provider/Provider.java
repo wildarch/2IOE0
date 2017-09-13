@@ -13,13 +13,6 @@ import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 public interface Provider extends Renderer {
 
     /**
-     * Get the name (identifier) of the Provider.
-     *
-     * @return The name of the Provider.
-     */
-    String getName();
-
-    /**
      * Initialize the provider. This method will only be called once at startup. The {@link Engine} parameter can be
      * used to initialize a link to all required resources.
      *
