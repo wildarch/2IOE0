@@ -45,26 +45,20 @@ public class InputGenerator {
         }
 
         for (int i = 0; i < nrDeployTypes; i++) {
-            properties.add(getDeployValues());
+            properties.add(getDeployValues(unitBufSize));
             labels.add("Deploy type " + i);
         }
-
-        properties.add(getTimeTillLastDeployValues(nrTimeSteps));
-        labels.add("Time till last deployment");
-
-        properties.add(getUnitBufferSizeValues(unitBufSize));
-        labels.add("Unit buffer size");
 
         properties.add(getQLearnerTrustValues(qLearnerTrustSteps));
         labels.add("QLearner trust");
 
-        // Only allow inputs where at most one tower is placed
+        // Only allow inputs where at most one unit is placed
         inputs = Sets.cartesianProduct(properties).stream().filter(l -> {
             int sum = 0;
             for (int i = nrTowers; i < nrTowers + nrDeployTypes; i++) {
                 sum += l.get(i);
             }
-            return sum <= 1;
+            return sum == 1;
         }).collect(Collectors.toSet());
 
         return inputs;
@@ -84,14 +78,6 @@ public class InputGenerator {
         return discretize(steps);
     }
 
-    private static Set<Float> getUnitBufferSizeValues(int maxSize) {
-        return discretize(maxSize);
-    }
-
-    private static Set<Float> getTimeTillLastDeployValues(int nrTimeSteps) {
-        return discretize(nrTimeSteps);
-    }
-
     private static Set<Float> getTowerValues(int levels) {
         return discretize(levels);
     }
@@ -104,10 +90,7 @@ public class InputGenerator {
         return res;
     }
 
-    private static Set<Float> getDeployValues() {
-        Set<Float> res = new HashSet<>(2);
-        res.add((float) 0);
-        res.add((float) 1);
-        return res;
+    private static Set<Float> getDeployValues(int unitBufSize) {
+        return discretize(unitBufSize);
     }
 }
