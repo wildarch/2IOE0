@@ -81,6 +81,7 @@ public class Engine {
         long tickTimer = 0;
 
         while (running && !window.shouldClose()) {
+            timer.updateLooptime();
             elapsedTime = timer.getElapsedTime();
             tickTimer += elapsedTime;
 

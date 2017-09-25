@@ -34,7 +34,7 @@ public class Updatable<T> {
     }
 
     /**
-     * sets the old current value to the new previous field, and the new current field to the new element
+     * sets the old current value to the previous field, and the new current field to the new element
      * @param newElement the new current value
      */
     public void update(T newElement) {
