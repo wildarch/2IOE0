@@ -81,7 +81,7 @@ public class Engine {
         long tickTimer = 0;
 
         while (running && !window.shouldClose()) {
-            timer.updateLooptime();
+            timer.updateLoopTime();
             elapsedTime = timer.getElapsedTime();
             tickTimer += elapsedTime;
 
@@ -104,7 +104,7 @@ public class Engine {
             if (!window.vSyncEnabled()) {
                 // manually sync up frame rate with the timer if vSync is disabled
                 long endTime = timer.getPreviousTime() + FPS_INTERVAL;
-                while (timer.getTime() < endTime) {
+                while (timer.getSystemTime() < endTime) {
                     try { // use sleep(1) for more accurate intervals
                         Thread.sleep(1);
                     } catch (InterruptedException ignored) {}
@@ -199,6 +199,10 @@ public class Engine {
      */
     public boolean isRunning() {
         return running;
+    }
+
+    public Timer getGameloopTimer(){
+        return timer;
     }
 
 }

@@ -17,9 +17,15 @@ public class Timer {
     /**
      * @return The current system time.
      */
-    public long getTime() {
+    public long getSystemTime() {
         return System.currentTimeMillis();
-//        return time.current();
+    }
+
+    /**
+     * @return the time of the start of the frame
+     */
+    public long getLoopTime(){
+        return time.current();
     }
 
     /**
@@ -36,7 +42,7 @@ public class Timer {
         return time.previous();
     }
 
-    public void updateLooptime(){
+    public void updateLoopTime(){
         time.update(System.currentTimeMillis());
     }
 }
