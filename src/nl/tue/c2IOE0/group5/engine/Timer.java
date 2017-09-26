@@ -1,5 +1,7 @@
 package nl.tue.c2IOE0.group5.engine;
 
+import nl.tue.c2IOE0.group5.util.Updatable;
+
 /**
  * @author Jorren Hendriks & Geert van Ieperen
  */

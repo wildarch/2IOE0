@@ -4,6 +4,7 @@ import nl.tue.c2IOE0.group5.engine.controller.Controller;
 import nl.tue.c2IOE0.group5.engine.controller.input.InputHandler;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.Listener;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
+import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public class Engine {
     private boolean running = false;
 
     private Window window;
+    private Renderer renderer;
     private InputHandler inputHandler;
     private Timer timer;
 
@@ -31,6 +33,7 @@ public class Engine {
 
     public Engine() {
         window = new Window("Tower Defence", 960, 720, false, false);
+        renderer = new Renderer();
         inputHandler = new InputHandler();
         timer = new Timer();
 
@@ -55,11 +58,14 @@ public class Engine {
      * Initialize necessary objects
      */
     private void init() {
-        timer.init();
-        window.init();
-        inputHandler.init(window);
-        providers.forEach(provider -> provider.init(this));
-        controllers.forEach(controller -> controller.init(this));
+        try {
+            timer.init();
+            window.init();
+            renderer.init();
+            inputHandler.init(window);
+            providers.forEach(provider -> provider.init(this));
+            controllers.forEach(controller -> controller.init(this));
+        } catch (Exception e) { System.err.print(e.getMessage()); }
     }
 
     /**
@@ -67,6 +73,7 @@ public class Engine {
      */
     private void cleanup() {
         window.cleanup();
+        renderer.cleanup();
     }
 
     /**
@@ -95,9 +102,11 @@ public class Engine {
                 tickTimer -= TPS_INTERVAL;
             }
 
-            // render
+            // draw
             if (window.update()) {
-                providers.forEach(provider -> provider.render(window));
+                renderer.bind();
+                providers.forEach(provider -> provider.draw(window));
+                renderer.unbind();
             }
 
             // sync up frame rate as desired
