@@ -1,7 +1,13 @@
 package nl.tue.c2IOE0.group5.engine.rendering;
 
+import org.lwjgl.system.MemoryStack;
+import org.joml.Matrix4f;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.FloatBuffer;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 import static org.lwjgl.opengl.GL20.*;
@@ -11,9 +17,26 @@ import static org.lwjgl.opengl.GL20.*;
  */
 public class Renderer {
 
+    /**
+     * Field of View in Radians
+     */
+    private static final float FOV = (float) Math.toRadians(60.0f);
+    private static final float Z_NEAR = 0.01f;
+    private static final float Z_FAR = 1000.f;
+
+    public final Transformation transformation;
+
+    private final Map<String, Integer> uniforms;
+
     private int programId;
     private int vertexShaderId;
     private int fragmentShaderId;
+
+    //private constructor for initializing a few variables
+    public Renderer() {
+        uniforms = new HashMap<>();
+        transformation = new Transformation();
+    }
 
     /**
      * Initialize the renderer, create shaders and link them.
@@ -28,8 +51,11 @@ public class Renderer {
 
         createVertexShader(loadResource("/vertex.vs"));
         createFragmentShader(loadResource("/fragment.fs"));
-
         link();
+
+        // Create uniforms for world and projection matrices
+        createUniform("projectionMatrix");
+        createUniform("worldMatrix");
     }
 
     /**
@@ -74,6 +100,30 @@ public class Renderer {
             System.err.println("Warning validating Shader code: " + glGetProgramInfoLog(programId, 1024));
         }
 
+    }
+
+
+    public void updateProjectionMatrix(Window window) {
+        // Update projection Matrix
+        Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
+        setUniform("projectionMatrix", projectionMatrix);
+    }
+
+    public void createUniform(String uniformName) throws Exception {
+        int uniformLocation = glGetUniformLocation(programId, uniformName);
+        if (uniformLocation < 0) {
+            throw new Exception("Could not find uniform:" + uniformName);
+        }
+        uniforms.put(uniformName, uniformLocation);
+    }
+
+    public void setUniform(String uniformName, Matrix4f value) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            // Dump the matrix into a float buffer
+            FloatBuffer fb = stack.mallocFloat(16);
+            value.get(fb);
+            glUniformMatrix4fv(uniforms.get(uniformName), false, fb);
+        }
     }
 
     private void createVertexShader(String shaderCode) throws Exception {

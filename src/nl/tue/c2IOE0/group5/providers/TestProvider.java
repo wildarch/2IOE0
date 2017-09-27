@@ -86,7 +86,7 @@ public class TestProvider implements Provider {
         window.setClearColor(r, g, b, 1f);
 
 
-        mesh.draw();
+        //mesh.draw();
 
         //mesh2.draw();
 /*
