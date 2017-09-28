@@ -1,16 +1,11 @@
-package nl.tue.c2IOE0.group5.providers;
+package nl.tue.c2IOE0.group5.engine.rendering;
 
-import nl.tue.c2IOE0.group5.engine.Engine;
-import nl.tue.c2IOE0.group5.engine.provider.Provider;
-import nl.tue.c2IOE0.group5.engine.provider.RenderableProvider;
-import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
-import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import org.joml.Vector3f;
 
 /**
  * @author Yoeri Poels
  */
-public class GameObject implements RenderableProvider {
+public class GameObject implements Drawable {
     Mesh mesh;
 
     private final Vector3f position;
@@ -19,8 +14,12 @@ public class GameObject implements RenderableProvider {
 
     private final Vector3f rotation;
 
-    public void init(Engine engine) {
+    public GameObject() {
         // initialize resources here, e.g.
+
+        position = new Vector3f(0, 0, 0);
+        scale = 1;
+        rotation = new Vector3f(0, 0, 0);
 
         this.mesh = new Mesh(new float[]{
                 -0.5f,  0.5f, 0.0f,
@@ -32,12 +31,6 @@ public class GameObject implements RenderableProvider {
         });
 
         setPosition(0, 0, -2);
-    }
-
-    public GameObject() {
-        position = new Vector3f(0, 0, 0);
-        scale = 1;
-        rotation = new Vector3f(0, 0, 0);
     }
 
     public Vector3f getPosition() {
@@ -76,7 +69,8 @@ public class GameObject implements RenderableProvider {
         // do updates here using resources, e.g.
     }
 
-    public void draw(Window window) {
+    public void draw(Window window, Renderer renderer) {
+        renderer.setTransformationMatrix(getPosition(), getRotation(), getScale());
         mesh.draw();
     }
 }

@@ -4,11 +4,8 @@ import nl.tue.c2IOE0.group5.engine.controller.Controller;
 import nl.tue.c2IOE0.group5.engine.controller.input.InputHandler;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.Listener;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
-import nl.tue.c2IOE0.group5.engine.provider.RenderableProvider;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
-import nl.tue.c2IOE0.group5.providers.GameObject;
-import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -110,22 +107,7 @@ public class Engine {
                 renderer.bind();
 
                 renderer.updateProjectionMatrix(window);
-                providers.forEach(provider ->{
-                    //check if it extends the renderable provider interface
-                    if (provider.getClass().getInterfaces()[0].equals(RenderableProvider.class)) {
-                        //renderable providers contain information regarding transformations, used for 3D rendering
-                        Matrix4f worldMatrix = renderer.transformation.getWorldMatrix(
-                                ((RenderableProvider)provider).getPosition(),
-                                ((RenderableProvider)provider).getRotation(),
-                                ((RenderableProvider)provider).getScale());
-                        renderer.setUniform("worldMatrix", worldMatrix);
-                        provider.draw(window);
-                    } else {
-                        //regular draw for non 3D renderable objects
-                        provider.draw(window);
-                    }
-                });
-
+                providers.forEach(provider -> provider.draw(window, renderer));
 
                 renderer.unbind();
             }

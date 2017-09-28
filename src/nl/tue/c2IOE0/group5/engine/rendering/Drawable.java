@@ -14,6 +14,6 @@ public interface Drawable {
      *
      * @param window The window on which the drawer is drawing.
      */
-    void draw(Window window);
+    void draw(Window window, Renderer renderer);
 
 }

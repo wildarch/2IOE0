@@ -1,5 +1,6 @@
 package nl.tue.c2IOE0.group5.engine.rendering;
 
+import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
 import org.joml.Matrix4f;
 
@@ -102,6 +103,14 @@ public class Renderer {
 
     }
 
+    public void setTransformationMatrix(Vector3f position, Vector3f rotation) {
+        setTransformationMatrix(position, rotation, 1f);
+    }
+
+    public void setTransformationMatrix(Vector3f position, Vector3f rotation, float scale) {
+        Matrix4f transformationMatrix = transformation.getWorldMatrix(position, rotation, scale);
+        setUniform("worldMatrix", transformationMatrix);
+    }
 
     public void updateProjectionMatrix(Window window) {
         // Update projection Matrix

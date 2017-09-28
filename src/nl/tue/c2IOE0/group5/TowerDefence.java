@@ -14,7 +14,6 @@ public class TowerDefence {
     public static void main(String[] args) {
         Engine e = new Engine();
         e.addProviders(new Provider[] {
-                new GameObject(),
                 new TestProvider(),
         });
         e.addControllers(new Controller[] {

@@ -109,6 +109,11 @@
             <artifactId>pngdecoder</artifactId>
             <version>1.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.joml</groupId>
+            <artifactId>joml</artifactId>
+            <version>1.9.4</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.tensorflow/tensorflow -->
         <dependency>
             <groupId>org.tensorflow</groupId>
