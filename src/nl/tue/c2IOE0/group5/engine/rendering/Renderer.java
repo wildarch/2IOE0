@@ -42,12 +42,12 @@ public class Renderer {
     /**
      * Initialize the renderer, create shaders and link them.
      *
-     * @throws ShaderException When an error occured.
+     * @throws Exception When an error occured.
      */
-    public void init() throws ShaderException, IOException {
+    public void init() throws Exception {
         programId = glCreateProgram();
         if (programId == 0) {
-            throw new ShaderException("Could not create Shader");
+            throw new Exception("Could not create Shader");
         }
 
         createVertexShader(loadResource("/vertex.vs"));
@@ -56,7 +56,12 @@ public class Renderer {
 
         // Create uniforms for world and projection matrices
         createUniform("projectionMatrix");
-        createUniform("worldMatrix");
+        createUniform("modelViewMatrix");
+        createUniform("texture_sampler");
+
+        setUniform("texture_sampler", 0);
+
+
     }
 
     /**
@@ -83,10 +88,10 @@ public class Renderer {
         }
     }
 
-    private void link() throws ShaderException {
+    private void link() throws Exception {
         glLinkProgram(programId);
         if (glGetProgrami(programId, GL_LINK_STATUS) == 0) {
-            throw new ShaderException("Error linking Shader code: " + glGetProgramInfoLog(programId, 1024));
+            throw new Exception("Error linking Shader code: " + glGetProgramInfoLog(programId, 1024));
         }
 
         if (vertexShaderId != 0) {
@@ -108,20 +113,24 @@ public class Renderer {
     }
 
     public void setTransformationMatrix(Vector3f position, Vector3f rotation, float scale) {
-        Matrix4f transformationMatrix = transformation.getWorldMatrix(position, rotation, scale);
-        setUniform("worldMatrix", transformationMatrix);
+        Matrix4f transformationMatrix = transformation.getModelViewMatrix(position, rotation, scale);
+        setUniform("modelViewMatrix", transformationMatrix);
     }
 
-    public void updateProjectionMatrix(Window window) {
+    public void updateProjectionMatrix(Window window, Camera camera) {
         // Update projection Matrix
         Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
         setUniform("projectionMatrix", projectionMatrix);
+
+        // Update view Matrix
+        Matrix4f viewMatrix = transformation.getViewMatrix(camera);
+
     }
 
-    public void createUniform(String uniformName) throws ShaderException {
+    public void createUniform(String uniformName) throws Exception {
         int uniformLocation = glGetUniformLocation(programId, uniformName);
         if (uniformLocation < 0) {
-            throw new ShaderException("Could not find uniform:" + uniformName);
+            throw new Exception("Could not find uniform:" + uniformName);
         }
         uniforms.put(uniformName, uniformLocation);
     }
@@ -135,25 +144,29 @@ public class Renderer {
         }
     }
 
-    private void createVertexShader(String shaderCode) throws ShaderException {
+    public void setUniform(String uniformName, int value) {
+        glUniform1i(uniforms.get(uniformName), value);
+    }
+
+    private void createVertexShader(String shaderCode) throws Exception {
         vertexShaderId = createShader(shaderCode, GL_VERTEX_SHADER);
     }
 
-    private void createFragmentShader(String shaderCode) throws ShaderException {
+    private void createFragmentShader(String shaderCode) throws Exception {
         fragmentShaderId = createShader(shaderCode, GL_FRAGMENT_SHADER);
     }
 
-    private int createShader(String shaderCode, int shaderType) throws ShaderException {
+    private int createShader(String shaderCode, int shaderType) throws Exception {
         int shaderId = glCreateShader(shaderType);
         if (shaderId == 0) {
-            throw new ShaderException("Error creating shader. Type: " + shaderType);
+            throw new Exception("Error creating shader. Type: " + shaderType);
         }
 
         glShaderSource(shaderId, shaderCode);
         glCompileShader(shaderId);
 
         if (glGetShaderi(shaderId, GL_COMPILE_STATUS) == 0) {
-            throw new ShaderException("Error compiling Shader code: " + glGetShaderInfoLog(shaderId, 1024));
+            throw new Exception("Error compiling Shader code: " + glGetShaderInfoLog(shaderId, 1024));
         }
 
         glAttachShader(programId, shaderId);
@@ -161,11 +174,14 @@ public class Renderer {
         return shaderId;
     }
 
-    private String loadResource(String name) throws IOException {
+    private String loadResource(String name) {
         try (InputStream in = this.getClass().getResourceAsStream(name)) {
             Scanner scanner = new Scanner(in, "UTF-8");
             return scanner.useDelimiter("\\A").next();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        return null;
     }
 
 }

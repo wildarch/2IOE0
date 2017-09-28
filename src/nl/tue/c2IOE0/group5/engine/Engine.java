@@ -4,6 +4,7 @@ import nl.tue.c2IOE0.group5.engine.controller.Controller;
 import nl.tue.c2IOE0.group5.engine.controller.input.InputHandler;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.Listener;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
+import nl.tue.c2IOE0.group5.engine.rendering.Camera;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.ShaderException;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
@@ -29,6 +30,7 @@ public class Engine {
     private Renderer renderer;
     private InputHandler inputHandler;
     private Timer timer;
+    private Camera camera;
 
     private List<Provider> providers;
     private List<Controller> controllers;
@@ -38,6 +40,7 @@ public class Engine {
         renderer = new Renderer();
         inputHandler = new InputHandler();
         timer = new Timer();
+        camera = new Camera();
 
         providers = new ArrayList<>();
         controllers = new ArrayList<>();
@@ -106,7 +109,7 @@ public class Engine {
             if (window.update()) {
                 renderer.bind();
 
-                renderer.updateProjectionMatrix(window);
+                renderer.updateProjectionMatrix(window, camera);
                 providers.forEach(provider -> provider.draw(window, renderer));
 
                 renderer.unbind();
@@ -202,6 +205,10 @@ public class Engine {
             }
         }
         throw new IllegalArgumentException("Requested Provider does not exist");
+    }
+
+    public Camera getCamera() {
+        return camera;
     }
 
     /**

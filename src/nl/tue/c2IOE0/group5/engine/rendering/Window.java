@@ -100,6 +100,11 @@ public class Window {
 
         // Set clear color to black
         glClearColor(0f, 0f, 0f, 0f);
+
+        // Enable Depth Test
+        glEnable(GL_DEPTH_TEST);
+        // Enable 2d Texture
+        glEnable(GL_TEXTURE_2D);
     }
 
     /**
