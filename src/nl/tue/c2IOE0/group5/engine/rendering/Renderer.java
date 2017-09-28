@@ -57,6 +57,11 @@ public class Renderer {
         // Create uniforms for world and projection matrices
         createUniform("projectionMatrix");
         createUniform("modelViewMatrix");
+        createUniform("texture_sampler");
+
+        setUniform("texture_sampler", 0);
+
+
     }
 
     /**
@@ -112,7 +117,7 @@ public class Renderer {
         setUniform("modelViewMatrix", transformationMatrix);
     }
 
-    public void updateMatrices(Window window, Camera camera) {
+    public void updateProjectionMatrix(Window window, Camera camera) {
         // Update projection Matrix
         Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
         setUniform("projectionMatrix", projectionMatrix);
@@ -137,6 +142,10 @@ public class Renderer {
             value.get(fb);
             glUniformMatrix4fv(uniforms.get(uniformName), false, fb);
         }
+    }
+
+    public void setUniform(String uniformName, int value) {
+        glUniform1i(uniforms.get(uniformName), value);
     }
 
     private void createVertexShader(String shaderCode) throws Exception {

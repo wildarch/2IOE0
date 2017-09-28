@@ -109,7 +109,7 @@ public class Engine {
             if (window.update()) {
                 renderer.bind();
 
-                renderer.updateMatrices(window, camera);
+                renderer.updateProjectionMatrix(window, camera);
                 providers.forEach(provider -> provider.draw(window, renderer));
 
                 renderer.unbind();
@@ -205,6 +205,10 @@ public class Engine {
             }
         }
         throw new IllegalArgumentException("Requested Provider does not exist");
+    }
+
+    public Camera getCamera() {
+        return camera;
     }
 
     /**
