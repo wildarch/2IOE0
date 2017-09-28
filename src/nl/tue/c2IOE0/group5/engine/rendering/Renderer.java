@@ -42,12 +42,12 @@ public class Renderer {
     /**
      * Initialize the renderer, create shaders and link them.
      *
-     * @throws Exception When an error occured.
+     * @throws ShaderException When an error occured.
      */
-    public void init() throws Exception {
+    public void init() throws ShaderException, IOException {
         programId = glCreateProgram();
         if (programId == 0) {
-            throw new Exception("Could not create Shader");
+            throw new ShaderException("Could not create Shader");
         }
 
         createVertexShader(loadResource("/vertex.vs"));
@@ -88,10 +88,10 @@ public class Renderer {
         }
     }
 
-    private void link() throws Exception {
+    private void link() throws ShaderException {
         glLinkProgram(programId);
         if (glGetProgrami(programId, GL_LINK_STATUS) == 0) {
-            throw new Exception("Error linking Shader code: " + glGetProgramInfoLog(programId, 1024));
+            throw new ShaderException("Error linking Shader code: " + glGetProgramInfoLog(programId, 1024));
         }
 
         if (vertexShaderId != 0) {
@@ -127,10 +127,10 @@ public class Renderer {
 
     }
 
-    public void createUniform(String uniformName) throws Exception {
+    public void createUniform(String uniformName) throws ShaderException {
         int uniformLocation = glGetUniformLocation(programId, uniformName);
         if (uniformLocation < 0) {
-            throw new Exception("Could not find uniform:" + uniformName);
+            throw new ShaderException("Could not find uniform:" + uniformName);
         }
         uniforms.put(uniformName, uniformLocation);
     }
@@ -148,25 +148,25 @@ public class Renderer {
         glUniform1i(uniforms.get(uniformName), value);
     }
 
-    private void createVertexShader(String shaderCode) throws Exception {
+    private void createVertexShader(String shaderCode) throws ShaderException {
         vertexShaderId = createShader(shaderCode, GL_VERTEX_SHADER);
     }
 
-    private void createFragmentShader(String shaderCode) throws Exception {
+    private void createFragmentShader(String shaderCode) throws ShaderException {
         fragmentShaderId = createShader(shaderCode, GL_FRAGMENT_SHADER);
     }
 
-    private int createShader(String shaderCode, int shaderType) throws Exception {
+    private int createShader(String shaderCode, int shaderType) throws ShaderException {
         int shaderId = glCreateShader(shaderType);
         if (shaderId == 0) {
-            throw new Exception("Error creating shader. Type: " + shaderType);
+            throw new ShaderException("Error creating shader. Type: " + shaderType);
         }
 
         glShaderSource(shaderId, shaderCode);
         glCompileShader(shaderId);
 
         if (glGetShaderi(shaderId, GL_COMPILE_STATUS) == 0) {
-            throw new Exception("Error compiling Shader code: " + glGetShaderInfoLog(shaderId, 1024));
+            throw new ShaderException("Error compiling Shader code: " + glGetShaderInfoLog(shaderId, 1024));
         }
 
         glAttachShader(programId, shaderId);
@@ -174,14 +174,11 @@ public class Renderer {
         return shaderId;
     }
 
-    private String loadResource(String name) {
+    private String loadResource(String name) throws IOException {
         try (InputStream in = this.getClass().getResourceAsStream(name)) {
             Scanner scanner = new Scanner(in, "UTF-8");
             return scanner.useDelimiter("\\A").next();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-        return null;
     }
 
 }
