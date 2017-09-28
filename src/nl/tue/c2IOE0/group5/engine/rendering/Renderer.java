@@ -33,6 +33,8 @@ public class Renderer {
     private int vertexShaderId;
     private int fragmentShaderId;
 
+    private Camera camera;
+
     //private constructor for initializing a few variables
     public Renderer() {
         uniforms = new HashMap<>();
@@ -62,6 +64,14 @@ public class Renderer {
         setUniform("texture_sampler", 0);
 
 
+    }
+
+    public void setCamera(Camera camera) {
+        this.camera = camera;
+    }
+
+    public Camera getCamera() {
+        return this.camera;
     }
 
     /**
@@ -113,18 +123,14 @@ public class Renderer {
     }
 
     public void setTransformationMatrix(Vector3f position, Vector3f rotation, float scale) {
-        Matrix4f transformationMatrix = transformation.getModelViewMatrix(position, rotation, scale);
+        Matrix4f transformationMatrix = transformation.getModelViewMatrix(position, rotation, scale, getCamera());
         setUniform("modelViewMatrix", transformationMatrix);
     }
 
-    public void updateProjectionMatrix(Window window, Camera camera) {
+    public void updateProjectionMatrix(Window window) {
         // Update projection Matrix
         Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
         setUniform("projectionMatrix", projectionMatrix);
-
-        // Update view Matrix
-        Matrix4f viewMatrix = transformation.getViewMatrix(camera);
-
     }
 
     public void createUniform(String uniformName) throws ShaderException {

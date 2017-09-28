@@ -11,6 +11,8 @@ public class Transformation {
 
     private final Matrix4f viewMatrix;
 
+    private Matrix4f cameraMatrix;
+
     public Transformation() {
         modelViewMatrix = new Matrix4f();
         projectionMatrix = new Matrix4f();
@@ -24,14 +26,14 @@ public class Transformation {
         return projectionMatrix;
     }
 
-    public Matrix4f getModelViewMatrix(Vector3f offset, Vector3f rotation, float scale) {
+    public Matrix4f getModelViewMatrix(Vector3f offset, Vector3f rotation, float scale, Camera camera) {
         modelViewMatrix.identity().translate(offset).
                 rotateX((float)Math.toRadians(-rotation.x)).
                 rotateY((float)Math.toRadians(-rotation.y)).
                 rotateZ((float)Math.toRadians(-rotation.z)).
                 scale(scale);
         //copy matrix
-        Matrix4f viewCurr = new Matrix4f(viewMatrix);
+        Matrix4f viewCurr = new Matrix4f(this.getViewMatrix(camera));
         return viewCurr.mul(modelViewMatrix);
     }
 

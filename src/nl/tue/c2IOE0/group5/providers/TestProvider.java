@@ -2,6 +2,7 @@ package nl.tue.c2IOE0.group5.providers;
 
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
+import nl.tue.c2IOE0.group5.engine.rendering.Camera;
 import nl.tue.c2IOE0.group5.engine.rendering.GameObject;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
@@ -19,11 +20,13 @@ public class TestProvider implements Provider {
 
     private GameObject object;
 
+    private Camera camera;
+
     @Override
     public void init(Engine engine) {
         // initialize resources here, e.g.
         updatecounter = 0;
-
+        camera = engine.getCamera();
         this.object = new GameObject();
     }
 
@@ -60,10 +63,12 @@ public class TestProvider implements Provider {
                 r = 1;
                 b = 1;
         }
-
-        object.setPosition(0f, 2f, -1*updatecounter);
+        object.setPosition(0f, -0.5f, -4-updatecounter);
 
         window.setClearColor(r, g, b, 1f);
+
+        camera.movePosition(0.11f*((float)Math.random()-0.5f), 0.11f*((float)Math.random()-0.5f), 0.11f*((float)Math.random()-0.5f));
+        camera.moveRotation(0.31f*((float)Math.random()-0.5f), 0.31f*((float)Math.random()-0.5f), 0.31f*((float)Math.random()-0.5f));
 
         object.draw(window, renderer);
     }

@@ -107,9 +107,10 @@ public class Engine {
 
             // draw
             if (window.update()) {
+                renderer.setCamera(camera);
                 renderer.bind();
 
-                renderer.updateProjectionMatrix(window, camera);
+                renderer.updateProjectionMatrix(window);
                 providers.forEach(provider -> provider.draw(window, renderer));
 
                 renderer.unbind();
