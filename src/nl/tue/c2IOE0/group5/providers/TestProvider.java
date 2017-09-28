@@ -61,6 +61,8 @@ public class TestProvider implements Provider {
                 b = 1;
         }
 
+        object.setPosition(0f, 0f, -1*updatecounter);
+
         window.setClearColor(r, g, b, 1f);
 
         object.draw(window, renderer);

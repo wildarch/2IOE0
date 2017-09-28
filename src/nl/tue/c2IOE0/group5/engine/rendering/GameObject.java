@@ -19,7 +19,7 @@ public class GameObject implements Drawable {
 
         position = new Vector3f(0, 0, 0);
         scale = 1;
-        rotation = new Vector3f(0, 0, 0);
+        rotation = new Vector3f(0, 110f, 0);
 
         this.mesh = new Mesh(new float[]{
                 -0.5f,  0.5f, 0.0f,

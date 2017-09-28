@@ -56,7 +56,7 @@ public class Renderer {
 
         // Create uniforms for world and projection matrices
         createUniform("projectionMatrix");
-        createUniform("worldMatrix");
+        createUniform("modelViewMatrix");
     }
 
     /**
@@ -108,14 +108,18 @@ public class Renderer {
     }
 
     public void setTransformationMatrix(Vector3f position, Vector3f rotation, float scale) {
-        Matrix4f transformationMatrix = transformation.getWorldMatrix(position, rotation, scale);
-        setUniform("worldMatrix", transformationMatrix);
+        Matrix4f transformationMatrix = transformation.getModelViewMatrix(position, rotation, scale);
+        setUniform("modelViewMatrix", transformationMatrix);
     }
 
-    public void updateProjectionMatrix(Window window) {
+    public void updateMatrices(Window window, Camera camera) {
         // Update projection Matrix
         Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
         setUniform("projectionMatrix", projectionMatrix);
+
+        // Update view Matrix
+        Matrix4f viewMatrix = transformation.getViewMatrix(camera);
+
     }
 
     public void createUniform(String uniformName) throws Exception {
