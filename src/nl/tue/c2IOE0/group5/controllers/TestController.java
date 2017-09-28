@@ -27,7 +27,7 @@ public class TestController implements Controller,Listener {
     @Override
     public void update() {
         // you can use resources here, e.g.
-        String testProviderName = this.testProvider.getClass().getName();
+
     }
 
     @Override
@@ -48,6 +48,7 @@ public class TestController implements Controller,Listener {
     public void onMouseButtonPressed(MouseEvent event) {
         if (event.getSubject() == GLFW_MOUSE_BUTTON_1) {
             System.out.println("Click at (" + event.getX() + ", " + event.getY() + ")");
+            this.testProvider.ud();
         }
     }
 

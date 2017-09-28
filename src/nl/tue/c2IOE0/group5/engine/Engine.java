@@ -4,8 +4,11 @@ import nl.tue.c2IOE0.group5.engine.controller.Controller;
 import nl.tue.c2IOE0.group5.engine.controller.input.InputHandler;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.Listener;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
+import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
+import nl.tue.c2IOE0.group5.engine.rendering.ShaderException;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +26,7 @@ public class Engine {
     private boolean running = false;
 
     private Window window;
+    private Renderer renderer;
     private InputHandler inputHandler;
     private Timer timer;
 
@@ -31,6 +35,7 @@ public class Engine {
 
     public Engine() {
         window = new Window("Tower Defence", 960, 720, false, false);
+        renderer = new Renderer();
         inputHandler = new InputHandler();
         timer = new Timer();
 
@@ -41,7 +46,7 @@ public class Engine {
     /**
      * Run the Engine, should be invoked after initializing and attaching {@link Controller}s and {@link Provider}s.
      */
-    public void run() {
+    public void run() throws ShaderException, IOException {
         try {
             running = true;
             init();
@@ -54,9 +59,10 @@ public class Engine {
     /**
      * Initialize necessary objects
      */
-    private void init() {
+    private void init() throws ShaderException, IOException {
         timer.init();
         window.init();
+        renderer.init();
         inputHandler.init(window);
         providers.forEach(provider -> provider.init(this));
         controllers.forEach(controller -> controller.init(this));
@@ -67,6 +73,7 @@ public class Engine {
      */
     private void cleanup() {
         window.cleanup();
+        renderer.cleanup();
     }
 
     /**
@@ -81,6 +88,7 @@ public class Engine {
         long tickTimer = 0;
 
         while (running && !window.shouldClose()) {
+            timer.updateLoopTime();
             elapsedTime = timer.getElapsedTime();
             tickTimer += elapsedTime;
 
@@ -94,16 +102,21 @@ public class Engine {
                 tickTimer -= TPS_INTERVAL;
             }
 
-            // render
+            // draw
             if (window.update()) {
-                providers.forEach(provider -> provider.render(window));
+                renderer.bind();
+
+                renderer.updateProjectionMatrix(window);
+                providers.forEach(provider -> provider.draw(window, renderer));
+
+                renderer.unbind();
             }
 
             // sync up frame rate as desired
             if (!window.vSyncEnabled()) {
                 // manually sync up frame rate with the timer if vSync is disabled
                 long endTime = timer.getPreviousTime() + FPS_INTERVAL;
-                while (timer.getTime() < endTime) {
+                while (timer.getSystemTime() < endTime) {
                     try { // use sleep(1) for more accurate intervals
                         Thread.sleep(1);
                     } catch (InterruptedException ignored) {}
@@ -198,6 +211,10 @@ public class Engine {
      */
     public boolean isRunning() {
         return running;
+    }
+
+    public Timer getGameloopTimer(){
+        return timer;
     }
 
 }

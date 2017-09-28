@@ -1,47 +1,50 @@
 package nl.tue.c2IOE0.group5.engine;
 
+import nl.tue.c2IOE0.group5.util.Updatable;
+
 /**
- * @author Jorren Hendriks
+ * @author Jorren Hendriks & Geert van Ieperen
  */
 public class Timer {
 
-    private long previousTime;
+    private Updatable<Long> time;
 
     /**
      * Initialize the timer, set previous time to current.
      */
     public void init() {
-        previousTime = System.currentTimeMillis();
+        time = new Updatable<>(System.currentTimeMillis());
     }
 
     /**
-     * Get the current time.
-     *
-     * @return The current time.
+     * @return The current system time.
      */
-    public long getTime() {
+    public long getSystemTime() {
         return System.currentTimeMillis();
     }
 
     /**
-     * Get the elapsed time since previous request. Will also update {@link #previousTime} to be the current time.
-     *
-     * @return The elapsed time since previous request.
+     * @return the time of the start of the frame
      */
-    public long getElapsedTime() {
-        long time = System.currentTimeMillis();
-        long elapsedTime = time - previousTime;
-        previousTime = time;
-        return elapsedTime;
+    public long getLoopTime(){
+        return time.current();
     }
 
     /**
-     * Get the previous time at which the timer was requested.
-     *
-     * @return The previous time.
+     * @return The elapsed time since previous request.
      */
-    public long getPreviousTime() {
-        return previousTime;
+    public long getElapsedTime() {
+        return time.current() - time.previous();
     }
 
+    /**
+     * @return The previous time at which the timer was requested.
+     */
+    public long getPreviousTime() {
+        return time.previous();
+    }
+
+    public void updateLoopTime(){
+        time.update(System.currentTimeMillis());
+    }
 }
