@@ -3,8 +3,8 @@ package nl.tue.c2IOE0.group5.engine;
 import nl.tue.c2IOE0.group5.engine.controller.Controller;
 import nl.tue.c2IOE0.group5.engine.controller.input.InputHandler;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.Listener;
+import nl.tue.c2IOE0.group5.engine.objects.Camera;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
-import nl.tue.c2IOE0.group5.engine.rendering.Camera;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.ShaderException;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
@@ -107,12 +107,16 @@ public class Engine {
 
             // draw
             if (window.update()) {
-                renderer.setCamera(camera);
+                // set main camera
+                renderer.setActiveCamera(camera);
+                // bind default shader program
                 renderer.bind();
+
 
                 renderer.updateProjectionMatrix(window);
                 providers.forEach(provider -> provider.draw(window, renderer));
 
+                // unbind shader program
                 renderer.unbind();
             }
 

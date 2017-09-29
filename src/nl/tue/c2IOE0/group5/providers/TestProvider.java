@@ -1,14 +1,11 @@
 package nl.tue.c2IOE0.group5.providers;
 
 import nl.tue.c2IOE0.group5.engine.Engine;
+import nl.tue.c2IOE0.group5.engine.objects.Camera;
+import nl.tue.c2IOE0.group5.engine.objects.GameObject;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
-import nl.tue.c2IOE0.group5.engine.rendering.Camera;
-import nl.tue.c2IOE0.group5.engine.rendering.GameObject;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
-
-import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
-import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 /**
  * @author Jorren Hendriks
@@ -27,7 +24,7 @@ public class TestProvider implements Provider {
         // initialize resources here, e.g.
         updatecounter = 0;
         camera = engine.getCamera();
-        this.object = new GameObject();
+        this.object = new TestObject();
     }
 
     public void ud() {
@@ -63,12 +60,14 @@ public class TestProvider implements Provider {
                 r = 1;
                 b = 1;
         }
-        object.setPosition(0f, -0.5f, -4-updatecounter);
+        object.setPosition(0f, -0.5f, -4);
+        //object.setRotation(0f, 0f, 0f);
+        object.rotate(0.0f, 2f, 0f);
 
         window.setClearColor(r, g, b, 1f);
 
-        camera.movePosition(0.11f*((float)Math.random()-0.5f), 0.11f*((float)Math.random()-0.5f), 0.11f*((float)Math.random()-0.5f));
-        camera.moveRotation(0.31f*((float)Math.random()-0.5f), 0.31f*((float)Math.random()-0.5f), 0.31f*((float)Math.random()-0.5f));
+        //camera.moveRelative(0.05f/*((float)Math.random()-0.5f)*/, 0.01f/*((float)Math.random()-0.5f)*/, 0.10f/*((float)Math.random()-0.5f)*/);
+        //camera.rotate(0.00f/*((float)Math.random()-0.5f)*/, 0.00f/*((float)Math.random()-0.5f)*/, 6.00f/*((float)Math.random()-0.5f)*/);
 
         object.draw(window, renderer);
     }

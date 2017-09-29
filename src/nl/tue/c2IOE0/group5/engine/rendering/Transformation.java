@@ -1,52 +1,73 @@
 package nl.tue.c2IOE0.group5.engine.rendering;
 
+import nl.tue.c2IOE0.group5.engine.objects.Camera;
+import nl.tue.c2IOE0.group5.util.Angle;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-public class Transformation {
+class Transformation {
 
     private final Matrix4f projectionMatrix;
-
-    private final Matrix4f modelViewMatrix;
-
+    private final Matrix4f modelMatrix;
     private final Matrix4f viewMatrix;
 
-    private Matrix4f cameraMatrix;
-
-    public Transformation() {
-        modelViewMatrix = new Matrix4f();
+    Transformation() {
+        modelMatrix = new Matrix4f();
         projectionMatrix = new Matrix4f();
         viewMatrix = new Matrix4f();
     }
 
-    public final Matrix4f getProjectionMatrix(float fov, float width, float height, float zNear, float zFar) {
+    /**
+     * Get the projection matrix.
+     *
+     * @param fov The field of view of the scene.
+     * @param width The width of the window to which the scene will be rendered.
+     * @param height The height of the window to which the scene will be rendered.
+     * @param zNear The closest z-coordinate that will be rendered.
+     * @param zFar The furthest z-coordinate that will be rendered.
+     * @return The projection matrix.
+     */
+    Matrix4f getProjectionMatrix(float fov, float width, float height, float zNear, float zFar) {
         float aspectRatio = width / height;
-        projectionMatrix.identity();
-        projectionMatrix.perspective(fov, aspectRatio, zNear, zFar);
-        return projectionMatrix;
+        return projectionMatrix.identity().perspective(fov, aspectRatio, zNear, zFar);
     }
 
-    public Matrix4f getModelViewMatrix(Vector3f offset, Vector3f rotation, float scale, Camera camera) {
-        modelViewMatrix.identity().translate(offset).
-                rotateX((float)Math.toRadians(-rotation.x)).
-                rotateY((float)Math.toRadians(-rotation.y)).
-                rotateZ((float)Math.toRadians(-rotation.z)).
+    /**
+     * Get the modelview matrix. combining the model matrix with the view matrix to get a matrix representing model
+     * positioning relative to the camera.
+     *
+     * @param position The position of the model.
+     * @param rotation The rotation of the model.
+     * @param scale The scale of the model.
+     * @param camera The camera that will look at the model.
+     * @return A modelview matrix.
+     */
+    Matrix4f getModelViewMatrix(Vector3f position, Vector3f rotation, float scale, Camera camera) {
+        modelMatrix.identity().translate(position).
+                rotateX(Angle.radf(-rotation.x)).
+                rotateY(Angle.radf(-rotation.y)).
+                rotateZ(Angle.radf(-rotation.z)).
                 scale(scale);
-        //copy matrix
-        Matrix4f viewCurr = new Matrix4f(this.getViewMatrix(camera));
-        return viewCurr.mul(modelViewMatrix);
+        // return the final modelview matrix
+        return getViewMatrix(camera).mul(modelMatrix);
     }
 
-    public Matrix4f getViewMatrix(Camera camera) {
-        Vector3f cameraPos = camera.getPosition();
+    /**
+     * Get the view matrix from a camera.
+     *
+     * @param camera The camera to get a view matrix for.
+     * @return A view matrix corresponding to the camera positioning.
+     */
+    private Matrix4f getViewMatrix(Camera camera) {
+        Vector3f position = camera.getPosition();
         Vector3f rotation = camera.getRotation();
 
-        viewMatrix.identity();
-        // First do the rotation so camera rotates over its position
-        viewMatrix.rotate((float)Math.toRadians(rotation.x), new Vector3f(1, 0, 0))
-                .rotate((float)Math.toRadians(rotation.y), new Vector3f(0, 1, 0));
-        // Then do the translation
-        viewMatrix.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
-        return viewMatrix;
+        return viewMatrix.identity()
+                // first do the rotation so camera rotates over its position
+                .rotateX(Angle.radf(rotation.x))
+                .rotateY(Angle.radf(rotation.y))
+                .rotateZ(Angle.radf(rotation.z))
+                .translate(position.mul(-1));
     }
+
 }

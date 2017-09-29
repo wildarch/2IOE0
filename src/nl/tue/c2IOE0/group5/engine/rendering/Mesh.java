@@ -9,12 +9,8 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.glDisableVertexAttribArray;
-import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
-import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
-import static org.lwjgl.opengl.GL30.glGenVertexArrays;
+import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL30.*;
 
 /**
  * @author Jorren Hendriks.
@@ -57,7 +53,7 @@ public class Mesh {
             texBuffer.put(texCoords).flip();
             glBindBuffer(GL_ARRAY_BUFFER, texVboID);
             glBufferData(GL_ARRAY_BUFFER, texBuffer, GL_STATIC_DRAW);
-            glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
+            glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
 
             // Index VBO
             idVboID = glGenBuffers();
@@ -81,11 +77,11 @@ public class Mesh {
         }
     }
 
-    public int getVaoId() {
+    private int getVaoId() {
         return vaoId;
     }
 
-    public int getVertexCount() {
+    private int getVertexCount() {
         return vertexCount;
     }
 
