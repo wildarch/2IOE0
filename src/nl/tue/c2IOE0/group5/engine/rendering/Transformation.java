@@ -67,7 +67,7 @@ class Transformation {
                 .rotateX(Angle.radf(rotation.x))
                 .rotateY(Angle.radf(rotation.y))
                 .rotateZ(Angle.radf(rotation.z))
-                .translate(position.mul(-1));
+                .translate(-position.x, -position.y, -position.z);
     }
 
 }
