@@ -22,18 +22,19 @@ public class Mesh {
     private final int posVboID;
     private final int idVboID;
     private final int texVboID;
+    private final int norVboID;
 
     private final int vertexCount;
 
-    private final Texture texture;
+    private Texture texture;
 
-    public Mesh(float[] positions, float[] texCoords, int[] indices, Texture texture) {
-        this.texture = texture;
-
+    public Mesh(float[] positions, float[] texCoords, float[] normals, int[] indices) {
         FloatBuffer posBuffer = null;
         FloatBuffer texBuffer = null;
+        FloatBuffer norBuffer = null;
         IntBuffer indicesBuffer = null;
         try {
+
             vertexCount = indices.length;
 
             vaoId = glGenVertexArrays();
@@ -47,13 +48,21 @@ public class Mesh {
             glBufferData(GL_ARRAY_BUFFER, posBuffer, GL_STATIC_DRAW);
             glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
 
-            // Color or Texture VBO
+            // Texture VBO
             texVboID = glGenBuffers();
             texBuffer = MemoryUtil.memAllocFloat(texCoords.length);
             texBuffer.put(texCoords).flip();
             glBindBuffer(GL_ARRAY_BUFFER, texVboID);
             glBufferData(GL_ARRAY_BUFFER, texBuffer, GL_STATIC_DRAW);
             glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
+
+            // Vertex normals VBO
+            norVboID = glGenBuffers();
+            norBuffer = MemoryUtil.memAllocFloat(normals.length);
+            norBuffer.put(normals).flip();
+            glBindBuffer(GL_ARRAY_BUFFER, norVboID);
+            glBufferData(GL_ARRAY_BUFFER, norBuffer, GL_STATIC_DRAW);
+            glVertexAttribPointer(2, 3, GL_FLOAT, false, 0, 0);
 
             // Index VBO
             idVboID = glGenBuffers();
@@ -71,11 +80,27 @@ public class Mesh {
             if (texBuffer != null) {
                 MemoryUtil.memFree(texBuffer);
             }
+            if (norBuffer != null) {
+                MemoryUtil.memFree(norBuffer);
+            }
             if (indicesBuffer != null) {
                 MemoryUtil.memFree(indicesBuffer);
             }
         }
     }
+
+    public boolean isTextured() {
+        return this.texture != null;
+    }
+
+    public Texture getTexture() {
+        return this.texture;
+    }
+
+    public void setTexture(Texture texture) {
+        this.texture = texture;
+    }
+
 
     private int getVaoId() {
         return vaoId;
@@ -97,6 +122,7 @@ public class Mesh {
         glDeleteBuffers(posVboID);
         glDeleteBuffers(texVboID);
         glDeleteBuffers(idVboID);
+        glDeleteBuffers(texVboID);
 
 
         // Delete the VAO
@@ -105,22 +131,27 @@ public class Mesh {
     }
 
     public void draw() {
-        // Activate firs texture bank
-        glActiveTexture(GL_TEXTURE0);
-        // Bind the texture
-        glBindTexture(GL_TEXTURE_2D, texture.getId());
-
+        // If we have a texture for our mesh
+        if (texture != null) {
+            // Activate first texture bank
+            glActiveTexture(GL_TEXTURE0);
+            // Bind the texture
+            glBindTexture(GL_TEXTURE_2D, texture.getId());
+        }
         // Draw the mesh
         glBindVertexArray(getVaoId());
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
+        glEnableVertexAttribArray(2);
 
         glDrawElements(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0);
 
         // Restore state
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
+        glDisableVertexAttribArray(2);
         glBindVertexArray(0);
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
 
 }
