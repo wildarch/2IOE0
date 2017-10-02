@@ -18,6 +18,7 @@ public class TestController implements Controller,Listener {
     // define required resources here, e.g.
     private TestProvider testProvider;
     private Camera camera;
+    private boolean spacebarPressed = false;
 
     @Override
     public void init(Engine engine) {
@@ -34,30 +35,59 @@ public class TestController implements Controller,Listener {
 
     @Override
     public void onKeyPressed(Event event) {
-
         switch (event.getSubject()) {
             case GLFW_KEY_A:
                 //camera.setRotation(0, 90, 0);
-                camera.moveRelative(-1f, 0f, 0f);
+                if (spacebarPressed){
+                    camera.rotate(0f, -4f, 0f);
+                }
+                else {
+                    camera.moveRelative(-1f, 0f, 0f);
+                }
                 break;
             case GLFW_KEY_D:
                 //camera.setRotation(0, -90, 0);
-                camera.moveRelative(1f, 0f, 0f);
+                if (spacebarPressed){
+                    camera.rotate(0f, 4f, 0f);
+                }
+                else {
+                    camera.moveRelative(1f, 0f, 0f);
+                }
                 break;
             case GLFW_KEY_S:
                 //camera.setRotation(0, 180, 0);
-                camera.moveRelative(0f, 0f, 1f);
+                if (spacebarPressed){
+                    camera.rotate(1f, 0f, 0f);
+                }
+                else {
+                    camera.moveRelative(0f, 0f, 4f);
+                }
                 break;
             case GLFW_KEY_W:
                 //camera.setRotation(0, 0, 0);
-                camera.moveRelative(0f, 0f, -1f);
+                if (spacebarPressed){
+                    camera.rotate(-1f, 0f, 0f);
+                }
+                else {
+                    camera.moveRelative(0f, 0f, -4f);
+                }
                 break;
+            case GLFW_KEY_SPACE:
+                spacebarPressed = true;
+                break;
+            case GLFW_KEY_ESCAPE:
+                camera.setRotation(0f, 0f, 0f);
+                camera.setPosition(0f, 0f, 0f);
         }
     }
 
     @Override
     public void onKeyReleased(Event event) {
-
+        switch (event.getSubject()) {
+            case GLFW_KEY_SPACE:
+                spacebarPressed = false;
+                break;
+        }
     }
 
     @Override
