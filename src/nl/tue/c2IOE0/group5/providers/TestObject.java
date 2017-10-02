@@ -32,7 +32,6 @@ public class TestObject extends GameObject {
     @Override
     public void draw(Window window, Renderer renderer) {
         super.draw(window, renderer);
-
         mesh.draw();
     }
 
