@@ -7,9 +7,9 @@ import org.joml.Vector3f;
  */
 public abstract class Positionable {
 
-    // position of the camera
+    // position of the object
     private final Vector3f position;
-    // rotation of the camera in degrees
+    // rotation of the object in degrees
     private final Vector3f rotation;
 
     public Positionable() {
@@ -23,20 +23,20 @@ public abstract class Positionable {
     }
 
     /**
-     * Get the current position of the camera.
+     * Get the current position of the object.
      *
-     * @return The position of the camera.
+     * @return The position of the object.
      */
     public Vector3f getPosition() {
         return position;
     }
 
     /**
-     * Set the current position of the camera.
+     * Set the current position of the object.
      *
-     * @param x The new x-coordinate of the camera.
-     * @param y The new y-coordinate of the camera.
-     * @param z The new z-coordinate of the camera.
+     * @param x The new x-coordinate of the object.
+     * @param y The new y-coordinate of the object.
+     * @param z The new z-coordinate of the object.
      */
     public void setPosition(float x, float y, float z) {
         position.x = x;
@@ -45,7 +45,7 @@ public abstract class Positionable {
     }
 
     /**
-     * Move the camera relative to its previous location.
+     * Move the object relative to its previous location.
      *
      * @param offsetX The movement in the x direction.
      * @param offsetY The movement in the y direction.
@@ -58,7 +58,7 @@ public abstract class Positionable {
     }
 
     /**
-     * Move the camera relative to its previous location and its panning from the center.
+     * Move the object relative to its previous location and its panning from the center.
      *
      * @param offsetX The movement in the x direction relative to the panning.
      * @param offsetY The movement in the y direction.
@@ -77,20 +77,20 @@ public abstract class Positionable {
     }
 
     /**
-     * Get the current rotation of the camera in degrees.
+     * Get the current rotation of the object in degrees.
      *
-     * @return The rotation of the camera in degrees.
+     * @return The rotation of the object in degrees.
      */
     public Vector3f getRotation() {
         return rotation;
     }
 
     /**
-     * Set the current rotation of the camera.
+     * Set the current rotation of the object.
      *
-     * @param x The new x rotation of the camera in degrees.
-     * @param y The new y rotation of the camera in degrees.
-     * @param z The new z rotation of the camera in degrees.
+     * @param x The new x rotation of the object in degrees.
+     * @param y The new y rotation of the object in degrees.
+     * @param z The new z rotation of the object in degrees.
      */
     public void setRotation(float x, float y, float z) {
         rotation.x = x;
@@ -99,7 +99,7 @@ public abstract class Positionable {
     }
 
     /**
-     * Rotate the camera relative to its current rotation.
+     * Rotate the object relative to its current rotation.
      *
      * @param offsetX The rotation in the x direction in degrees.
      * @param offsetY The rotation in the y direction in degrees.
