@@ -11,6 +11,7 @@
     <properties>
         <td.mainclass>nl.tue.c2IOE0.group5.TowerDefence</td.mainclass>
         <lwjgl.version>3.1.2</lwjgl.version>
+        <dl4j.version>0.9.1</dl4j.version>
     </properties>
 
     <dependencies>
@@ -112,12 +113,12 @@
         <dependency>
             <groupId>org.deeplearning4j</groupId>
             <artifactId>deeplearning4j-core</artifactId>
-            <version>0.9.1</version>
+            <version>${dl4j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.nd4j</groupId>
             <artifactId>nd4j-native-platform</artifactId>
-            <version>0.9.1</version>
+            <version>${dl4j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -127,7 +128,7 @@
         <dependency>
             <groupId>org.datavec</groupId>
             <artifactId>datavec-api</artifactId>
-            <version>0.9.1</version>
+            <version>${dl4j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jfree</groupId>
@@ -137,7 +138,7 @@
         <dependency>
             <groupId>org.deeplearning4j</groupId>
             <artifactId>deeplearning4j-ui_2.11</artifactId>
-            <version>0.9.1</version>
+            <version>${dl4j.version}</version>
         </dependency>
     </dependencies>
     <profiles>
