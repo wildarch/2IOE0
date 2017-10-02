@@ -1,8 +1,11 @@
 package nl.tue.c2IOE0.group5.engine.rendering;
 
 import nl.tue.c2IOE0.group5.engine.objects.Camera;
+import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
+import nl.tue.c2IOE0.group5.engine.rendering.shader.PointLight;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.system.MemoryStack;
 
 import java.io.IOException;
@@ -29,6 +32,14 @@ public class Renderer {
 
     private final Map<String, Integer> uniforms;
 
+    private float specularPower = 10f;
+    private Vector3f ambientLight = new Vector3f(0.3f, 0.3f, 0.3f);
+    private PointLight pointLight = new PointLight(
+                    new Vector3f(1f, 1f, 1f),
+                    new Vector3f(0f, 0f, 1f),
+                    10.0f);
+    private PointLight.Attenuation pointLightAtt = new PointLight.Attenuation(0f, 0f, 1f);
+
     private int programId;
     private int vertexShaderId;
     private int fragmentShaderId;
@@ -41,6 +52,8 @@ public class Renderer {
     public Renderer() {
         uniforms = new HashMap<>();
         transformation = new Transformation();
+
+        pointLight.setAttenuation(pointLightAtt);
     }
 
     /**
@@ -63,9 +76,13 @@ public class Renderer {
         createUniform("modelViewMatrix");
         createUniform("texture_sampler");
 
-        setUniform("texture_sampler", 0);
+        // Create the Material uniform
+        createMaterialUniform("material");
 
-
+        // Create the lighting uniforms
+        createUniform("specularPower");
+        createUniform("ambientLight");
+        createPointLightUniform("pointLight");
     }
 
     /**
@@ -156,6 +173,15 @@ public class Renderer {
     }
 
     /**
+     * Set the material of currently rendered object.
+     *
+     * @param material The material of the object.
+     */
+    public void setMaterial(Material material) {
+        setUniform("material", material);
+    }
+
+    /**
      * Update the projection matrix, this has to do with the perspective of the activeCamera.
      *
      * @param window The window on which the scene will be rendered.
@@ -164,6 +190,50 @@ public class Renderer {
         // Update projection Matrix
         Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
         setUniform("projectionMatrix", projectionMatrix);
+
+        // Update Light Uniforms
+        setUniform("ambientLight", ambientLight);
+        setUniform("specularPower", specularPower);
+        // Get a copy of the light object and transform its position to view coordinates
+        PointLight currPointLight = new PointLight(pointLight);
+        Vector3f lightPos = currPointLight.getPosition();
+        Vector4f aux = new Vector4f(lightPos, 1);
+        aux.mul(transformation.getViewMatrix(getActiveCamera()));
+        lightPos.x = aux.x;
+        lightPos.y = aux.y;
+        lightPos.z = aux.z;
+        setUniform("pointLight", currPointLight);
+
+        setUniform("texture_sampler", 0);
+    }
+
+    /**
+     * Create the uniforms required for a PointLight
+     *
+     * @param uniformName The name of the uniform
+     * @throws ShaderException If an error occurs getting the memory location.
+     */
+    public void createPointLightUniform(String uniformName) throws ShaderException {
+        createUniform(uniformName + ".colour");
+        createUniform(uniformName + ".position");
+        createUniform(uniformName + ".intensity");
+        createUniform(uniformName + ".att.constant");
+        createUniform(uniformName + ".att.linear");
+        createUniform(uniformName + ".att.exponent");
+    }
+
+    /**
+     * Create the uniforms required for a Material
+     *
+     * @param uniformName The name of the uniform
+     * @throws ShaderException If an error occurs getting the memory location.
+     */
+    public void createMaterialUniform(String uniformName) throws ShaderException {
+        createUniform(uniformName + ".ambient");
+        createUniform(uniformName + ".diffuse");
+        createUniform(uniformName + ".specular");
+        createUniform(uniformName + ".hasTexture");
+        createUniform(uniformName + ".reflectance");
     }
 
     /**
@@ -203,6 +273,60 @@ public class Renderer {
      */
     private void setUniform(String uniformName, int value) {
         glUniform1i(uniforms.get(uniformName), value);
+    }
+
+    /**
+     * Set the value of a certain float shader uniform
+     *
+     * @param uniformName The name of the uniform.
+     * @param value The new value of the uniform.
+     */
+    public void setUniform(String uniformName, float value) {
+        glUniform1f(uniforms.get(uniformName), value);
+    }
+
+    /**
+     * Set the value of a certain 3D Vector shader uniform
+     *
+     * @param uniformName The name of the uniform.
+     * @param value The new value of the uniform.
+     */
+    public void setUniform(String uniformName, Vector3f value) {
+        glUniform3f(uniforms.get(uniformName), value.x, value.y, value.z);
+    }
+
+    /**
+     * Set the value of a certain 4D Vector shader uniform
+     *
+     * @param uniformName The name of the uniform.
+     * @param value The new value of the uniform.
+     */
+    public void setUniform(String uniformName, Vector4f value) {
+        glUniform4f(uniforms.get(uniformName), value.x, value.y, value.z, value.w);
+    }
+
+    /**
+     * Set the value of a certain PointLight shader uniform
+     *
+     * @param uniformName The name of the uniform.
+     * @param pointLight The new value of the uniform.
+     */
+    public void setUniform(String uniformName, PointLight pointLight) {
+        setUniform(uniformName + ".colour", pointLight.getColor() );
+        setUniform(uniformName + ".position", pointLight.getPosition());
+        setUniform(uniformName + ".intensity", pointLight.getIntensity());
+        PointLight.Attenuation att = pointLight.getAttenuation();
+        setUniform(uniformName + ".att.constant", att.getConstant());
+        setUniform(uniformName + ".att.linear", att.getLinear());
+        setUniform(uniformName + ".att.exponent", att.getExponent());
+    }
+
+    public void setUniform(String uniformName, Material material) {
+        setUniform(uniformName + ".ambient", material.getAmbientColour());
+        setUniform(uniformName + ".diffuse", material.getDiffuseColour());
+        setUniform(uniformName + ".specular", material.getSpecularColour());
+        setUniform(uniformName + ".hasTexture", material.isTextured() ? 1 : 0);
+        setUniform(uniformName + ".reflectance", material.getReflectance());
     }
 
     /**

@@ -58,7 +58,7 @@ class Transformation {
      * @param camera The camera to get a view matrix for.
      * @return A view matrix corresponding to the camera positioning.
      */
-    private Matrix4f getViewMatrix(Camera camera) {
+    Matrix4f getViewMatrix(Camera camera) {
         Vector3f position = camera.getPosition();
         Vector3f rotation = camera.getRotation();
 

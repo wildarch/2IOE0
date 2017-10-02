@@ -29,10 +29,6 @@ public class Mesh {
     private Texture texture;
 
     public Mesh(float[] positions, float[] texCoords, float[] normals, int[] indices) {
-        for (int i = 0; i < texCoords.length; i++) {
-            System.out.print(texCoords[i] + " ");
-        }
-
         FloatBuffer posBuffer = null;
         FloatBuffer texBuffer = null;
         FloatBuffer norBuffer = null;
