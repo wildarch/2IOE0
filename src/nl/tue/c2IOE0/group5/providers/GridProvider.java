@@ -152,6 +152,6 @@ public class GridProvider implements Provider {
 
     @Override
     public void draw(Window window, Renderer renderer) {
-        mesh.draw();
+        //mesh.draw();
     }
 }
