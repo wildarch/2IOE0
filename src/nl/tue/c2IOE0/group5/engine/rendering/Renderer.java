@@ -67,7 +67,7 @@ public class Renderer {
             throw new ShaderException("Could not create Shader");
         }
 
-        createVertexShader(loadResource("/vertex.vert"));
+        createVertexShader(loadResource("/bounceShader.vert"));
         createFragmentShader(loadResource("/fragment.frag"));
         link();
 
@@ -83,6 +83,14 @@ public class Renderer {
         createUniform("specularPower");
         createUniform("ambientLight");
         createPointLightUniform("pointLight");
+
+        // current spread
+        createUniform("bounceDegree");
+        // height of middle of object/bounce
+        createUniform("gravityMiddle");
+        // height from top to bottom (the heightrange that is expanded)
+        createUniform("totalHeight");
+
     }
 
     /**
@@ -150,6 +158,28 @@ public class Renderer {
             System.err.println("Warning validating Shader code: " + glGetProgramInfoLog(programId, 1024));
         }
 
+    }
+
+    /**
+     * applies a bounce-effect around the given gravity-middle, stretching totalheight/2 up and down.
+     * this effect stays until {@link #unboink()} has been called
+     * @param bounceDegree the strength B of the effect, with B = 0 no effect,
+     *                     B > 0 a horizontal expansion and B < 0 a vertical stretch
+     * @param totalHeight the height of the object, measured from the lowest vertex to the highest vertex.
+     * @param gravityMiddle the center of the effect
+     */
+    public void boink(float bounceDegree, float totalHeight, Vector3f gravityMiddle){
+        setUniform("bounceDegree", bounceDegree);
+        setUniform("totalHeight", totalHeight);
+        setUniform("gravityMiddle", gravityMiddle);
+    }
+
+    /**
+     * disables previously activated bounce-effects
+     * @see #boink(float, float, Vector3f)
+     */
+    public void unboink(){
+        setUniform("bounceDegree", 0f);
     }
 
     /**
