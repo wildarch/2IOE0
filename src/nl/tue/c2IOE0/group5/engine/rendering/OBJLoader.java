@@ -1,6 +1,7 @@
 package nl.tue.c2IOE0.group5.engine.rendering;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,7 @@ import org.joml.Vector3f;
 
 public class OBJLoader {
 
-    public static Mesh loadMesh(String fileName) throws Exception {
+    public static Mesh loadMesh(String fileName) throws IOException {
         List<String> lines = readAllLines(fileName);
 
         List<Vector3f> vertices = new ArrayList<>();
@@ -162,7 +163,7 @@ public class OBJLoader {
             idxVecNormal = NO_VALUE;
         }
     }
-    private static List<String> readAllLines(String fileName) throws Exception {
+    private static List<String> readAllLines(String fileName) throws IOException {
         List<String> list = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new InputStreamReader(OBJLoader.class.getResourceAsStream(fileName)))) {
             String line;

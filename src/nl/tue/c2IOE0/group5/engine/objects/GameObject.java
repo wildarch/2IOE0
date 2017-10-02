@@ -41,4 +41,8 @@ public abstract class GameObject extends Positionable implements Drawable {
 
         // actually draw objects here
     }
+
+    public void update() {
+        // Update the state of objects
+    }
 }

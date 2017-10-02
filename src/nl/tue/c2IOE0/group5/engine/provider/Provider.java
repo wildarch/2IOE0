@@ -3,6 +3,8 @@ package nl.tue.c2IOE0.group5.engine.provider;
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.rendering.Drawable;
 
+import java.io.IOException;
+
 /**
  * @author Jorren Hendriks
  *
