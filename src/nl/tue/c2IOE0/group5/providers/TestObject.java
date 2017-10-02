@@ -5,6 +5,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Texture;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
+import nl.tue.c2IOE0.group5.engine.rendering.OBJLoader;
 
 import java.io.IOException;
 
@@ -19,33 +20,11 @@ public class TestObject extends GameObject {
         super();
 
         try {
-            this.mesh = new Mesh(new float[] {
-                -0.5f,   0.8f,   0.5f,
-                -0.4f,  -0.8f,   0.4f,
-                 0.4f,  -0.8f,   0.4f,
-                 0.5f,   0.8f,   0.5f,
-                -0.5f,   0.8f,  -0.5f,
-                 0.5f,   0.8f,  -0.5f,
-                -0.4f,  -0.8f,  -0.4f,
-                 0.4f,  -0.8f,  -0.4f,
-            }, new float[]{
-                0.2f, 0.2f,
-                0.2f, 0.8f,
-                0.8f, 0.8f,
-                0.8f, 0.2f,
-                0.8f, 0.2f,
-                0.2f, 0.2f,
-                0.8f, 0.8f,
-                0.2f, 0.8f,
-            }, new int[] {
-                0, 1, 3, 3, 1, 2,
-                4, 0, 3, 5, 4, 3,
-                3, 2, 7, 5, 3, 7,
-                6, 1, 0, 6, 0, 4,
-                2, 1, 6, 2, 6, 7,
-                7, 6, 4, 7, 4, 5,
-            }, new Texture("/texture.png"));
-        } catch (IOException e) {
+            this.mesh = OBJLoader.loadMesh("/tower.obj");
+            this.mesh.setTexture(new Texture("/tower.png"));
+            this.setScale(40f);
+            this.setPosition(0f, -1f, 0f);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
