@@ -67,8 +67,8 @@ public class Renderer {
             throw new ShaderException("Could not create Shader");
         }
 
-        createVertexShader(loadResource("/vertex.vs"));
-        createFragmentShader(loadResource("/fragment.fs"));
+        createVertexShader(loadResource("/vertex.vert"));
+        createFragmentShader(loadResource("/fragment.frag"));
         link();
 
         // Create uniforms for world and projection matrices
