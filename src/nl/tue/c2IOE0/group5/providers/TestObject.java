@@ -32,6 +32,7 @@ public class TestObject extends GameObject {
     @Override
     public void draw(Window window, Renderer renderer) {
         super.draw(window, renderer);
+        // Boinky?
         boinkyness = (boinkyness + 0.01f);
         renderer.setMaterial(new Material(mesh.getTexture()));
         renderer.boink((float)Math.sin(boinkyness) +1f, 2f, new Vector3f(0, 1f, 0), ()->
