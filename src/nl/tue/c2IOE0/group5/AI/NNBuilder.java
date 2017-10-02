@@ -3,11 +3,14 @@ package nl.tue.c2IOE0.group5.AI;
 import org.deeplearning4j.api.storage.StatsStorage;
 import org.deeplearning4j.eval.Evaluation;
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
-import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
+import org.deeplearning4j.nn.conf.ComputationGraphConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
+import org.deeplearning4j.nn.conf.inputs.InputType;
+import org.deeplearning4j.nn.conf.layers.ConvolutionLayer;
 import org.deeplearning4j.nn.conf.layers.DenseLayer;
 import org.deeplearning4j.nn.conf.layers.OutputLayer;
-import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
+import org.deeplearning4j.nn.graph.ComputationGraph;
+import org.deeplearning4j.nn.weights.WeightInit;
 import org.deeplearning4j.ui.api.UIServer;
 import org.deeplearning4j.ui.stats.StatsListener;
 import org.deeplearning4j.ui.storage.InMemoryStatsStorage;
@@ -18,6 +21,7 @@ import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -58,9 +62,8 @@ public class NNBuilder {
         System.out.println("Number of inputs: " + inputs.size());
 
         int columns = inputs.iterator().next().size();
-        INDArray input = Nd4j.zeros(inputs.size(), columns);
-        INDArray labels = Nd4j.zeros(inputs.size(), 2);
-
+        INDArray input = Nd4j.create(inputs.size(), columns);
+        INDArray labels = Nd4j.create(inputs.size(), 2);
 
         for(int r = 0; r < inputs.size(); r++) {
             for(int c = 0; c < columns; c++) {
@@ -73,20 +76,29 @@ public class NNBuilder {
 
         DataSet ds = new DataSet(input, labels);
 
-        MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder()
-            .iterations(1000)
-            .learningRate(0.1)
+        DataSet ds2 = new DataSet();
+
+        ComputationGraphConfiguration conf = new NeuralNetConfiguration.Builder()
+            .weightInit(WeightInit.XAVIER)
+            .iterations(500)
+            .learningRate(0.15)
             .seed(123)
             .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
             .miniBatch(true)
-            .list()
+            .graphBuilder()
             .pretrain(false)
             .backprop(true)
-            .layer(0, new DenseLayer.Builder().nIn(columns).nOut(20).build())
-            .layer(1, new DenseLayer.Builder().nIn(20).nOut(10).build())
-            .layer(2, new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD).nIn(10).nOut(2).activation(Activation.SOFTMAX).build())
+            .addInputs("input", "grid")
+            .setInputTypes(InputType.inferInputType(input), InputType.convolutional(9, 9, 7))
+            .addLayer("layerc0", new ConvolutionLayer.Builder(9, 9).nIn(7).nOut(10).build(), "grid")
+            .addLayer("layer0", new DenseLayer.Builder().nIn(columns).nOut(20).build(), "input")
+            .addLayer("layer1", new DenseLayer.Builder().nIn(columns).nOut(20).build(), "input")
+            .addLayer("layer2", new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD).nIn(50).nOut(2).activation(Activation.SOFTMAX).build(), "layer0", "layer1", "layerc0")
+            .setOutputs("layer2")
             .build();
-        MultiLayerNetwork net = new MultiLayerNetwork(conf);
+
+        ComputationGraph net = new ComputationGraph(conf);
+
         net.init();
 
         //net.setListeners(new ScoreIterationListener(10));
@@ -95,14 +107,15 @@ public class NNBuilder {
 
         net.fit(ds);
 
+
         // create output for every training sample
-        INDArray output = net.output(ds.getFeatureMatrix());
-        System.out.println(output);
+        INDArray[] output = net.output(ds.getFeatureMatrix());
+        System.out.println(Arrays.toString(output));
 
         // let Evaluation prints stats how often the right output had the
         // highest value
         Evaluation eval = new Evaluation(2);
-        eval.eval(ds.getLabels(), output);
+        //eval.eval(ds.getLabels(), ds);
         System.out.println(eval.stats());
 
     }
