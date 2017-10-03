@@ -1,6 +1,7 @@
 package nl.tue.c2IOE0.group5.engine.rendering;
 
 import nl.tue.c2IOE0.group5.engine.objects.Camera;
+import nl.tue.c2IOE0.group5.engine.rendering.shader.DirectionalLight;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.PointLight;
 import org.joml.Matrix4f;
@@ -34,6 +35,11 @@ public class Renderer {
 
     private float specularPower = 10f;
     private Vector3f ambientLight = new Vector3f(0.3f, 0.3f, 0.3f);
+    private DirectionalLight directionalLight = new DirectionalLight(
+            new Vector3f(1f, 1f, 1f),
+            new Vector3f(16.4f, -11.6f, 0f),
+            1f
+    );
     private PointLight pointLight = new PointLight(
                     new Vector3f(1f, 1f, 1f),
                     new Vector3f(0f, 0f, 1f),
@@ -67,7 +73,7 @@ public class Renderer {
             throw new ShaderException("Could not create Shader");
         }
 
-        createVertexShader(loadResource("/vertex.vert"));
+        createVertexShader(loadResource("/bounceShader.vert"));
         createFragmentShader(loadResource("/fragment.frag"));
         link();
 
@@ -83,6 +89,15 @@ public class Renderer {
         createUniform("specularPower");
         createUniform("ambientLight");
         createPointLightUniform("pointLight");
+
+        // current spread
+        createUniform("bounceDegree");
+        // height of middle of object/bounce
+        createUniform("gravityMiddle");
+        // height from top to bottom (the heightrange that is expanded)
+        createUniform("totalHeight");
+
+        createDirectionalLightUniform("directionalLight");
     }
 
     /**
@@ -153,6 +168,28 @@ public class Renderer {
     }
 
     /**
+     * applies a bounce-effect around the given gravity-middle, stretching totalheight/2 up and down.
+     * this effect stays until {@link #unboink()} has been called
+     * @param bounceDegree the strength B of the effect, with B = 0 no effect,
+     *                     B > 0 a horizontal expansion and B < 0 a vertical stretch
+     * @param totalHeight the height of the object, measured from the lowest vertex to the highest vertex.
+     * @param gravityMiddle the center of the effect
+     */
+    public void boink(float bounceDegree, float totalHeight, Vector3f gravityMiddle){
+        setUniform("bounceDegree", bounceDegree);
+        setUniform("totalHeight", totalHeight);
+        setUniform("gravityMiddle", gravityMiddle);
+    }
+
+    /**
+     * disables previously activated bounce-effects
+     * @see #boink(float, float, Vector3f)
+     */
+    public void unboink(){
+        setUniform("bounceDegree", 0f);
+    }
+
+    /**
      * see {@link #setModelViewMatrix(Vector3f, Vector3f, float)}, with {@code float scale = 1f}
      */
     public void setModelViewMatrix(Vector3f position, Vector3f rotation) {
@@ -191,6 +228,8 @@ public class Renderer {
         Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
         setUniform("projectionMatrix", projectionMatrix);
 
+        Matrix4f viewMatrix = transformation.getViewMatrix(getActiveCamera());
+
         // Update Light Uniforms
         setUniform("ambientLight", ambientLight);
         setUniform("specularPower", specularPower);
@@ -198,11 +237,17 @@ public class Renderer {
         PointLight currPointLight = new PointLight(pointLight);
         Vector3f lightPos = currPointLight.getPosition();
         Vector4f aux = new Vector4f(lightPos, 1);
-        aux.mul(transformation.getViewMatrix(getActiveCamera()));
+        aux.mul(viewMatrix);
         lightPos.x = aux.x;
         lightPos.y = aux.y;
         lightPos.z = aux.z;
         setUniform("pointLight", currPointLight);
+        // Get a copy of the directional light object and transform its position to view coordinates
+        DirectionalLight currDirLight = new DirectionalLight(directionalLight);
+        Vector4f dir = new Vector4f(currDirLight.getDirection(), 0);
+        dir.mul(viewMatrix);
+        currDirLight.setDirection(new Vector3f(dir.x, dir.y, dir.z));
+        setUniform("directionalLight", currDirLight);
 
         setUniform("texture_sampler", 0);
     }
@@ -220,6 +265,18 @@ public class Renderer {
         createUniform(uniformName + ".att.constant");
         createUniform(uniformName + ".att.linear");
         createUniform(uniformName + ".att.exponent");
+    }
+
+    /**
+     * Create the uniforms required for a DirectionalLight
+     *
+     * @param uniformName The name of the uniform
+     * @throws ShaderException If an error occurs getting the memory location.
+     */
+    public void createDirectionalLightUniform(String uniformName) throws ShaderException {
+        createUniform(uniformName + ".colour");
+        createUniform(uniformName + ".direction");
+        createUniform(uniformName + ".intensity");
     }
 
     /**
@@ -321,6 +378,24 @@ public class Renderer {
         setUniform(uniformName + ".att.exponent", att.getExponent());
     }
 
+    /**
+     * Set the value of a certain DirecionalLight shader uniform
+     *
+     * @param uniformName The name of the uniform.
+     * @param directionalLight The new value of the uniform.
+     */
+    public void setUniform(String uniformName, DirectionalLight directionalLight) {
+        setUniform(uniformName + ".colour", directionalLight.getColor() );
+        setUniform(uniformName + ".direction", directionalLight.getDirection());
+        setUniform(uniformName + ".intensity", directionalLight.getIntensity());
+    }
+
+    /**
+     * Set the value of a certain Material shader uniform
+     *
+     * @param uniformName The name of the uniform.
+     * @param material The new value of the uniform.
+     */
     public void setUniform(String uniformName, Material material) {
         setUniform(uniformName + ".ambient", material.getAmbientColour());
         setUniform(uniformName + ".diffuse", material.getDiffuseColour());
