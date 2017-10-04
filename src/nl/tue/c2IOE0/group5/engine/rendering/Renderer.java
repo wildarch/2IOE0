@@ -169,23 +169,22 @@ public class Renderer {
 
     /**
      * applies a bounce-effect around the given gravity-middle, stretching totalheight/2 up and down.
-     * this effect stays until {@link #unboink()} has been called
+     * this effect applies to everything rendered in the render runnable.
      * @param bounceDegree the strength B of the effect, with B = 0 no effect,
      *                     B > 0 a horizontal expansion and B < 0 a vertical stretch
      * @param totalHeight the height of the object, measured from the lowest vertex to the highest vertex.
      * @param gravityMiddle the center of the effect
+     * @param render the runnable in which the bounce-effect will be applied.
      */
-    public void boink(float bounceDegree, float totalHeight, Vector3f gravityMiddle){
+    public void boink(float bounceDegree, float totalHeight, Vector3f gravityMiddle, Runnable render){
+        // set values pre-render
         setUniform("bounceDegree", bounceDegree);
         setUniform("totalHeight", totalHeight);
         setUniform("gravityMiddle", gravityMiddle);
-    }
 
-    /**
-     * disables previously activated bounce-effects
-     * @see #boink(float, float, Vector3f)
-     */
-    public void unboink(){
+        render.run();
+
+        // reset values post-render
         setUniform("bounceDegree", 0f);
     }
 
