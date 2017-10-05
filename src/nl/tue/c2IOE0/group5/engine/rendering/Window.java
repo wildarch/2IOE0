@@ -1,5 +1,6 @@
 package nl.tue.c2IOE0.group5.engine.rendering;
 
+import org.joml.Vector2i;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
@@ -186,9 +187,9 @@ public class Window {
      *
      * @return The position of the mouse.
      */
-    public MousePos getMousePosition() {
+    public Vector2i getMousePosition() {
         glfwGetCursorPos(window, mousePosX, mousePosY);
-        return new MousePos(mousePosX.get(0), mousePosY.get(0));
+        return new Vector2i((int) mousePosX.get(0), (int) mousePosY.get(0));
     }
 
     /**
@@ -286,24 +287,6 @@ public class Window {
         }
         if (callback instanceof GLFWCursorPosCallbackI) {
             glfwSetCursorPosCallback(window, (GLFWCursorPosCallbackI) callback);
-        }
-    }
-
-    public class MousePos {
-        private int x;
-        private int y;
-
-        private MousePos(double x, double y) {
-            this.x = (int) x;
-            this.y = (int) y;
-        }
-
-        public int getX() {
-            return x;
-        }
-
-        public int getY() {
-            return y;
         }
     }
 }

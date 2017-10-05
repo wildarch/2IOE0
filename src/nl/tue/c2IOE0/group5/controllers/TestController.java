@@ -158,8 +158,8 @@ public class TestController implements Controller,Listener {
     public void onMouseMove(MouseEvent event) {
         //Get current values
         if (MiddleMouseButton) {
-            float x = event.getSource().getMousePosition().getX();
-            float y = event.getSource().getMousePosition().getY();
+            float x = event.getX();
+            float y = event.getY();
 
             float deltaxMouse = (x - oldx) * (sensitivity / 10);
             float deltayMouse = (y - oldy) * (sensitivity / 10);

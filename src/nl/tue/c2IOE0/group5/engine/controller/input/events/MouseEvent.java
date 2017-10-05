@@ -1,6 +1,7 @@
 package nl.tue.c2IOE0.group5.engine.controller.input.events;
 
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
+import org.joml.Vector2i;
 
 /**
  * @author Jorren Hendriks
@@ -34,5 +35,14 @@ public class MouseEvent extends Event {
      */
     public int getY() {
         return yPos;
+    }
+
+    /**
+     * Get the position at which the mouseevent fired.
+     *
+     * @return A 2d vector with x at index 0 and y at index 1
+     */
+    public Vector2i getPosition() {
+        return new Vector2i(xPos, yPos);
     }
 }

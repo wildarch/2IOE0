@@ -4,6 +4,7 @@ import nl.tue.c2IOE0.group5.engine.controller.input.events.Event;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.Listener;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.MouseEvent;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
+import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
@@ -69,8 +70,8 @@ public class InputHandler {
     private class MouseButtonEventHandler extends GLFWMouseButtonCallback {
         @Override
         public void invoke(long windowHandle, int button, int action, int mods) {
-            Window.MousePos pos = window.getMousePosition();
-            MouseEvent event = new MouseEvent(window, button, pos.getX(), pos.getY());
+            Vector2i pos = window.getMousePosition();
+            MouseEvent event = new MouseEvent(window, button, pos.x(), pos.y());
             if (action == GLFW_PRESS) {
                 listeners.forEach(listener -> listener.onMouseButtonPressed(event));
             } else if (action == GLFW_RELEASE) {
