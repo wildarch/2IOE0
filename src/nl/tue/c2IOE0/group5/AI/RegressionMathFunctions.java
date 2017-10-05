@@ -123,7 +123,7 @@ public class RegressionMathFunctions {
             .addLayer("dense1", new DenseLayer.Builder().nIn(numInputs).nOut(50).activation(Activation.TANH).build(), "feedforward_in")
             .addLayer("dense2", new DenseLayer.Builder().nIn(50).nOut(50).activation(Activation.TANH).build(), "dense1")
             .addLayer("dense3", new DenseLayer.Builder().nIn(numInputs).nOut(20).activation(Activation.TANH).build(), "feedforward_in")
-            .addLayer("dense4", new DenseLayer.Builder().nIn(50 + 20).nOut(20).activation(Activation.RELU).build(), "dense2", "dense3")
+            .addLayer("dense4", new DenseLayer.Builder().nIn(50 + 20).nOut(20).activation(Activation.TANH).build(), "dense2", "dense3")
             .addLayer("output", new OutputLayer.Builder(LossFunctions.LossFunction.MSE).nIn(20).nOut(1).activation(Activation.IDENTITY).build(), "dense4")
             .setOutputs("output")
             .pretrain(false).backprop(true)
