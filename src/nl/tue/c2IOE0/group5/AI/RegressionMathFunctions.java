@@ -1,14 +1,19 @@
 package nl.tue.c2IOE0.group5.AI;
 
+import org.deeplearning4j.api.storage.StatsStorage;
 import org.deeplearning4j.datasets.iterator.impl.ListDataSetIterator;
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
+import org.deeplearning4j.nn.conf.ComputationGraphConfiguration;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
-import org.deeplearning4j.nn.conf.layers.DenseLayer;
-import org.deeplearning4j.nn.conf.layers.OutputLayer;
-import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
+import org.deeplearning4j.nn.conf.inputs.InputType;
+import org.deeplearning4j.nn.conf.layers.*;
+import org.deeplearning4j.nn.graph.ComputationGraph;
 import org.deeplearning4j.nn.weights.WeightInit;
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
+import org.deeplearning4j.ui.api.UIServer;
+import org.deeplearning4j.ui.stats.StatsListener;
+import org.deeplearning4j.ui.storage.InMemoryStatsStorage;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -55,10 +60,21 @@ public class RegressionMathFunctions {
 
 
     public static void main(final String[] args){
+        //Initialize the user interface backend
+        UIServer uiServer = UIServer.getInstance();
+
+        //Configure where the network information (gradients, score vs. time etc) is to be stored. Here: store in memory.
+        StatsStorage statsStorage = new InMemoryStatsStorage();         //Alternative: new FileStatsStorage(File), for saving and loading later
+
+        //Attach the StatsStorage instance to the UI: this allows the contents of the StatsStorage to be visualized
+        uiServer.attach(statsStorage);
+
+        //Then add the StatsListener to collect this information from the network, as it trains
 
         //Switch these two options to do different functions with different networks
         final MathFunction fn = new DiscreteMathFunction();
         final MultiLayerConfiguration conf = getDeepDenseLayerNetworkConfiguration();
+        final ComputationGraphConfiguration graphConf = getComputationGraphNetworkConfiguration();
 
         //Generate the training data
         final INDArray x = Nd4j.linspace(-10,10,nSamples).reshape(nSamples, 1);
@@ -73,22 +89,45 @@ public class RegressionMathFunctions {
 
         final DataSetIterator iterator = getTrainingData(total,fn,batchSize,rng);
 
-        //Create the network
-        final MultiLayerNetwork net = new MultiLayerNetwork(conf);
-        net.init();
-        net.setListeners(new ScoreIterationListener(10));
+        final ComputationGraph net = new ComputationGraph(graphConf);
 
+
+        //Create the network
+        //final MultiLayerNetwork net = new MultiLayerNetwork(conf);
+        net.init();
+        net.setListeners(new ScoreIterationListener(10), new StatsListener(statsStorage));
 
         //Train the network on the full data set, and evaluate in periodically
         final INDArray[] networkPredictions = new INDArray[nEpochs / plotFrequency];
         for( int i=0; i<nEpochs; i++ ){
             iterator.reset();
             net.fit(iterator);
-            if((i+1) % plotFrequency == 0) networkPredictions[i/ plotFrequency] = net.output(total, false);
+            if((i+1) % plotFrequency == 0) networkPredictions[i/ plotFrequency] = net.output(total)[0];//net.output(total, false);
         }
 
         //Plot the target data and the network predictions
         plot(fn,x,fn.getFunctionValues(x),networkPredictions);
+    }
+
+    private static ComputationGraphConfiguration getComputationGraphNetworkConfiguration(){
+        return new NeuralNetConfiguration.Builder()
+            .seed(seed)
+            .iterations(iterations)
+            .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
+            .learningRate(learningRate)
+            .weightInit(WeightInit.XAVIER)
+            .updater(new Nesterovs(0.9))
+            .graphBuilder()
+            .addInputs("feedforward_in")
+            .setInputTypes(InputType.feedForward(numInputs))
+            .addLayer("dense1", new DenseLayer.Builder().nIn(numInputs).nOut(50).activation(Activation.TANH).build(), "feedforward_in")
+            .addLayer("dense2", new DenseLayer.Builder().nIn(50).nOut(50).activation(Activation.TANH).build(), "dense1")
+            .addLayer("dense3", new DenseLayer.Builder().nIn(numInputs).nOut(20).activation(Activation.TANH).build(), "feedforward_in")
+            .addLayer("dense4", new DenseLayer.Builder().nIn(50 + 20).nOut(20).activation(Activation.RELU).build(), "dense2", "dense3")
+            .addLayer("output", new OutputLayer.Builder(LossFunctions.LossFunction.MSE).nIn(20).nOut(1).activation(Activation.IDENTITY).build(), "dense4")
+            .setOutputs("output")
+            .pretrain(false).backprop(true)
+            .build();
     }
 
     /** Returns the network configuration, 2 hidden DenseLayers of size 50.
@@ -178,10 +217,9 @@ class DiscreteMathFunction implements MathFunction {
 
     @Override
     public INDArray getFunctionValues(INDArray x) {
-
         INDArray out = Nd4j.create(x.rows(), 1);
         for (int r = 0; r < x.rows(); r++){
-            out.putScalar(r, 0, (x.getDouble(r, 0) > 2 && x.getDouble(r, 0) < 7) || x.getDouble(r, 0) < 0 ? 1 : 0);
+            out.putScalar(r, 0, (x.getDouble(r, 0) > 2 && x.getDouble(r, 0) < 7) || (x.getDouble(r, 0) < 0) ? 1 : 0);
 //            for (int c = 0; c < x.columns(); c++){
 //
 //            }
