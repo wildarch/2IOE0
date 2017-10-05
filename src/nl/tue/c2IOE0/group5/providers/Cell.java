@@ -92,7 +92,7 @@ public class Cell extends GameObject {
             }
             color = defaultColor;
             this.deactivate();
-            this.setPosition(x*this.getScale(), 0, y*this.getScale());
+            this.setPosition(x*this.getScale(), -0.5f, y*this.getScale());
         } catch (Exception e) {
             e.printStackTrace();
         }

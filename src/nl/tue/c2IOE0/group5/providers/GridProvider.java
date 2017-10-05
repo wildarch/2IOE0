@@ -8,9 +8,11 @@ import nl.tue.c2IOE0.group5.engine.rendering.*;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.awt.*;
+import java.lang.reflect.Array;
 
 /**
  * A class providing the grid.
@@ -61,7 +63,10 @@ public class GridProvider implements Provider {
      * @param y
      * @return The cell on that specific coordinate
      */
-    public Cell getCell(int x, int y) {
+    public Cell getCell(int x, int y) throws ArrayIndexOutOfBoundsException {
+        if (x < 0 || y < 0 || x >= SIZE || y >= SIZE) {
+            throw new ArrayIndexOutOfBoundsException("cannot get the cell at coordinates: (" + x + ","  + y + ")");
+        }
         return grid[x][y];
     }
 
@@ -148,17 +153,37 @@ public class GridProvider implements Provider {
         Matrix4f projectionMatrix = r.getProjectionMatrix(window);
         int mouseX = e.getX();
         int mouseY = e.getY();
-        int viewPortX = 2 * mouseX / window.getWidth() - 1;
-        int viewPortY = 1 - 2 * mouseY / window.getHeight();
+        float viewPortX = 2 * (float)mouseX / (float)window.getWidth() - 1;
+        float viewPortY = 1 - 2 * (float)mouseY / (float)window.getHeight();
         int viewPortZ = -1;
         int viewPortW = 1;
+
         Vector4f viewPortPosition = new Vector4f(viewPortX, viewPortY, viewPortZ, viewPortW);
         Matrix4f projectionMatrixInverse = projectionMatrix.invert();
         Matrix4f viewMatrixInverse = viewMatrix.invert();
-        Vector4f direction = viewPortPosition.mul(projectionMatrixInverse).mul(viewMatrixInverse);
-        //the ray is now defined using the position of the camera and direction
 
-        setActiveCell(e.getX() % 13, e.getY() % 13);
+        Vector4f stepone = viewPortPosition.mul(projectionMatrixInverse);
+        Vector4f steptwo = new Vector4f(stepone.x(), stepone.y(), -1f, 0);
+        Vector4f direction = steptwo.mul(viewMatrixInverse);
+        Vector3f direction3f = new Vector3f(direction.x, direction.y, direction.z);
+
+        //the ray is now defined using the position of the camera and direction
+        if (direction3f.y() >= 0) {
+            activeCell.deactivate();
+            return;
+        }
+        float lambda = -c.getPosition().y()/direction3f.y(); //assuming the y = 0
+        float x = c.getPosition().x() + lambda * direction3f.x();
+        float z = c.getPosition().z() + lambda * direction3f.z();
+        System.err.println(x + ", " + z);
+        int gridX = Math.round(x);
+        int gridY = Math.round(z);
+        System.out.println(gridX + "," + gridY);
+        if (!(gridX < 0 || gridY < 0 || gridX >= SIZE || gridY >= SIZE)) {
+            setActiveCell(gridX, gridY);
+        } else {
+            activeCell.deactivate();
+        }
     }
 
     /**
