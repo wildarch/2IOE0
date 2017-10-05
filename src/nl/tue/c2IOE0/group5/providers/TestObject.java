@@ -1,15 +1,10 @@
 package nl.tue.c2IOE0.group5.providers;
 
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
-import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
-import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
-import nl.tue.c2IOE0.group5.engine.rendering.Texture;
-import nl.tue.c2IOE0.group5.engine.rendering.Window;
-import nl.tue.c2IOE0.group5.engine.rendering.OBJLoader;
+import nl.tue.c2IOE0.group5.engine.rendering.*;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
+import nl.tue.c2IOE0.group5.engine.rendering.shader.Texture;
 import org.joml.Vector3f;
-
-import java.io.IOException;
 
 /**
  * @author Jorren
@@ -27,7 +22,7 @@ public class TestObject extends GameObject {
 
         try {
             this.mesh = OBJLoader.loadMesh("/tower.obj");
-            this.mesh.setTexture(new Texture("/tower.png"));
+            this.mesh.setMaterial(new Material("/tower.png"));
             this.setScale(40f);
             this.setPosition(0f, -1f, 0f);
         } catch (Exception e) {
@@ -39,10 +34,8 @@ public class TestObject extends GameObject {
     public void draw(Window window, Renderer renderer) {
         super.draw(window, renderer);
         boinkyness = (boinkyness + 0.01f);
-        renderer.setMaterial(new Material(mesh.getTexture()));
-        renderer.boink((float)Math.sin(boinkyness) +1f, 2f, new Vector3f(0, 1f, 0));
-        mesh.draw();
-        renderer.unboink();
+        renderer.boink((float)Math.sin(boinkyness) +1f, new Vector3f(0, 0, 0), new Vector3f(1f, 1f, 1f), ()->
+                mesh.draw(renderer));
     }
 
 }

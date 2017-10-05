@@ -93,9 +93,9 @@ public class Renderer {
         // current spread
         createUniform("bounceDegree");
         // height of middle of object/bounce
-        createUniform("gravityMiddle");
+        createUniform("boundingMax");
         // height from top to bottom (the heightrange that is expanded)
-        createUniform("totalHeight");
+        createUniform("boundingMin");
 
         createDirectionalLightUniform("directionalLight");
     }
@@ -168,25 +168,36 @@ public class Renderer {
     }
 
     /**
-     * applies a bounce-effect around the given gravity-middle, stretching totalheight/2 up and down.
+     * applies a bounce-effect around the given gravity-middle, stretching boundingMin/2 up and down.
      * this effect stays until {@link #unboink()} has been called
      * @param bounceDegree the strength B of the effect, with B = 0 no effect,
      *                     B > 0 a horizontal expansion and B < 0 a vertical stretch
-     * @param totalHeight the height of the object, measured from the lowest vertex to the highest vertex.
-     * @param gravityMiddle the center of the effect
+     * @param boundingMin the minimum coordinates of the 3D-model
+     * @param boundingMax idem maximum
+     * @param render the runnable where the bounce effect will apply to
      */
-    public void boink(float bounceDegree, float totalHeight, Vector3f gravityMiddle){
+    public void boink(float bounceDegree, Vector3f boundingMin, Vector3f boundingMax, Runnable render){
         setUniform("bounceDegree", bounceDegree);
-        setUniform("totalHeight", totalHeight);
-        setUniform("gravityMiddle", gravityMiddle);
+        setUniform("boundingMin", boundingMin);
+        setUniform("boundingMax", boundingMax);
+
+        render.run();
+
+        setUniform("bounceDegree", 0f);
     }
 
     /**
      * disables previously activated bounce-effects
-     * @see #boink(float, float, Vector3f)
+     * @see #boink(float, Vector3f, Vector3f, Runnable)
      */
     public void unboink(){
         setUniform("bounceDegree", 0f);
+    }
+
+    public void ambientLight(Vector3f color, Runnable render) {
+        setUniform("ambientLight", color);
+        render.run();
+        setUniform("ambientLight", ambientLight);
     }
 
     /**
