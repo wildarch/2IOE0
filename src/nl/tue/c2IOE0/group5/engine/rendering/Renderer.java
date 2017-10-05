@@ -174,16 +174,21 @@ public class Renderer {
      *                     B > 0 a horizontal expansion and B < 0 a vertical stretch
      * @param boundingMin the minimum coordinates of the 3D-model
      * @param boundingMax idem maximum
+     * @param render the runnable where the bounce effect will apply to
      */
-    public void boink(float bounceDegree, Vector3f boundingMin, Vector3f boundingMax){
+    public void boink(float bounceDegree, Vector3f boundingMin, Vector3f boundingMax, Runnable render){
         setUniform("bounceDegree", bounceDegree);
         setUniform("boundingMin", boundingMin);
         setUniform("boundingMax", boundingMax);
+
+        render.run();
+
+        setUniform("bounceDegree", 0f);
     }
 
     /**
      * disables previously activated bounce-effects
-     * @see #boink(float, Vector3f, Vector3f)
+     * @see #boink(float, Vector3f, Vector3f, Runnable)
      */
     public void unboink(){
         setUniform("bounceDegree", 0f);

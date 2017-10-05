@@ -34,7 +34,7 @@ public class TestObject extends GameObject {
         super.draw(window, renderer);
         boinkyness = (boinkyness + 0.01f);
         renderer.setMaterial(new Material(mesh.getTexture()));
-        renderer.boink((float)Math.sin(boinkyness) +1f, 2f, new Vector3f(0, 1f, 0), ()->
+        renderer.boink((float)Math.sin(boinkyness) +1f, new Vector3f(0, 0, 0), new Vector3f(1f, 1f, 1f), ()->
                 mesh.draw());
     }
 
