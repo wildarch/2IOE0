@@ -194,6 +194,12 @@ public class Renderer {
         setUniform("bounceDegree", 0f);
     }
 
+    public void ambientLight(Vector3f color, Runnable render) {
+        setUniform("ambientLight", color);
+        render.run();
+        setUniform("ambientLight", ambientLight);
+    }
+
     /**
      * see {@link #setModelViewMatrix(Vector3f, Vector3f, float)}, with {@code float scale = 1f}
      */
