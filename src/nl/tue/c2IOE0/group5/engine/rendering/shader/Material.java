@@ -1,7 +1,8 @@
 package nl.tue.c2IOE0.group5.engine.rendering.shader;
 
-import nl.tue.c2IOE0.group5.engine.rendering.Texture;
 import org.joml.Vector4f;
+
+import java.io.IOException;
 
 /**
  * @author Jorren Hendriks.
@@ -34,6 +35,14 @@ public class Material {
 
     public Material(Texture texture) {
         this(DEFAULT_COLOUR, DEFAULT_COLOUR, DEFAULT_COLOUR, texture, 0);
+    }
+
+    public Material(String texture) throws IOException {
+        this(texture, 0);
+    }
+
+    public Material(String texture, float reflectance) throws IOException {
+        this(new Texture(texture), reflectance);
     }
 
     public Material(Texture texture, float reflectance) {

@@ -1,9 +1,10 @@
 package nl.tue.c2IOE0.group5.providers;
 
-import com.sun.org.apache.xpath.internal.SourceTree;
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
 import nl.tue.c2IOE0.group5.engine.rendering.*;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
+import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
+import nl.tue.c2IOE0.group5.engine.rendering.shader.Texture;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
 
 import java.awt.*;
@@ -28,7 +29,7 @@ public class Cell extends GameObject {
 
         try {
             this.mesh = OBJLoader.loadMesh("/bunny.obj");
-            this.mesh.setTexture(new Texture("/square.png"));
+            this.mesh.setMaterial(new Material("/square.png"));
             this.setScale(40f);
             this.setPosition(x*2, y*2, 0);
         } catch (Exception e) {
@@ -86,6 +87,6 @@ public class Cell extends GameObject {
     @Override
     public void draw(Window window, Renderer renderer) {
         super.draw(window, renderer);
-        mesh.draw();
+        mesh.draw(renderer);
     }
 }
