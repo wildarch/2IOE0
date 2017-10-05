@@ -56,7 +56,7 @@ public class Window {
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, resizable ? GL_TRUE : GL_FALSE);
-        // Some MacOS hints
+        // Set OpenGL version
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -100,6 +100,11 @@ public class Window {
 
         // Set clear color to black
         glClearColor(0f, 0f, 0f, 0f);
+
+        // Enable Depth Test
+        glEnable(GL_DEPTH_TEST);
+        // Enable 2d Texture
+        glEnable(GL_TEXTURE_2D);
     }
 
     /**
