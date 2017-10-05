@@ -252,6 +252,14 @@ public class Renderer {
         setUniform("texture_sampler", 0);
     }
 
+    public Matrix4f getViewMatrix() {
+        return transformation.getViewMatrix(getActiveCamera());
+    }
+
+    public Matrix4f getProjectionMatrix(Window window) {
+        return transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
+    }
+
     /**
      * Create the uniforms required for a PointLight
      *
