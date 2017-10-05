@@ -7,7 +7,6 @@ import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
 
 import java.awt.*;
-import java.io.IOException;
 
 /**
  * A class providing the grid.
@@ -15,8 +14,6 @@ import java.io.IOException;
  * [0][0] lying in the bottom left corner and [1][0] the cell adjacent to it on the right side.
  */
 public class GridProvider implements Provider {
-
-    private Mesh mesh;
 
     //total size of the grid. Change this to change the total grid
     private final int SIZE = 13;
@@ -28,7 +25,9 @@ public class GridProvider implements Provider {
     //estimate the damage in a cell, used for Q learner
     private final int[][] estimatedDamagePerCell = new int[SIZE][SIZE];
 
-    public GridProvider() {
+    @Override
+    public void init(Engine engine) {
+
         int bordersize = (SIZE - PLAYFIELDSIZE)/2;
         for (int x = bordersize; x < SIZE - bordersize; x++) {
             for (int y = bordersize; y < SIZE - bordersize; y++) {
@@ -46,17 +45,6 @@ public class GridProvider implements Provider {
                     grid[x][y] = new Cell(true, x, y);
                 }
             }
-        }
-    }
-
-    @Override
-    public void init(Engine engine) {
-    //currently a tower
-        try {
-            this.mesh = OBJLoader.loadMesh("/tower.obj");
-            this.mesh.setTexture(new Texture("/tower.png"));
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -107,7 +95,7 @@ public class GridProvider implements Provider {
         Cell cell = getCell(x, y);
         AbstractTower tower = cell.getTower();
         if (tower == null) {
-            throw new NullPointerException("No tower on cell (" + cell.getPosition().getX() + "," + cell.getPosition().getY() + ")");
+            throw new NullPointerException("No tower on cell (" + cell.getGridPosition().getX() + "," + cell.getGridPosition().getY() + ")");
         }
         tower.levelUp();
         recalculateEstimatedDamage();
@@ -130,8 +118,8 @@ public class GridProvider implements Provider {
 
     private boolean isInRange(Cell cellWithTower, Cell cellToCheck) {
         int range = cellWithTower.getTower().getRange();
-        Point positionToCheck = cellToCheck.getPosition();
-        Point positionWithTower = cellWithTower.getPosition();
+        Point positionToCheck = cellToCheck.getGridPosition();
+        Point positionWithTower = cellWithTower.getGridPosition();
         return positionToCheck.getX() - positionWithTower.getX() + positionToCheck.getY() - positionWithTower.getY() < range;
     }
 
@@ -152,6 +140,10 @@ public class GridProvider implements Provider {
 
     @Override
     public void draw(Window window, Renderer renderer) {
-        //mesh.draw();
+        for (int x = 0; x < SIZE; x++) {
+            for (int y = 0; y < SIZE; y++) {
+                getCell(x, y).draw(window, renderer);
+            }
+        }
     }
 }

@@ -1,5 +1,9 @@
 package nl.tue.c2IOE0.group5.providers;
 
+import com.sun.org.apache.xpath.internal.SourceTree;
+import nl.tue.c2IOE0.group5.engine.objects.GameObject;
+import nl.tue.c2IOE0.group5.engine.rendering.*;
+import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
 
 import java.awt.*;
@@ -8,16 +12,28 @@ import java.awt.*;
  * @author Tom Peters
  */
 
-public class Cell {
+public class Cell extends GameObject {
     //the tower on this cell
     AbstractTower tower;
 
     boolean borderCell;
     Point position;
 
+    private Mesh mesh;
+
     public Cell(boolean borderCell, int x, int y) {
+        super();
         this.borderCell = borderCell;
         this.position = new Point(x, y);
+
+        try {
+            this.mesh = OBJLoader.loadMesh("/bunny.obj");
+            this.mesh.setTexture(new Texture("/square.png"));
+            this.setScale(40f);
+            this.setPosition(x*2, y*2, 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -63,7 +79,13 @@ public class Cell {
      * Gets the coordinates of this cell
      * @return
      */
-    public Point getPosition() {
+    public Point getGridPosition() {
         return this.position;
+    }
+
+    @Override
+    public void draw(Window window, Renderer renderer) {
+        super.draw(window, renderer);
+        mesh.draw();
     }
 }
