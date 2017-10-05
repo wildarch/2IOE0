@@ -175,10 +175,8 @@ public class GridProvider implements Provider {
         float lambda = -c.getPosition().y()/direction3f.y(); //assuming the y = 0
         float x = c.getPosition().x() + lambda * direction3f.x();
         float z = c.getPosition().z() + lambda * direction3f.z();
-        System.err.println(x + ", " + z);
         int gridX = Math.round(x);
         int gridY = Math.round(z);
-        System.out.println(gridX + "," + gridY);
         if (!(gridX < 0 || gridY < 0 || gridX >= SIZE || gridY >= SIZE)) {
             setActiveCell(gridX, gridY);
         } else {
