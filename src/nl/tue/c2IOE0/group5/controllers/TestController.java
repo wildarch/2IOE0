@@ -10,6 +10,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
 import nl.tue.c2IOE0.group5.providers.TestProvider;
+import org.joml.Vector2i;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -103,7 +104,7 @@ public class TestController implements Controller,Listener {
 
     @Override
     public void onMouseMove(MouseEvent event) {
-        gridProvider.mouseMoved(event, camera, renderer, window);
+        gridProvider.recalculateActiveCell(new Vector2i(event.getX(), event.getY()), camera, renderer, window);
     }
 
 }

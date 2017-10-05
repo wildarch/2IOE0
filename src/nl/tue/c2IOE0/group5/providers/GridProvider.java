@@ -8,6 +8,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.*;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
 import org.joml.Matrix4f;
+import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
@@ -148,11 +149,11 @@ public class GridProvider implements Provider {
         activeCell.activate();
     }
 
-    public void mouseMoved(MouseEvent e, Camera c, Renderer r, Window window) {
+    public void recalculateActiveCell(Vector2i mousePos, Camera c, Renderer r, Window window) {
         Matrix4f viewMatrix = r.getViewMatrix();
         Matrix4f projectionMatrix = r.getProjectionMatrix(window);
-        int mouseX = e.getX();
-        int mouseY = e.getY();
+        int mouseX = mousePos.x();
+        int mouseY = mousePos.y();
         float viewPortX = 2 * (float)mouseX / (float)window.getWidth() - 1;
         float viewPortY = 1 - 2 * (float)mouseY / (float)window.getHeight();
         int viewPortZ = -1;
