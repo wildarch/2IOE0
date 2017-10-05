@@ -97,6 +97,9 @@ public class Renderer {
         // height from top to bottom (the heightrange that is expanded)
         createUniform("boundingMin");
 
+        // skybox uniform
+        createUniform("isSkybox");
+
         createDirectionalLightUniform("directionalLight");
     }
 
@@ -184,6 +187,19 @@ public class Renderer {
         render.run();
 
         setUniform("bounceDegree", 0f);
+    }
+
+    /**
+     * Sets up the renderer to draw a skybox, e.g. an object that doesn't care but just draws its texture.
+     *
+     * @param render The code to render in skybox mode.
+     */
+    public void drawSkybox(Runnable render) {
+        setUniform("isSkybox", 1);
+
+        render.run();
+
+        setUniform("isSkybox", 0);
     }
 
     /**
