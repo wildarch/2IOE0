@@ -33,6 +33,9 @@ public class TestController implements Controller,Listener {
         this.camera = engine.getCamera();
         this.renderer = engine.getRenderer();
         this.window = engine.getWindow();
+
+        camera.setPosition(gridProvider.SIZE/2, 12f, gridProvider.SIZE/2);
+        camera.setRotation(90, 90, 0);
     }
 
     @Override

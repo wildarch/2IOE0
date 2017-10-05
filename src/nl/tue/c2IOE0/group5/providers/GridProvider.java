@@ -20,9 +20,9 @@ import java.awt.*;
 public class GridProvider implements Provider {
 
     //total size of the grid. Change this to change the total grid
-    private final int SIZE = 13;
+    public final int SIZE = 13;
     //size of the grid in which towers can be placed
-    private final int PLAYFIELDSIZE = 9;
+    public final int PLAYFIELDSIZE = 9;
     //the actual grid
     private final Cell[][] grid = new Cell[SIZE][SIZE];
 
@@ -38,7 +38,7 @@ public class GridProvider implements Provider {
         for (int x = bordersize; x < SIZE - bordersize; x++) {
             for (int y = bordersize; y < SIZE - bordersize; y++) {
                 //initialize the playfield as non-bordercells
-                grid[x][y] = new Cell(false, x, y);
+                grid[x][y] = new Cell(CellType.BASE, x, y);
                 //initialize the estimated damage per cell to 0
                 estimatedDamagePerCell[x][y] = 0;
             }
@@ -48,7 +48,7 @@ public class GridProvider implements Provider {
             for (int y = 0; y < SIZE; y++) {
                 if (grid[x][y] == null) {
                     //initialize all cells not yet initialized as a bordercell
-                    grid[x][y] = new Cell(true, x, y);
+                    grid[x][y] = new Cell(CellType.BORDER, x, y);
                 }
             }
         }
