@@ -42,4 +42,10 @@ public abstract class AbstractTower {
     }
 
     public abstract TowerType getType();
+
+    /**
+     * Returns the level of the tower
+     * @return double x where 0 < x <= 1.0
+     */
+    public abstract double getLevel();
 }

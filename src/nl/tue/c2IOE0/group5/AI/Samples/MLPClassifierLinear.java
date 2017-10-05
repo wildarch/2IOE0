@@ -1,4 +1,4 @@
-package nl.tue.c2IOE0.group5.AI;
+package nl.tue.c2IOE0.group5.AI.Samples;
 
 import org.datavec.api.records.reader.RecordReader;
 import org.datavec.api.records.reader.impl.csv.CSVRecordReader;

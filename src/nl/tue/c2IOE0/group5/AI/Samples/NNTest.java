@@ -1,4 +1,4 @@
-package nl.tue.c2IOE0.group5.AI;
+package nl.tue.c2IOE0.group5.AI.Samples;
 
 import org.deeplearning4j.datasets.iterator.impl.MnistDataSetIterator;
 import org.deeplearning4j.eval.Evaluation;

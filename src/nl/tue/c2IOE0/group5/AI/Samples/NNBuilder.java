@@ -1,5 +1,6 @@
-package nl.tue.c2IOE0.group5.AI;
+package nl.tue.c2IOE0.group5.AI.Samples;
 
+import nl.tue.c2IOE0.group5.AI.Data.InputGenerator;
 import org.deeplearning4j.api.storage.StatsStorage;
 import org.deeplearning4j.eval.Evaluation;
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;

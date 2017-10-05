@@ -2,6 +2,7 @@ package nl.tue.c2IOE0.group5.AI.Data;
 
 import nl.tue.c2IOE0.group5.enemies.EnemyType;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
+import nl.tue.c2IOE0.group5.towers.AbstractTower;
 import nl.tue.c2IOE0.group5.towers.TowerType;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
@@ -71,11 +72,13 @@ public class InputConverter {
         final int numTowers = TowerType.getSize();
         double[] result = new double[grid.SIZE * grid.SIZE * numTowers];
         int positionId, towerId;
+        AbstractTower tower;
         for (int x = 0; x < grid.SIZE; x++){
             for (int y = 0; y < grid.SIZE; y++){
                 positionId = x * grid.SIZE * numTowers + y * numTowers;
-                towerId = grid.getCell(x, y).getTower().getType().getValue();
-                result[positionId + towerId] = 1;
+                tower = grid.getCell(x, y).getTower();
+                towerId = tower.getType().getValue();
+                result[positionId + towerId] = tower.getLevel();
             }
         }
         return result;

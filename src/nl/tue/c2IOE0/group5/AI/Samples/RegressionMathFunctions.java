@@ -1,4 +1,4 @@
-package nl.tue.c2IOE0.group5.AI;
+package nl.tue.c2IOE0.group5.AI.Samples;
 
 import org.deeplearning4j.api.storage.StatsStorage;
 import org.deeplearning4j.datasets.iterator.impl.ListDataSetIterator;
@@ -90,6 +90,7 @@ public class RegressionMathFunctions {
         final DataSetIterator iterator = getTrainingData(total,fn,batchSize,rng);
 
         final ComputationGraph net = new ComputationGraph(graphConf);
+
 
 
         //Create the network

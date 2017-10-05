@@ -1,4 +1,4 @@
-package nl.tue.c2IOE0.group5.AI;
+package nl.tue.c2IOE0.group5.AI.Data;
 
 import com.google.common.collect.Sets;
 

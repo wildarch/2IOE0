@@ -1,4 +1,4 @@
-package nl.tue.c2IOE0.group5.AI;
+package nl.tue.c2IOE0.group5.AI.Samples;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartUtilities;
