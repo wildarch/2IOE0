@@ -46,6 +46,7 @@ uniform Material material;
 uniform PointLight pointLight;
 uniform DirectionalLight directionalLight;
 uniform vec3 camera_pos;
+uniform int isSkybox;
 
 vec4 ambientC;
 vec4 diffuseC;
@@ -107,10 +108,15 @@ vec4 calcDirectionalLight(DirectionalLight light, vec3 position, vec3 normal)
 
 void main()
 {
-    setupColours(material, outTexture);
+    if (isSkybox == 0) {
+        setupColours(material, outTexture);
 
-    vec4 diffuseSpecularComponent = calcDirectionalLight(directionalLight, mvVertexPosition, mvVertexNormal);
-    diffuseSpecularComponent += calcPointLight(pointLight, mvVertexPosition, mvVertexNormal);
+        vec4 diffuseSpecularComponent = calcDirectionalLight(directionalLight, mvVertexPosition, mvVertexNormal);
+        diffuseSpecularComponent += calcPointLight(pointLight, mvVertexPosition, mvVertexNormal);
 
-    fragColor = ambientC * vec4(ambientLight, 1) + diffuseSpecularComponent;
+        fragColor = ambientC * vec4(ambientLight, 1) + diffuseSpecularComponent;
+    } else {
+        fragColor = texture(texture_sampler, outTexture);
+    }
+
 }

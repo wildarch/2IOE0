@@ -17,7 +17,8 @@ public class TowerDefence {
         e.addProviders(new Provider[] {
                 new TestProvider(),
                 new EnemyProvider(),
-                new GridProvider()
+                new GridProvider(),
+                new BackgroundProvider(),
         });
         e.addControllers(new Controller[] {
                 new TestController(),
