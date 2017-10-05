@@ -7,6 +7,7 @@ import nl.tue.c2IOE0.group5.engine.provider.ObjectProvider;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
+import org.joml.Vector3f;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,6 +17,6 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
 
     @Override
     public void init(Engine engine) {
-        objects.add(new TestEnemy(engine.getGameloopTimer()));
+        objects.add(new TestEnemy(engine.getGameloopTimer(), new Vector3f(0f, 1f, 0f)));
     }
 }

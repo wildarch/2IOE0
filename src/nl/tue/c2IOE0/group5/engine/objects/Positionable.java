@@ -45,6 +45,14 @@ public abstract class Positionable {
     }
 
     /**
+     * Set the current position of the object
+     * @param p new coordinates of the object
+     */
+    public void setPosition(Vector3f p) {
+        position.set(p);
+    }
+
+    /**
      * Move the object relative to its previous location.
      *
      * @param offsetX The movement in the x direction.
@@ -52,9 +60,16 @@ public abstract class Positionable {
      * @param offsetZ The movement in the z direction.
      */
     public void move(float offsetX, float offsetY, float offsetZ) {
-        position.x += offsetX;
-        position.y += offsetY;
-        position.z += offsetZ;
+        move(new Vector3f(offsetX, offsetY, offsetZ));
+    }
+
+    /**
+     * Move the object relative to its previous location.
+     *
+     * @param offset The movement
+     */
+    public void move(Vector3f offset) {
+        position.add(offset);
     }
 
     /**
@@ -74,6 +89,15 @@ public abstract class Positionable {
             position.z += (float)Math.cos(Math.toRadians(rotation.y - 90)) * offsetX;
         }
         position.y += offsetY;
+    }
+
+    /**
+     * Move the object relative to its previous location and its panning from the center
+     *
+     * @param offset The movement
+     */
+    public void moveRelative(Vector3f offset) {
+        moveRelative(offset.x(), offset.y(), offset.z());
     }
 
     /**

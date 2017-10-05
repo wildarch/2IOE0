@@ -57,21 +57,26 @@ public class TestController implements Controller,Listener {
             case GLFW_KEY_S:
                 //camera.setRotation(0, 180, 0);
                 if (spacebarPressed){
-                    camera.rotate(1f, 0f, 0f);
+                    camera.rotate(4f, 0f, 0f);
                 }
                 else {
-                    camera.moveRelative(0f, 0f, 4f);
+                    camera.moveRelative(0f, -1f, 0f);
                 }
                 break;
             case GLFW_KEY_W:
                 //camera.setRotation(0, 0, 0);
                 if (spacebarPressed){
-                    camera.rotate(-1f, 0f, 0f);
+                    camera.rotate(-4f, 0f, 0f);
                 }
                 else {
-                    camera.moveRelative(0f, 0f, -4f);
+                    camera.moveRelative(0f, 1f, 0f);
                 }
                 break;
+            case GLFW_KEY_Z:
+                camera.moveRelative(0f, 0f, 1f);
+                break;
+            case GLFW_KEY_X:
+                camera.moveRelative(0f, 0f, -1f);
             case GLFW_KEY_SPACE:
                 spacebarPressed = true;
                 break;
