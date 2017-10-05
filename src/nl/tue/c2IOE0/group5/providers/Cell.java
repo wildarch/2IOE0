@@ -1,12 +1,14 @@
 package nl.tue.c2IOE0.group5.providers;
 
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
-import nl.tue.c2IOE0.group5.engine.rendering.*;
+import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
+import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
+import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
+import org.joml.Vector3f;
 
 import java.awt.*;
-import java.io.IOException;
 
 /**
  * @author Tom Peters
@@ -16,34 +18,25 @@ public class Cell extends GameObject {
     //the tower on this cell
     AbstractTower tower;
 
-    boolean borderCell;
-
     //the position in the grid
-    Point position;
-    Texture activeTexture;
-    Texture normalTexture;
+    private Point position;
+    private Vector3f defaultColor = new Vector3f(0.3f);
+    private Vector3f color;
 
+    private final CellType cellType;
     private Mesh mesh;
 
     /**
      * The x and y coordinates are of the grid, not in 3d space!
-     * @param borderCell
+     * @param type
      * @param x
      * @param y
      */
-    public Cell(boolean borderCell, int x, int y) {
+    public Cell(CellType type, int x, int y) {
         super();
-        this.borderCell = borderCell;
+        this.cellType = type;
         this.position = new Point(x, y);
 
-        /*try {
-            this.mesh = OBJLoader.loadMesh("/bunny.obj");
-            this.mesh.setTexture(new Texture("/square.png"));
-            this.setScale(40f);
-            this.setPosition(x*2, y*2, 0);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
         try {
             this.mesh = new Mesh(new float[] {
                     -0.5f,   0.5f,   0.5f,
@@ -85,10 +78,21 @@ public class Cell extends GameObject {
             });
 
             //initialize textures
-            activeTexture = new Texture("/yellowsquare.png");
-            normalTexture = new Texture("/square.png");
+            mesh.setMaterial(new Material("/square.png"));
+            switch (cellType) {
+                case BASE:
+                    defaultColor = new Vector3f(0f, 1f, 0f);
+                    break;
+                case BORDER:
+                    defaultColor = new Vector3f(1f, 0f, 0f);
+                    break;
+                case SPAWN:
+                    defaultColor = new Vector3f(1f);
+                    break;
+            }
+            color = defaultColor;
             this.deactivate();
-            this.setPosition(x*this.getScale(), 0, y*this.getScale());
+            this.setPosition(x*this.getScale(), -0.5f, y*this.getScale());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -96,12 +100,12 @@ public class Cell extends GameObject {
 
     //set the texture of this cell to activated
     public void activate() {
-        this.mesh.setTexture(activeTexture);
+        color = new Vector3f(1f, 1f, 0f);
     }
 
     //set the texture of this cell to deactivated
     public void deactivate() {
-        this.mesh.setTexture(normalTexture);
+        color = defaultColor;
     }
 
     /**
@@ -140,7 +144,7 @@ public class Cell extends GameObject {
      * @return whether or not this cell is a bordercell
      */
     public boolean isBorderCell() {
-        return borderCell;
+        return cellType == CellType.BORDER;
     }
 
     /**
@@ -154,6 +158,8 @@ public class Cell extends GameObject {
     @Override
     public void draw(Window window, Renderer renderer) {
         super.draw(window, renderer);
-        mesh.draw();
+        renderer.ambientLight(color, () ->
+                mesh.draw(renderer)
+        );
     }
 }

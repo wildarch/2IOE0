@@ -1,5 +1,7 @@
 package nl.tue.c2IOE0.group5.engine.rendering;
 
+import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
+import nl.tue.c2IOE0.group5.engine.rendering.shader.Texture;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
@@ -26,7 +28,7 @@ public class Mesh {
 
     private final int vertexCount;
 
-    private Texture texture;
+    private Material material;
 
     public Mesh(float[] positions, float[] texCoords, float[] normals, int[] indices) {
         FloatBuffer posBuffer = null;
@@ -90,17 +92,20 @@ public class Mesh {
     }
 
     public boolean isTextured() {
-        return this.texture != null;
+        return this.material!= null && this.material.isTextured();
     }
 
     public Texture getTexture() {
-        return this.texture;
+        return this.material.getTexture();
     }
 
-    public void setTexture(Texture texture) {
-        this.texture = texture;
+    public Material getMaterial() {
+        return this.material;
     }
 
+    public void setMaterial(Material material) {
+        this.material = material;
+    }
 
     private int getVaoId() {
         return vaoId;
@@ -111,8 +116,8 @@ public class Mesh {
     }
 
     public void cleanup() {
-        if (texture != null) {
-            texture.cleanup();
+        if (isTextured()) {
+            getMaterial().getTexture().cleanup();
         }
 
         glDisableVertexAttribArray(0);
@@ -130,13 +135,15 @@ public class Mesh {
         glDeleteVertexArrays(vaoId);
     }
 
-    public void draw() {
+    public void draw(Renderer renderer) {
+        renderer.setMaterial(getMaterial());
+
         // If we have a texture for our mesh
-        if (texture != null) {
+        if (isTextured()) {
             // Activate first texture bank
             glActiveTexture(GL_TEXTURE0);
             // Bind the texture
-            glBindTexture(GL_TEXTURE_2D, texture.getId());
+            glBindTexture(GL_TEXTURE_2D, getTexture().getId());
         }
         // Draw the mesh
         glBindVertexArray(getVaoId());

@@ -1,4 +1,4 @@
-package nl.tue.c2IOE0.group5.engine.rendering;
+package nl.tue.c2IOE0.group5.engine.rendering.shader;
 
 import de.matthiasmann.twl.utils.PNGDecoder;
 
