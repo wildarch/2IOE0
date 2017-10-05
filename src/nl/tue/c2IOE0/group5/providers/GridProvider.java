@@ -20,7 +20,7 @@ import java.awt.*;
 public class GridProvider implements Provider {
 
     //total size of the grid. Change this to change the total grid
-    private final int SIZE = 13;
+    public final int SIZE = 13;
     //size of the grid in which towers can be placed
     private final int PLAYFIELDSIZE = 9;
     //the actual grid

@@ -40,4 +40,6 @@ public abstract class AbstractTower {
         //TODO: calculate a specific damage value
         return 1;
     }
+
+    public abstract TowerType getType();
 }
