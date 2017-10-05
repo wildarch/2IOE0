@@ -2,10 +2,9 @@ package nl.tue.c2IOE0.group5.providers;
 
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
-import nl.tue.c2IOE0.group5.engine.rendering.*;
+import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
-import org.joml.Vector3f;
 
 import java.awt.*;
 
@@ -26,9 +25,11 @@ public class GridProvider implements Provider {
     //estimate the damage in a cell, used for Q learner
     private final int[][] estimatedDamagePerCell = new int[SIZE][SIZE];
 
+    //the cell currently active (pointed to)
+    private Cell activeCell;
+
     @Override
     public void init(Engine engine) {
-
         int bordersize = (SIZE - PLAYFIELDSIZE)/2;
         for (int x = bordersize; x < SIZE - bordersize; x++) {
             for (int y = bordersize; y < SIZE - bordersize; y++) {
@@ -47,6 +48,7 @@ public class GridProvider implements Provider {
                 }
             }
         }
+        setActiveCell(1, 1);
     }
 
     /**
@@ -122,6 +124,37 @@ public class GridProvider implements Provider {
         Point positionToCheck = cellToCheck.getGridPosition();
         Point positionWithTower = cellWithTower.getGridPosition();
         return positionToCheck.getX() - positionWithTower.getX() + positionToCheck.getY() - positionWithTower.getY() < range;
+    }
+
+    /**
+     * Set the active cell and color it
+     * @param x the x coordinate of the active cell
+     * @param y the y coordinate of the active cell
+     */
+    public void setActiveCell(int x, int y) {
+        if (activeCell != null) {
+            activeCell.deactivate();
+        }
+        this.activeCell = getCell(x, y);
+        activeCell.activate();
+    }
+
+    public void mouseMoved(MouseEvent e, Camera c, Renderer r, Window window) {
+        Matrix4f viewMatrix = r.getViewMatrix();
+        Matrix4f projectionMatrix = r.getProjectionMatrix(window);
+        int mouseX = e.getX();
+        int mouseY = e.getY();
+        int viewPortX = 2 * mouseX / window.getWidth() - 1;
+        int viewPortY = 1 - 2 * mouseY / window.getHeight();
+        int viewPortZ = -1;
+        int viewPortW = 1;
+        Vector4f viewPortPosition = new Vector4f(viewPortX, viewPortY, viewPortZ, viewPortW);
+        Matrix4f projectionMatrixInverse = projectionMatrix.invert();
+        Matrix4f viewMatrixInverse = viewMatrix.invert();
+        Vector4f direction = viewPortPosition.mul(projectionMatrixInverse).mul(viewMatrixInverse);
+        //the ray is now defined using the position of the camera and direction
+
+        setActiveCell(e.getX() % 13, e.getY() % 13);
     }
 
     /**

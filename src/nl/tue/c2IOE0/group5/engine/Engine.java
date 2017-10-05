@@ -229,4 +229,8 @@ public class Engine {
         return timer;
     }
 
+    public Renderer getRenderer() {
+        return this.renderer;
+    }
+
 }
