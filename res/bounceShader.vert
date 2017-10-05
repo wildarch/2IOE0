@@ -8,10 +8,12 @@ layout (location = 2) in vec3 vertexNormal;
 
 // current spread
 uniform float bounceDegree;
-// height of middle of object/bounce
-uniform vec3 gravityMiddle;
-// height from top to bottom (the heightrange that is expanded)
-uniform float totalHeight;
+
+// minimum coordinates of the bounding box
+uniform vec3 boundingMin;
+// idem maximum
+uniform vec3 boundingMax;
+
 
 out vec2 outTexture;
 // normal of the vertex
@@ -24,6 +26,8 @@ uniform mat4 projectionMatrix;
 
 // a value that is approximately 0, but large enough to prevent rounding errors
 float fragmentSize = 0.001;
+vec3 diffVec = boundingMax - boundingMin;
+vec3 gravityMiddle = boundingMin + (0.5 * boundingMax);
 
 // bends out the vector of a mapToUnitd system
 vec3 bendOut(vec3 p) {
@@ -40,15 +44,17 @@ vec3 bendOut(vec3 p) {
 // pushes the object to a 2*2*2 cube
 vec3 mapToUnit(vec3 p) {
 	// move gravitymiddle to 0,0,0
-	// divide through half the total height
-	return ((p - gravityMiddle) * (2.0 / totalHeight));
+	p = (p - gravityMiddle);
+	// multiply with the inverse of the difference vector
+	return vec3(p.x / diffVec.x, p.y / diffVec.y, p.z / diffVec.z) * 2;
+
 }
 
 // reverts the action of mapToUnit(p)
 vec3 revert(vec3 p){
-	// multiply with half the total height
+	// multiply with difference vector
 	// move middle back to gravitymiddle
-	return ((p * totalHeight * 0.5) + gravityMiddle);
+	return (vec3(p.x * diffVec.x, p.y * diffVec.y, p.z * diffVec.z) + gravityMiddle) * 0.5;
 }
 
 // calculates the normal given the UNCHANGED position vector and both unchanged and changed position
