@@ -1,7 +1,7 @@
 package nl.tue.c2IOE0.group5;
 
 import nl.tue.c2IOE0.group5.controllers.AiController;
-import nl.tue.c2IOE0.group5.controllers.TestController;
+import nl.tue.c2IOE0.group5.controllers.PlayerController;
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.controller.Controller;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
@@ -18,10 +18,11 @@ public class TowerDefence {
                 new TestProvider(),
                 new EnemyProvider(),
                 new GridProvider(),
+                new UIProvider(),
                 new BackgroundProvider(),
         });
         e.addControllers(new Controller[] {
-                new TestController(),
+                new PlayerController(),
                 new AiController()
         });
         try {

@@ -17,7 +17,7 @@ import static org.lwjgl.glfw.GLFW.*;
 /**
  * @author Jorren Hendriks
  */
-public class TestController implements Controller,Listener {
+public class PlayerController implements Controller,Listener {
 
     // define required resources here, e.g.
     private TestProvider testProvider;
@@ -110,18 +110,6 @@ public class TestController implements Controller,Listener {
                 System.out.println("Y: " + yRotation);
 
                 camera.moveRelative(unitVX/2,-unitVY/2,-unitVZ/2);
-                break;
-            case GLFW_KEY_SPACE:
-                camera.moveRelative(0f, 1f, 0f);
-                break;
-            case GLFW_KEY_LEFT_SHIFT:
-                camera.moveRelative(0f, -1f, 0f);
-                break;
-            case GLFW_KEY_Q:
-                camera.rotate(10f, 0f, 0f);
-                break;
-            case GLFW_KEY_E:
-                camera.rotate(-10f, 0f, 0f);
                 break;
         }
     }
