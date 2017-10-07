@@ -20,12 +20,14 @@ public class Camera extends Positionable {
     public Camera(Engine engine) {
         super();
         this.engine = engine;
-        this.gridProvider = engine.getProvider(GridProvider);
         this.window = engine.getWindow();
         this.renderer = engine.getRenderer();
     }
 
     public void recalculateActiveCell() {
+        if (gridProvider == null) {
+            this.gridProvider = engine.getProvider(GridProvider.class);
+        }
         gridProvider.recalculateActiveCell(window.getMousePosition(), this, renderer, window);
     }
 

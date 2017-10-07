@@ -23,10 +23,8 @@ public class TestController implements Controller,Listener {
     private TestProvider testProvider;
     private GridProvider gridProvider;
     private Camera camera;
-<<<<<<< HEAD
     private Renderer renderer;
     private Window window;
-=======
     private float oldx = 0;
     private float oldy = 0;
     private float sensitivity = 5;//Camera Sensitivity on a scale from 1 to 10
@@ -38,8 +36,6 @@ public class TestController implements Controller,Listener {
     private boolean D = false;
     private boolean R = false;
     private boolean F = false;
-
->>>>>>> master
 
     @Override
     public void init(Engine engine) {
@@ -57,8 +53,6 @@ public class TestController implements Controller,Listener {
     @Override
     public void update() {
         // you can use resources here, e.g.
-<<<<<<< HEAD
-=======
         if (A){
             camera.moveRelative(-0.1f, 0f, 0f);
         }
@@ -77,7 +71,6 @@ public class TestController implements Controller,Listener {
         if (F){
             camera.moveRelative(0f, -0.1f, 0f);
         }
->>>>>>> master
     }
 
     @Override
@@ -130,11 +123,6 @@ public class TestController implements Controller,Listener {
             case GLFW_KEY_E:
                 camera.rotate(-10f, 0f, 0f);
                 break;
-            case GLFW_KEY_F:
-                camera.rotate(0f, -10f, 0f);
-                break;
-            case GLFW_KEY_R:
-                camera.rotate(0f, 10f, 0f);
         }
     }
 

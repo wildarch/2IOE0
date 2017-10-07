@@ -40,7 +40,7 @@ public class Engine {
         renderer = new Renderer();
         inputHandler = new InputHandler();
         timer = new Timer();
-        camera = new Camera();
+        camera = new Camera(this);
 
         providers = new ArrayList<>();
         controllers = new ArrayList<>();
@@ -66,6 +66,7 @@ public class Engine {
         timer.init();
         window.init();
         renderer.init();
+        renderer.setActiveCamera(camera);
         inputHandler.init(window);
         providers.forEach(provider -> provider.init(this));
         controllers.forEach(controller -> controller.init(this));
