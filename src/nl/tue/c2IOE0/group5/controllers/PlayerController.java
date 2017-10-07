@@ -142,6 +142,7 @@ public class PlayerController implements Controller,Listener {
     public void onMouseButtonPressed(MouseEvent event) {
         if (event.getSubject() == GLFW_MOUSE_BUTTON_1) {
             System.out.println("Click at (" + event.getX() + ", " + event.getY() + ")");
+            this.gridProvider.click();
             this.testProvider.ud();
         }
 
