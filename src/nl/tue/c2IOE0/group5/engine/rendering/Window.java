@@ -27,18 +27,20 @@ public class Window {
     private long window;
     private int width;
     private int height;
-    private boolean vSync;
+
+    private Options options;
 
     public Window(String title) {
-        this(title, 960, 720, true, false);
+        this(title, 960, 720, true, new Options());
     }
 
-    public Window(String title, int width, int height, boolean vSync, boolean resizable) {
+    public Window(String title, int width, int height, boolean resizable, Options options) {
         this.title = title;
         this.width = width;
         this.height = height;
-        this.vSync = vSync;
         this.resizable = resizable;
+
+        this.options = options;
 
         this.mousePosX = BufferUtils.createDoubleBuffer(1);
         this.mousePosY = BufferUtils.createDoubleBuffer(1);
@@ -62,6 +64,9 @@ public class Window {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        if (getOptions().antialiasing()) {
+            glfwWindowHint(GLFW_SAMPLES, getOptions().antialiasing);
+        }
 
         // Create window
         window = glfwCreateWindow(this.width, this.height, this.title, NULL, NULL);
@@ -104,8 +109,14 @@ public class Window {
 
         // Enable Depth Test
         glEnable(GL_DEPTH_TEST);
-        // Enable 2d Texture
-        glEnable(GL_TEXTURE_2D);
+        // Enable Stencil Test
+        glEnable(GL_STENCIL_TEST);
+        // Support transparencies
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        // Cull backfaces
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
     }
 
     /**
@@ -139,6 +150,14 @@ public class Window {
      */
     public void close() {
         glfwSetWindowShouldClose(window, true);
+    }
+
+    /**
+     * Restore the state of the window. Needed to restore the state after the HUD changes it.
+     */
+    void restoreState() {
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_STENCIL_TEST);
     }
 
     /**
@@ -262,7 +281,7 @@ public class Window {
      * @return Whether vSync is enabled.
      */
     public boolean vSyncEnabled() {
-        return this.vSync;
+        return getOptions().vSync;
     }
 
     /**
@@ -270,7 +289,7 @@ public class Window {
      */
     public void clear() {
         // Clear framebuffer
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     }
 
     /**
@@ -288,5 +307,21 @@ public class Window {
         if (callback instanceof GLFWCursorPosCallbackI) {
             glfwSetCursorPosCallback(window, (GLFWCursorPosCallbackI) callback);
         }
+    }
+
+    public Options getOptions() {
+        return options;
+    }
+
+    public static class Options {
+
+        public boolean vSync = true;
+
+        public int antialiasing = 0;
+
+        public boolean antialiasing() {
+            return antialiasing > 0;
+        }
+
     }
 }
