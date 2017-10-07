@@ -1,7 +1,8 @@
 package nl.tue.c2IOE0.group5.providers;
 
+import javafx.util.Pair;
+import nl.tue.c2IOE0.group5.QLearner;
 import nl.tue.c2IOE0.group5.engine.Engine;
-import nl.tue.c2IOE0.group5.engine.controller.input.events.MouseEvent;
 import nl.tue.c2IOE0.group5.engine.objects.Camera;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
 import nl.tue.c2IOE0.group5.engine.rendering.*;
@@ -12,7 +13,8 @@ import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A class providing the grid.
@@ -31,8 +33,14 @@ public class GridProvider implements Provider {
     //the cell currently active (pointed to)
     private Cell activeCell;
 
+    private QLearner qlearner;
+    private List<Integer> optimalPath; //the current optimal path for the active cell
+
     @Override
     public void init(Engine engine) {
+        doQLearnerStuffForTesting();
+
+
         int bordersize = (SIZE - PLAYFIELDSIZE)/2;
         for (int x = bordersize; x < SIZE - bordersize; x++) {
             for (int y = bordersize; y < SIZE - bordersize; y++) {
@@ -51,6 +59,19 @@ public class GridProvider implements Provider {
             }
         }
         setActiveCell(1, 1);
+    }
+
+    public void doQLearnerStuffForTesting() {
+        qlearner = new QLearner(SIZE);
+        qlearner.updateRewardsMatrix(qlearner.getState(SIZE/2, SIZE/2), 1000);
+        Integer[][] paths = {
+                {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 25, 24, 23, 22, 21, 20, 33, 46},
+                {6, 19, 32, 45, 58, 71, 84, 97, 96, 83, 84, 85},
+                {84, 83, 84, 97, 84, 85, 84, 71, 84},
+        };
+        double gamma = 0.1d;
+        int noIterations = 10;
+        qlearner.execute(paths, gamma, noIterations);
     }
 
     /**
@@ -165,11 +186,27 @@ public class GridProvider implements Provider {
     }
 
     /**
-     * To be called on a click
+     * To be called on a click, currently shows the qlearner output
      */
     public void click() {
         //assuming the active cell is set correctly
-        System.out.println("Clicked on cell (" + activeCell.getGridPosition().getX() + "," + activeCell.getGridPosition().getY() + ")");
+        List<Integer> optimalPath = qlearner.getOptimalPath(qlearner.getState(activeCell.getGridPosition()));
+        deactivateAll();
+        for (int state : optimalPath) {
+            Cell cell = getCell(qlearner.getX(state), qlearner.getY(state));
+            cell.activate();
+        }
+    }
+
+    /**
+     * A helper method to show the qlearner output
+     */
+    private void deactivateAll() {
+        for (int x = 0; x < SIZE; x++) {
+            for (int y = 0; y < SIZE; y++) {
+                getCell(x, y).deactivate();
+            }
+        }
     }
 
     @Override
