@@ -3,10 +3,14 @@ package nl.tue.c2IOE0.group5.engine.rendering;
 import nl.tue.c2IOE0.group5.util.Resource;
 import org.joml.Vector4f;
 import org.lwjgl.nanovg.NVGColor;
+import org.lwjgl.nanovg.NVGPaint;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.lwjgl.nanovg.NanoVG.*;
 import static org.lwjgl.nanovg.NanoVGGL3.*;
@@ -34,7 +38,9 @@ public class Hud implements Drawable {
 
     private long vg;
     private NVGColor color;
+    private NVGPaint paint;
     private ByteBuffer fontBuffer;
+    private Map<String, Integer> imageBuffer;
 
     private List<Runnable> drawBuffer;
 
@@ -57,7 +63,9 @@ public class Hud implements Drawable {
         if (f == -1) {
             throw new Exception("Could not create font " + font.name);
         }
+        imageBuffer = new HashMap<>();
         color = NVGColor.create();
+        paint = NVGPaint.create();
 
         drawBuffer = new ArrayList<>();
     }
@@ -107,22 +115,24 @@ public class Hud implements Drawable {
         return rgba(color.x, color.y, color.z, color.w);
     }
 
-    public void rectangle(int x, int y, int width, int height, Vector4f color) {
+    public void rectangle(int x, int y, int width, int height) {
         nvgBeginPath(vg);
         nvgRect(vg, x, y, width, height);
     }
 
-    public void circle(int x, int y, int radius, Vector4f color) {
+    public void circle(int x, int y, int radius) {
         nvgBeginPath(vg);
         nvgCircle(vg, x, y, radius);
     }
 
-    public void poly(int[][] points) {
-        int length = points.length;
+    public void polygon(int... points) throws Exception {
+        if (points.length < 2 || points.length % 2 != 0) {
+            throw new Exception("Not a valid polygon");
+        }
         nvgBeginPath(vg);
-        nvgMoveTo(vg, points[length-1][0], points[length-1][1]);
-        for (int[] point : points) {
-            nvgLineTo(vg, point[0], point[1]);
+        nvgMoveTo(vg, points[points.length-2], points[points.length-1]);
+        for (int i = 0; i < points.length; i += 2) {
+            nvgLineTo(vg, points[i], points[i+1]);
         }
     }
 
@@ -143,6 +153,30 @@ public class Hud implements Drawable {
         nvgStrokeWidth(vg, width);
         nvgStrokeColor(vg, rgba(red, green, blue, alpha));
         nvgStroke(vg);
+    }
+
+    public void image(String filename, int x, int y, int width, int height, float alpha) throws IOException {
+        image(filename, x, y, width, height, 0f, alpha, NVG_IMAGE_GENERATE_MIPMAPS);
+    }
+
+    public void image(String fileName, int x, int y, int width, int height, float angle, float alpha, int imageFlags) throws IOException {
+        int img = getImage(fileName, imageFlags);
+        NVGPaint p = nvgImagePattern(vg, x, y, width, height, angle, img, alpha, this.paint);
+
+        rectangle(x, y, width, height);
+
+        nvgFillPaint(vg, p);
+        nvgFill(vg);
+    }
+
+    private int getImage(String filename, int imageFlags) throws IOException {
+        if (imageBuffer.containsKey(filename)) {
+            return imageBuffer.get(filename);
+        }
+        ByteBuffer image = Resource.toByteBuffer(filename, 1);
+        int img = nvgCreateImageMem(vg, imageFlags, image);
+        imageBuffer.put(filename, img);
+        return img;
     }
 
     @Override

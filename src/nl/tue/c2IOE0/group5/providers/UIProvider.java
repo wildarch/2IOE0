@@ -29,19 +29,25 @@ public class UIProvider implements Provider {
         this.hud = engine.getHud();
 
         hud.create(() -> {
-            hud.poly(new int[][] {
-                    new int[]{30, wHeight-20},
-                    new int[]{20, wHeight-30},
-                    new int[]{20, wHeight-60},
-                    new int[]{30, wHeight-70},
-                    new int[]{wWidth-30, wHeight-70},
-                    new int[]{wWidth-20, wHeight-60},
-                    new int[]{wWidth-20, wHeight-30},
-                    new int[]{wWidth-30, wHeight-20}
-            });
-            hud.fill(color.x, color.y, color.z, color.w);
-            hud.stroke(5, 0.6f, 0.1f, 1f, 1f);
-            hud.text(40, wHeight - 52, 25f, Hud.Font.MEDIUM, NVG_ALIGN_LEFT | NVG_ALIGN_TOP, "Welcome to the HUD " + x, textColor);
+            try {
+                hud.polygon(
+                        30,     wHeight - 20,
+                        20,             wHeight - 30,
+                        20,             wHeight - 60,
+                        30,             wHeight - 70,
+                        wWidth - 30,    wHeight - 70,
+                        wWidth - 20,    wHeight - 60,
+                        wWidth - 20,    wHeight - 30,
+                        wWidth - 30,    wHeight - 20
+                );
+                hud.fill(color.x, color.y, color.z, color.w);
+                hud.stroke(5, 0.6f, 0.1f, 1f, 1f);
+                hud.image("/texture.png", wWidth-70, wHeight-60, 30, 30, 0.6f);
+                hud.text(40, wHeight - 52, 25f, Hud.Font.MEDIUM, NVG_ALIGN_LEFT | NVG_ALIGN_TOP, "Welcome to the HUD " + x, textColor);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         });
     }
 
