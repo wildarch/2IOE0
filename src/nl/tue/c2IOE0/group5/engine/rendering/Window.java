@@ -307,6 +307,9 @@ public class Window {
         if (callback instanceof GLFWCursorPosCallbackI) {
             glfwSetCursorPosCallback(window, (GLFWCursorPosCallbackI) callback);
         }
+        if (callback instanceof GLFWScrollCallbackI) {
+            glfwSetScrollCallback(window, (GLFWScrollCallbackI) callback);
+        }
     }
 
     public Options getOptions() {
