@@ -11,8 +11,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import org.joml.Vector3f;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 public class EnemyProvider extends ObjectProvider<Enemy> {
 
@@ -41,23 +40,12 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
         return objects.size();
     }
 
-    public void putEnemy(Vector3f initialPosition) {
+    public void putEnemy(Vector3f initialPosition, List<Vector3f> targets) {
         objects.add(new TestEnemy(
                 mesh,
                 loopTimer,
                 initialPosition,
-                new ArrayList<>(Arrays.asList(
-                        new Vector3f(7.5f, 1f, 7.5f),
-                        new Vector3f(6.5f, 1f, 7.5f),
-                        new Vector3f(6.5f, 1f, 6.5f),
-                        new Vector3f(5.5f, 1f, 6.5f),
-                        new Vector3f(5.5f, 1f, 6.5f),
-                        new Vector3f(5.5f, 1f, 5.5f),
-                        new Vector3f(4.5f, 1f, 5.5f),
-                        new Vector3f(4.5f, 1f, 4.5f),
-                        new Vector3f(3.5f, 1f, 4.5f),
-                        new Vector3f(3.5f, 1f, 3.5f)
-                ))
+                targets
         ));
     }
 }

@@ -7,6 +7,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
 import org.joml.Vector2i;
+import org.joml.Vector2ic;
 import org.joml.Vector3f;
 
 import java.util.Vector;

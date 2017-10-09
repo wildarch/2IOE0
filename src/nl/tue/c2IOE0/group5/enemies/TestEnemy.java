@@ -10,6 +10,7 @@ import org.joml.Vector3fc;
 
 import java.io.IOException;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 public class TestEnemy extends Enemy {
@@ -23,7 +24,7 @@ public class TestEnemy extends Enemy {
         setMesh(mesh);
 
         this.loopTimer = loopTimer;
-        this.targetPositions = targetPositions;
+        this.targetPositions = new ArrayList<>(targetPositions);
         setPosition(initialPosition);
         setScale(0.01f);
         timeToDie = loopTimer.getLoopTime() + 20000;
