@@ -156,23 +156,12 @@ public class GridProvider implements Provider {
     }
 
     public void recalculateActiveCell(Vector2i mousePos, Camera c, Renderer r, Window window) {
-        Matrix4f viewMatrix = r.getViewMatrix();
-        Matrix4f projectionMatrix = r.getProjectionMatrix(window);
         int mouseX = mousePos.x();
         int mouseY = mousePos.y();
         float viewPortX = 2 * (float)mouseX / (float)window.getWidth() - 1;
         float viewPortY = 1 - 2 * (float)mouseY / (float)window.getHeight();
-        int viewPortZ = -1;
-        int viewPortW = 1;
 
-        Vector4f viewPortPosition = new Vector4f(viewPortX, viewPortY, viewPortZ, viewPortW);
-        Matrix4f projectionMatrixInverse = projectionMatrix.invert();
-        Matrix4f viewMatrixInverse = viewMatrix.invert();
-
-        Vector4f stepone = viewPortPosition.mul(projectionMatrixInverse);
-        Vector4f steptwo = new Vector4f(stepone.x(), stepone.y(), -1f, 0);
-        Vector4f direction = steptwo.mul(viewMatrixInverse);
-        Vector3f direction3f = new Vector3f(direction.x, direction.y, direction.z);
+        Vector3f direction3f = getDirectionOfCamera(r, window, viewPortX, viewPortY);
 
         //the ray is now defined using the position of the camera and direction
         if (direction3f.y() >= 0) {
@@ -189,6 +178,22 @@ public class GridProvider implements Provider {
         } else {
             activeCell.deactivate();
         }
+    }
+
+    public Vector3f getDirectionOfCamera(Renderer r, Window window, float viewPortX, float viewPortY) {
+        Matrix4f viewMatrix = r.getViewMatrix();
+        Matrix4f projectionMatrix = r.getProjectionMatrix(window);
+        int viewPortZ = -1;
+        int viewPortW = 1;
+
+        Vector4f viewPortPosition = new Vector4f(viewPortX, viewPortY, viewPortZ, viewPortW);
+        Matrix4f projectionMatrixInverse = projectionMatrix.invert();
+        Matrix4f viewMatrixInverse = viewMatrix.invert();
+
+        Vector4f stepone = viewPortPosition.mul(projectionMatrixInverse);
+        Vector4f steptwo = new Vector4f(stepone.x(), stepone.y(), -1f, 0);
+        Vector4f direction = steptwo.mul(viewMatrixInverse);
+        return new Vector3f(direction.x, direction.y, direction.z);
     }
 
     /**
