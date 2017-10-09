@@ -1,6 +1,5 @@
 package nl.tue.c2IOE0.group5.providers;
 
-import javafx.util.Pair;
 import nl.tue.c2IOE0.group5.QLearner;
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.objects.Camera;
@@ -13,7 +12,6 @@ import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
