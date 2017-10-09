@@ -72,7 +72,7 @@ public class PlayerController implements Controller,Listener {
                 System.out.println("VY: " + unitVY);
                 System.out.println("VZ: " + unitVZ);
 
-                camera.move(unitVX/2,-unitVY/2,0);
+                camera.move(unitVX/2,-unitVY/2,-unitVZ/2);
                 break;
         }
     }
@@ -99,10 +99,10 @@ public class PlayerController implements Controller,Listener {
             case GLFW_KEY_S:
                 camera.moveRelative(0f, 0f, speed);
                 break;
-            case GLFW_KEY_R:
+            case GLFW_KEY_SPACE:
                 camera.moveRelative(0f, speed, 0f);
                 break;
-            case GLFW_KEY_F:
+            case GLFW_KEY_LEFT_SHIFT:
                 camera.moveRelative(0f, -speed, 0f);
                 break;
         }
