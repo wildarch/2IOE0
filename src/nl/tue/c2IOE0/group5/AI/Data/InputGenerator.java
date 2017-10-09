@@ -1,14 +1,15 @@
 package nl.tue.c2IOE0.group5.AI.Data;
 
 import com.google.common.collect.Sets;
+import org.deeplearning4j.datasets.iterator.impl.ListDataSetIterator;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.dataset.DataSet;
+import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
+import org.nd4j.linalg.factory.Nd4j;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -34,8 +35,100 @@ public class InputGenerator {
         this.qLearnerTrustSteps = qLearnerTrustSteps;
     }
 
-    public static INDArray getInputs(int gridSize, int nrTowers, int nrTowerLevels, int nrDeployTypes, int qLearnerTrustSteps) {
-        return null;
+    public static INDArray getInputs(int numInputs, int gridSize, int nrTowers, int nrTowerLevels, int nrDeployTypes, int qLearnerTrustSteps) {
+        List<double[]> data = new ArrayList<>(numInputs);
+        Random r = new Random();
+
+        INDArray result = Nd4j.create(numInputs, gridSize * gridSize * nrTowers + nrDeployTypes + 1);
+
+        for (int i = 0; i < numInputs; i++){
+            double[] row = new double[gridSize * gridSize * nrTowers + nrDeployTypes + 1];
+
+            double[] grid = randomGrid(gridSize, nrTowers, nrTowerLevels, r);
+            double[] buffer = randomBuffer(nrDeployTypes, r);
+            double[] qtrust = new double[]{r.nextDouble()};
+
+            System.arraycopy(grid, 0, row, 0, grid.length);
+            System.arraycopy(buffer, 0, row, grid.length, buffer.length);
+            System.arraycopy(qtrust, 0, row, grid.length + buffer.length, qtrust.length);
+
+            data.add(row);
+
+            System.out.println(Arrays.toString(row));
+        }
+
+        for (int i = 0; i < data.size(); i++){
+            double[] row = data.get(i);
+            for(int c = 0; c < row.length; c++){
+                result.putScalar(i, c, row[c]);
+            }
+        }
+
+        return result;
+    }
+
+    interface TD_Q_Function{
+        /**
+         * Returns the function values for the given input matrix
+         * @param inputRow
+         * @return
+         */
+        INDArray getOutputValues(INDArray inputRow);
+    }
+
+    /** Create a DataSetIterator for training
+     * @param x X values
+     * @param function Function to evaluate
+     * @param batchSize Batch size (number of examples for every call of DataSetIterator.next())
+     * @param rng Random number generator (for repeatability)
+     */
+    private static DataSetIterator getTrainingData(final INDArray x, final TD_Q_Function function, final int batchSize, final Random rng) {
+        final INDArray y = function.getOutputValues(x);
+        final DataSet allData = new DataSet(x,y);
+
+        final List<DataSet> list = allData.asList();
+        Collections.shuffle(list,rng);
+        return new ListDataSetIterator(list,batchSize);
+    }
+
+    private static DataSetIterator getTrainingData(int numInputs, int gridSize, int nrTowers, int nrTowerLevels, int nrDeployTypes, int qLearnerTrustSteps, final TD_Q_Function function, final int batchSize, final Random rng) {
+        INDArray genData = getInputs(numInputs, gridSize, nrTowers, nrTowerLevels, nrDeployTypes, qLearnerTrustSteps);
+        return getTrainingData(genData, function, batchSize, rng);
+    }
+
+    public static void main(String[] args){
+        getInputs(10, 9, 5, 10, 8, 10);
+    }
+
+    private static double[] randomBuffer(int nrDeployTypes, Random r){
+        double[] buffer = new double[nrDeployTypes];
+        double sum = 0.0;
+        for (int i = 0; i < nrDeployTypes; i++){
+            buffer[i] = r.nextDouble();
+            sum += buffer[i];
+        }
+        for (int i = 0; i < nrDeployTypes; i++){
+            buffer[i] = buffer[i] / sum;
+        }
+        return buffer;
+    }
+
+    private static double[] randomGrid(int gridSize, int nrTowers, int nrTowerLevels, Random r){
+        double[] grid = new double[gridSize * gridSize * nrTowers];
+
+        //grid data
+        for (int x = 0; x < gridSize; x++){
+            for (int y = 0; y < gridSize; y++){
+                if(!r.nextBoolean()) continue;
+
+                //this cell contains a tower
+                int towerType = r.nextInt(nrTowers);
+                double towerLevel = r.nextInt(nrTowerLevels) / (double)nrTowerLevels;
+                grid[x * gridSize * nrTowers + y * nrTowers + towerType] = towerLevel;
+
+            }
+        }
+        return grid;
     }
 
     public Set<List<Float>> getInputs() {
@@ -44,6 +137,7 @@ public class InputGenerator {
         }
         List<Set<Float>> properties = new ArrayList<>();
         labels = new ArrayList<>();
+
         for (int i = 0; i < nrTowers; i++) {
             properties.add(getTowerValues(nrTowerLevels));
             labels.add("Tower " + i + " level");
