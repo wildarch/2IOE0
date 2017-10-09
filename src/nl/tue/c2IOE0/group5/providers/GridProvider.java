@@ -91,6 +91,10 @@ public class GridProvider implements Provider {
         return grid[x][y];
     }
 
+    public Cell getCell(Vector2i position) throws ArrayIndexOutOfBoundsException {
+        return getCell(position.x(), position.y());
+    }
+
     /**
      * Set a tower on a specific position
      * @param x the x coordinate to set the tower to
@@ -197,7 +201,7 @@ public class GridProvider implements Provider {
         List<Integer> optimalPath = qlearner.getOptimalPath(qlearner.getState(activeCell.getGridPosition()));
         deactivateAll();
         for (int state : optimalPath) {
-            Cell cell = getCell(qlearner.getX(state), qlearner.getY(state));
+            Cell cell = getCell(qlearner.getPoint(state));
             cell.activate();
         }
     }

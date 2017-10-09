@@ -25,6 +25,9 @@ public class QLearner {
     int[] policy;
     List<Integer[]> paths;
     int noIterations;
+    List<Integer> outerStates;
+
+    Double[][] Q;
 
     /**
      * @param gridSize obvious
@@ -34,6 +37,23 @@ public class QLearner {
         makeRewardMatrix();
         paths = new ArrayList<>();
         this.noIterations = noIterations;
+
+        outerStates = new ArrayList<>();
+        for (int i = 0; i < gridSize; i++) { //add bottom states
+            outerStates.add(i);
+        }
+        for (int i = gridSize - 1 + gridSize; i < gridSize * gridSize; i += gridSize) { //add right states
+            outerStates.add(i);
+        }
+        for (int i = gridSize; i < gridSize * gridSize - 1; i += gridSize) { //add left states
+            outerStates.add(i);
+        }
+        for (int i = gridSize * gridSize - gridSize + 1; i < gridSize * gridSize - 2; i++) {
+            outerStates.add(i);
+        }
+        for (int i : outerStates) {
+            System.err.println(i);
+        }
     }
 
     /**
@@ -42,7 +62,7 @@ public class QLearner {
      */
     public void execute(Double gamma) {
         // Initialize Q as only 0
-        final Double[][] Q = new Double[rewards.length][rewards[0].length];
+        Q = new Double[rewards.length][rewards[0].length];
         for (int i = 0; i < Q.length; i++) {
             for (int j = 0; j < Q[0].length; j++) {
                 if (rewards[i][j] == null) {
@@ -56,11 +76,11 @@ public class QLearner {
         // Do Q-learning
         for (int iteration = 0; iteration < noIterations; iteration++) {
             for (Integer[] path : paths) {
-                execute(Q, rewards, path, gamma);
+                execute(rewards, path, gamma);
             }
         }
 
-        policy(Q);
+        policy();
     }
 
     public void setNoIterations(int noIterations) {
@@ -110,6 +130,10 @@ public class QLearner {
         return state / gridSize;
     }
 
+    public Vector2i getPoint(int state) {
+        return new Vector2i(state % gridSize, state / gridSize);
+    }
+
     public List<Integer> getStatesAdjacent(int state) {
         List<Integer> neighbours = new ArrayList<>();
         if (state >= gridSize) { //there is a bottom
@@ -131,7 +155,7 @@ public class QLearner {
      * do Q-learning for one path. Does the Q learning alogrithm for one path.
      * helper method for the first execute method
      */
-    private void execute(Double[][] Q, Integer[][] rewards, Integer[] path, Double gamma) {
+    private void execute(Integer[][] rewards, Integer[] path, Double gamma) {
         if (path.length == 0) {
             System.err.println("Empty path in qlearner");
             return;
@@ -139,7 +163,7 @@ public class QLearner {
         int s = path[0];
         for (Integer a : path) {
             if (rewards[s][a] != null) {
-                Integer maxAction = getMaximumAction(Q, a);
+                Integer maxAction = getMaximumAction(a);
                 if (maxAction == null) {
                     System.err.println("From " + s + " to " + a + " is not a valid action in some qlearner path.");
                     break;
@@ -153,7 +177,7 @@ public class QLearner {
     /**
      * Gets action in a certain state for which the Q value is the highest
      */
-    private Integer getMaximumAction(Double[][] Q, int state) {
+    private Integer getMaximumAction(int state) {
         Integer max = null;
         for (int a = 0; a < Q[state].length; a++) {
             Double currentQValue = Q[state][a];
@@ -203,14 +227,17 @@ public class QLearner {
     /**
      * computes the policy, according to a certain Q, for a certain state
      */
-    private void policy(Double[][] Q) {
+    private void policy() {
         policy = new int[Q.length];
         for (int s = 0; s < Q.length; s++) {
-            Integer maxAction = getMaximumAction(Q, s);
+            Integer maxAction = getMaximumAction(s);
             policy[s] = maxAction;
         }
     }
 
+    /**
+     * Return the optimal path for a specific staten
+     */
     public List<Integer> getOptimalPath(int state) {
         List<Integer> optimalPath = new ArrayList<>();
         optimalPath.add(state);
@@ -221,6 +248,21 @@ public class QLearner {
             nextState = policy[state];
         }
         return optimalPath;
+    }
+
+    /**
+     * Return the spawn location with the best Q learner options
+     */
+    public Vector2i getOptimalSpawnState() {
+        int maxQ = 0;
+        int maxState = 0;
+        for (int i : outerStates) {
+            if (getMaximumAction(i) >= maxQ) {
+                maxQ = getMaximumAction(i);
+                maxState = i;
+            }
+        }
+        return new Vector2i(getPoint(maxState));
     }
 
 }
