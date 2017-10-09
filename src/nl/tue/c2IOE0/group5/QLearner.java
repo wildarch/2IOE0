@@ -2,6 +2,7 @@ package nl.tue.c2IOE0.group5;
 
 import javafx.util.Pair;
 import nl.tue.c2IOE0.group5.providers.Cell;
+import org.joml.Vector2i;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,23 +23,24 @@ public class QLearner {
     int gridSize;
     Integer[][] rewards;
     int[] policy;
+    List<Integer[]> paths;
+    int noIterations;
 
     /**
      * @param gridSize obvious
      */
-    public QLearner(int gridSize) {
+    public QLearner(int gridSize, int noIterations) {
         this.gridSize = gridSize;
         makeRewardMatrix();
+        paths = new ArrayList<>();
+        this.noIterations = noIterations;
     }
 
     /**
-     * @param paths an array containing the paths to be followed
      * @param gamma the learning coefficient
-     * @param noIterations the amount of times all the paths have to be traveled
-     * @param state The state to calculate the optimal route for
      * @return The optimal policy for the input
      */
-    public void execute(Integer[][] paths, Double gamma, Integer noIterations) {
+    public void execute(Double gamma) {
         // Initialize Q as only 0
         final Double[][] Q = new Double[rewards.length][rewards[0].length];
         for (int i = 0; i < Q.length; i++) {
@@ -59,6 +61,10 @@ public class QLearner {
         }
 
         policy(Q);
+    }
+
+    public void setNoIterations(int noIterations) {
+        this.noIterations = noIterations;
     }
 
     /**
@@ -92,8 +98,8 @@ public class QLearner {
         return x + gridSize * y;
     }
 
-    public int getState(Cell.Point p) {
-        return getState(p.getX(), p.getY());
+    public int getState(Vector2i p) {
+        return getState(p.x(), p.y());
     }
 
     public int getX(int state) {
@@ -162,12 +168,12 @@ public class QLearner {
         return max;
     }
 
-    public Integer[] generateRandomPath(int length) {
+    public void generateRandomPath(int length) {
         Random r = new Random();
-        return generateRandomPath(length, r.nextInt(gridSize * gridSize - 1));
+        generateRandomPath(length, r.nextInt(gridSize * gridSize - 1));
     }
 
-    public Integer[] generateRandomPath(int length, int startState) {
+    public void generateRandomPath(int length, int startState) {
         Integer[] path = new Integer[length];
         Random r = new Random();
         path[0] = startState;
@@ -183,7 +189,15 @@ public class QLearner {
             nextState = neighbours.get(random);
             path[i] = state;
         }
-        return path;
+        paths.add(path);
+    }
+
+    public void addPath(Integer[] path) {
+        paths.add(path);
+    }
+
+    public void deletePaths() {
+        paths = new ArrayList<>();
     }
 
     /**
@@ -208,5 +222,6 @@ public class QLearner {
         }
         return optimalPath;
     }
+
 }
 

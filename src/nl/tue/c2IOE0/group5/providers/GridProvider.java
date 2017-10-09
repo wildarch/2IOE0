@@ -62,21 +62,20 @@ public class GridProvider implements Provider {
     }
 
     public void doQLearnerStuffForTesting() {
-        qlearner = new QLearner(SIZE);
+        int noIterations = 1000;
+        qlearner = new QLearner(SIZE, noIterations);
         qlearner.updateRewardsMatrix(qlearner.getState(SIZE/2, SIZE/2), 1000);
         qlearner.updateRewardsMatrix(qlearner.getState(3, 3), 500);
         qlearner.updateRewardsMatrix(qlearner.getState(2, 3), -5);
         qlearner.updateRewardsMatrix(qlearner.getState(4, 3), -5);
         qlearner.updateRewardsMatrix(qlearner.getState(3, 2), -5);
         qlearner.updateRewardsMatrix(qlearner.getState(3, 4), -5);
-        Integer[][] paths = new Integer[50][];
-        for (int i = 0; i < paths.length - 1; i++) {
-            paths[i] = qlearner.generateRandomPath(100);
+        for (int i = 0; i < 10; i++) {
+            qlearner.generateRandomPath(100);
         }
-        paths[paths.length - 1] = qlearner.generateRandomPath(100, 0);
+        qlearner.generateRandomPath(100, 0);
         double gamma = 0.1d;
-        int noIterations = 1000;
-        qlearner.execute(paths, gamma, noIterations);
+        qlearner.execute(gamma);
     }
 
     /**
@@ -114,7 +113,7 @@ public class GridProvider implements Provider {
         Cell cell = getCell(x, y);
         AbstractTower tower = cell.getTower();
         if (tower == null) {
-            throw new NullPointerException("No tower on cell (" + cell.getGridPosition().getX() + "," + cell.getGridPosition().getY() + ")");
+            throw new NullPointerException("No tower on cell (" + cell.getGridPosition().x() + "," + cell.getGridPosition().y() + ")");
         }
         tower.levelUp();
     }
@@ -136,9 +135,9 @@ public class GridProvider implements Provider {
 
     private boolean isInRange(Cell cellWithTower, Cell cellToCheck) {
         int range = cellWithTower.getTower().getRange();
-        Cell.Point positionToCheck = cellToCheck.getGridPosition();
-        Cell.Point positionWithTower = cellWithTower.getGridPosition();
-        return positionToCheck.getX() - positionWithTower.getX() + positionToCheck.getY() - positionWithTower.getY() < range;
+        Vector2i positionToCheck = cellToCheck.getGridPosition();
+        Vector2i positionWithTower = cellWithTower.getGridPosition();
+        return positionToCheck.x() - positionWithTower.x() + positionToCheck.y() - positionWithTower.y() < range;
     }
 
     /**
