@@ -114,6 +114,9 @@ public class Engine {
 
             // draw
             if (window.update()) {
+                // fire non-native events
+                inputHandler.fire();
+
                 // set main camera
                 renderer.setActiveCamera(camera);
                 // bind default shader program

@@ -28,14 +28,7 @@ public class PlayerController implements Controller,Listener {
     private float oldx = 0;
     private float oldy = 0;
     private float sensitivity = 5;//Camera Sensitivity on a scale from 1 to 10
-
     private boolean MiddleMouseButton = false;
-    private boolean W = false;
-    private boolean A = false;
-    private boolean S = false;
-    private boolean D = false;
-    private boolean R = false;
-    private boolean F = false;
 
     @Override
     public void init(Engine engine) {
@@ -53,48 +46,11 @@ public class PlayerController implements Controller,Listener {
     @Override
     public void update() {
         // you can use resources here, e.g.
-        if (A){
-            camera.moveRelative(-0.1f, 0f, 0f);
-        }
-        if (D){
-            camera.moveRelative(0.1f, 0f, 0f);
-        }
-        if (W){
-            camera.moveRelative(0f, 0f, -0.1f);
-        }
-        if (S){
-            camera.moveRelative(0f, 0f, 0.1f);
-        }
-        if (R){
-            camera.moveRelative(0f, 0.1f, 0f);
-        }
-        if (F){
-            camera.moveRelative(0f, -0.1f, 0f);
-        }
     }
 
     @Override
     public void onKeyPressed(Event event) {
-
         switch (event.getSubject()) {
-            case GLFW_KEY_A:
-                A = true;
-                break;
-            case GLFW_KEY_D:
-                D = true;
-                break;
-            case GLFW_KEY_S:
-                S = true;
-                break;
-            case GLFW_KEY_W:
-                W = true;
-                break;
-            case GLFW_KEY_F:
-                F = true;
-                break;
-            case GLFW_KEY_R:
-                R = true;
-                break;
             case GLFW_KEY_L:
                 camera.setRotation(0,0,0);
                 break;
@@ -103,37 +59,44 @@ public class PlayerController implements Controller,Listener {
                 float yRotation = (camera.getRotation().y())%360;
 
                 float unitVX = (float)Math.sin(yRotation*Math.PI/180);
-                float unitVY = (float)Math.sin(xRotation*Math.PI/180);
-                float unitVZ = (float)Math.cos(xRotation*Math.PI/180);
+                //float unitVY = (float)Math.sin(xRotation*Math.PI/180);
+                float unitVZ = (float)(Math.cos(yRotation*Math.PI/180));
 
                 System.out.println("X: " + xRotation);
                 System.out.println("Y: " + yRotation);
 
-                camera.moveRelative(unitVX/2,-unitVY/2,-unitVZ/2);
+                camera.moveRelative(unitVX/2,0,unitVZ/2);
                 break;
         }
     }
 
     @Override
     public void onKeyReleased(Event event) {
+
+    }
+
+    @Override
+    public void onKeyHold(Event event) {
+        double frameTime = event.getSource().getFrameTime();
+        float speed = (float)frameTime * 0.01f;
         switch (event.getSubject()) {
             case GLFW_KEY_A:
-                A = false;
+                camera.moveRelative(-speed, 0f, 0f);
                 break;
             case GLFW_KEY_D:
-                D = false;
-                break;
-            case GLFW_KEY_S:
-                S = false;
+                camera.moveRelative(speed, 0f, 0f);
                 break;
             case GLFW_KEY_W:
-                W = false;
+                camera.moveRelative(0f, 0f, -speed);
+                break;
+            case GLFW_KEY_S:
+                camera.moveRelative(0f, 0f, speed);
                 break;
             case GLFW_KEY_R:
-                R = false;
+                camera.moveRelative(0f, speed, 0f);
                 break;
             case GLFW_KEY_F:
-                F = false;
+                camera.moveRelative(0f, -speed, 0f);
                 break;
         }
     }
@@ -185,6 +148,13 @@ public class PlayerController implements Controller,Listener {
             //Set new old values
             oldx = x;
             oldy = y;
+        }
+    }
+
+    @Override
+    public void onMouseScroll(MouseEvent event) {
+        if (Math.abs(event.getY()) > 30) {
+            System.out.println("woow");
         }
     }
 

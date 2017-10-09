@@ -23,6 +23,9 @@ public class Window {
     // buffers for mouse input
     private final DoubleBuffer mousePosX;
     private final DoubleBuffer mousePosY;
+    private double lastTime = glfwGetTime();
+    private int nbFrames = 0;
+    private double frametime;
 
     private long window;
     private int width;
@@ -126,6 +129,15 @@ public class Window {
      * @return Whether the {@link Window} should continue running.
      */
     public boolean update() {
+        // Measure speed
+        double currentTime = glfwGetTime();
+        nbFrames++;
+        if ( currentTime - lastTime >= 0.25 ){ // If last prinf() was more than 1 sec ago
+            // printf and reset timer
+            frametime = (250.0/((double)(nbFrames)));
+            nbFrames = 0;
+            lastTime += 0.25;
+        }
         // Swap buffers
         glfwSwapBuffers(window);
 
@@ -293,6 +305,13 @@ public class Window {
     }
 
     /**
+     * Returns the current frametime, used for player movement.
+     */
+    public double getFrameTime() {
+        return frametime;
+    }
+
+    /**
      * Register a listener for window events.
      *
      * @param callback The callback function which is called on event firing.
@@ -306,6 +325,9 @@ public class Window {
         }
         if (callback instanceof GLFWCursorPosCallbackI) {
             glfwSetCursorPosCallback(window, (GLFWCursorPosCallbackI) callback);
+        }
+        if (callback instanceof GLFWScrollCallbackI) {
+            glfwSetScrollCallback(window, (GLFWScrollCallbackI) callback);
         }
     }
 
