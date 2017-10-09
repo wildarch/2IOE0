@@ -173,12 +173,12 @@ public class GridProvider implements Provider {
         int gridY = Math.round(z);
         if (!(gridX < 0 || gridY < 0 || gridX >= SIZE || gridY >= SIZE)) {
             setActiveCell(gridX, gridY);
-            activeCell.deactivate();
+            activeCell.activate();
         }
     }
 
     /**
-     * A helper method to show the qlearner output
+     * A helper method to show the qlearner output, by first deactivating all the cells and then activating the cells on the path
      */
     private void deactivateAll() {
         for (int x = 0; x < SIZE; x++) {
