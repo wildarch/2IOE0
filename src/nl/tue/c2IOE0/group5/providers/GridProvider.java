@@ -160,7 +160,8 @@ public class GridProvider implements Provider {
 
         //the ray is now defined using the position of the camera and direction
         if (direction3f.y() >= 0) {
-            activeCell.deactivate();
+            if(activeCell != null)
+                activeCell.deactivate();
             return;
         }
         float lambda = -c.getPosition().y()/direction3f.y(); //assuming the y = 0
