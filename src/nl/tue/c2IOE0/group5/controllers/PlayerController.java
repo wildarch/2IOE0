@@ -10,6 +10,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
 import nl.tue.c2IOE0.group5.providers.TestProvider;
+import nl.tue.c2IOE0.group5.providers.UIProvider;
 import org.joml.Vector2i;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -21,6 +22,7 @@ public class PlayerController implements Controller,Listener {
 
     // define required resources here, e.g.
     private TestProvider testProvider;
+    private UIProvider uiProvider;
     private GridProvider gridProvider;
     private Camera camera;
     private Renderer renderer;
@@ -28,19 +30,13 @@ public class PlayerController implements Controller,Listener {
     private float oldx = 0;
     private float oldy = 0;
     private float sensitivity = 5;//Camera Sensitivity on a scale from 1 to 10
-
     private boolean MiddleMouseButton = false;
-    private boolean W = false;
-    private boolean A = false;
-    private boolean S = false;
-    private boolean D = false;
-    private boolean R = false;
-    private boolean F = false;
 
     @Override
     public void init(Engine engine) {
         // you can initialize resources here, e.g.
         this.testProvider = engine.getProvider(TestProvider.class);
+        this.uiProvider = engine.getProvider(UIProvider.class);
         this.gridProvider = engine.getProvider(GridProvider.class);
         this.camera = engine.getCamera();
         this.renderer = engine.getRenderer();
@@ -53,48 +49,11 @@ public class PlayerController implements Controller,Listener {
     @Override
     public void update() {
         // you can use resources here, e.g.
-        if (A){
-            camera.moveRelative(-0.1f, 0f, 0f);
-        }
-        if (D){
-            camera.moveRelative(0.1f, 0f, 0f);
-        }
-        if (W){
-            camera.moveRelative(0f, 0f, -0.1f);
-        }
-        if (S){
-            camera.moveRelative(0f, 0f, 0.1f);
-        }
-        if (R){
-            camera.moveRelative(0f, 0.1f, 0f);
-        }
-        if (F){
-            camera.moveRelative(0f, -0.1f, 0f);
-        }
     }
 
     @Override
     public void onKeyPressed(Event event) {
-
         switch (event.getSubject()) {
-            case GLFW_KEY_A:
-                A = true;
-                break;
-            case GLFW_KEY_D:
-                D = true;
-                break;
-            case GLFW_KEY_S:
-                S = true;
-                break;
-            case GLFW_KEY_W:
-                W = true;
-                break;
-            case GLFW_KEY_F:
-                F = true;
-                break;
-            case GLFW_KEY_R:
-                R = true;
-                break;
             case GLFW_KEY_L:
                 camera.setRotation(0,0,0);
                 break;
@@ -102,38 +61,49 @@ public class PlayerController implements Controller,Listener {
                 float xRotation = (camera.getRotation().x());
                 float yRotation = (camera.getRotation().y())%360;
 
-                float unitVX = (float)Math.sin(yRotation*Math.PI/180);
-                float unitVY = (float)Math.sin(xRotation*Math.PI/180);
-                float unitVZ = (float)Math.cos(xRotation*Math.PI/180);
+                float unitVX = (float)(Math.sin((yRotation*Math.PI)/180))*((float)(Math.sin((xRotation*Math.PI)/180)));
+                float unitVY = (float)Math.sin((xRotation*Math.PI)/180);
+                float unitVZ = (float)(Math.cos((yRotation*Math.PI)/180))*((float)(Math.sin((xRotation*Math.PI)/180)));
 
-                System.out.println("X: " + xRotation);
-                System.out.println("Y: " + yRotation);
+                System.out.println("XRotation: " + Math.sin((xRotation*Math.PI)/180));
+                System.out.println("YRotation: " + Math.cos((yRotation*Math.PI)/180));
 
-                camera.moveRelative(unitVX/2,-unitVY/2,-unitVZ/2);
+                System.out.println("VX: " + unitVX);
+                System.out.println("VY: " + unitVY);
+                System.out.println("VZ: " + unitVZ);
+
+                camera.move(unitVX/2,-unitVY/2,-unitVZ/2);
                 break;
         }
     }
 
     @Override
     public void onKeyReleased(Event event) {
+
+    }
+
+    @Override
+    public void onKeyHold(Event event) {
+        double frameTime = event.getSource().getFrameTime();
+        float speed = (float)frameTime * 0.01f;
         switch (event.getSubject()) {
             case GLFW_KEY_A:
-                A = false;
+                camera.moveRelative(-speed, 0f, 0f);
                 break;
             case GLFW_KEY_D:
-                D = false;
-                break;
-            case GLFW_KEY_S:
-                S = false;
+                camera.moveRelative(speed, 0f, 0f);
                 break;
             case GLFW_KEY_W:
-                W = false;
+                camera.moveRelative(0f, 0f, -speed);
                 break;
-            case GLFW_KEY_R:
-                R = false;
+            case GLFW_KEY_S:
+                camera.moveRelative(0f, 0f, speed);
                 break;
-            case GLFW_KEY_F:
-                F = false;
+            case GLFW_KEY_SPACE:
+                camera.moveRelative(0f, speed, 0f);
+                break;
+            case GLFW_KEY_LEFT_SHIFT:
+                camera.moveRelative(0f, -speed, 0f);
                 break;
         }
     }
@@ -141,9 +111,10 @@ public class PlayerController implements Controller,Listener {
     @Override
     public void onMouseButtonPressed(MouseEvent event) {
         if (event.getSubject() == GLFW_MOUSE_BUTTON_1) {
-            System.out.println("Click at (" + event.getX() + ", " + event.getY() + ")");
-            this.gridProvider.click();
-            this.testProvider.ud();
+            if (uiProvider.onClick(event)) {
+                System.out.println("Click at (" + event.getX() + ", " + event.getY() + ")");
+                this.gridProvider.click();
+            }
         }
 
         if (event.getSubject() == GLFW_MOUSE_BUTTON_2) {
@@ -186,6 +157,20 @@ public class PlayerController implements Controller,Listener {
             oldx = x;
             oldy = y;
         }
+    }
+
+    @Override
+    public void onMouseScroll(MouseEvent event) {
+        float scrollSpeed = event.getY()/10;
+        float xRotation = (camera.getRotation().x());
+        float yRotation = (camera.getRotation().y())%360;
+
+        float unitVX = (float)Math.sin((yRotation*Math.PI)/180);
+        float unitVY = (float)Math.sin((xRotation*Math.PI)/180);
+        float unitVZ = (float)(Math.cos((yRotation*Math.PI)/180) + Math.cos((yRotation*Math.PI)/180))/2;
+
+
+        camera.move(unitVX * scrollSpeed,-unitVY * scrollSpeed,-unitVZ * scrollSpeed);
     }
 
 }

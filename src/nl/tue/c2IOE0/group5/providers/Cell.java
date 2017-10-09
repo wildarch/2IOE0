@@ -6,7 +6,10 @@ import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
+import org.joml.Vector2i;
 import org.joml.Vector3f;
+
+import java.util.Vector;
 
 /**
  * @author Tom Peters
@@ -17,7 +20,7 @@ public class Cell extends GameObject {
     AbstractTower tower;
 
     //the position in the grid
-    private Point position;
+    private Vector2i position;
     private Vector3f defaultColor = new Vector3f(0.3f);
     private Vector3f color;
 
@@ -33,7 +36,7 @@ public class Cell extends GameObject {
     public Cell(CellType type, int x, int y) {
         super();
         this.cellType = type;
-        this.position = new Point(x, y);
+        this.position = new Vector2i(x, y);
 
         try {
             this.mesh = new Mesh(new float[] {
@@ -113,7 +116,7 @@ public class Cell extends GameObject {
      */
     public void placeTower(AbstractTower t) throws ArrayIndexOutOfBoundsException {
         if (isBorderCell()) {
-            throw new ArrayIndexOutOfBoundsException("This ("+position.getX()+","+position.getY()+" is a bordercell, you cannot place a tower here.");
+            throw new ArrayIndexOutOfBoundsException("This ("+position.x()+","+position.y()+" is a bordercell, you cannot place a tower here.");
         } else {
             this.tower = t;
         }
@@ -121,9 +124,9 @@ public class Cell extends GameObject {
 
     public void destroyTower() throws NullPointerException {
         if (tower == null) {
-            throw new NullPointerException("There was no tower to destroy on (" +position.getX() + ","+ position.getY()+ ")");
+            throw new NullPointerException("There was no tower to destroy on (" +position.x() + ","+ position.y()+ ")");
         } else if (isBorderCell()) {
-            throw new ArrayIndexOutOfBoundsException("This (" + position.getX() + "," + position.getY() + " is a bordercell, you cannot destroy a tower here.");
+            throw new ArrayIndexOutOfBoundsException("This (" + position.x() + "," + position.y() + " is a bordercell, you cannot destroy a tower here.");
         } else {
                 tower = null;
         }
@@ -149,48 +152,16 @@ public class Cell extends GameObject {
      * Gets the coordinates of this cell
      * @return
      */
-    public Point getGridPosition() {
+    public Vector2i getGridPosition() {
         return this.position;
     }
 
     @Override
     public void draw(Window window, Renderer renderer) {
         super.draw(window, renderer);
+
         renderer.ambientLight(color, () ->
                 mesh.draw(renderer)
         );
-    }
-
-    /**
-     * For al the awt haters
-     */
-    public class Point {
-        int x, y;
-
-        public Point(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        public int getX() {
-            return this.x;
-        }
-
-        public int getY() {
-            return this.y;
-        }
-
-        public void setLocation(int x, int y) {
-            setX(x);
-            setY(y);
-        }
-
-        public void setX(int x) {
-            this.x = x;
-        }
-
-        public void setY(int y) {
-            this.y = y;
-        }
     }
 }
