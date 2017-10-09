@@ -1,7 +1,6 @@
 package nl.tue.c2IOE0.group5.providers;
 
-import javafx.util.Pair;
-import nl.tue.c2IOE0.group5.QLearner;
+import nl.tue.c2IOE0.group5.controllers.QLearner;
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.objects.Camera;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
@@ -13,7 +12,6 @@ import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,22 +22,17 @@ import java.util.List;
 public class GridProvider implements Provider {
 
     //total size of the grid (including spawn cells). Change this to change the total grid
-    public final int SIZE = 14;
+    public static final int SIZE = 14;
     //size of the grid in which towers can be placed
-    public final int PLAYFIELDSIZE = 9;
+    public static final int PLAYFIELDSIZE = 9;
     //the actual grid
     private final Cell[][] grid = new Cell[SIZE][SIZE];
 
     //the cell currently active (pointed to)
     private Cell activeCell;
 
-    private QLearner qlearner;
-    private List<Integer> optimalPath; //the current optimal path for the active cell
-
     @Override
     public void init(Engine engine) {
-        doQLearnerStuffForTesting();
-
         // Create the player base cells
         int bordersize = (SIZE - PLAYFIELDSIZE - 1)/2;
         for (int x = bordersize+1; x < SIZE - bordersize-1; x++) {
@@ -68,23 +61,6 @@ public class GridProvider implements Provider {
                 }
             }
         }
-    }
-
-    public void doQLearnerStuffForTesting() {
-        int noIterations = 1000;
-        qlearner = new QLearner(SIZE, noIterations);
-        qlearner.updateRewardsMatrix(qlearner.getState(SIZE/2, SIZE/2), 1000);
-        qlearner.updateRewardsMatrix(qlearner.getState(3, 3), 500);
-        qlearner.updateRewardsMatrix(qlearner.getState(2, 3), -5);
-        qlearner.updateRewardsMatrix(qlearner.getState(4, 3), -5);
-        qlearner.updateRewardsMatrix(qlearner.getState(3, 2), -5);
-        qlearner.updateRewardsMatrix(qlearner.getState(3, 4), -5);
-        for (int i = 0; i < 10; i++) {
-            qlearner.generateRandomPath(100);
-        }
-        qlearner.generateRandomPath(100, 0);
-        double gamma = 0.1d;
-        qlearner.execute(gamma);
     }
 
     /**
@@ -204,19 +180,6 @@ public class GridProvider implements Provider {
     }
 
     /**
-     * To be called on a click, currently shows the qlearner output
-     */
-    public void click() {
-        //assuming the active cell is set correctly
-        List<Integer> optimalPath = qlearner.getOptimalPath(qlearner.getState(activeCell.getGridPosition()));
-        deactivateAll();
-        for (int state : optimalPath) {
-            Cell cell = getCell(qlearner.getPoint(state));
-            cell.activate();
-        }
-    }
-
-    /**
      * A helper method to show the qlearner output
      */
     private void deactivateAll() {
@@ -225,6 +188,18 @@ public class GridProvider implements Provider {
                 getCell(x, y).deactivate();
             }
         }
+    }
+
+    public void drawPath(List<Integer> path) {
+        deactivateAll();
+        for (int state : path) {
+            Vector2i position = QLearner.getPoint(state);
+            getCell(position).activate();
+        }
+    }
+
+    public Vector2i getActiveCell() {
+        return this.activeCell.getGridPosition();
     }
 
     @Override
