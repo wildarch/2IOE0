@@ -38,12 +38,13 @@ struct Material
     float reflectance;
 };
 
+const int MAX_POINT_LIGHTS = 5;
 
 uniform sampler2D texture_sampler;
 uniform vec3 ambientLight;
 uniform float specularPower;
 uniform Material material;
-uniform PointLight pointLight;
+uniform PointLight pointLights[MAX_POINT_LIGHTS];
 uniform DirectionalLight directionalLight;
 uniform vec3 camera_pos;
 uniform int isSkybox;
@@ -112,7 +113,11 @@ void main()
         setupColours(material, outTexture);
 
         vec4 diffuseSpecularComponent = calcDirectionalLight(directionalLight, mvVertexPosition, mvVertexNormal);
-        diffuseSpecularComponent += calcPointLight(pointLight, mvVertexPosition, mvVertexNormal);
+        for (int i=0; i < MAX_POINT_LIGHTS; i++) {
+            if ( pointLights[i].intensity > 0 ) {
+                diffuseSpecularComponent += calcPointLight(pointLights[i], mvVertexPosition, mvVertexNormal);
+            }
+        }
 
         fragColor = ambientC * vec4(ambientLight, 1) + diffuseSpecularComponent;
     } else {

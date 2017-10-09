@@ -6,6 +6,7 @@ import nl.tue.c2IOE0.group5.engine.objects.Camera;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
 import nl.tue.c2IOE0.group5.engine.rendering.*;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
+import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
 import org.joml.Matrix4f;
 import org.joml.Vector2i;
@@ -38,12 +39,19 @@ public class GridProvider implements Provider {
     public void init(Engine engine) {
         doQLearnerStuffForTesting();
 
+        try {
+            // Setup cell mesh
+            Mesh cell = engine.getRenderer().linkMesh("/cube.obj");
+            cell.setMaterial(new Material("/square.png"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         int bordersize = (SIZE - PLAYFIELDSIZE)/2;
         for (int x = bordersize; x < SIZE - bordersize; x++) {
             for (int y = bordersize; y < SIZE - bordersize; y++) {
                 //initialize the playfield as non-bordercells
-                grid[x][y] = new Cell(CellType.BASE, x, y);
+                grid[x][y] = new Cell(CellType.BASE, x, y).init(engine.getRenderer());
                 //initialize the estimated damage per cell to 0
             }
         }
@@ -52,7 +60,7 @@ public class GridProvider implements Provider {
             for (int y = 0; y < SIZE; y++) {
                 if (grid[x][y] == null) {
                     //initialize all cells not yet initialized as a bordercell
-                    grid[x][y] = new Cell(CellType.BORDER, x, y);
+                    grid[x][y] = new Cell(CellType.BORDER, x, y).init(engine.getRenderer());
                 }
             }
         }
@@ -182,7 +190,7 @@ public class GridProvider implements Provider {
 
     public Vector3f getDirectionOfCamera(Renderer r, Window window, float viewPortX, float viewPortY) {
         Matrix4f viewMatrix = r.getViewMatrix();
-        Matrix4f projectionMatrix = r.getProjectionMatrix(window);
+        Matrix4f projectionMatrix = window.getProjectionMatrix();
         int viewPortZ = -1;
         int viewPortW = 1;
 
@@ -229,7 +237,7 @@ public class GridProvider implements Provider {
     public void draw(Window window, Renderer renderer) {
         for (int x = 0; x < SIZE; x++) {
             for (int y = 0; y < SIZE; y++) {
-                getCell(x, y).draw(window, renderer);
+                //getCell(x, y).draw(window, renderer);
             }
         }
     }

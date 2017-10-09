@@ -5,18 +5,20 @@ import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Texture;
 import org.joml.Vector3f;
 
+import java.io.IOException;
+
 /**
  * @author Jorren Hendriks.
  */
 public class Skybox extends GameObject {
 
-    private Mesh mesh;
+    private String model;
+    private Texture texture;
 
     public Skybox(String objModel, String textureFile) throws Exception {
         super();
-        mesh = OBJLoader.loadMesh(objModel);
-        Texture texture = new Texture(textureFile);
-        mesh.setMaterial(new Material(texture, 0.0f));
+        this.model = objModel;
+        this.texture = new Texture(textureFile);
     }
 
     public void setPosition(Camera camera) {
@@ -25,10 +27,18 @@ public class Skybox extends GameObject {
     }
 
     @Override
-    public void draw(Window window, Renderer renderer) {
-        super.draw(window, renderer);
+    public Skybox init(Renderer renderer) {
+        try {
+            Mesh mesh = renderer.linkMesh(model, (m) -> {
+                setModelView(renderer);
+                renderer.drawSkybox(m::draw);
+            });
 
-        mesh.draw(renderer);
+            mesh.setMaterial(new Material(texture));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return this;
     }
-
 }

@@ -6,6 +6,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.OBJLoader;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
+import org.joml.Vector3f;
 
 /**
  * @author Jorren
@@ -18,25 +19,31 @@ public class TestObject extends GameObject {
 
     public TestObject() {
         super();
-
         boinkyness = 0f;
-
-        try {
-            this.mesh = OBJLoader.loadMesh("/tower.obj");
-            this.mesh.setMaterial(new Material("/tower.png"));
-            this.setScale(40f);
-            this.setPosition(0f, -1f, 0f);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.setScale(40f);
+        this.setPosition(0f, -1f, 0f);
     }
 
     @Override
-    public void draw(Window window, Renderer renderer) {
-        super.draw(window, renderer);
+    public TestObject init(Renderer renderer) {
+        try {
+            Mesh tower = renderer.linkMesh("/tower.obj", (mesh) -> {
+                setModelView(renderer);
+                renderer.boink((float) Math.sin(boinkyness) +1f, new Vector3f(0), new Vector3f(1), mesh::draw);
+            });
+
+            tower.setMaterial(new Material("/tower.png"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return this;
+    }
+
+    public void boink() {
+        // update private members here
         boinkyness = (boinkyness + 0.01f);
         //renderer.boink((float)Math.sin(boinkyness) +1f, new Vector3f(0, 0, 0), new Vector3f(1f, 1f, 1f), ()->
-                mesh.draw(renderer);//);
     }
 
 }

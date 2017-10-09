@@ -52,7 +52,7 @@ public class QLearner {
             outerStates.add(i);
         }
         for (int i : outerStates) {
-            System.err.println(i);
+            //System.err.println(i);
         }
     }
 
