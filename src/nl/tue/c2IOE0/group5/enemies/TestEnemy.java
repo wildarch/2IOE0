@@ -25,8 +25,8 @@ public class TestEnemy extends Enemy {
         this.loopTimer = loopTimer;
         this.targetPositions = targetPositions;
         setPosition(initialPosition);
-        setScale(0.1f);
-        timeToDie = loopTimer.getLoopTime() + 7000;
+        setScale(0.01f);
+        timeToDie = loopTimer.getLoopTime() + 20000;
     }
 
     @Override
@@ -44,10 +44,10 @@ public class TestEnemy extends Enemy {
             return;
         }
         super.draw(window, renderer);
-        float step = loopTimer.getElapsedTime() / 5000f;
+        float step = loopTimer.getElapsedTime() / 1000f;
         Vector3f offset = new Vector3f(0, 0, 0);
         targetPositions.get(0).toImmutable().sub(getPosition().toImmutable(), offset);
-        if (offset.length() > 0.001f) {
+        if (offset.length() > 0.01f) {
             offset = offset.normalize().mul(step);
             move(offset);
         }

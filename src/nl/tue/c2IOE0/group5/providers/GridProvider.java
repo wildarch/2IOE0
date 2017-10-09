@@ -61,6 +61,7 @@ public class GridProvider implements Provider {
                 }
             }
         }
+        activeCell = getCell(0, 0);
     }
 
     /**
@@ -163,9 +164,7 @@ public class GridProvider implements Provider {
 
         //the ray is now defined using the position of the camera and direction
         if (direction3f.y() >= 0) {
-            if(activeCell != null)
-                activeCell.deactivate();
-            return;
+            activeCell.deactivate();
         }
         float lambda = -c.getPosition().y()/direction3f.y(); //assuming the y = 0
         float x = c.getPosition().x() + lambda * direction3f.x();
@@ -174,7 +173,6 @@ public class GridProvider implements Provider {
         int gridY = Math.round(z);
         if (!(gridX < 0 || gridY < 0 || gridX >= SIZE || gridY >= SIZE)) {
             setActiveCell(gridX, gridY);
-        } else if (activeCell != null) {
             activeCell.deactivate();
         }
     }

@@ -46,7 +46,18 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
                 mesh,
                 loopTimer,
                 initialPosition,
-                new ArrayList<>(Arrays.asList(new Vector3f(7f, 1f, 7f)))
+                new ArrayList<>(Arrays.asList(
+                        new Vector3f(7.5f, 1f, 7.5f),
+                        new Vector3f(6.5f, 1f, 7.5f),
+                        new Vector3f(6.5f, 1f, 6.5f),
+                        new Vector3f(5.5f, 1f, 6.5f),
+                        new Vector3f(5.5f, 1f, 6.5f),
+                        new Vector3f(5.5f, 1f, 5.5f),
+                        new Vector3f(4.5f, 1f, 5.5f),
+                        new Vector3f(4.5f, 1f, 4.5f),
+                        new Vector3f(3.5f, 1f, 4.5f),
+                        new Vector3f(3.5f, 1f, 3.5f)
+                ))
         ));
     }
 }
