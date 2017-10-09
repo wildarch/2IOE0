@@ -40,7 +40,7 @@ public class TestEnemy extends Enemy {
     @Override
     public void draw(Window window, Renderer renderer) {
         super.draw(window, renderer);
-        float step = loopTimer.getElapsedTime() / 10000f;
+        float step = loopTimer.getElapsedTime() / 5000f;
         Vector3f offset = new Vector3f(0, 0, 0);
         targetPosition.toImmutable().sub(getPosition().toImmutable(), offset);
         if (offset.length() > 0.001f) {

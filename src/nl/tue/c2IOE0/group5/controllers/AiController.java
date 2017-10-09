@@ -39,12 +39,12 @@ public class AiController implements Controller {
         // Do a wave!
         String size = big ? "Big  " : "Small";
         System.out.println(size + " wave at " + loopTimer.getLoopTime());
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 5; i++) {
             Vector3f pos = new Vector3f((float)(Math.random() * 13), 1f, (float)(Math.random() * 13));
             enemyProvider.putEnemy(pos);
         }
         if (big) {
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 10; i++) {
                 Vector3f pos2 = new Vector3f((float)(Math.random() * 13), 1f, (float)(Math.random() * 13));
                 enemyProvider.putEnemy(pos2);
             }

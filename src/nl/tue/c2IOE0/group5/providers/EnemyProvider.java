@@ -44,7 +44,7 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
                 mesh,
                 loopTimer,
                 initialPosition,
-                new Vector3f(1f, 1f, 1f)
+                new Vector3f(7f, 1f, 7f)
         ));
     }
 }
