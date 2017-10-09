@@ -61,14 +61,18 @@ public class PlayerController implements Controller,Listener {
                 float xRotation = (camera.getRotation().x());
                 float yRotation = (camera.getRotation().y())%360;
 
-                float unitVX = (float)Math.sin(yRotation*Math.PI/180);
-                //float unitVY = (float)Math.sin(xRotation*Math.PI/180);
-                float unitVZ = (float)(Math.cos(yRotation*Math.PI/180));
+                float unitVX = (float)(Math.sin((yRotation*Math.PI)/180))*((float)(Math.sin((xRotation*Math.PI)/180)));
+                float unitVY = (float)Math.sin((xRotation*Math.PI)/180);
+                float unitVZ = (float)(Math.cos((yRotation*Math.PI)/180))*((float)(Math.sin((xRotation*Math.PI)/180)));
 
-                System.out.println("X: " + xRotation);
-                System.out.println("Y: " + yRotation);
+                System.out.println("XRotation: " + Math.sin((xRotation*Math.PI)/180));
+                System.out.println("YRotation: " + Math.cos((yRotation*Math.PI)/180));
 
-                camera.moveRelative(unitVX/2,0,unitVZ/2);
+                System.out.println("VX: " + unitVX);
+                System.out.println("VY: " + unitVY);
+                System.out.println("VZ: " + unitVZ);
+
+                camera.move(unitVX/2,-unitVY/2,-unitVZ/2);
                 break;
         }
     }
@@ -95,10 +99,10 @@ public class PlayerController implements Controller,Listener {
             case GLFW_KEY_S:
                 camera.moveRelative(0f, 0f, speed);
                 break;
-            case GLFW_KEY_R:
+            case GLFW_KEY_SPACE:
                 camera.moveRelative(0f, speed, 0f);
                 break;
-            case GLFW_KEY_F:
+            case GLFW_KEY_LEFT_SHIFT:
                 camera.moveRelative(0f, -speed, 0f);
                 break;
         }
@@ -157,9 +161,16 @@ public class PlayerController implements Controller,Listener {
 
     @Override
     public void onMouseScroll(MouseEvent event) {
-        if (Math.abs(event.getY()) > 30) {
-            System.out.println("woow");
-        }
+        float scrollSpeed = event.getY()/10;
+        float xRotation = (camera.getRotation().x());
+        float yRotation = (camera.getRotation().y())%360;
+
+        float unitVX = (float)Math.sin((yRotation*Math.PI)/180);
+        float unitVY = (float)Math.sin((xRotation*Math.PI)/180);
+        float unitVZ = (float)(Math.cos((yRotation*Math.PI)/180) + Math.cos((yRotation*Math.PI)/180))/2;
+
+
+        camera.move(unitVX * scrollSpeed,-unitVY * scrollSpeed,-unitVZ * scrollSpeed);
     }
 
 }
