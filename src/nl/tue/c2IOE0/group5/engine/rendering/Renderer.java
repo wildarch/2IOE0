@@ -60,7 +60,7 @@ public class Renderer {
 
     private void initSceneShader() throws ShaderException, IOException {
         sceneShader.init();
-        sceneShader.createVertexShader(loadResource("/shaders/bounceShader.vert"));
+        sceneShader.createVertexShader(loadResource("/shaders/vertex.vert"));
         sceneShader.createFragmentShader(loadResource("/shaders/fragment.frag"));
         sceneShader.link();
 
