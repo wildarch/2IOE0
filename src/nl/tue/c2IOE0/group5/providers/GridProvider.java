@@ -21,8 +21,8 @@ import java.lang.reflect.Array;
  */
 public class GridProvider implements Provider {
 
-    //total size of the grid. Change this to change the total grid
-    public final int SIZE = 13;
+    //total size of the grid (including spawn cells). Change this to change the total grid
+    public final int SIZE = 14;
     //size of the grid in which towers can be placed
     public final int PLAYFIELDSIZE = 9;
     //the actual grid
@@ -36,9 +36,11 @@ public class GridProvider implements Provider {
 
     @Override
     public void init(Engine engine) {
-        int bordersize = (SIZE - PLAYFIELDSIZE)/2;
-        for (int x = bordersize; x < SIZE - bordersize; x++) {
-            for (int y = bordersize; y < SIZE - bordersize; y++) {
+
+        // Create the player base cells
+        int bordersize = (SIZE - PLAYFIELDSIZE - 1)/2;
+        for (int x = bordersize+1; x < SIZE - bordersize; x++) {
+            for (int y = bordersize+1; y < SIZE - bordersize-1; y++) {
                 //initialize the playfield as non-bordercells
                 grid[x][y] = new Cell(CellType.BASE, x, y);
                 //initialize the estimated damage per cell to 0
@@ -46,15 +48,24 @@ public class GridProvider implements Provider {
             }
         }
 
-        for (int x = 0; x < SIZE; x++) {
-            for (int y = 0; y < SIZE; y++) {
+        // Create the borders
+        for (int x = 1; x < SIZE-1; x++) {
+            for (int y = 1; y < SIZE-1; y++) {
                 if (grid[x][y] == null) {
                     //initialize all cells not yet initialized as a bordercell
                     grid[x][y] = new Cell(CellType.BORDER, x, y);
                 }
             }
         }
-        setActiveCell(1, 1);
+
+        for (int x = 0; x < SIZE; x++) {
+            for (int y = 0; y < SIZE; y++) {
+                if (grid[x][y] == null) {
+                    //initialize all cells not yet initialized as a bordercell
+                    grid[x][y] = new Cell(CellType.SPAWN, x, y);
+                }
+            }
+        }
     }
 
     /**
@@ -179,7 +190,7 @@ public class GridProvider implements Provider {
         int gridY = Math.round(z);
         if (!(gridX < 0 || gridY < 0 || gridX >= SIZE || gridY >= SIZE)) {
             setActiveCell(gridX, gridY);
-        } else {
+        } else if (activeCell != null) {
             activeCell.deactivate();
         }
     }

@@ -10,7 +10,7 @@ public abstract class Enemy extends GameObject {
     public void draw(Window window, Renderer renderer) {
         super.draw(window, renderer);
         if (mesh != null)
-            mesh.draw();
+            mesh.draw(renderer);
     }
 
     public void setMesh(Mesh mesh) {

@@ -2,6 +2,8 @@ package nl.tue.c2IOE0.group5.enemies;
 
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.rendering.*;
+import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
+import nl.tue.c2IOE0.group5.engine.rendering.shader.Texture;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
@@ -17,7 +19,7 @@ public class TestEnemy extends Enemy {
     public TestEnemy(Timer loopTimer, Vector3f targetPosition) {
         try {
             Mesh mesh = OBJLoader.loadMesh("/bunny.obj");
-            mesh.setTexture(new Texture("/tower.png"));
+            mesh.setMaterial(new Material(("/tower.png")));
             super.setMesh(mesh);
         } catch (IOException e) {
             e.printStackTrace();
