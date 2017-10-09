@@ -7,11 +7,9 @@ import nl.tue.c2IOE0.group5.engine.provider.Provider;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
-import org.joml.Matrix4f;
-import org.joml.Vector2i;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
+import org.joml.*;
 
+import java.lang.Math;
 import java.util.List;
 
 /**
@@ -125,8 +123,8 @@ public class GridProvider implements Provider {
 
     private boolean isInRange(Cell cellWithTower, Cell cellToCheck) {
         int range = cellWithTower.getTower().getRange();
-        Vector2i positionToCheck = cellToCheck.getGridPosition();
-        Vector2i positionWithTower = cellWithTower.getGridPosition();
+        Vector2ic positionToCheck = cellToCheck.getGridPosition();
+        Vector2ic positionWithTower = cellWithTower.getGridPosition();
         return positionToCheck.x() - positionWithTower.x() + positionToCheck.y() - positionWithTower.y() < range;
     }
 
@@ -136,9 +134,7 @@ public class GridProvider implements Provider {
      * @param y the y coordinate of the active cell
      */
     public void setActiveCell(int x, int y) {
-        if (activeCell != null) {
-            activeCell.deactivate();
-        }
+        activeCell.deactivate();
         this.activeCell = getCell(x, y);
         activeCell.activate();
     }
@@ -173,7 +169,6 @@ public class GridProvider implements Provider {
         int gridY = Math.round(z);
         if (!(gridX < 0 || gridY < 0 || gridX >= SIZE || gridY >= SIZE)) {
             setActiveCell(gridX, gridY);
-            activeCell.deactivate();
         }
     }
 

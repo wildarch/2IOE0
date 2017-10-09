@@ -238,6 +238,10 @@ public class QLearner {
         return optimalPath;
     }
 
+    public List<Integer> getOptimalPath(Vector2i state) {
+        return getOptimalPath(getState(state));
+    }
+
     /**
      * Return the spawn location with the best Q learner options
      */

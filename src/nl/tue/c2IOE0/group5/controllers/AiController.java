@@ -11,6 +11,7 @@ import nl.tue.c2IOE0.group5.providers.GridProvider;
 import org.joml.Vector3f;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AiController implements Controller, Listener {
 
@@ -47,19 +48,24 @@ public class AiController implements Controller, Listener {
     }
 
     private void wave(boolean big) {
-        //if(true) return;
         // Do a wave!
         String size = big ? "Big  " : "Small";
         System.out.println(size + " wave at " + loopTimer.getLoopTime());
         for (int i = 0; i < 5; i++) {
-            Vector3f pos = new Vector3f((float)(Math.random() * 13), 1f, (float)(Math.random() * 13));
-            enemyProvider.putEnemy(pos);
+            Vector3f start = new Vector3f(gridProvider.getCell(qlearner.getOptimalSpawnState()).getPosition());
+            start.add(0, 1, 0);
+            List<Integer> path = qlearner.getOptimalPath(qlearner.getOptimalSpawnState());
+            enemyProvider.putEnemy(start, path.stream().map(
+                    (x -> new Vector3f(gridProvider.getCell(QLearner.getPoint(x)).getPosition()).add(0, 1, 0))
+            ).collect(Collectors.toList()));
         }
         if (big) {
+            /*
             for (int i = 0; i < 10; i++) {
                 Vector3f pos2 = new Vector3f((float)(Math.random() * 13), 1f, (float)(Math.random() * 13));
                 enemyProvider.putEnemy(pos2);
             }
+            */
         }
     }
 
