@@ -134,7 +134,7 @@ public class PlayerController implements Controller,Listener {
             float deltayMouse = (y - oldy) * (sensitivity / 10);
 
             //If Y-axis is threatening to
-            if ((camera.getRotation().x() + deltayMouse <= 90) && (camera.getRotation().x() - deltayMouse > -35)){
+            if ((camera.getRotation().x() + deltayMouse <= 90) && (camera.getRotation().x() + deltayMouse > -35)){
                 camera.rotate(deltayMouse, deltaxMouse, 0);
             } else {
                 camera.rotate(0,deltaxMouse,0);
