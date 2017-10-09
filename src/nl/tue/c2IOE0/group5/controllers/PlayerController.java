@@ -28,7 +28,6 @@ public class PlayerController implements Controller,Listener {
     private float oldx = 0;
     private float oldy = 0;
     private float sensitivity = 5;//Camera Sensitivity on a scale from 1 to 10
-
     private boolean MiddleMouseButton = false;
 
     @Override
@@ -60,13 +59,13 @@ public class PlayerController implements Controller,Listener {
                 float yRotation = (camera.getRotation().y())%360;
 
                 float unitVX = (float)Math.sin(yRotation*Math.PI/180);
-                float unitVY = (float)Math.sin(xRotation*Math.PI/180);
-                float unitVZ = (float)Math.cos(xRotation*Math.PI/180);
+                //float unitVY = (float)Math.sin(xRotation*Math.PI/180);
+                float unitVZ = (float)(Math.cos(yRotation*Math.PI/180));
 
                 System.out.println("X: " + xRotation);
                 System.out.println("Y: " + yRotation);
 
-                camera.moveRelative(unitVX/2,-unitVY/2,-unitVZ/2);
+                camera.moveRelative(unitVX/2,0,unitVZ/2);
                 break;
         }
     }
@@ -78,24 +77,26 @@ public class PlayerController implements Controller,Listener {
 
     @Override
     public void onKeyHold(Event event) {
+        double frameTime = event.getSource().getFrameTime();
+        float speed = (float)frameTime * 0.01f;
         switch (event.getSubject()) {
             case GLFW_KEY_A:
-                camera.moveRelative(-0.1f, 0f, 0f);
+                camera.moveRelative(-speed, 0f, 0f);
                 break;
             case GLFW_KEY_D:
-                camera.moveRelative(0.1f, 0f, 0f);
+                camera.moveRelative(speed, 0f, 0f);
                 break;
             case GLFW_KEY_W:
-                camera.moveRelative(0f, 0f, -0.1f);
+                camera.moveRelative(0f, 0f, -speed);
                 break;
             case GLFW_KEY_S:
-                camera.moveRelative(0f, 0f, 0.1f);
+                camera.moveRelative(0f, 0f, speed);
                 break;
             case GLFW_KEY_R:
-                camera.moveRelative(0f, 0.1f, 0f);
+                camera.moveRelative(0f, speed, 0f);
                 break;
             case GLFW_KEY_F:
-                camera.moveRelative(0f, -0.1f, 0f);
+                camera.moveRelative(0f, -speed, 0f);
                 break;
         }
     }
