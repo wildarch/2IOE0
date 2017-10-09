@@ -5,6 +5,7 @@ import nl.tue.c2IOE0.group5.providers.Cell;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * @author Tom Peters
@@ -159,6 +160,30 @@ public class QLearner {
             }
         }
         return max;
+    }
+
+    public Integer[] generateRandomPath(int length) {
+        Random r = new Random();
+        return generateRandomPath(length, r.nextInt(gridSize * gridSize - 1));
+    }
+
+    public Integer[] generateRandomPath(int length, int startState) {
+        Integer[] path = new Integer[length];
+        Random r = new Random();
+        path[0] = startState;
+        int state = startState;
+        int nextState = startState;
+        for (int i = 1; i < length; i++) {
+            List<Integer> neighbours = getStatesAdjacent(nextState);
+            int random;
+            do {
+                random = r.nextInt(neighbours.size());
+            } while (neighbours.get(random) == state);
+            state = nextState;
+            nextState = neighbours.get(random);
+            path[i] = state;
+        }
+        return path;
     }
 
     /**

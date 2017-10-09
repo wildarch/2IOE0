@@ -64,13 +64,18 @@ public class GridProvider implements Provider {
     public void doQLearnerStuffForTesting() {
         qlearner = new QLearner(SIZE);
         qlearner.updateRewardsMatrix(qlearner.getState(SIZE/2, SIZE/2), 1000);
-        Integer[][] paths = {
-                {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 25, 24, 23, 22, 21, 20, 33, 46},
-                {6, 19, 32, 45, 58, 71, 84, 97, 96, 83, 84, 85},
-                {84, 83, 84, 97, 84, 85, 84, 71, 84},
-        };
+        qlearner.updateRewardsMatrix(qlearner.getState(3, 3), 500);
+        qlearner.updateRewardsMatrix(qlearner.getState(2, 3), -5);
+        qlearner.updateRewardsMatrix(qlearner.getState(4, 3), -5);
+        qlearner.updateRewardsMatrix(qlearner.getState(3, 2), -5);
+        qlearner.updateRewardsMatrix(qlearner.getState(3, 4), -5);
+        Integer[][] paths = new Integer[50][];
+        for (int i = 0; i < paths.length - 1; i++) {
+            paths[i] = qlearner.generateRandomPath(100);
+        }
+        paths[paths.length - 1] = qlearner.generateRandomPath(100, 0);
         double gamma = 0.1d;
-        int noIterations = 10;
+        int noIterations = 1000;
         qlearner.execute(paths, gamma, noIterations);
     }
 
