@@ -73,8 +73,8 @@ public class Renderer {
             throw new ShaderException("Could not create Shader");
         }
 
-        createVertexShader(loadResource("/bounceShader.vert"));
-        createFragmentShader(loadResource("/fragment.frag"));
+        createVertexShader(loadResource("/shaders/bounceShader.vert"));
+        createFragmentShader(loadResource("/shaders/fragment.frag"));
         link();
 
         // Create uniforms for world and projection matrices
@@ -96,6 +96,9 @@ public class Renderer {
         createUniform("boundingMax");
         // height from top to bottom (the heightrange that is expanded)
         createUniform("boundingMin");
+
+        // skybox uniform
+        createUniform("isSkybox");
 
         createDirectionalLightUniform("directionalLight");
     }
@@ -184,6 +187,19 @@ public class Renderer {
         render.run();
 
         setUniform("bounceDegree", 0f);
+    }
+
+    /**
+     * Sets up the renderer to draw a skybox, e.g. an object that doesn't care but just draws its texture.
+     *
+     * @param render The code to render in skybox mode.
+     */
+    public void drawSkybox(Runnable render) {
+        setUniform("isSkybox", 1);
+
+        render.run();
+
+        setUniform("isSkybox", 0);
     }
 
     /**

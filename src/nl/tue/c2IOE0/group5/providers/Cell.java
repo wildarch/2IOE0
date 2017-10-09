@@ -8,8 +8,6 @@ import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
 import org.joml.Vector3f;
 
-import java.awt.*;
-
 /**
  * @author Tom Peters
  */
@@ -111,7 +109,7 @@ public class Cell extends GameObject {
     /**
      * Places a tower if possible
      * @param t the tower to be placed
-     * @return whether or not it was successful. If the cell is a bordercell, a tower cannot be placed
+     * @throws ArrayIndexOutOfBoundsException if this cell is a bordercell and thus no tower can be placed here
      */
     public void placeTower(AbstractTower t) throws ArrayIndexOutOfBoundsException {
         if (isBorderCell()) {
@@ -161,5 +159,38 @@ public class Cell extends GameObject {
         renderer.ambientLight(color, () ->
                 mesh.draw(renderer)
         );
+    }
+
+    /**
+     * For al the awt haters
+     */
+    public class Point {
+        int x, y;
+
+        public Point(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        public int getX() {
+            return this.x;
+        }
+
+        public int getY() {
+            return this.y;
+        }
+
+        public void setLocation(int x, int y) {
+            setX(x);
+            setY(y);
+        }
+
+        public void setX(int x) {
+            this.x = x;
+        }
+
+        public void setY(int y) {
+            this.y = y;
+        }
     }
 }

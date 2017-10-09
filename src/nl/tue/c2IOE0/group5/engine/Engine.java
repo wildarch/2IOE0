@@ -5,6 +5,7 @@ import nl.tue.c2IOE0.group5.engine.controller.input.InputHandler;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.Listener;
 import nl.tue.c2IOE0.group5.engine.objects.Camera;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
+import nl.tue.c2IOE0.group5.engine.rendering.Hud;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.ShaderException;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
@@ -28,6 +29,7 @@ public class Engine {
 
     private Window window;
     private Renderer renderer;
+    private Hud hud;
     private InputHandler inputHandler;
     private Timer timer;
     private Camera camera;
@@ -36,11 +38,12 @@ public class Engine {
     private List<Controller> controllers;
 
     public Engine() {
-        window = new Window("Tower Defence", 960, 720, false, false);
+        window = new Window("Tower Defence", 960, 720, false, new Window.Options());
         renderer = new Renderer();
+        hud = new Hud();
         inputHandler = new InputHandler();
         timer = new Timer();
-        camera = new Camera();
+        camera = new Camera(this);
 
         providers = new ArrayList<>();
         controllers = new ArrayList<>();
@@ -49,7 +52,7 @@ public class Engine {
     /**
      * Run the Engine, should be invoked after initializing and attaching {@link Controller}s and {@link Provider}s.
      */
-    public void run() throws ShaderException, IOException {
+    public void run() throws ShaderException, IOException, Exception {
         try {
             running = true;
             init();
@@ -62,10 +65,13 @@ public class Engine {
     /**
      * Initialize necessary objects
      */
-    private void init() throws ShaderException, IOException {
+    private void init() throws ShaderException, IOException, Exception {
         timer.init();
         window.init();
         renderer.init();
+        renderer.setActiveCamera(camera);
+        hud.init(window);
+
         inputHandler.init(window);
         providers.forEach(provider -> provider.init(this));
         controllers.forEach(controller -> controller.init(this));
@@ -77,6 +83,7 @@ public class Engine {
     private void cleanup() {
         window.cleanup();
         renderer.cleanup();
+        hud.cleanup();
     }
 
     /**
@@ -118,6 +125,9 @@ public class Engine {
 
                 // unbind shader program
                 renderer.unbind();
+
+                // draw the hud
+                hud.draw(window, renderer);
             }
 
             // sync up frame rate as desired
@@ -214,6 +224,10 @@ public class Engine {
 
     public Camera getCamera() {
         return camera;
+    }
+
+    public Hud getHud() {
+        return hud;
     }
 
     /**

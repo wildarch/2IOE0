@@ -1,17 +1,25 @@
 package nl.tue.c2IOE0.group5.engine.rendering;
 
+import org.joml.Vector2f;
+import org.joml.Vector3f;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
+import java.util.Map;
 
 
 public class OBJLoader {
 
+    private static Map<String, Mesh> cache = new HashMap<>();
+
     public static Mesh loadMesh(String fileName) throws IOException {
+        if (cache.containsKey(fileName)) {
+            return cache.get(fileName);
+        }
         List<String> lines = readAllLines(fileName);
 
         List<Vector3f> vertices = new ArrayList<>();
@@ -54,7 +62,10 @@ public class OBJLoader {
                     break;
             }
         }
-        return reorderLists(vertices, textures, normals, faces);
+        Mesh mesh = reorderLists(vertices, textures, normals, faces);
+        cache.put(fileName, mesh);
+
+        return mesh;
     }
 
     private static Mesh reorderLists(List<Vector3f> posList, List<Vector2f> textCoordList,

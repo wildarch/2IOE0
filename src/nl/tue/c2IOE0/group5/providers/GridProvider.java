@@ -8,10 +8,10 @@ import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
 import org.joml.Matrix4f;
+import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-import java.awt.*;
 import java.lang.reflect.Array;
 
 /**
@@ -28,9 +28,6 @@ public class GridProvider implements Provider {
     //the actual grid
     private final Cell[][] grid = new Cell[SIZE][SIZE];
 
-    //estimate the damage in a cell, used for Q learner
-    private final int[][] estimatedDamagePerCell = new int[SIZE][SIZE];
-
     //the cell currently active (pointed to)
     private Cell activeCell;
 
@@ -44,7 +41,6 @@ public class GridProvider implements Provider {
                 //initialize the playfield as non-bordercells
                 grid[x][y] = new Cell(CellType.BASE, x, y);
                 //initialize the estimated damage per cell to 0
-                estimatedDamagePerCell[x][y] = 0;
             }
         }
 
@@ -81,20 +77,6 @@ public class GridProvider implements Provider {
         return grid[x][y];
     }
 
-    private void recalculateEstimatedDamage() {
-        for (int x1 = 0; x1 < SIZE; x1++) {
-            for (int y1 = 0; y1 < SIZE; y1++) {
-                for (int x2 = 0; x2 < SIZE; x2++) {
-                    for (int y2 = 0; y2 < SIZE; y2++) {
-                        if (isInRange(getCell(x1, y1), getCell(x2, y2))) {
-                            estimatedDamagePerCell[x2][y2] += getCell(x1, y1).getTower().getDamage();
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     /**
      * Set a tower on a specific position
      * @param x the x coordinate to set the tower to
@@ -108,7 +90,6 @@ public class GridProvider implements Provider {
             throw new ArrayIndexOutOfBoundsException("The coordinates of this cell are outside the grid.");
         }
         getCell(x, y).placeTower(tower);
-        recalculateEstimatedDamage();
     }
 
     public void levelUpTower(int x, int y) {
@@ -121,7 +102,6 @@ public class GridProvider implements Provider {
             throw new NullPointerException("No tower on cell (" + cell.getGridPosition().getX() + "," + cell.getGridPosition().getY() + ")");
         }
         tower.levelUp();
-        recalculateEstimatedDamage();
     }
 
     /**
@@ -141,8 +121,8 @@ public class GridProvider implements Provider {
 
     private boolean isInRange(Cell cellWithTower, Cell cellToCheck) {
         int range = cellWithTower.getTower().getRange();
-        Point positionToCheck = cellToCheck.getGridPosition();
-        Point positionWithTower = cellWithTower.getGridPosition();
+        Cell.Point positionToCheck = cellToCheck.getGridPosition();
+        Cell.Point positionWithTower = cellWithTower.getGridPosition();
         return positionToCheck.getX() - positionWithTower.getX() + positionToCheck.getY() - positionWithTower.getY() < range;
     }
 
@@ -159,11 +139,11 @@ public class GridProvider implements Provider {
         activeCell.activate();
     }
 
-    public void mouseMoved(MouseEvent e, Camera c, Renderer r, Window window) {
+    public void recalculateActiveCell(Vector2i mousePos, Camera c, Renderer r, Window window) {
         Matrix4f viewMatrix = r.getViewMatrix();
         Matrix4f projectionMatrix = r.getProjectionMatrix(window);
-        int mouseX = e.getX();
-        int mouseY = e.getY();
+        int mouseX = mousePos.x();
+        int mouseY = mousePos.y();
         float viewPortX = 2 * (float)mouseX / (float)window.getWidth() - 1;
         float viewPortY = 1 - 2 * (float)mouseY / (float)window.getHeight();
         int viewPortZ = -1;
@@ -196,13 +176,11 @@ public class GridProvider implements Provider {
     }
 
     /**
-     * Get the estimated damage for a cell
-     * @param x
-     * @param y
-     * @return the estimated damage for a cell
+     * To be called on a click
      */
-    public int getEstimatedDamage(int x, int y) {
-        return estimatedDamagePerCell[x][y];
+    public void click() {
+        //assuming the active cell is set correctly
+        System.out.println("Clicked on cell (" + activeCell.getGridPosition().getX() + "," + activeCell.getGridPosition().getY() + ")");
     }
 
     @Override

@@ -19,7 +19,7 @@ public class Skybox extends GameObject {
         mesh.setMaterial(new Material(texture, 0.0f));
     }
 
-    public void update(Camera camera) {
+    public void setPosition(Camera camera) {
         Vector3f pos = camera.getPosition();
         setPosition(pos.x, pos.y, pos.z);
     }
