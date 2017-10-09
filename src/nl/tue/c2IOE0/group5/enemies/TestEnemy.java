@@ -10,19 +10,20 @@ import org.joml.Vector3fc;
 
 import java.io.IOException;
 import java.text.NumberFormat;
+import java.util.List;
 
 public class TestEnemy extends Enemy {
     private float t = 0;
     private Timer loopTimer;
-    private Vector3f targetPosition;
+    private List<Vector3f> targetPositions;
     private long timeToDie;
 
 
-    public TestEnemy(Mesh mesh, Timer loopTimer, Vector3f initialPosition, Vector3f targetPosition) {
+    public TestEnemy(Mesh mesh, Timer loopTimer, Vector3f initialPosition, List<Vector3f> targetPositions) {
         setMesh(mesh);
 
         this.loopTimer = loopTimer;
-        this.targetPosition = targetPosition;
+        this.targetPositions = targetPositions;
         setPosition(initialPosition);
         setScale(0.1f);
         timeToDie = loopTimer.getLoopTime() + 7000;
@@ -39,13 +40,19 @@ public class TestEnemy extends Enemy {
 
     @Override
     public void draw(Window window, Renderer renderer) {
+        if(targetPositions.size() == 0) {
+            return;
+        }
         super.draw(window, renderer);
         float step = loopTimer.getElapsedTime() / 5000f;
         Vector3f offset = new Vector3f(0, 0, 0);
-        targetPosition.toImmutable().sub(getPosition().toImmutable(), offset);
+        targetPositions.get(0).toImmutable().sub(getPosition().toImmutable(), offset);
         if (offset.length() > 0.001f) {
             offset = offset.normalize().mul(step);
             move(offset);
+        }
+        else {
+            targetPositions.remove(0);
         }
     }
 }

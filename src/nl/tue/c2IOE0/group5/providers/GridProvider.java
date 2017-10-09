@@ -36,7 +36,7 @@ public class GridProvider implements Provider {
 
         // Create the player base cells
         int bordersize = (SIZE - PLAYFIELDSIZE - 1)/2;
-        for (int x = bordersize+1; x < SIZE - bordersize; x++) {
+        for (int x = bordersize+1; x < SIZE - bordersize-1; x++) {
             for (int y = bordersize+1; y < SIZE - bordersize-1; y++) {
                 //initialize the playfield as non-bordercells
                 grid[x][y] = new Cell(CellType.BASE, x, y);
