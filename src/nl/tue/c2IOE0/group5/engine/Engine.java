@@ -38,7 +38,7 @@ public class Engine {
     private List<Controller> controllers;
 
     public Engine() {
-        window = new Window("Tower Defence", 960, 720, false, new Window.Options());
+        window = new Window("Tower Defence", 1600, 900, false, new Window.Options());
         renderer = new Renderer();
         hud = new Hud();
         inputHandler = new InputHandler();
