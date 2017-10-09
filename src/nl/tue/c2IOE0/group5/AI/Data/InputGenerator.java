@@ -1,6 +1,7 @@
 package nl.tue.c2IOE0.group5.AI.Data;
 
 import com.google.common.collect.Sets;
+import org.nd4j.linalg.api.ndarray.INDArray;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -31,6 +32,10 @@ public class InputGenerator {
         this.nrTimeSteps = nrTimeSteps;
         this.unitBufSize = unitBufSize;
         this.qLearnerTrustSteps = qLearnerTrustSteps;
+    }
+
+    public static INDArray getInputs(int gridSize, int nrTowers, int nrTowerLevels, int nrDeployTypes, int qLearnerTrustSteps) {
+        return null;
     }
 
     public Set<List<Float>> getInputs() {

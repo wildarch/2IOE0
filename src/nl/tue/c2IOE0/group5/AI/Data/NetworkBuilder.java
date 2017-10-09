@@ -1,4 +1,4 @@
-package nl.tue.c2IOE0.group5.AI.Samples;
+package nl.tue.c2IOE0.group5.AI.Data;
 
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
 import org.deeplearning4j.nn.conf.ComputationGraphConfiguration;
@@ -14,21 +14,10 @@ import org.nd4j.linalg.lossfunctions.LossFunctions;
 
 /**
  * TowerDefence
- * Created by s154796 on 2-10-2017.
+ * Created by s154796 on 9-10-2017.
  */
 public class NetworkBuilder {
-
-    /***
-     * Builds the computation graph required for training and evaluating the tactical A.I.
-     * The network uses a convolutional neural network to detect features in the tower grid.
-     * Other features are detected using a regular feed-forward neural network
-     * with n dense hidden layers and k hidden neurons.
-     * @return graph configuration
-     */
-    public static ComputationGraphConfiguration BuildTDComputationGraph() {
-        final int feedforwardInputSize = 10;
-        final int gridInputWidth = 9, gridInputHeight = 9, gridInputDepth = 7;
-        
+    public static ComputationGraphConfiguration buildNetwork(int gridSize, int nrTowers, int nrDeployTypes){
         return new NeuralNetConfiguration.Builder()
             .iterations(2000)
             .learningRate(0.1)
@@ -40,7 +29,7 @@ public class NetworkBuilder {
             .pretrain(false)
             .backprop(true)
             .addInputs("feedforward-input", "grid-input")
-            .setInputTypes(InputType.feedForward(feedforwardInputSize), InputType.convolutionalFlat(gridInputHeight, gridInputWidth, gridInputDepth))
+            .setInputTypes(InputType.feedForward(nrDeployTypes + 1), InputType.convolutionalFlat(gridSize, gridSize, nrTowers))
             .addLayer("layerc0", new ConvolutionLayer.Builder().nIn(7).nOut(10).build(), "grid")
             .addLayer("layer0", new DenseLayer.Builder().nIn(10).nOut(20).build(), "input")
             .addLayer("layer1", new DenseLayer.Builder().nIn(10).nOut(20).build(), "input")
