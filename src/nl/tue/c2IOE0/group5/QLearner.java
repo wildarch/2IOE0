@@ -51,9 +51,6 @@ public class QLearner {
         for (int i = gridSize * gridSize - gridSize + 1; i < gridSize * gridSize - 2; i++) {
             outerStates.add(i);
         }
-        for (int i : outerStates) {
-            System.err.println(i);
-        }
     }
 
     /**

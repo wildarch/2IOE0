@@ -25,6 +25,7 @@ public class AiController implements Controller {
 
     @Override
     public void update() {
+        if(true) return;
         boolean bigWave = wave % NR_SUB_WAVES == 0 && enemyProvider.countEnemies() == 0;
         boolean smallWave = wave % NR_SUB_WAVES != 0 && loopTimer.getLoopTime() > nextWaveTime;
         if (bigWave || smallWave) {

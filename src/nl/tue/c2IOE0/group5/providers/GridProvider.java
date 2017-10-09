@@ -40,11 +40,6 @@ public class GridProvider implements Provider {
     public void init(Engine engine) {
         doQLearnerStuffForTesting();
 
-
-        int bordersize = (SIZE - PLAYFIELDSIZE)/2;
-        for (int x = bordersize; x < SIZE - bordersize; x++) {
-            for (int y = bordersize; y < SIZE - bordersize; y++) {
-
         // Create the player base cells
         int bordersize = (SIZE - PLAYFIELDSIZE - 1)/2;
         for (int x = bordersize+1; x < SIZE - bordersize-1; x++) {
