@@ -133,8 +133,11 @@ public class PlayerController implements Controller,Listener {
             float deltaxMouse = (x - oldx) * (sensitivity / 10);
             float deltayMouse = (y - oldy) * (sensitivity / 10);
 
-            if ((camera.getRotation().x() + deltayMouse <= 90) && (camera.getRotation().x() + deltayMouse > -35)){
+            //If Y-axis is threatening to
+            if ((camera.getRotation().x() + deltayMouse <= 90) && (camera.getRotation().x() - deltayMouse > -35)){
                 camera.rotate(deltayMouse, deltaxMouse, 0);
+            } else {
+                camera.rotate(0,deltaxMouse,0);
             }
 
             //Set new old values
@@ -146,7 +149,7 @@ public class PlayerController implements Controller,Listener {
     @Override
     public void onMouseScroll(MouseEvent event) {
         Vector3f speed = gridProvider.getDirectionOfCamera(renderer, window, 0, 0);
-        camera.move(speed.x(),speed.y(),speed.z());
+        camera.move((event.getY()/10) * speed.x(),(event.getY()/10) * speed.y(),(event.getY()/10) * speed.z());
     }
 
 }
