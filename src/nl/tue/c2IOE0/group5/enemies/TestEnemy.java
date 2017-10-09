@@ -39,7 +39,6 @@ public class TestEnemy extends Enemy {
         if (offset.length() > 0.001f) {
             offset = offset.normalize().mul(step);
             move(offset);
-            System.out.println(offset);
         }
     }
 }
