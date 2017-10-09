@@ -156,6 +156,7 @@ public class Cell extends GameObject {
     @Override
     public void draw(Window window, Renderer renderer) {
         super.draw(window, renderer);
+
         renderer.ambientLight(color, () ->
                 mesh.draw(renderer)
         );
