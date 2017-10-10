@@ -1,7 +1,5 @@
 package nl.tue.c2IOE0.group5;
 
-import javafx.util.Pair;
-import nl.tue.c2IOE0.group5.providers.Cell;
 import org.joml.Vector2i;
 
 import java.util.ArrayList;
