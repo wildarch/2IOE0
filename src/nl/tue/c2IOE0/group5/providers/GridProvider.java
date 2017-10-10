@@ -20,7 +20,7 @@ import java.util.List;
 public class GridProvider implements Provider {
 
     //total size of the grid (including spawn cells). Change this to change the total grid
-    public static final int SIZE = 15;
+    public static final int SIZE = 13;
     //size of the grid in which towers can be placed
     public static final int PLAYFIELDSIZE = 9;
     //the actual grid
@@ -42,8 +42,8 @@ public class GridProvider implements Provider {
         }
 
         // Create the borders
-        for (int x = 1; x < SIZE-1; x++) {
-            for (int y = 1; y < SIZE-1; y++) {
+        for (int x = 0; x < SIZE; x++) {
+            for (int y = 0; y < SIZE; y++) {
                 if (grid[x][y] == null) {
                     //initialize all cells not yet initialized as a bordercell
                     grid[x][y] = new Cell(CellType.BORDER, x, y);
@@ -51,14 +51,14 @@ public class GridProvider implements Provider {
             }
         }
 
-        for (int x = 0; x < SIZE; x++) {
+        /*for (int x = 0; x < SIZE; x++) {
             for (int y = 0; y < SIZE; y++) {
                 if (grid[x][y] == null) {
                     //initialize all cells not yet initialized as a bordercell
                     grid[x][y] = new Cell(CellType.SPAWN, x, y);
                 }
             }
-        }
+        }*/
         activeCell = getCell(0, 0);
     }
 

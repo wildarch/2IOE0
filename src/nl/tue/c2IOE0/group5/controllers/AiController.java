@@ -6,13 +6,16 @@ import nl.tue.c2IOE0.group5.engine.controller.Controller;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.Event;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.Listener;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.MouseEvent;
+import nl.tue.c2IOE0.group5.providers.Cell;
 import nl.tue.c2IOE0.group5.providers.EnemyProvider;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
-import org.joml.Vector2i;
 import org.joml.Vector3f;
 
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
+
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
 
 public class AiController implements Controller, Listener {
 
@@ -34,7 +37,7 @@ public class AiController implements Controller, Listener {
         enemyProvider = engine.getProvider(EnemyProvider.class);
         loopTimer = engine.getGameloopTimer();
         gridProvider = engine.getProvider(GridProvider.class);
-        doQLearnerStuffForTesting();
+        traingQLearner();
     }
 
     @Override
@@ -52,34 +55,41 @@ public class AiController implements Controller, Listener {
         // Do a wave!
         String size = big ? "Big  " : "Small";
         System.out.println(size + " wave at " + loopTimer.getLoopTime());
+        Random r = new Random();
         for (int i = 0; i < 5; i++) {
-            Vector3f start = new Vector3f(gridProvider.getCell(qlearner.getOptimalSpawnState()).getPosition());
-            start.add(0, 1, 0);
-            List<Integer> path = qlearner.getOptimalPath(qlearner.getOptimalSpawnState());
+            int random = r.nextInt(5);
+            Cell startCell = gridProvider.getCell(qlearner.getOptimalNSpawnStates(5)[random]);
+            Vector3f start = new Vector3f(startCell.getPosition());
+            start.add(0, 0.5f, 0);
+            List<Integer> path = qlearner.getOptimalPath(startCell.getGridPosition());
             enemyProvider.putEnemy(start, path.stream().map(
-                    (x -> new Vector3f(gridProvider.getCell(QLearner.getPoint(x)).getPosition()).add(0, 1, 0))
+                    (x -> new Vector3f(gridProvider.getCell(QLearner.getPoint(x)).getPosition()).add(0, 0.5f, 0))
             ).collect(Collectors.toList()));
         }
         if (big) {
-            /*
             for (int i = 0; i < 10; i++) {
-                Vector3f pos2 = new Vector3f((float)(Math.random() * 13), 1f, (float)(Math.random() * 13));
-                enemyProvider.putEnemy(pos2);
+                int random = r.nextInt(7);
+                Cell startCell = gridProvider.getCell(qlearner.getOptimalNSpawnStates(7)[random]);
+                Vector3f start = new Vector3f(startCell.getPosition());
+                start.add(0, 0.5f, 0);
+                List<Integer> path = qlearner.getOptimalPath(startCell.getGridPosition());
+                enemyProvider.putEnemy(start, path.stream().map(
+                        (x -> new Vector3f(gridProvider.getCell(QLearner.getPoint(x)).getPosition()).add(0, 0.5f, 0))
+                ).collect(Collectors.toList()));
             }
-            */
         }
     }
 
-    public void doQLearnerStuffForTesting() {
+    public void traingQLearner() {
         int noIterations = 1000;
         qlearner = new QLearner(GridProvider.SIZE, noIterations);
         qlearner.updateRewardsMatrix(qlearner.getState(GridProvider.SIZE/2, GridProvider.SIZE/2), 1000);
-        qlearner.updateRewardsMatrix(qlearner.getState(3, 3), 500);
+        qlearner.updateRewardsMatrix(qlearner.getState(3, 3), 5);
         qlearner.updateRewardsMatrix(qlearner.getState(2, 3), -5);
         qlearner.updateRewardsMatrix(qlearner.getState(4, 3), -5);
         qlearner.updateRewardsMatrix(qlearner.getState(3, 2), -5);
         qlearner.updateRewardsMatrix(qlearner.getState(3, 4), -5);
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 20; i++) {
             qlearner.generateRandomPath(100);
         }
         qlearner.generateRandomPath(100, 0);
@@ -104,8 +114,10 @@ public class AiController implements Controller, Listener {
 
     @Override
     public void onMouseButtonPressed(MouseEvent event) {
-        optimalPath = qlearner.getOptimalPath(qlearner.getState(gridProvider.getActiveCell()));
-        gridProvider.drawPath(optimalPath);
+        if (event.getSubject() == GLFW_MOUSE_BUTTON_1) {
+            optimalPath = qlearner.getOptimalPath(qlearner.getState(gridProvider.getActiveCell()));
+            gridProvider.drawPath(optimalPath);
+        }
     }
 
     @Override

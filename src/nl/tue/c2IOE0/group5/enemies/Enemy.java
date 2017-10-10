@@ -2,7 +2,6 @@ package nl.tue.c2IOE0.group5.enemies;
 
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
 import nl.tue.c2IOE0.group5.engine.rendering.*;
-import nl.tue.c2IOE0.group5.providers.EnemyProvider;
 
 public abstract class Enemy extends GameObject {
     private Mesh mesh;

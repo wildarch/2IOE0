@@ -257,5 +257,34 @@ public class QLearner {
         return new Vector2i(getPoint(maxState));
     }
 
+    /**
+     * Get the n best spawnstates
+     * @param n
+     * @return
+     */
+    public Vector2i[] getOptimalNSpawnStates(int n) {
+        int[] maxQ = new int[n];
+        int[] maxStates = new int[n];
+        for (int i = 0; i < n; i++) {
+            maxQ[i] = 0;
+            maxStates[i] = 0;
+        }
+
+        for (int i : outerStates) {
+            for (int j = 0; j < n; j++) {
+                if (getMaximumAction(i) >= maxQ[j]) {
+                    maxQ[j] = getMaximumAction(i);
+                    maxStates[j] = i;
+                    break; // it is already in the array, so continue with the next element
+                }
+            }
+        }
+        Vector2i[] results = new Vector2i[n];
+        for (int i = 0; i < n; i++) {
+            results[i] = new Vector2i(getPoint(maxStates[i]));
+        }
+        return results;
+    }
+
 }
 
