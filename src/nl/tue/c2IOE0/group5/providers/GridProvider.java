@@ -20,7 +20,7 @@ import java.util.List;
 public class GridProvider implements Provider {
 
     //total size of the grid (including spawn cells). Change this to change the total grid
-    public static final int SIZE = 14;
+    public static final int SIZE = 15;
     //size of the grid in which towers can be placed
     public static final int PLAYFIELDSIZE = 9;
     //the actual grid
