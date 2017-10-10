@@ -120,6 +120,8 @@ public class Cell extends GameObject {
             throw new ArrayIndexOutOfBoundsException("This ("+position.x()+","+position.y()+" is a bordercell, you cannot place a tower here.");
         } else {
             this.tower = t;
+            t.setCell(this);
+            t.setPosition(getPosition().add(0, 0.5f, 0f));
         }
     }
 

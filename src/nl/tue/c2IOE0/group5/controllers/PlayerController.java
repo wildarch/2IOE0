@@ -21,7 +21,6 @@ import static org.lwjgl.glfw.GLFW.*;
 public class PlayerController implements Controller,Listener {
 
     // define required resources here, e.g.
-    private TestProvider testProvider;
     private UIProvider uiProvider;
     private GridProvider gridProvider;
     private Camera camera;
@@ -35,7 +34,6 @@ public class PlayerController implements Controller,Listener {
     @Override
     public void init(Engine engine) {
         // you can initialize resources here, e.g.
-        this.testProvider = engine.getProvider(TestProvider.class);
         this.uiProvider = engine.getProvider(UIProvider.class);
         this.gridProvider = engine.getProvider(GridProvider.class);
         this.camera = engine.getCamera();

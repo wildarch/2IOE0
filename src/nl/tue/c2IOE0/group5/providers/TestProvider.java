@@ -43,7 +43,7 @@ public class TestProvider implements Provider {
 
         switch(updatecounter) {
             case 0:
-                g = 1;
+                b = 1;
             case 1:
                 r = 1;
                 break;

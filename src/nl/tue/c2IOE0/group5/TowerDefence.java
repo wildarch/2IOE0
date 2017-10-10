@@ -15,11 +15,11 @@ public class TowerDefence {
     public static void main(String[] args) {
         Engine e = new Engine();
         e.addProviders(new Provider[] {
-                new TestProvider(),
                 new EnemyProvider(),
                 new GridProvider(),
-                new UIProvider(),
                 new BackgroundProvider(),
+                new TowerProvider(),
+                new UIProvider(),
         });
         e.addControllers(new Controller[] {
                 new PlayerController(),

@@ -8,7 +8,7 @@ import nl.tue.c2IOE0.group5.engine.provider.ObjectProvider;
 import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
 import nl.tue.c2IOE0.group5.engine.rendering.OBJLoader;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
-import org.joml.Vector3f;
+import org.joml.Vector2i;
 
 import java.io.IOException;
 import java.util.List;
@@ -16,11 +16,13 @@ import java.util.List;
 public class EnemyProvider extends ObjectProvider<Enemy> {
 
     private Timer loopTimer;
+    private GridProvider gridProvider;
     private Mesh mesh;
 
     @Override
     public void init(Engine engine) {
         loopTimer = engine.getGameloopTimer();
+        gridProvider = engine.getProvider(GridProvider.class);
         try {
             mesh = OBJLoader.loadMesh("/cube.obj");
             mesh.setMaterial(new Material(("/tower.png")));
@@ -40,10 +42,11 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
         return objects.size();
     }
 
-    public void putEnemy(Vector3f initialPosition, List<Vector3f> targets) {
+    public void putEnemy(Vector2i initialPosition, List<Vector2i> targets) {
         objects.add(new TestEnemy(
                 mesh,
                 loopTimer,
+                gridProvider,
                 initialPosition,
                 targets
         ));

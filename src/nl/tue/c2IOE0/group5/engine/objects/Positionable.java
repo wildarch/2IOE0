@@ -28,7 +28,7 @@ public abstract class Positionable {
      * @return The position of the object.
      */
     public Vector3f getPosition() {
-        return position;
+        return new Vector3f(position);
     }
 
     /**

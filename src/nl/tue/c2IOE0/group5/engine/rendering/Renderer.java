@@ -7,17 +7,10 @@ import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.PointLight;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
-import org.lwjgl.system.MemoryStack;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.FloatBuffer;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
-
-import static org.lwjgl.opengl.GL20.*;
 
 /**
  * @author Jorren Hendriks.

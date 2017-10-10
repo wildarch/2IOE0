@@ -9,6 +9,7 @@ import nl.tue.c2IOE0.group5.engine.controller.input.events.MouseEvent;
 import nl.tue.c2IOE0.group5.providers.Cell;
 import nl.tue.c2IOE0.group5.providers.EnemyProvider;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
+import org.joml.Vector2i;
 import org.joml.Vector3f;
 
 import java.util.List;
@@ -59,23 +60,23 @@ public class AiController implements Controller, Listener {
         for (int i = 0; i < 5; i++) {
             int random = r.nextInt(5);
             Cell startCell = gridProvider.getCell(qlearner.getOptimalNSpawnStates(5)[random]);
-            Vector3f start = new Vector3f(startCell.getPosition());
-            start.add(0, 0.5f, 0);
+            Vector2i start = startCell.getGridPosition();
             List<Integer> path = qlearner.getOptimalPath(startCell.getGridPosition());
-            enemyProvider.putEnemy(start, path.stream().map(
-                    (x -> new Vector3f(gridProvider.getCell(QLearner.getPoint(x)).getPosition()).add(0, 0.5f, 0))
-            ).collect(Collectors.toList()));
+            enemyProvider.putEnemy(
+                    start,
+                    path.stream().map(QLearner::getPoint).collect(Collectors.toList())
+            );
         }
         if (big) {
             for (int i = 0; i < 10; i++) {
                 int random = r.nextInt(7);
                 Cell startCell = gridProvider.getCell(qlearner.getOptimalNSpawnStates(7)[random]);
-                Vector3f start = new Vector3f(startCell.getPosition());
-                start.add(0, 0.5f, 0);
+                Vector2i start = startCell.getGridPosition();
                 List<Integer> path = qlearner.getOptimalPath(startCell.getGridPosition());
-                enemyProvider.putEnemy(start, path.stream().map(
-                        (x -> new Vector3f(gridProvider.getCell(QLearner.getPoint(x)).getPosition()).add(0, 0.5f, 0))
-                ).collect(Collectors.toList()));
+                enemyProvider.putEnemy(
+                        start,
+                        path.stream().map(QLearner::getPoint).collect(Collectors.toList())
+                );
             }
         }
     }

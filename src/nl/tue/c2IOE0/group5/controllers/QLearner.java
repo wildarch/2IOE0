@@ -1,7 +1,5 @@
 package nl.tue.c2IOE0.group5.controllers;
 
-import javafx.util.Pair;
-import nl.tue.c2IOE0.group5.providers.Cell;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
 import org.joml.Vector2i;
 

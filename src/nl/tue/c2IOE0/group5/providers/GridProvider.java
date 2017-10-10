@@ -51,14 +51,6 @@ public class GridProvider implements Provider {
             }
         }
 
-        /*for (int x = 0; x < SIZE; x++) {
-            for (int y = 0; y < SIZE; y++) {
-                if (grid[x][y] == null) {
-                    //initialize all cells not yet initialized as a bordercell
-                    grid[x][y] = new Cell(CellType.SPAWN, x, y);
-                }
-            }
-        }*/
         activeCell = getCell(0, 0);
     }
 
