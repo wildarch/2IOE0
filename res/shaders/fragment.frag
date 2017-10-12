@@ -3,8 +3,13 @@
 in vec2 outTexture;
 in vec3 mvVertexNormal;
 in vec3 mvVertexPosition;
+in vec4 mlightviewVertexPos;
+in mat4 outModelViewMatrix;
 
 out vec4 fragColor;
+
+uniform sampler2D depthMap;
+
 
 struct Attenuation
 {
@@ -107,6 +112,33 @@ vec4 calcDirectionalLight(DirectionalLight light, vec3 position, vec3 normal)
     return calcLightColour(light.colour, light.intensity, position, normalize(light.direction), normal);
 }
 
+float calcShadow(vec4 position)
+{
+    vec3 projCoords = position.xyz;
+    // Transform from screen coordinates to texture coordinates
+    projCoords = projCoords * 0.5 + 0.5;
+    float bias = 0.001;
+
+    float shadowFactor = 0.0;
+    vec2 inc = 1.0 / textureSize(depthMap, 0);
+    for(int row = -1; row <= 1; ++row)
+    {
+        for(int col = -1; col <= 1; ++col)
+        {
+            float textDepth = texture(depthMap, projCoords.xy + vec2(row, col) * inc).r;
+            shadowFactor += projCoords.z - bias > textDepth ? 1.0 : 0.0;
+        }
+    }
+    shadowFactor /= 9.0;
+
+    if(projCoords.z > 1.0)
+    {
+        shadowFactor = 1.0;
+    }
+
+    return 1 - shadowFactor;
+}
+
 void main()
 {
     if (isSkybox == 0) {
@@ -119,7 +151,9 @@ void main()
             }
         }
 
-        fragColor = ambientC * vec4(ambientLight, 1) + diffuseSpecularComponent;
+        float shadow = calcShadow(mlightviewVertexPos);
+
+        fragColor = ambientC * vec4(ambientLight, 1) + diffuseSpecularComponent * shadow;
     } else {
         fragColor = texture(texture_sampler, outTexture);
     }

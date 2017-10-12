@@ -41,6 +41,14 @@ public abstract class GameObject extends Positionable {
         renderer.setModelViewMatrix(getPosition(), getRotation(), getScale());
     }
 
+    protected void setModelLightView(Renderer renderer) {
+        renderer.setModelLightViewMatrix(getPosition(), getRotation(), getScale());
+    }
+
+    protected void setModelLightViewScene(Renderer renderer) {
+        renderer.setModelLightViewMatrixScene(getPosition(), getRotation(), getScale());
+    }
+
     /**
      * {@link #setModelView(Renderer, Vector3f, Vector3f 0, float 0)}
      */
@@ -66,6 +74,12 @@ public abstract class GameObject extends Positionable {
     protected void setModelView(Renderer renderer, Vector3f posOffset, Vector3f rotOffset, float scaleOffset) {
         renderer.setModelViewMatrix(posOffset.add(getPosition()), rotOffset.add(getRotation()), scaleOffset+getScale());
     }
+
+    protected void setModelLightView(Renderer renderer, Vector3f posOffset, Vector3f rotOffset, float scaleOffset) {
+        renderer.setModelLightViewMatrix(posOffset.add(getPosition()), rotOffset.add(getRotation()), scaleOffset+getScale());
+    }
+
+
 
     /**
      * Initialize the gameobject. Link meshes here and define their render methods.
