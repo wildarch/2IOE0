@@ -8,11 +8,15 @@ import nl.tue.c2IOE0.group5.engine.controller.input.events.MouseEvent;
 import nl.tue.c2IOE0.group5.engine.objects.Camera;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
+import nl.tue.c2IOE0.group5.providers.Cell;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
 import nl.tue.c2IOE0.group5.providers.TestProvider;
 import nl.tue.c2IOE0.group5.providers.UIProvider;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -34,13 +38,14 @@ public class PlayerController implements Controller,Listener {
     private boolean rightMouseButton = false;
     private boolean middleMouseButton = false;
     private float ticksSinceTrigger = 0.000f;
+    private List<Cell> cells = new ArrayList<>();
 
     private float maxX;
     private float maxY;
     private float maxZ;
 
     private float minX;
-    private float minY = 0.1f;
+    private float minY = -1f;
     private float minZ;
 
     public PlayerController() {
@@ -129,7 +134,7 @@ public class PlayerController implements Controller,Listener {
     public void onKeyPressed(Event event) {
         switch (event.getSubject()) {
             case GLFW_KEY_L:
-                camera.setRotation(0,0,0);
+                updateCollisions();
                 break;
         }
     }
@@ -182,6 +187,16 @@ public class PlayerController implements Controller,Listener {
         return new PositionContainer(nextXPosition,nextYPosition,nextZPosition);
     }
 
+    public void updateCollisions(){
+
+        for (int i = 0; i < gridProvider.SIZE; i++) {
+            for (int j = 0; j < gridProvider.SIZE; j++) {
+                cells.add(gridProvider.getCell(i,j));
+            }
+        }
+
+    }
+
     public void moveRelativeLocal(float offsetX, float offsetY, float offsetZ) {
         float XPosition = camera.getPosition().x;
         float YPosition = camera.getPosition().y;
@@ -189,28 +204,79 @@ public class PlayerController implements Controller,Listener {
 
         if (offsetZ != 0) {
             if (getRelativeMovement(offsetX,offsetY,offsetZ).getX() <= maxX && getRelativeMovement(offsetX, offsetY, offsetZ).getX() >= minX) {
-                XPosition += (float) Math.sin(Math.toRadians(camera.getRotation().y)) * -1.0f * offsetZ;
+                if (checkIfClearX(offsetX,offsetY,offsetZ) && checkIfClearY(offsetX,offsetY,offsetZ)) {
+                    XPosition += (float) Math.sin(Math.toRadians(camera.getRotation().y)) * -1.0f * offsetZ;
+                }
             }
             if (getRelativeMovement(offsetX,offsetY,offsetZ).getZ() <= maxZ && getRelativeMovement(offsetX, offsetY, offsetZ).getZ() >= minZ) {
-                ZPosition += (float) Math.cos(Math.toRadians(camera.getRotation().y)) * offsetZ;
+                if (checkIfClearZ(offsetX,offsetY,offsetZ) && checkIfClearY(offsetX,offsetY,offsetZ)) {
+                    ZPosition += (float) Math.cos(Math.toRadians(camera.getRotation().y)) * offsetZ;
+                }
             }
-
         }
 
         if (offsetX != 0) {
             if (getRelativeMovement(offsetX,offsetY,offsetZ).getX() <= maxX && getRelativeMovement(offsetX, offsetY, offsetZ).getX() >= minX) {
-                XPosition += (float) Math.sin(Math.toRadians(camera.getRotation().y - 90)) * -1.0f * offsetX;
+                if (checkIfClearX(offsetX,offsetY,offsetZ) && checkIfClearY(offsetX,offsetY,offsetZ)) {
+                    XPosition += (float) Math.sin(Math.toRadians(camera.getRotation().y - 90)) * -1.0f * offsetX;
+                }
             }
             if (getRelativeMovement(offsetX,offsetY,offsetZ).getZ() <= maxZ && getRelativeMovement(offsetX, offsetY, offsetZ).getZ() >= minZ) {
-                ZPosition += (float) Math.cos(Math.toRadians(camera.getRotation().y - 90)) * offsetX;
+                if (checkIfClearZ(offsetX,offsetY,offsetZ) && checkIfClearY(offsetX,offsetY,offsetZ)) {
+                    ZPosition += (float) Math.cos(Math.toRadians(camera.getRotation().y - 90)) * offsetX;
+                }
             }
         }
 
         if (getRelativeMovement(offsetX, offsetY, offsetZ).getY() <= maxY && getRelativeMovement(offsetX, offsetY, offsetZ).getY() >= minY){
-            YPosition += offsetY;
+            if (checkIfClear(offsetX,offsetY,offsetZ)) {
+                YPosition += offsetY;
+            }
         }
 
         camera.setPosition(XPosition,YPosition,ZPosition);
+    }
+
+    private boolean checkIfClear(float offsetX,float offsetY,float offsetZ) {
+        if(!checkIfClearX(offsetX, offsetY, offsetZ) && !checkIfClearY(offsetX, offsetY, offsetZ) && !checkIfClearZ(offsetX, offsetY, offsetZ)){
+            System.out.println("Collision");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkIfClearX(float offsetX,float offsetY,float offsetZ){
+        for (Cell cell : cells) {
+            float centerX = cell.getGridPosition().x();
+
+            if (getRelativeMovement(offsetX, offsetY, offsetZ).getX() <= centerX + (cell.getScale()) && getRelativeMovement(offsetX, offsetY, offsetZ).getX() >= centerX - (cell.getScale())) {
+                //System.out.println("Collision at Xmax: " + (centerX + (cell.getScale()/2)) + " Xmin: " + (centerX - (cell.getScale()/2)));
+                return false;
+            }
+        }
+        return true;
+    }
+    private boolean checkIfClearY(float offsetX,float offsetY,float offsetZ){
+        for (Cell cell : cells) {
+            float centerY = 0;
+
+            if (getRelativeMovement(offsetX, offsetY, offsetZ).getY() <= centerY + (cell.getScale()) && getRelativeMovement(offsetX, offsetY, offsetZ).getY() >= centerY - (cell.getScale())) {
+                //System.out.println("Collision at Ymax: " + (centerY + (cell.getScale()/2)) + " Ymin: " + (centerY - (cell.getScale()/2)));
+                return false;
+            }
+        }
+        return true;
+    }
+    private boolean checkIfClearZ(float offsetX,float offsetY,float offsetZ){
+        for (Cell cell : cells) {
+            float centerZ = cell.getGridPosition().y();
+
+            if (getRelativeMovement(offsetX, offsetY, offsetZ).getZ() <= centerZ + (cell.getScale()) && getRelativeMovement(offsetX, offsetY, offsetZ).getZ() >= centerZ - (cell.getScale())) {
+                //System.out.println("Collision at Zmax: " + (centerZ + (cell.getScale()/2)) + " Zmin: " + (centerZ - (cell.getScale()/2)));
+                return false;
+            }
+        }
+        return true;
     }
 
     public void moveLocal(float offsetX, float offsetY, float offsetZ) {
