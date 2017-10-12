@@ -1,12 +1,11 @@
 package nl.tue.c2IOE0.group5.AI.Data;
 
 import com.google.common.collect.Sets;
-import org.deeplearning4j.datasets.iterator.impl.ListDataSetIterator;
 import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.dataset.DataSet;
-import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
+import org.nd4j.linalg.dataset.api.MultiDataSet;
 import org.nd4j.linalg.factory.Nd4j;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
@@ -35,65 +34,107 @@ public class InputGenerator {
         this.qLearnerTrustSteps = qLearnerTrustSteps;
     }
 
-    public static INDArray getInputs(int numInputs, int gridSize, int nrTowers, int nrTowerLevels, int nrDeployTypes, int qLearnerTrustSteps) {
-        List<double[]> data = new ArrayList<>(numInputs);
+    public static INDArray[] getInputs(int numInputs, int gridSize, int nrTowers, int nrTowerLevels, int nrDeployTypes, int qLearnerTrustSteps) {
+        //List<double[]> data = new ArrayList<>(numInputs);
         Random r = new Random();
 
-        INDArray result = Nd4j.create(numInputs, gridSize * gridSize * nrTowers + nrDeployTypes + 1);
+        //INDArray result = Nd4j.create(numInputs, gridSize * gridSize * nrTowers + nrDeployTypes + 1);
+
+        INDArray gridResult = Nd4j.create(numInputs, gridSize * gridSize * nrTowers);
+        INDArray bufferResult = Nd4j.create(numInputs, nrDeployTypes);
+        INDArray qTrustResult = Nd4j.create(numInputs, 1);
+
 
         for (int i = 0; i < numInputs; i++){
-            double[] row = new double[gridSize * gridSize * nrTowers + nrDeployTypes + 1];
+//            double[] row = new double[gridSize * gridSize * nrTowers + nrDeployTypes + 1];
 
             double[] grid = randomGrid(gridSize, nrTowers, nrTowerLevels, r);
             double[] buffer = randomBuffer(nrDeployTypes, r);
             double[] qtrust = new double[]{r.nextDouble()};
 
-            System.arraycopy(grid, 0, row, 0, grid.length);
-            System.arraycopy(buffer, 0, row, grid.length, buffer.length);
-            System.arraycopy(qtrust, 0, row, grid.length + buffer.length, qtrust.length);
+            gridResult.putRow(i, Nd4j.create(grid));
+            bufferResult.putRow(i, Nd4j.create(buffer));
+            qTrustResult.putRow(i, Nd4j.create(qtrust));
 
-            data.add(row);
+//            System.arraycopy(grid, 0, row, 0, grid.length);
+//            System.arraycopy(buffer, 0, row, grid.length, buffer.length);
+//            System.arraycopy(qtrust, 0, row, grid.length + buffer.length, qtrust.length);
+//
+//            data.add(row);
 
-            System.out.println(Arrays.toString(row));
+            //System.out.println(Arrays.toString(row));
         }
 
-        for (int i = 0; i < data.size(); i++){
-            double[] row = data.get(i);
-            for(int c = 0; c < row.length; c++){
-                result.putScalar(i, c, row[c]);
-            }
-        }
+//        for (int i = 0; i < data.size(); i++){
+//            double[] row = data.get(i);
+//            for(int c = 0; c < row.length; c++){
+//                result.putScalar(i, c, row[c]);
+//            }
+//        }
 
-        return result;
+        return new INDArray[]{gridResult, bufferResult, qTrustResult};
     }
 
-    interface TD_Q_Function{
+    public interface TD_Q_Function{
         /**
          * Returns the function values for the given input matrix
-         * @param inputRow
+         * @param input
          * @return
          */
-        INDArray getOutputValues(INDArray inputRow);
+        INDArray getOutputValues(INDArray[] input);
+    }
+//
+//    /** Create a DataSetIterator for training
+//     * @param x X values
+//     * @param function Function to evaluate
+//     * @param batchSize Batch size (number of examples for every call of DataSetIterator.next())
+//     * @param rng Random number generator (for repeatability)
+//     */
+//    private static MultiDataSetIterator getTrainingData(final INDArray[] x, final TD_Q_Function function, final int batchSize, final Random rng) {
+//        final INDArray y = function.getOutputValues(x);
+//        final org.nd4j.linalg.dataset.MultiDataSet allData = new org.nd4j.linalg.dataset.MultiDataSet(x, new INDArray[]{y});
+////        MultiDataSet ds = new (x, new INDArray[]{y});
+//
+//        final List<MultiDataSet> list = allData.asList();
+//        Collections.shuffle(list,rng);
+//        return new MultiDataSetIteratorAdapter(new ListDataSetIterator(list,batchSize));
+//    }
+//
+//    public static MultiDataSetIterator getTrainingData(final MultiDataSet allData, final int batchSize, final Random rng){
+//        final List<MultiDataSet> list = allData.asList();
+//        Collections.shuffle(list,rng);
+//        return new MultiDataSetIteratorAdapter(new ListDataSetIterator(list,batchSize));
+//    }
+
+    public static void export(File output, int numInputs, int gridSize, int nrTowers, int nrTowerLevels, int nrDeployTypes, int qLearnerTrustSteps, final TD_Q_Function function) throws IOException {
+        MultiDataSet data = getTrainingData(numInputs, gridSize, nrTowers, nrTowerLevels, nrDeployTypes, qLearnerTrustSteps, function);
+        data.save(output);
     }
 
-    /** Create a DataSetIterator for training
-     * @param x X values
-     * @param function Function to evaluate
-     * @param batchSize Batch size (number of examples for every call of DataSetIterator.next())
-     * @param rng Random number generator (for repeatability)
-     */
-    private static DataSetIterator getTrainingData(final INDArray x, final TD_Q_Function function, final int batchSize, final Random rng) {
+    public static void export(File output, MultiDataSet data) throws IOException {
+        data.save(output);
+    }
+
+    public static MultiDataSet fromFile(File input) throws IOException {
+        MultiDataSet set = new org.nd4j.linalg.dataset.MultiDataSet();
+        set.load(input);
+        return set;
+    }
+
+//    public static MultiDataSetIterator getTrainingData(int numInputs, int gridSize, int nrTowers, int nrTowerLevels, int nrDeployTypes, int qLearnerTrustSteps, final TD_Q_Function function, final int batchSize, final Random rng) {
+//        INDArray[] genData = getInputs(numInputs, gridSize, nrTowers, nrTowerLevels, nrDeployTypes, qLearnerTrustSteps);
+//        return getTrainingData(genData, function, batchSize, rng);
+//    }
+
+    private static MultiDataSet getTrainingData(final INDArray[] x, final TD_Q_Function function){
         final INDArray y = function.getOutputValues(x);
-        final DataSet allData = new DataSet(x,y);
 
-        final List<DataSet> list = allData.asList();
-        Collections.shuffle(list,rng);
-        return new ListDataSetIterator(list,batchSize);
+        return new org.nd4j.linalg.dataset.MultiDataSet(x, new INDArray[]{y});
     }
 
-    private static DataSetIterator getTrainingData(int numInputs, int gridSize, int nrTowers, int nrTowerLevels, int nrDeployTypes, int qLearnerTrustSteps, final TD_Q_Function function, final int batchSize, final Random rng) {
-        INDArray genData = getInputs(numInputs, gridSize, nrTowers, nrTowerLevels, nrDeployTypes, qLearnerTrustSteps);
-        return getTrainingData(genData, function, batchSize, rng);
+    public static MultiDataSet getTrainingData(int numInputs, int gridSize, int nrTowers, int nrTowerLevels, int nrDeployTypes, int qLearnerTrustSteps, final TD_Q_Function function){
+        INDArray[] genData = getInputs(numInputs, gridSize, nrTowers, nrTowerLevels, nrDeployTypes, qLearnerTrustSteps);
+        return getTrainingData(genData, function);
     }
 
     public static void main(String[] args){
