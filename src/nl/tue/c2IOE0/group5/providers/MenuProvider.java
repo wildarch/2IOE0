@@ -12,62 +12,70 @@ import nl.tue.c2IOE0.group5.userinterface.UIElement;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * Created by Geert van Ieperen on 12-10-2017.
  */
 public class MenuProvider implements Provider {
 
-    int screenMiddle;
+    private Window window;
+
+    private UIButton startGame;
+    private UIButton graphics;
+    private UIButton parameters;
+    private UIButton gameState;
+    private UIButton backOptions;
+    private UIButton options;
+    private UIButton credits;
+    private UIButton exitGame;
+
+    private final UIButton[] mainMenu = {startGame, options, credits, exitGame};
+    private final UIButton[] optionMenu = {graphics, parameters, gameState, backOptions};
+
+    private UIButton[] activeItems;
 
     private Engine engine;
     private Hud hud;
 
-    UIButton startGame;
-    UIButton options;
-        MenuItem graphics;
-        MenuItem parameters;
-        MenuItem gamestate;
-    UIButton credits;
-    UIButton exitgame;
-
     List<UIElement> elements;
-
-    MenuItem[] activeItems;
 
     @Override
     public void init(Engine engine) {
         this.engine = engine;
         engine.pause(true);
 
-        /*
-        startGame = new MenuItem("Start Game", ()->{System.out.print("start");});
-        options = new MenuItem("Options", ()-> activeItems = new MenuItem[]{graphics, parameters, gamestate});
-        credits = new MenuItem("Credits", ()->{});
-        exitgame = new MenuItem("Exit Game", ()->{});
-        */
+        int x = 0;
+        int mainY = 30;
+        int OFFSET = 50;
+
+        startGame = new MenuItem("Start Game", x, mainY += OFFSET, (event) -> { engine.pause(false); });
+        options = new MenuItem("Options", x, mainY += OFFSET, (event)-> activeItems = optionMenu);
+        {
+            int optionsY = 0;
+            graphics = new MenuItem("Graphics", x, optionsY += OFFSET, (event)->{});
+            parameters = new MenuItem("Parameters", x, optionsY += OFFSET, (event)->{});
+            gameState = new MenuItem("Game state", x, optionsY += OFFSET, (event)->{});
+            backOptions = new MenuItem("Back", x, optionsY, (event) -> activeItems = mainMenu);
+        }
+        credits = new MenuItem("Credits", x, mainY += OFFSET, (event)->{});
+        exitGame = new MenuItem("Exit Game", x, mainY, (event)->{});
 
         this.hud = engine.getHud();
         elements = new ArrayList<>();
 
-        startGame = new MenuItem("Begin",10, 10, 100, 50, (event) -> { engine.pause(false); });
-        options = new MenuItem("Options", 10, 70, 100, 50, (event) -> {});
-        credits = new MenuItem("Credits", 10, 130, 100, 50, (event) -> {});
-        exitgame = new MenuItem("Exit", 10, 190, 100, 50, (event) -> {});
-
         elements.add(startGame);
         elements.add(options);
         elements.add(credits);
-        elements.add(exitgame);
-
-        //activeItems = new MenuItem[]{startGame, options, credits, exitgame};
-
-        //screenMiddle = (engine.getWindow().getWidth())/2;
+        elements.add(exitGame);
     }
 
     @Override
-    public void update() { }
+    public void update() {
+        int middle = (engine.getWindow().getWidth())/2;
+        for (UIElement item : activeItems){
+            item.updateXPosition(middle);
+        }
+    }
 
     public void onClick(MouseEvent event) {
 
@@ -76,14 +84,6 @@ public class MenuProvider implements Provider {
                 ((UIButton) element).onClick(event);
             }
         });
-
-        /*
-        for(MenuItem menuItem : activeItems) {
-            if (menuItem.contains(event.getPosition())) {
-                menuItem.onClick();
-            }
-        }
-        */
     }
 
     @Override
@@ -92,11 +92,6 @@ public class MenuProvider implements Provider {
 
         hud.create(() -> {
             elements.forEach((element) -> element.draw(hud));
-            /*
-            for (int i = 0; i < activeItems.length; i++) {
-                activeItems[i].draw(screenMiddle, MenuItem.BUTTON_HEIGHT + (50 * i), hud);
-            }
-            */
         });
     }
 

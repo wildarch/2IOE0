@@ -31,7 +31,7 @@ public class Timer {
     }
 
     /**
-     * @return The elapsed time since previous request (gametick).
+     * @return The elapsed time since previous gametick.
      */
     public long getElapsedTime() {
         return time.current() - time.previous();

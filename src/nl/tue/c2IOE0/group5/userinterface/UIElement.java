@@ -11,7 +11,10 @@ import java.util.function.Consumer;
  */
 public class UIElement {
 
-    private int x, y, width, heigth;
+    protected int x;
+    protected int y;
+    private int width;
+    private int heigth;
     private Consumer<Hud> render;
 
     public UIElement(int x, int y, int width, int heigth, Consumer<Hud> render) {
@@ -35,4 +38,7 @@ public class UIElement {
         render.accept(hud);
     }
 
+    public void updateXPosition(int x){
+        this.x = x;
+    }
 }
