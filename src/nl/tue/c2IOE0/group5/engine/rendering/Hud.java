@@ -50,18 +50,18 @@ public class Hud implements Drawable {
      * @param window The window on which the hud is drawn.
      * @throws Exception If an error occures during the setup of the Hud.
      */
-    public void init(Window window) throws Exception {
+    public void init(Window window) throws IOException {
         vg = window.getOptions().antialiasing() ? nvgCreate(NVG_ANTIALIAS | NVG_STENCIL_STROKES) :
                 nvgCreate(NVG_STENCIL_STROKES);
         if (this.vg == NULL) {
-            throw new Exception("Could not initialize NanoVG");
+            throw new IOException("Could not initialize NanoVG");
         }
 
         Font font = Font.MEDIUM;
         fontBuffer = Resource.toByteBuffer(font.source, 96 * 1024);
         int f = nvgCreateFontMem(vg, font.name , fontBuffer, 0);
         if (f == -1) {
-            throw new Exception("Could not create font " + font.name);
+            throw new IOException("Could not create font " + font.name);
         }
         imageBuffer = new HashMap<>();
         color = NVGColor.create();
@@ -118,6 +118,24 @@ public class Hud implements Drawable {
     public void rectangle(int x, int y, int width, int height) {
         nvgBeginPath(vg);
         nvgRect(vg, x, y, width, height);
+    }
+
+    public void roundedRectangle(int x, int y, int width, int height, int indent) {
+        int xMax = x + width;
+        int yMax = y + height;
+
+        try {
+            polygon(x + indent, y,
+                    xMax - indent, y,
+                    xMax, y + indent,
+                    xMax, yMax - indent,
+                    xMax - indent, yMax,
+                    x + indent, yMax,
+                    x, yMax - indent,
+                    x, y + indent
+            );
+        } catch (Exception ignored) { }
+
     }
 
     public void circle(int x, int y, int radius) {

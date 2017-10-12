@@ -46,7 +46,7 @@ public class UIProvider implements Provider {
                 e.printStackTrace();
             }
         }, (event) -> {
-            System.out.println("HUD is being sexually harrased");
+            System.out.println("HUD is being sexually harassed");
         });
 
         elements.add(button);
@@ -55,15 +55,8 @@ public class UIProvider implements Provider {
             elements.forEach(UIElement::draw);
 
             try {
-                hud.polygon(30, bottom(20),
-                        20,             bottom(30),
-                        20,             bottom(60),
-                        30,             bottom(70),
-                        right(30),    bottom(70),
-                        right(20),    bottom(60),
-                        right(20),    bottom(30),
-                        right(30),    bottom(20)
-                );
+                hud.roundedRectangle(20, bottom(80), wWidth - 40, 60, 10);
+
                 hud.fill(color.x, color.y, color.z, color.w);
                 hud.stroke(5, 0.6f, 0.1f, 1f, 1f);
                 hud.image("/texture.png", wWidth-70, wHeight-60, 30, 30, 0.6f);
