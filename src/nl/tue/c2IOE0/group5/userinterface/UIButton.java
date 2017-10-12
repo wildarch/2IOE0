@@ -1,6 +1,7 @@
 package nl.tue.c2IOE0.group5.userinterface;
 
 import nl.tue.c2IOE0.group5.engine.controller.input.events.MouseEvent;
+import nl.tue.c2IOE0.group5.engine.rendering.Hud;
 
 import java.util.function.Consumer;
 
@@ -11,8 +12,8 @@ public class UIButton extends UIElement {
 
     private Consumer<MouseEvent> click;
 
-    public UIButton(int x1, int y1, int x2, int y2, Runnable render, Consumer click) {
-        super(x1, y1, x2, y2, render);
+    public UIButton(int x, int y, int width, int height, Consumer<Hud> render, Consumer<MouseEvent> click) {
+        super(x, y, width, height, render);
         this.click = click;
     }
 

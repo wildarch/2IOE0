@@ -9,10 +9,13 @@ import nl.tue.c2IOE0.group5.engine.objects.Camera;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
+import nl.tue.c2IOE0.group5.providers.MenuProvider;
 import nl.tue.c2IOE0.group5.providers.TestProvider;
 import nl.tue.c2IOE0.group5.providers.UIProvider;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
+
+import java.awt.*;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -22,6 +25,8 @@ import static org.lwjgl.glfw.GLFW.*;
 public class PlayerController implements Controller,Listener {
 
     // define required resources here, e.g.
+    private Engine engine;
+    private MenuProvider menuProvider;
     private TestProvider testProvider;
     private UIProvider uiProvider;
     private GridProvider gridProvider;
@@ -48,6 +53,8 @@ public class PlayerController implements Controller,Listener {
     @Override
     public void init(Engine engine) {
         // you can initialize resources here, e.g.
+        this.engine = engine;
+        this.menuProvider = engine.getProvider(MenuProvider.class);
         this.testProvider = engine.getProvider(TestProvider.class);
         this.uiProvider = engine.getProvider(UIProvider.class);
         this.gridProvider = engine.getProvider(GridProvider.class);
@@ -77,6 +84,8 @@ public class PlayerController implements Controller,Listener {
 
     @Override
     public void onKeyPressed(Event event) {
+        if (engine.isPaused()) return;
+
         switch (event.getSubject()) {
             case GLFW_KEY_L:
                 camera.setRotation(0,0,0);
@@ -90,6 +99,8 @@ public class PlayerController implements Controller,Listener {
 
     @Override
     public void onKeyHold(Event event) {
+        if (engine.isPaused()) return;
+
         double frameTime = event.getSource().getFrameTime();
         float movement = (float)frameTime * 0.01f;
         switch (event.getSubject()) {
@@ -228,9 +239,13 @@ public class PlayerController implements Controller,Listener {
     @Override
     public void onMouseButtonPressed(MouseEvent event) {
         if (event.getSubject() == GLFW_MOUSE_BUTTON_1) {
-            if (uiProvider.onClick(event)) {
-                //System.out.println("Click at (" + event.getX() + ", " + event.getY() + ")");
-                this.gridProvider.click();
+            if (engine.isPaused()) {
+                menuProvider.onClick(event);
+            } else {
+                if (uiProvider.onClick(event)) {
+                    //System.out.println("Click at (" + event.getX() + ", " + event.getY() + ")");
+                    this.gridProvider.click();
+                }
             }
         }
 
@@ -259,6 +274,8 @@ public class PlayerController implements Controller,Listener {
 
     @Override
     public void onMouseMove(MouseEvent event) {
+        if (engine.isPaused()) return;
+
         gridProvider.recalculateActiveCell(new Vector2i(event.getX(), event.getY()), camera, renderer, event.getSource());
         //Get current values
         if (rightMouseButton || middleMouseButton) {
@@ -283,6 +300,8 @@ public class PlayerController implements Controller,Listener {
 
     @Override
     public void onMouseHover(MouseEvent event) {
+        if (engine.isPaused()) return;
+
         Window window = event.getSource();
 
         float percDistFromEdge = 0.07f;
@@ -334,6 +353,7 @@ public class PlayerController implements Controller,Listener {
 
     @Override
     public void onMouseScroll(MouseEvent event) {
+        if (engine.isPaused()) return;
         Vector3f directionOfCamera = gridProvider.getDirectionOfCamera(renderer, event.getSource(), 0, 0);
         float speed = 0.04f;
         moveLocal((event.getY()) * directionOfCamera.x()*speed,(event.getY()) * directionOfCamera.y()*speed,(event.getY()) * directionOfCamera.z()*speed);

@@ -22,6 +22,7 @@ import static org.lwjgl.nanovg.NanoVG.NVG_ALIGN_TOP;
  */
 public class UIProvider implements Provider {
 
+    private Engine engine;
     private Hud hud;
 
     private int x = 3;
@@ -36,10 +37,11 @@ public class UIProvider implements Provider {
     @Override
     public void init(Engine engine) {
         this.hud = engine.getHud();
+        this.engine = engine;
 
         elements = new ArrayList<>();
 
-        UIButton button = new UIButton(10, 10, 40, 40, () -> {
+        UIButton button = new UIButton(10, 10, 40, 40, (hud) -> {
             try {
                 hud.image("/texture.png", 10, 10, 40, 40, 1);
             } catch (IOException e) {
@@ -52,7 +54,9 @@ public class UIProvider implements Provider {
         elements.add(button);
 
         hud.create(() -> {
-            elements.forEach(UIElement::draw);
+            if (engine.isPaused()) return;
+
+            elements.forEach(element-> element.draw(hud));
 
             try {
                 hud.roundedRectangle(20, bottom(80), wWidth - 40, 60, 10);
@@ -86,6 +90,8 @@ public class UIProvider implements Provider {
 
     @Override
     public void update() {
+        if (engine.isPaused()) return;
+
         this.x ++;
         this.x %= 100;
     }

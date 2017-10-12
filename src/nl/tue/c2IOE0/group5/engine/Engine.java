@@ -27,6 +27,7 @@ public class Engine {
 
     private final boolean render;
     private boolean running = false;
+    private boolean paused = false;
 
     private Window window;
     private Renderer renderer;
@@ -253,6 +254,14 @@ public class Engine {
      */
     public boolean isRunning() {
         return running;
+    }
+
+    public boolean isPaused() {
+        return this.paused;
+    }
+
+    public void pause(boolean value) {
+        this.paused = value;
     }
 
     public Timer getGameloopTimer(){
