@@ -120,6 +120,24 @@ public class Hud implements Drawable {
         nvgRect(vg, x, y, width, height);
     }
 
+    public void roundedRectangle(int x, int y, int width, int height, int indent) {
+        int xMax = x + width;
+        int yMax = y + height;
+
+        try {
+            polygon(x + indent, y,
+                    xMax - indent, y,
+                    xMax, y + indent,
+                    xMax, yMax - indent,
+                    xMax - indent, yMax,
+                    x + indent, yMax,
+                    x, yMax - indent,
+                    x, y + indent
+            );
+        } catch (Exception ignored) { }
+
+    }
+
     public void circle(int x, int y, int radius) {
         nvgBeginPath(vg);
         nvgCircle(vg, x, y, radius);
