@@ -112,9 +112,6 @@ public class Engine {
                 tickTimer -= TPS_INTERVAL;
             }
 
-            // update human controller mouse position
-            controllers.forEach(Controller::updateMouseLocation);
-
             // draw
             if (window.update()) {
                 // fire non-native events
