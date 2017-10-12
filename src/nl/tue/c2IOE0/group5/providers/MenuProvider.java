@@ -12,40 +12,58 @@ import nl.tue.c2IOE0.group5.userinterface.MenuItem;
  */
 public class MenuProvider implements Provider {
 
-    int screenMiddle;
-
     private Hud hud;
+    private Window window;
 
-    MenuItem startGame;
-    MenuItem options;
-        MenuItem graphics;
-        MenuItem parameters;
-        MenuItem gamestate;
-    MenuItem credits;
-    MenuItem exitgame;
+    private MenuItem startGame;
+    private MenuItem graphics;
+    private MenuItem parameters;
+    private MenuItem gameState;
+    private MenuItem backOptions;
+    private MenuItem options;
+    private MenuItem credits;
+    private MenuItem exitGame;
 
-    MenuItem[] activeItems;
+    private final MenuItem[] mainMenu = {startGame, options, credits, exitGame};
+    private final MenuItem[] optionMenu = {graphics, parameters, gameState, backOptions};
+
+    private MenuItem[] activeItems;
 
     @Override
     public void init(Engine engine) {
-        startGame = new MenuItem("Start Game", ()->{});
-        options = new MenuItem("Options", ()-> activeItems = new MenuItem[]{graphics, parameters, gamestate});
-        credits = new MenuItem("Credits", ()->{});
-        exitgame = new MenuItem("Exit Game", ()->{});
+        int mmx = 0;
+        int y = 0;
+        final int OFFSET = (50 + MenuItem.BUTTON_HEIGHT);
+
+        startGame = new MenuItem(mmx += OFFSET, y, ()->{}, "Start Game");
+        options = new MenuItem(mmx += OFFSET, y, ()-> activeItems = optionMenu, "Options");
+        {
+            int omx = 0;
+            graphics = new MenuItem(omx += OFFSET, y, ()->{}, "Graphics");
+            parameters = new MenuItem(omx += OFFSET, y, ()->{}, "Parameters");
+            gameState = new MenuItem(omx += OFFSET, y, ()->{}, "Game state");
+            backOptions = new MenuItem(omx, y, () -> activeItems = mainMenu, "Back");
+        }
+        credits = new MenuItem(mmx += OFFSET, y, ()->{}, "Credits");
+        exitGame = new MenuItem(mmx, y, ()->{}, "Exit Game");
 
         this.hud = engine.getHud();
-        activeItems = new MenuItem[]{startGame, options, credits, exitgame};
-
-        screenMiddle = (engine.getWindow().getWidth())/2;
+        this.window = engine.getWindow();
+        activeItems = mainMenu;
     }
 
     @Override
-    public void update() { }
+    public void update() {
+        int middle = window.getWidth();
+        for (MenuItem activeItem : activeItems) {
+            activeItem.updatePosition(middle);
+        }
+    }
 
     @Override
     public void draw(Window window, Renderer renderer) {
-        for (int i = 0; i < activeItems.length; i++) {
-            activeItems[i].draw(screenMiddle, MenuItem.BUTTON_HEIGHT + (50 * i), hud);
+        for (MenuItem activeItem : activeItems) {
+            activeItem.draw(hud);
         }
     }
 }

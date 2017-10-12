@@ -23,26 +23,45 @@ public class MenuItem {
     private String text;
 
     private Runnable onClick;
+    public int x, y;
 
-    public MenuItem(int width, int height, Vector4f color, Vector4f textColor, Vector4f lineColor, String text, Runnable onClick) {
-        this.baseColor = color;
+    /**
+     * creates a menu button
+     * @param x
+     * @param y
+     * @param baseColor color of the background of the button
+     * @param textColor color of the text in the button
+     * @param lineColor color of the bounding line around the button
+     * @param text text displayed in the button
+     * @param onClick execution when the button is clicked
+     */
+    public MenuItem(int x, int y, int width, int height, Vector4f baseColor, Vector4f textColor, Vector4f lineColor, String text, Runnable onClick) {
+        this.baseColor = baseColor;
         this.textColor = textColor;
         this.width = width;
         this.height = height;
         this.lineColor = lineColor;
         this.text = text;
         this.onClick = onClick;
+        this.x = x;
+        this.y = y;
     }
 
-    public MenuItem(String text, Runnable onClick) {
-        new MenuItem(BUTTON_WIDTH, BUTTON_HEIGHT, BACK_COLOR, TEXT_COLOR, TEXT_COLOR, text, onClick);
+    public MenuItem(int x, int y, Runnable onClick, String text) {
+        this.x = x;
+        this.y = y;
+        new MenuItem(this.x, this.y, BUTTON_WIDTH, BUTTON_HEIGHT, BACK_COLOR, TEXT_COLOR, TEXT_COLOR, text, onClick);
     }
 
-    public void draw(int x, int y, Hud hud) {
+    public void draw(Hud hud) {
         hud.fill(baseColor.x, baseColor.y, baseColor.z, baseColor.w);
         hud.stroke(STROKE_WIDTH, lineColor.x, lineColor.y, lineColor.z, lineColor.w);
         hud.text(x + width/2, y + height/2, 12f, Hud.Font.MEDIUM, NVG_ALIGN_CENTER, text, textColor);
         hud.roundedRectangle(x, y, width, height, 10);
+    }
+
+    public void updatePosition(int y){
+        this.y = y;
     }
 
     public void onClick(){
