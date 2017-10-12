@@ -14,12 +14,18 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
 
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.*;
+import static org.lwjgl.opengl.GL30.*;
+
 /**
  * @author Jorren Hendriks.
  */
 public class Renderer {
     private Map<String, Mesh> meshes;
     private Map<Mesh, List<Consumer<Mesh>>> meshBuffer;
+
+    private Map<Mesh, List<Consumer<Mesh>>> shadowBuffer;
 
     private Window window;
     private Camera activeCamera;
@@ -32,6 +38,9 @@ public class Renderer {
 
     private Transformation transformation;
 
+    // light matrix for shadow mas
+    private Matrix4f lightViewMatrix;
+
 
 
     /**
@@ -40,16 +49,21 @@ public class Renderer {
     public Renderer() {
         meshes = new HashMap<>();
         meshBuffer = new HashMap<>();
-
+        shadowBuffer = new HashMap<>();
         transformation = new Transformation();
     }
 
-    public Mesh linkMesh(String filename, Consumer<Mesh> render) throws Exception {
+    public Mesh linkMesh(String filename, Consumer<Mesh> render, Consumer<Mesh> shadowrender) throws Exception {
         Mesh mesh = linkMesh(filename);
         if (meshBuffer.containsKey(mesh)) {
             meshBuffer.get(mesh).add(render);
         } else {
             meshBuffer.put(mesh, new ArrayList<>(Collections.singleton(render)));
+        }
+        if (shadowBuffer.containsKey(mesh)) {
+            shadowBuffer.get(mesh).add(shadowrender);
+        } else {
+            shadowBuffer.put(mesh, new ArrayList<>(Collections.singleton(shadowrender)));
         }
         return mesh;
     }
@@ -115,11 +129,13 @@ public class Renderer {
 
         // Initialize some fields
         sceneShader.setAmbientLight(new Vector3f(0.3f, 0.3f, 0.3f));
-        sceneShader.setDirectionalLight(new DirectionalLight(
+        DirectionalLight directionalLight = new DirectionalLight(
                 new Vector3f(1f, 1f, 1f),
                 new Vector3f(-0.78f, 0.4f, 0.66f),
                 1f
-        ));
+        );
+        directionalLight.setOrthoCords(-50.0f, 50.0f, -50.0f, 50.0f, -1.0f, 500.0f);
+        sceneShader.setDirectionalLight(directionalLight);
     }
 
     private void initDepthShader() throws ShaderException, IOException {
@@ -263,6 +279,7 @@ public class Renderer {
         sceneShader.setUniform("directionalLight", dirLight);
     }
 
+
     /**
      * Render the main objects of the scene.
      */
@@ -280,13 +297,51 @@ public class Renderer {
 
         meshBuffer.forEach((mesh, consumers) -> {
             setMaterial(mesh.getMaterial());
+            //setMaterial(new Material(depthMap.getDepthMapTexture()));
             mesh.renderAll(consumers);
         });
 
         sceneShader.unbind();
     }
 
+    public void renderDepthMap() {
+        // Setup view port to match the texture size
+        glBindFramebuffer(GL_FRAMEBUFFER, depthMap.getDepthMapFBO());
+        glViewport(0, 0, depthMap.width, depthMap.height);
+        glClear(GL_DEPTH_BUFFER_BIT);
+
+        depthShader.bind();
+
+        DirectionalLight light = sceneShader.getDirectionalLight();
+        Vector3f lightDirection = light.getDirection();
+
+        float lightAngleX = (float)Math.toDegrees(Math.acos(lightDirection.z));
+        float lightAngleY = (float)Math.toDegrees(Math.asin(lightDirection.x));
+        float lightAngleZ = 0;
+        lightViewMatrix = transformation.updateLightViewMatrix(new Vector3f(lightDirection).mul(light.getShadowStrength()), new Vector3f(lightAngleX, lightAngleY, lightAngleZ));
+        DirectionalLight.OrthoCoords orthCoords = light.getOrthoCoords();
+        Matrix4f orthoProjMatrix = transformation.updateOrthoProjectionMatrix(orthCoords.left, orthCoords.right, orthCoords.bottom, orthCoords.top, orthCoords.near, orthCoords.far);
+
+        depthShader.setUniform("orthoProjectionMatrix", orthoProjMatrix);
+
+        shadowBuffer.forEach((mesh, consumers) -> {
+            mesh.renderAll(consumers);
+        });
+
+        // Unbind
+        depthShader.unbind();
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    public void setModelLightViewMatrix(Vector3f position, Vector3f rotation, float scale) {
+        Matrix4f modelLightViewMatrix = transformation.buildModelViewMatrix(position, rotation, scale, lightViewMatrix);
+        depthShader.setUniform("modelLightViewMatrix", modelLightViewMatrix);
+    }
     public void render() {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        renderDepthMap();
+
+        glViewport(0, 0, window.getWidth(), window.getHeight());
         renderScene();
     }
 

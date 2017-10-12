@@ -32,7 +32,7 @@ public class Skybox extends GameObject {
             Mesh mesh = renderer.linkMesh(model, (m) -> {
                 setModelView(renderer);
                 renderer.drawSkybox(m::draw);
-            });
+            }, (m) -> {});
 
             mesh.setMaterial(new Material(texture));
         } catch (Exception e) {

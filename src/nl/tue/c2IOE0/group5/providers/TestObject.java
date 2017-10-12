@@ -29,7 +29,11 @@ public class TestObject extends GameObject {
         try {
             Mesh tower = renderer.linkMesh("/tower.obj", (mesh) -> {
                 setModelView(renderer);
-                renderer.boink((float) Math.sin(boinkyness) +1f, new Vector3f(0), new Vector3f(1), mesh::draw);
+                mesh.draw();
+                //renderer.boink((float) Math.sin(boinkyness) +1f, new Vector3f(0), new Vector3f(1), mesh::draw);
+            }, (mesh) -> {
+                setModelLightView(renderer);
+                mesh.draw();
             });
 
             tower.setMaterial(new Material("/tower.png"));

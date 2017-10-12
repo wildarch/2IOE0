@@ -126,6 +126,9 @@ public class Cell extends GameObject {
             renderer.linkMesh("/cube.obj", (mesh) -> {
                 setModelView(renderer);
                 renderer.ambientLight(color, mesh::draw);
+            }, (mesh) -> {
+                setModelLightView(renderer);
+                mesh.draw();
             });
         } catch (Exception e) {
             e.printStackTrace();

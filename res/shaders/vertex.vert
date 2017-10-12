@@ -24,6 +24,13 @@ out vec3 mvVertexPosition;
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
 
+//shadows
+out vec4 mlightviewVertexPos;
+out mat4 outModelViewMatrix;
+
+uniform mat4 modelLightViewMatrix;
+uniform mat4 orthoProjectionMatrix;
+
 // a value that is approximately 0, but large enough to prevent rounding errors
 float fragmentSize = 0.001;
 vec3 diffVec = boundingMax - boundingMin;
@@ -116,4 +123,8 @@ void main() {
 
 	// pass texture
 	outTexture = inTexture;
+
+	// shadow calculations
+	mlightviewVertexPos = orthoProjectionMatrix * modelLightViewMatrix * vec4(position, 1.0);
+    outModelViewMatrix = modelViewMatrix;
 }

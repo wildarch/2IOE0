@@ -3,8 +3,13 @@
 in vec2 outTexture;
 in vec3 mvVertexNormal;
 in vec3 mvVertexPosition;
+in vec4 mlightviewVertexPos;
+in mat4 outModelViewMatrix;
 
 out vec4 fragColor;
+
+uniform sampler2D depthMap;
+
 
 struct Attenuation
 {
@@ -107,6 +112,21 @@ vec4 calcDirectionalLight(DirectionalLight light, vec3 position, vec3 normal)
     return calcLightColour(light.colour, light.intensity, position, normalize(light.direction), normal);
 }
 
+float calcShadow(vec4 position)
+{
+    float shadowFactor = 1.0;
+    vec3 projCoords = position.xyz;
+    // Transform from screen coordinates to texture coordinates
+    projCoords = projCoords * 0.5 + 0.5;
+    if ( projCoords.z < texture(depthMap, projCoords.xy).r )
+    {
+        // Current fragment is not in shade
+        shadowFactor = 0;
+    }
+
+    return 1 - shadowFactor;
+}
+
 void main()
 {
     if (isSkybox == 0) {
@@ -119,7 +139,9 @@ void main()
             }
         }
 
-        fragColor = ambientC * vec4(ambientLight, 1) + diffuseSpecularComponent;
+        float shadow = calcShadow(mlightviewVertexPos);
+
+        fragColor = ambientC * vec4(ambientLight, 1) + diffuseSpecularComponent * shadow;
     } else {
         fragColor = texture(texture_sampler, outTexture);
     }
