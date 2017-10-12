@@ -75,6 +75,8 @@ public class InputHandler {
     private class KeyEventHandler extends GLFWKeyCallback {
         @Override
         public void invoke(long windowHandle, int keyCode, int scancode, int action, int mods) {
+            if (keyCode < 0) return;
+
             Event event = new Event(window, keyCode);
             if (action == GLFW_PRESS) {
                 keyBuffer[keyCode] = true;
