@@ -20,22 +20,18 @@ import java.util.List;
 public class TestEnemy extends Enemy {
     private Timer loopTimer;
     private List<Vector2i> targetPositions;
-    private long timeToDie;
     private long timeToDoDamage;
-
-    private GridProvider gridProvider;
 
 
     public TestEnemy(Mesh mesh, Timer loopTimer, GridProvider gridProvider,
-                     Vector2i initialPosition, List<Vector2i> targetPositions) {
+                     Vector2i initialPosition, List<Vector2i> targetPositions, int maxHealth) {
+        super(gridProvider, maxHealth);
         setMesh(mesh);
 
         this.loopTimer = loopTimer;
-        this.gridProvider = gridProvider;
         this.targetPositions = new ArrayList<>(targetPositions);
         setPosition(gridProvider.getCell(initialPosition).getPosition());
         setScale(0.01f);
-        timeToDie = loopTimer.getLoopTime() + 15000;
     }
 
     @Override
@@ -47,9 +43,6 @@ public class TestEnemy extends Enemy {
             if (tower != null) {
                 doDamage(tower);
             }
-        }
-        if(loopTimer.getLoopTime() > timeToDie) {
-            die();
         }
     }
 

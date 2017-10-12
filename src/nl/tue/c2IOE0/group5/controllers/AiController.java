@@ -85,11 +85,10 @@ public class AiController implements Controller, Listener {
         int noIterations = 1000;
         qlearner = new QLearner(GridProvider.SIZE, noIterations);
         qlearner.updateRewardsMatrix(qlearner.getState(GridProvider.SIZE/2, GridProvider.SIZE/2), 1000);
-        qlearner.updateRewardsMatrix(qlearner.getState(3, 3), 5);
-        qlearner.updateRewardsMatrix(qlearner.getState(2, 3), -5);
-        qlearner.updateRewardsMatrix(qlearner.getState(4, 3), -5);
-        qlearner.updateRewardsMatrix(qlearner.getState(3, 2), -5);
-        qlearner.updateRewardsMatrix(qlearner.getState(3, 4), -5);
+        for (int i = 3; i <= 9; i++) {
+            qlearner.updateRewardsMatrix(qlearner.getState(3, i), -5);
+            qlearner.updateRewardsMatrix(qlearner.getState(9, i), -5);
+        }
         for (int i = 0; i < 20; i++) {
             qlearner.generateRandomPath(100);
         }

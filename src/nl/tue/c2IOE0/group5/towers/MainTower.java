@@ -1,21 +1,21 @@
 package nl.tue.c2IOE0.group5.towers;
 
+import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
 import nl.tue.c2IOE0.group5.engine.rendering.OBJLoader;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
+import nl.tue.c2IOE0.group5.providers.EnemyProvider;
 
 import java.io.IOException;
 
 public class MainTower extends AbstractTower {
 
-    private static final int RANGE = 1;
+    private static final int RANGE = 2;
     private static final int MAX_LEVEL = 1;
-    private static final int DAMAGE_PER_ATTACK = 10;
-    private static final int ATTACKS_PER_SECOND = 2;
     private static final int MAX_HEALTH = 100;
 
-    public MainTower() {
-        super(RANGE, MAX_LEVEL, DAMAGE_PER_ATTACK, ATTACKS_PER_SECOND, MAX_HEALTH);
+    public MainTower(EnemyProvider enemyProvider, Timer timer) {
+        super(RANGE, MAX_LEVEL, MAX_HEALTH, enemyProvider, timer);
         setMesh();
     }
 

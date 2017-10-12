@@ -113,13 +113,6 @@ public class GridProvider implements Provider {
         cell.destroyTower();
     }
 
-    private boolean isInRange(Cell cellWithTower, Cell cellToCheck) {
-        int range = cellWithTower.getTower().getRange();
-        Vector2ic positionToCheck = cellToCheck.getGridPosition();
-        Vector2ic positionWithTower = cellWithTower.getGridPosition();
-        return positionToCheck.x() - positionWithTower.x() + positionToCheck.y() - positionWithTower.y() < range;
-    }
-
     /**
      * Set the active cell and color it
      * @param x the x coordinate of the active cell

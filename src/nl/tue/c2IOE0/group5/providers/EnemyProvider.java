@@ -38,6 +38,10 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
 
     }
 
+    public List<Enemy> getEnemies() {
+        return this.objects;
+    }
+
     public int countEnemies() {
         return objects.size();
     }
@@ -48,7 +52,7 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
                 loopTimer,
                 gridProvider,
                 initialPosition,
-                targets
+                targets, 20
         ));
     }
 }
