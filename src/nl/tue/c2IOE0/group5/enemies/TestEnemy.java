@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TestEnemy extends Enemy {
-    private float t = 0;
     private Timer loopTimer;
     private List<Vector2i> targetPositions;
     private long timeToDie;
@@ -46,11 +45,7 @@ public class TestEnemy extends Enemy {
             Cell targetCell = gridProvider.getCell(targetPositions.get(0));
             AbstractTower tower = targetCell.getTower();
             if (tower != null) {
-                // Do damage
-                if (timeToDoDamage < loopTimer.getLoopTime()) {
-                    tower.takeDamage(1);
-                    timeToDoDamage = loopTimer.getLoopTime() + 1000;
-                }
+                doDamage(tower);
             }
         }
         if(loopTimer.getLoopTime() > timeToDie) {
@@ -58,9 +53,9 @@ public class TestEnemy extends Enemy {
         }
     }
 
-    private void doDamage() {
+    private void doDamage(AbstractTower tower) {
         if (timeToDoDamage < loopTimer.getLoopTime()) {
-            System.out.println("Attack!");
+            tower.takeDamage(1);
             timeToDoDamage = loopTimer.getLoopTime() + 500;
         }
     }
