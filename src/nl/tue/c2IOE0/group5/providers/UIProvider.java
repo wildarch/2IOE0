@@ -41,31 +41,35 @@ public class UIProvider implements Provider {
 
         elements = new ArrayList<>();
 
-        UIButton button = new UIButton(10, 10, 40, 40, (hud) -> {
-            try {
-                hud.image("/texture.png", 10, 10, 40, 40, 1);
-            } catch (IOException e) {
-                e.printStackTrace();
+        UIButton button = new UIButton(10, 10, 40, 40) {
+            @Override
+            public void onClick(MouseEvent event) {
+                System.out.println("HUD is being sexually harassed");
             }
-        }, (event) -> {
-            System.out.println("HUD is being sexually harassed");
-        });
+
+            @Override
+            public void draw(Hud hud) throws IOException {
+                hud.image("/texture.png", 10, 10, 40, 40, 1);
+            }
+        };
 
         elements.add(button);
 
         hud.create(() -> {
             if (engine.isPaused()) return;
 
-            elements.forEach(element-> element.draw(hud));
-
             try {
+                for (UIElement element : elements) {
+                    element.draw(hud);
+                }
+
                 hud.roundedRectangle(20, bottom(80), wWidth - 40, 60, 10);
 
                 hud.fill(color.x, color.y, color.z, color.w);
                 hud.stroke(5, 0.6f, 0.1f, 1f, 1f);
                 hud.image("/texture.png", wWidth-70, wHeight-60, 30, 30, 0.6f);
                 hud.text(40, wHeight - 52, 25f, Hud.Font.MEDIUM, NVG_ALIGN_LEFT | NVG_ALIGN_TOP, "Welcome to the HUD " + x, textColor);
-            } catch (Exception e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 

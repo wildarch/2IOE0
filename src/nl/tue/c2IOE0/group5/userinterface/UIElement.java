@@ -1,27 +1,23 @@
 package nl.tue.c2IOE0.group5.userinterface;
 
-import nl.tue.c2IOE0.group5.engine.rendering.Hud;
+import nl.tue.c2IOE0.group5.engine.rendering.HudElement;
 import org.joml.Vector2i;
-
-import java.util.function.Consumer;
 
 /**
  * @author Jorren Hendriks.
  */
-public class UIElement {
+public abstract class UIElement implements HudElement {
 
     protected int x;
     protected int y;
-    private int width;
-    private int height;
-    private Consumer<Hud> render;
+    protected int width;
+    protected int height;
 
-    public UIElement(int x, int y, int width, int height, Consumer<Hud> render) {
+    public UIElement(int x, int y, int width, int height) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
-        this.render = render;
     }
 
     public boolean contains(Vector2i v) {
@@ -29,15 +25,12 @@ public class UIElement {
                 y <= v.y() && v.y() <= y + height;
     }
 
-    public void draw(Hud hud) {
-        render.accept(hud);
-    }
-
-    public void updateXPosition(int x){
+    public void setX(int x) {
         this.x = x;
     }
 
-    public void recreateRenderer(Consumer<Hud> render){
-        this.render = render;
+    public void setY(int y) {
+        this.y = y;
     }
+
 }
