@@ -101,7 +101,6 @@ public abstract class AbstractTower extends GameObject {
     }
 
     private void attack(Enemy e) {
-        System.out.println("Attack! (tower)");
         e.getDamage(1000);
     }
 
