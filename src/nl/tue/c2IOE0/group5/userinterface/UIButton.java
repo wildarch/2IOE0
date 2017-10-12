@@ -17,6 +17,9 @@ public class UIButton extends UIElement {
         this.click = click;
     }
 
+    /**
+     * always fires its click event
+     */
     public void onClick(MouseEvent event) {
         click.accept(event);
     }

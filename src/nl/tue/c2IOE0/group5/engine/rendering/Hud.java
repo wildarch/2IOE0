@@ -7,8 +7,8 @@ import org.lwjgl.nanovg.NVGPaint;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -67,7 +67,7 @@ public class Hud implements Drawable {
         color = NVGColor.create();
         paint = NVGPaint.create();
 
-        drawBuffer = new ArrayList<>();
+        drawBuffer = new LinkedList<>();
     }
 
     /**
