@@ -34,12 +34,20 @@ public class Renderer {
     // shader for shadow maps
     private ShaderProgram depthShader;
     // depth map used for shadows for the entire scene
-    private DepthMap depthMap;
+    public DepthMap depthMap;
 
     private Transformation transformation;
 
-    // light matrix for shadow mas
+    // light matrix for shadow map
     private Matrix4f lightViewMatrix;
+
+    // light matrix for usage shadow map
+    private Matrix4f sceneLightViewMatrix;
+
+
+    private DirectionalLight directionalLight;
+
+
 
 
 
@@ -66,6 +74,11 @@ public class Renderer {
             shadowBuffer.put(mesh, new ArrayList<>(Collections.singleton(shadowrender)));
         }
         return mesh;
+    }
+
+    public void changeOrtho(float left, float right, float bottom, float top, float near, float far) {
+        DirectionalLight.OrthoCoords c = directionalLight.getOrthoCoords();
+        directionalLight.setOrthoCords(c.left+left, c.right+right, c.bottom+bottom, c.top+top, c.near+near, c.far+far);
     }
 
     public Mesh linkMesh(String filename) throws Exception {
@@ -126,15 +139,20 @@ public class Renderer {
         // Create uniform for rendering the skybox
         sceneShader.createUniform("isSkybox");
 
+        // Create uniforms for shadow mapping
+        sceneShader.createUniform("depthMap");
+        sceneShader.createUniform("orthoProjectionMatrix");
+        sceneShader.createUniform("modelLightViewMatrix");
+
 
         // Initialize some fields
         sceneShader.setAmbientLight(new Vector3f(0.3f, 0.3f, 0.3f));
-        DirectionalLight directionalLight = new DirectionalLight(
+        directionalLight = new DirectionalLight(
                 new Vector3f(1f, 1f, 1f),
                 new Vector3f(-0.78f, 0.4f, 0.66f),
                 1f
         );
-        directionalLight.setOrthoCords(-50.0f, 50.0f, -50.0f, 50.0f, -1.0f, 500.0f);
+        directionalLight.setOrthoCords(-10.0f, 10.0f, -10.0f, 10.0f, -7.0f, 20.0f);
         sceneShader.setDirectionalLight(directionalLight);
     }
 
@@ -288,15 +306,21 @@ public class Renderer {
 
         Matrix4f projectionMatrix = window.getProjectionMatrix();
         sceneShader.setUniform("projectionMatrix", projectionMatrix);
+        Matrix4f orthoProjMatrix = transformation.getOrthoProjectionMatrix();
+        sceneShader.setUniform("orthoProjectionMatrix", orthoProjMatrix);
+        sceneLightViewMatrix = transformation.getLightViewMatrix();
 
         Matrix4f viewMatrix = getViewMatrix();
 
         renderLights(viewMatrix);
 
         sceneShader.setUniform("texture_sampler", 0);
+        sceneShader.setUniform("depthMap", 1);
 
         meshBuffer.forEach((mesh, consumers) -> {
             setMaterial(mesh.getMaterial());
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, depthMap.getDepthMapTexture().getId());
             //setMaterial(new Material(depthMap.getDepthMapTexture()));
             mesh.renderAll(consumers);
         });
@@ -319,6 +343,7 @@ public class Renderer {
         float lightAngleY = (float)Math.toDegrees(Math.asin(lightDirection.x));
         float lightAngleZ = 0;
         lightViewMatrix = transformation.updateLightViewMatrix(new Vector3f(lightDirection).mul(light.getShadowStrength()), new Vector3f(lightAngleX, lightAngleY, lightAngleZ));
+        //light.setOrthoCords(activeCamera.getPosition().x, 10.0f, -10.0f, 10.0f, -1.0f, 20.0f);
         DirectionalLight.OrthoCoords orthCoords = light.getOrthoCoords();
         Matrix4f orthoProjMatrix = transformation.updateOrthoProjectionMatrix(orthCoords.left, orthCoords.right, orthCoords.bottom, orthCoords.top, orthCoords.near, orthCoords.far);
 
@@ -336,6 +361,10 @@ public class Renderer {
     public void setModelLightViewMatrix(Vector3f position, Vector3f rotation, float scale) {
         Matrix4f modelLightViewMatrix = transformation.buildModelViewMatrix(position, rotation, scale, lightViewMatrix);
         depthShader.setUniform("modelLightViewMatrix", modelLightViewMatrix);
+    }
+    public void setModelLightViewMatrixScene(Vector3f position, Vector3f rotation, float scale) {
+        Matrix4f modelLightViewMatrix = transformation.buildModelViewMatrix(position, rotation, scale, sceneLightViewMatrix);
+        sceneShader.setUniform("modelLightViewMatrix", modelLightViewMatrix);
     }
     public void render() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

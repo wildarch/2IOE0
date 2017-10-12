@@ -14,11 +14,13 @@ public class Skybox extends GameObject {
 
     private String model;
     private Texture texture;
+    private Material material;
 
     public Skybox(String objModel, String textureFile) throws Exception {
         super();
         this.model = objModel;
         this.texture = new Texture(textureFile);
+        this.material = new Material(this.texture);
     }
 
     public void setPosition(Camera camera) {
@@ -34,7 +36,7 @@ public class Skybox extends GameObject {
                 renderer.drawSkybox(m::draw);
             }, (m) -> {});
 
-            mesh.setMaterial(new Material(texture));
+            mesh.setMaterial(material);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -114,14 +114,26 @@ vec4 calcDirectionalLight(DirectionalLight light, vec3 position, vec3 normal)
 
 float calcShadow(vec4 position)
 {
-    float shadowFactor = 1.0;
     vec3 projCoords = position.xyz;
     // Transform from screen coordinates to texture coordinates
     projCoords = projCoords * 0.5 + 0.5;
-    if ( projCoords.z < texture(depthMap, projCoords.xy).r )
+    float bias = 0.001;
+
+    float shadowFactor = 0.0;
+    vec2 inc = 1.0 / textureSize(depthMap, 0);
+    for(int row = -1; row <= 1; ++row)
     {
-        // Current fragment is not in shade
-        shadowFactor = 0;
+        for(int col = -1; col <= 1; ++col)
+        {
+            float textDepth = texture(depthMap, projCoords.xy + vec2(row, col) * inc).r;
+            shadowFactor += projCoords.z - bias > textDepth ? 1.0 : 0.0;
+        }
+    }
+    shadowFactor /= 9.0;
+
+    if(projCoords.z > 1.0)
+    {
+        shadowFactor = 1.0;
     }
 
     return 1 - shadowFactor;

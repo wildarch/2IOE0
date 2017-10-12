@@ -89,6 +89,48 @@ public class PlayerController implements Controller,Listener {
             case GLFW_KEY_LEFT_SHIFT:
                 camera.moveRelative(0f, -speed, 0f);
                 break;
+
+            //shadow ortho, for debugging purposes
+            /*
+            case GLFW_KEY_R:
+                renderer.changeOrtho(0.1f, 0, 0, 0, 0, 0);
+                break;
+            case GLFW_KEY_T:
+                renderer.changeOrtho(0, 0.1f, 0, 0, 0, 0);
+                break;
+            case GLFW_KEY_Y:
+                renderer.changeOrtho(0, 0, 0.1f, 0, 0, 0);
+                break;
+            case GLFW_KEY_U:
+                renderer.changeOrtho(0, 0, 0, 0.1f, 0, 0);
+                break;
+            case GLFW_KEY_I:
+                renderer.changeOrtho(0, 0, 0, 0, 0.1f, 0);
+                break;
+            case GLFW_KEY_O:
+                renderer.changeOrtho(0, 0, 0, 0, 0, 0.1f);
+                break;
+            case GLFW_KEY_F:
+                renderer.changeOrtho(-0.1f, 0, 0, 0, 0, 0);
+                break;
+            case GLFW_KEY_G:
+                renderer.changeOrtho(0, -0.1f, 0, 0, 0, 0);
+                break;
+            case GLFW_KEY_H:
+                renderer.changeOrtho(0, 0, -0.1f, 0, 0, 0);
+                break;
+            case GLFW_KEY_J:
+                renderer.changeOrtho(0, 0, 0, -0.1f, 0, 0);
+                break;
+            case GLFW_KEY_K:
+                renderer.changeOrtho(0, 0, 0, 0, -0.1f, 0);
+                break;
+            case GLFW_KEY_L:
+                renderer.changeOrtho(0, 0, 0, 0, 0, -0.1f);
+                break;
+            */
+
+
         }
     }
 

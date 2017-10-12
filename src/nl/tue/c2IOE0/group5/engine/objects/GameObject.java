@@ -45,6 +45,10 @@ public abstract class GameObject extends Positionable {
         renderer.setModelLightViewMatrix(getPosition(), getRotation(), getScale());
     }
 
+    protected void setModelLightViewScene(Renderer renderer) {
+        renderer.setModelLightViewMatrixScene(getPosition(), getRotation(), getScale());
+    }
+
     /**
      * {@link #setModelView(Renderer, Vector3f, Vector3f 0, float 0)}
      */
