@@ -20,7 +20,7 @@ import java.util.List;
 public class Engine {
 
     private final static int TARGET_TPS = 20;
-    private final static int TARGET_FPS = 75;
+    private final static int TARGET_FPS = 144;
 
     private final static int TPS_INTERVAL = 1000 / TARGET_TPS;
     private final static int FPS_INTERVAL = 1000 / TARGET_FPS;
@@ -111,6 +111,9 @@ public class Engine {
                 // tick has been processed, remove 1 interval from tick timer
                 tickTimer -= TPS_INTERVAL;
             }
+
+            // update human controller mouse position
+            controllers.forEach(Controller::updateMouseLocation);
 
             // draw
             if (window.update()) {

@@ -13,4 +13,9 @@ public class AiController implements Controller {
     public void update() {
 
     }
+
+    @Override
+    public void updateMouseLocation() {
+
+    }
 }

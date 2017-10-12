@@ -32,14 +32,19 @@ public class PlayerController implements Controller,Listener {
     private float oldy = 0;
     private float sensitivity = 5;//Camera Sensitivity on a scale from 1 to 10
     private boolean rightMouseButton = false;
+    private boolean middleMouseButton = false;
+    private float ticksSinceTrigger = 0.000f;
 
-    private float maxX = 0;
-    private float maxY = 20;
-    private float maxZ = 0;
+    private float maxX;
+    private float maxY;
+    private float maxZ;
 
-    private float minX = 0;
+    private float minX;
     private float minY = 0.1f;
-    private float minZ = 0;
+    private float minZ;
+
+    public PlayerController() {
+    }
 
     @Override
     public void init(Engine engine) {
@@ -58,7 +63,9 @@ public class PlayerController implements Controller,Listener {
 
     private void calculateXYZ(){
         maxX = gridProvider.SIZE/2 + gridProvider.SIZE;
+        maxY = gridProvider.SIZE;
         maxZ = gridProvider.SIZE/2 + gridProvider.SIZE;
+
         minX = gridProvider.SIZE/2 - gridProvider.SIZE;
         minZ = gridProvider.SIZE/2 - gridProvider.SIZE;
     }
@@ -66,6 +73,56 @@ public class PlayerController implements Controller,Listener {
     @Override
     public void update() {
         // you can use resources here, e.g.
+
+    }
+
+    @Override
+    public void updateMouseLocation() {
+        float percDistFromEdge = 0.07f;
+        float distFromEdge = percDistFromEdge*window.getWidth();
+        float speed = (float)window.getFrameTime();
+        float sensitivityScroll = 0.001f*speed * ticksSinceTrigger;
+
+        //x mouse location
+        float xMouse = window.getMousePosition().x();
+        /*
+        if (xMouse <= 0){xMouse=1;}
+        if (xMouse >= window.getWidth()){xMouse = window.getWidth()-1;}
+        if (yMouse <= 0){yMouse=1;}
+        if (yMouse >= window.getHeight()){yMouse = window.getHeight()-1;}
+        */
+
+        //y mouse location
+        float yMouse = window.getMousePosition().y();
+
+        if (!(xMouse > distFromEdge && xMouse <= window.getWidth()-distFromEdge && yMouse > distFromEdge && yMouse <= window.getHeight()-distFromEdge) && ticksSinceTrigger<=120){
+            ticksSinceTrigger += 0.001f;
+        }
+
+        if (xMouse > distFromEdge && xMouse <= window.getWidth()-distFromEdge && yMouse > distFromEdge && yMouse <= window.getHeight()-distFromEdge){
+            ticksSinceTrigger = 0;
+        }
+
+        //Scroll left if mouse is within border range
+        if (xMouse <= distFromEdge && xMouse > 0) {
+            moveRelativeLocal(-(distFromEdge - xMouse) * sensitivityScroll, 0, 0);
+        }
+
+        //Scroll right if mouse is within border range
+        if (xMouse >= window.getWidth() - distFromEdge && xMouse < window.getWidth()) {
+            moveRelativeLocal((xMouse - (window.getWidth() - distFromEdge)) * sensitivityScroll, 0, 0);
+        }
+
+        //Scroll up if mouse is within border range
+        if (yMouse <= distFromEdge && yMouse > 0) {
+            moveRelativeLocal(0, 0,  -(distFromEdge - yMouse) * sensitivityScroll);
+        }
+
+        //Scroll down if mouse is within border range
+        if (yMouse >= window.getHeight() - distFromEdge && yMouse < window.getHeight()) {
+            moveRelativeLocal(0, 0, (yMouse - (window.getHeight() - distFromEdge)) * sensitivityScroll);
+        }
+
     }
 
     @Override
@@ -185,14 +242,15 @@ public class PlayerController implements Controller,Listener {
             }
         }
 
-        if (event.getSubject() == GLFW_MOUSE_BUTTON_2) {
+        if (event.getSubject() == GLFW_MOUSE_BUTTON_2 || event.getSubject() == GLFW_MOUSE_BUTTON_3) {
             //System.out.println("M at (" + event.getX() + ", " + event.getY() + ")");
             rightMouseButton = true;
+            middleMouseButton = true;
 
             /******************************************************************************************\
-            Set current location as the start for the delta X and Y. Otherwise it will use outdated data
-            and think you'll have moveD in-between pressing releasing middle mouse and pressing it again.
-            \******************************************************************************************/
+             Set current location as the start for the delta X and Y. Otherwise it will use outdated data
+             and think you'll have moveD in-between pressing releasing middle mouse and pressing it again.
+             \******************************************************************************************/
             oldx = event.getX();
             oldy = event.getY();
         }
@@ -200,9 +258,10 @@ public class PlayerController implements Controller,Listener {
 
     @Override
     public void onMouseButtonReleased(MouseEvent event) {
-        if (event.getSubject() == GLFW_MOUSE_BUTTON_2) {
+        if (event.getSubject() == GLFW_MOUSE_BUTTON_2 || event.getSubject() == GLFW_MOUSE_BUTTON_3) {
             //System.out.println("M at (" + event.getX() + ", " + event.getY() + ")");www
             rightMouseButton = false;
+            middleMouseButton = false;
         }
     }
 
@@ -210,7 +269,7 @@ public class PlayerController implements Controller,Listener {
     public void onMouseMove(MouseEvent event) {
         gridProvider.recalculateActiveCell(new Vector2i(event.getX(), event.getY()), camera, renderer, window);
         //Get current values
-        if (rightMouseButton) {
+        if (rightMouseButton || middleMouseButton) {
             float x = event.getX();
             float y = event.getY();
 
@@ -233,7 +292,8 @@ public class PlayerController implements Controller,Listener {
     @Override
     public void onMouseScroll(MouseEvent event) {
         Vector3f directionOfCamera = gridProvider.getDirectionOfCamera(renderer, window, 0, 0);
-        moveLocal((event.getY()/10) * directionOfCamera.x(),(event.getY()/10) * directionOfCamera.y(),(event.getY()/10) * directionOfCamera.z());
+        float speed = 0.04f;
+        moveLocal((event.getY()) * directionOfCamera.x()*speed,(event.getY()) * directionOfCamera.y()*speed,(event.getY()) * directionOfCamera.z()*speed);
     }
 
     private class PositionContainer{
