@@ -187,6 +187,17 @@ public class ShaderProgram {
         setUniform("isSkybox", 0);
     }
 
+    public void drawHealthBolletje(Runnable render) {
+        DirectionalLight directionalLightOff = new DirectionalLight(
+                new Vector3f(),
+                new Vector3f(),
+                0f
+        );
+        setDirectionalLight(directionalLightOff);
+        render.run();
+        setDirectionalLight(directionalLight);
+    }
+
     /**
      * disables previously activated bounce-effects
      * @see #boink(float, Vector3f, Vector3f, Runnable)

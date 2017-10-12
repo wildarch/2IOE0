@@ -121,7 +121,7 @@ public class Cell extends GameObject {
         } else {
             this.tower = t;
             t.setCell(this);
-            t.setPosition(getPosition().add(0, 0.5f, 0f));
+            t.setPosition(this.getPosition().add(0, 0.5f, 0f));
         }
     }
 

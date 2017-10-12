@@ -146,6 +146,9 @@ public class Renderer {
     public void drawSkybox(Runnable render) {
         sceneShader.drawSkybox(render);
     }
+    public void drawHealthBolletje(Runnable render) {
+        sceneShader.drawHealthBolletje(render);
+    }
 
 
 
