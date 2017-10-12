@@ -26,7 +26,7 @@ public class Cell extends GameObject {
     private Vector3f color;
 
     private final CellType cellType;
-    private Mesh mesh;
+    //private Mesh mesh;
 
     /**
      * The x and y coordinates are of the grid, not in 3d space!
@@ -40,10 +40,10 @@ public class Cell extends GameObject {
         this.position = new Vector2i(x, y);
 
         try {
-            this.mesh = OBJLoader.loadMesh("/cube.obj");
+            //this.mesh = OBJLoader.loadMesh("/cube.obj");
 
             //initialize textures
-            mesh.setMaterial(new Material("/square.png"));
+            //mesh.setMaterial(new Material("/square.png"));
             switch (cellType) {
                 case BASE:
                     defaultColor = new Vector3f(0f, 1f, 0f);
@@ -121,11 +121,16 @@ public class Cell extends GameObject {
     }
 
     @Override
-    public void draw(Window window, Renderer renderer) {
-        super.draw(window, renderer);
+    public Cell init(Renderer renderer) {
+        try {
+            renderer.linkMesh("/cube.obj", (mesh) -> {
+                setModelView(renderer);
+                renderer.ambientLight(color, mesh::draw);
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        renderer.ambientLight(color, () ->
-                mesh.draw(renderer)
-        );
+        return this;
     }
 }

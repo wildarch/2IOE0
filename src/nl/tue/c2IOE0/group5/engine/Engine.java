@@ -20,11 +20,12 @@ import java.util.List;
 public class Engine {
 
     private final static int TARGET_TPS = 20;
-    private final static int TARGET_FPS = 75;
+    private final static int TARGET_FPS = 144;
 
     private final static int TPS_INTERVAL = 1000 / TARGET_TPS;
     private final static int FPS_INTERVAL = 1000 / TARGET_FPS;
 
+    private final boolean render;
     private boolean running = false;
 
     private Window window;
@@ -37,14 +38,14 @@ public class Engine {
     private List<Provider> providers;
     private List<Controller> controllers;
 
-    public Engine() {
+    public Engine(boolean render) {
+        this.render = render;
+        timer = new Timer();
         window = new Window("Tower Defence", 1600, 900, false, new Window.Options());
         renderer = new Renderer();
         hud = new Hud();
         inputHandler = new InputHandler();
-        timer = new Timer();
         camera = new Camera(this);
-
         providers = new ArrayList<>();
         controllers = new ArrayList<>();
     }
@@ -52,11 +53,15 @@ public class Engine {
     /**
      * Run the Engine, should be invoked after initializing and attaching {@link Controller}s and {@link Provider}s.
      */
-    public void run() throws ShaderException, IOException, Exception {
+    public void run() throws ShaderException, IOException {
         try {
             running = true;
             init();
-            loop();
+            if (render) {
+                loop();
+            } else {
+                renderlessLoop();
+            }
         } finally {
             cleanup();
         }
@@ -65,13 +70,12 @@ public class Engine {
     /**
      * Initialize necessary objects
      */
-    private void init() throws ShaderException, IOException, Exception {
+    private void init() throws ShaderException, IOException {
         timer.init();
         window.init();
-        renderer.init();
+        renderer.init(window);
         renderer.setActiveCamera(camera);
         hud.init(window);
-
         inputHandler.init(window);
         providers.forEach(provider -> provider.init(this));
         controllers.forEach(controller -> controller.init(this));
@@ -81,9 +85,22 @@ public class Engine {
      * Cleanup used objects
      */
     private void cleanup() {
-        window.cleanup();
-        renderer.cleanup();
-        hud.cleanup();
+        if (render) {
+            window.cleanup();
+            renderer.cleanup();
+            hud.cleanup();
+        }
+    }
+
+    /**
+     * The gameloop in case of no rendering. Only update gamestate and don't do anything with regard to rendering.
+     */
+    private void renderlessLoop() {
+        while(running && !window.shouldClose()) {
+            window.update();
+            controllers.forEach(Controller::update);
+            providers.forEach(Provider::update);
+        }
     }
 
     /**
@@ -103,7 +120,6 @@ public class Engine {
             tickTimer += elapsedTime;
 
             while (tickTimer >= TPS_INTERVAL) {
-
                 // update all controllers and providers
                 controllers.forEach(Controller::update);
                 providers.forEach(Provider::update);
@@ -119,15 +135,12 @@ public class Engine {
 
                 // set main camera
                 renderer.setActiveCamera(camera);
-                // bind default shader program
-                renderer.bind();
+                // update projection matrix
+                window.updateProjectionMatrix();
 
-
-                renderer.updateProjectionMatrix(window);
+                // render everything
                 providers.forEach(provider -> provider.draw(window, renderer));
-
-                // unbind shader program
-                renderer.unbind();
+                renderer.render();
 
                 // draw the hud
                 hud.draw(window, renderer);

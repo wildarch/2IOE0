@@ -22,7 +22,7 @@ import static org.lwjgl.BufferUtils.createByteBuffer;
  */
 public class Resource {
 
-    public static String load(String fileName) throws Exception {
+    public static String load(String fileName) throws IOException {
         String result;
         try (InputStream in = Resource.class.getClass().getResourceAsStream(fileName);
              Scanner scanner = new Scanner(in, "UTF-8")) {

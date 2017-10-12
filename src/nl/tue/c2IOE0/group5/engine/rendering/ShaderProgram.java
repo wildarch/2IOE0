@@ -1,6 +1,5 @@
 package nl.tue.c2IOE0.group5.engine.rendering;
 
-import nl.tue.c2IOE0.group5.engine.objects.Camera;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.DirectionalLight;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.PointLight;
@@ -9,57 +8,37 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.system.MemoryStack;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
 
 import static org.lwjgl.opengl.GL20.*;
 
 /**
- * Created by Administrator on 9-10-2017.
+ *  @author Yoeri Poels
  */
 public class ShaderProgram {
+
+    public final static int MAX_POINT_LIGHTS = 5;
+
+    private final Map<String, Integer> uniforms;
 
     private int programId;
     private int vertexShaderId;
     private int fragmentShaderId;
-    private final Map<String, Integer> uniforms;
 
-
-    // FOV in radians
-    private static final float FOV = (float) Math.toRadians(60.0f);
-    // z-coordinates relative to the activeCamera.
-    private static final float Z_NEAR = 0.01f;
-    private static final float Z_FAR = 1000.0f;
-
-    private final Transformation transformation;
-
-
-    private float specularPower = 10f;
+    private float specularPower = 1f;
     private Vector3f ambientLight = new Vector3f();
     private DirectionalLight directionalLight = new DirectionalLight(
             new Vector3f(),
             new Vector3f(),
             1f
     );
-    private PointLight pointLight = new PointLight(
-            new Vector3f(),
-            new Vector3f(),
-            1f);
-    private PointLight.Attenuation pointLightAtt = new PointLight.Attenuation(0f, 0f, 0f);
+    private PointLight[] pointLights = {};
 
-
-    private Camera activeCamera;
-
-    public ShaderProgram() {
-        transformation = new Transformation();
+    ShaderProgram() throws ShaderException {
         uniforms = new HashMap<>();
-    }
 
-    public void init() throws ShaderException {
         programId = glCreateProgram();
         if (programId == 0) {
             throw new ShaderException("Could not create Shader");
@@ -69,44 +48,28 @@ public class ShaderProgram {
     /**
      * Bind the renderer to the current rendering state
      */
-    public void bind() {
+    void bind() {
         glUseProgram(programId);
     }
 
     /**
      * Unbind the renderer from the current rendering state
      */
-    public void unbind() {
+    void unbind() {
         glUseProgram(0);
     }
 
     /**
      * Cleanup the renderer after it's done
      */
-    public void cleanup() {
+    void cleanup() {
         unbind();
         if (programId != 0) {
             glDeleteProgram(programId);
         }
     }
 
-    /**
-     * Set the camera which is currently active.
-     *
-     * @param activeCamera The camera to be active.
-     */
-    public void setActiveCamera(Camera activeCamera) {
-        this.activeCamera = activeCamera;
-    }
 
-    /**
-     * Get the currently active Camera.
-     *
-     * @return The active Camera.
-     */
-    public Camera getActiveCamera() {
-        return this.activeCamera;
-    }
 
     /**
      * Link the program and cleanup the shaders.
@@ -133,143 +96,90 @@ public class ShaderProgram {
 
     }
 
-
-    public Vector3f getAmbientLight() {
+    /**
+     * Get the ambient light vector.
+     *
+     * @return The ambient light vector.
+     */
+    Vector3f getAmbientLight() {
         return this.ambientLight;
     }
-    public void setAmbientLight(Vector3f ambientLight) {
+
+    /**
+     * Set the ambient light vector.
+     *
+     * @param ambientLight the ambient light vector.
+     */
+    void setAmbientLight(Vector3f ambientLight) {
         this.ambientLight = ambientLight;
     }
 
-    public DirectionalLight getDirectionalLight  () {
+    /**
+     * Get the specular power.
+     *
+     * @return the specular power.
+     */
+    float getSpecularPower() {
+        return specularPower;
+    }
+
+    /**
+     * Set the specular power.
+     *
+     * @param specularPower the specular power.
+     */
+    void setSpecularPower(float specularPower) {
+        this.specularPower = specularPower;
+    }
+
+    /**
+     * Get the directional light.
+     *
+     * @return the DirectionalLight
+     */
+    DirectionalLight getDirectionalLight() {
         return this.directionalLight;
     }
-    public void setDirectionalLight(DirectionalLight directionalLight) {
+
+    /**
+     * Set the directional light.
+     *
+     * @param directionalLight the DirectionalLight
+     */
+    void setDirectionalLight(DirectionalLight directionalLight) {
         this.directionalLight = directionalLight;
     }
 
-    public PointLight getPointLight() {
-        return this.pointLight;
-    }
-    public void setPointLight(PointLight pointLight) {
-        this.pointLight = pointLight;
-    }
-
     /**
-     * applies a bounce-effect around the given gravity-middle, stretching boundingMin/2 up and down.
-     * this effect stays until {@link #unboink()} has been called
-     * @param bounceDegree the strength B of the effect, with B = 0 no effect,
-     *                     B > 0 a horizontal expansion and B < 0 a vertical stretch
-     * @param boundingMin the minimum coordinates of the 3D-model
-     * @param boundingMax idem maximum
-     * @param render the runnable where the bounce effect will apply to
-     */
-    public void boink(float bounceDegree, Vector3f boundingMin, Vector3f boundingMax, Runnable render){
-        setUniform("bounceDegree", bounceDegree);
-        setUniform("boundingMin", boundingMin);
-        setUniform("boundingMax", boundingMax);
-
-        render.run();
-
-        setUniform("bounceDegree", 0f);
-    }
-
-    /**
-     * Sets up the renderer to draw a skybox, e.g. an object that doesn't care but just draws its texture.
+     * Get a list of pointlights.
      *
-     * @param render The code to render in skybox mode.
+     * @return the list of pointlights.
      */
-    public void drawSkybox(Runnable render) {
-        setUniform("isSkybox", 1);
-
-        render.run();
-
-        setUniform("isSkybox", 0);
+    PointLight[] getPointLights() {
+        return this.pointLights;
     }
 
     /**
-     * disables previously activated bounce-effects
-     * @see #boink(float, Vector3f, Vector3f, Runnable)
-     */
-    public void unboink(){
-        setUniform("bounceDegree", 0f);
-    }
-
-    public void ambientLight(Vector3f color, Runnable render) {
-        setUniform("ambientLight", color);
-        render.run();
-        setUniform("ambientLight", ambientLight);
-    }
-
-    /**
-     * see {@link #setModelViewMatrix(Vector3f, Vector3f, float)}, with {@code float scale = 1f}
-     */
-    public void setModelViewMatrix(Vector3f position, Vector3f rotation) {
-        setModelViewMatrix(position, rotation, 1f);
-    }
-
-    /**
-     * Set the modelview matrix. This sets the location, rotation and scale of the things to be rendered next. Besides
-     * it takes into account where the activeCamera is at.
+     * Set a pointlight.
      *
-     * @param position The position of the objects that will be rendered next.
-     * @param rotation The rotation of the objects that will be rendered next.
-     * @param scale The scale of the objects that will be rendered next.
+     * @param pointLight The pointlight to set.
+     * @param i The index in the pointlight array.
      */
-    public void setModelViewMatrix(Vector3f position, Vector3f rotation, float scale) {
-        Matrix4f transformationMatrix = transformation.getModelViewMatrix(position, rotation, scale, getActiveCamera());
-        setUniform("modelViewMatrix", transformationMatrix);
+    void setPointLight(PointLight pointLight, int i) {
+        this.pointLights[i] = pointLight;
     }
 
     /**
-     * Set the material of currently rendered object.
+     * Create an uniform for a pointslight array.
      *
-     * @param material The material of the object.
+     * @param uniformName The name of the uniform.
+     * @param size The size of the array.
+     * @throws ShaderException If an error occurs getting the memory location.
      */
-    public void setMaterial(Material material) {
-        setUniform("material", material);
-    }
-
-    /**
-     * Update the projection matrix, this has to do with the perspective of the activeCamera.
-     *
-     * @param window The window on which the scene will be rendered.
-     */
-    public void updateProjectionMatrix(Window window) {
-        // Update projection Matrix
-        Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
-        setUniform("projectionMatrix", projectionMatrix);
-
-        Matrix4f viewMatrix = transformation.getViewMatrix(getActiveCamera());
-
-        // Update Light Uniforms
-        setUniform("ambientLight", ambientLight);
-        setUniform("specularPower", specularPower);
-        // Get a copy of the light object and transform its position to view coordinates
-        PointLight currPointLight = new PointLight(pointLight);
-        Vector3f lightPos = currPointLight.getPosition();
-        Vector4f aux = new Vector4f(lightPos, 1);
-        aux.mul(viewMatrix);
-        lightPos.x = aux.x;
-        lightPos.y = aux.y;
-        lightPos.z = aux.z;
-        setUniform("pointLight", currPointLight);
-        // Get a copy of the directional light object and transform its position to view coordinates
-        DirectionalLight currDirLight = new DirectionalLight(directionalLight);
-        Vector4f dir = new Vector4f(currDirLight.getDirection(), 0);
-        dir.mul(viewMatrix);
-        currDirLight.setDirection(new Vector3f(dir.x, dir.y, dir.z));
-        setUniform("directionalLight", currDirLight);
-
-        setUniform("texture_sampler", 0);
-    }
-
-    public Matrix4f getViewMatrix() {
-        return transformation.getViewMatrix(getActiveCamera());
-    }
-
-    public Matrix4f getProjectionMatrix(Window window) {
-        return transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
+    public void createPointLightsUniform(String uniformName, int size) throws ShaderException {
+        for (int i = 0; i < size; i++) {
+            createPointLightUniform(uniformName + "[" + i + "]");
+        }
     }
 
     /**
@@ -380,6 +290,10 @@ public class ShaderProgram {
      */
     public void setUniform(String uniformName, Vector4f value) {
         glUniform4f(uniforms.get(uniformName), value.x, value.y, value.z, value.w);
+    }
+
+    public void setUniform(String uniformName, PointLight pointlight, int i) {
+        setUniform(uniformName + "[" + i + "]", pointlight);
     }
 
     /**

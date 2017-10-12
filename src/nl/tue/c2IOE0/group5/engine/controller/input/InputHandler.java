@@ -56,6 +56,9 @@ public class InputHandler {
                 listeners.forEach(listener -> listener.onKeyHold(event));
             }
         }
+        Vector2i mPos = window.getMousePosition();
+        MouseEvent event = new MouseEvent(window, -1, mPos.x, mPos.y);
+        listeners.forEach(listener -> listener.onMouseHover(event));
     }
 
     /**

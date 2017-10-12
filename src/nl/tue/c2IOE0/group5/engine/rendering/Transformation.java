@@ -7,29 +7,12 @@ import org.joml.Vector3f;
 
 class Transformation {
 
-    private final Matrix4f projectionMatrix;
     private final Matrix4f modelMatrix;
     private final Matrix4f viewMatrix;
 
     Transformation() {
         modelMatrix = new Matrix4f();
-        projectionMatrix = new Matrix4f();
         viewMatrix = new Matrix4f();
-    }
-
-    /**
-     * Get the projection matrix.
-     *
-     * @param fov The field of view of the scene.
-     * @param width The width of the window to which the scene will be rendered.
-     * @param height The height of the window to which the scene will be rendered.
-     * @param zNear The closest z-coordinate that will be rendered.
-     * @param zFar The furthest z-coordinate that will be rendered.
-     * @return The projection matrix.
-     */
-    Matrix4f getProjectionMatrix(float fov, float width, float height, float zNear, float zFar) {
-        float aspectRatio = width / height;
-        return projectionMatrix.identity().perspective(fov, aspectRatio, zNear, zFar);
     }
 
     /**

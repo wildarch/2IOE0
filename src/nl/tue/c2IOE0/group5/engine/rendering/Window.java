@@ -1,5 +1,6 @@
 package nl.tue.c2IOE0.group5.engine.rendering;
 
+import org.joml.Matrix4f;
 import org.joml.Vector2i;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.*;
@@ -18,6 +19,15 @@ import static org.lwjgl.system.MemoryUtil.NULL;
  * A window which initializes GLFW and manages it.
  */
 public class Window {
+
+    // FOV in radians
+    public static final float FOV = (float) Math.toRadians(60.0f);
+    // z-coordinates relative to the activeCamera.
+    public static final float Z_NEAR = 0.01f;
+    public static final float Z_FAR = 1000.0f;
+
+    private Matrix4f projectionMatrix;
+
     private final String title;
     private final boolean resizable;
     // buffers for mouse input
@@ -47,6 +57,8 @@ public class Window {
 
         this.mousePosX = BufferUtils.createDoubleBuffer(1);
         this.mousePosY = BufferUtils.createDoubleBuffer(1);
+
+        this.projectionMatrix = new Matrix4f();
     }
 
     public void init() {
@@ -68,6 +80,7 @@ public class Window {
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
         if (getOptions().antialiasing()) {
+            glfwWindowHint(GLFW_STENCIL_BITS, getOptions().antialiasing);
             glfwWindowHint(GLFW_SAMPLES, getOptions().antialiasing);
         }
 
@@ -277,6 +290,9 @@ public class Window {
     public void resize(int width, int height) {
         glfwSetWindowSize(window, width, height);
 
+        this.width = width;
+        this.height = height;
+
         // Get primary display resolution
         GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         // Center window on display
@@ -294,6 +310,15 @@ public class Window {
      */
     public boolean vSyncEnabled() {
         return getOptions().vSync;
+    }
+
+    public Matrix4f updateProjectionMatrix() {
+        float aspectRatio = (float) width / (float) height;
+        return projectionMatrix.setPerspective(FOV, aspectRatio, Z_NEAR, Z_FAR);
+    }
+
+    public Matrix4f getProjectionMatrix() {
+        return projectionMatrix;
     }
 
     /**
@@ -339,7 +364,7 @@ public class Window {
 
         public boolean vSync = true;
 
-        public int antialiasing = 0;
+        public int antialiasing = 4;
 
         public boolean antialiasing() {
             return antialiasing > 0;
