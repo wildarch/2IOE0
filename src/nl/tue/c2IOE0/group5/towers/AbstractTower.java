@@ -8,6 +8,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.OBJLoader;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
+import nl.tue.c2IOE0.group5.providers.BulletProvider;
 import nl.tue.c2IOE0.group5.providers.Cell;
 import nl.tue.c2IOE0.group5.providers.EnemyProvider;
 import org.joml.Vector2ic;
@@ -28,6 +29,7 @@ public abstract class AbstractTower extends GameObject {
     private final int maxHealth;
     private int health;
     private EnemyProvider enemyProvider;
+    private BulletProvider bulletProvider;
     private long timeToDoDamage;
     private Timer loopTimer;
     private HealthBolletje healthBolletje;
@@ -36,13 +38,14 @@ public abstract class AbstractTower extends GameObject {
     private Cell cell;
 
 
-    public AbstractTower(int range, int maxLevel, int maxHealth, EnemyProvider enemyProvider, Timer loopTimer) {
+    public AbstractTower(int range, int maxLevel, int maxHealth, EnemyProvider enemyProvider, BulletProvider bulletProvider, Timer loopTimer) {
         this.range = range;
         this.maxLevel = maxLevel;
         this.maxHealth = maxHealth;
         this.health = maxHealth;
         this.mesh = mesh;
         this.enemyProvider = enemyProvider;
+        this.bulletProvider = bulletProvider;
         this.loopTimer = loopTimer;
         this.healthBolletje = new HealthBolletje(this);
     }
@@ -106,7 +109,8 @@ public abstract class AbstractTower extends GameObject {
     }
 
     private void attack(Enemy e) {
-        e.getDamage(1000);
+        Bullet b = new Bullet(0.5f, 1000, e, this, loopTimer);
+        bulletProvider.addBullet(b);
     }
 
     private boolean isInRange(Enemy e) {

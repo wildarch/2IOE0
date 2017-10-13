@@ -20,6 +20,7 @@ public class TowerDefence {
                 new BackgroundProvider(),
                 new TowerProvider(),
                 new UIProvider(),
+                new BulletProvider(),
         });
         e.addControllers(new Controller[] {
                 new PlayerController(),
