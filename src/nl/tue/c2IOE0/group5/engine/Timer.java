@@ -44,6 +44,10 @@ public class Timer {
         return time.previous();
     }
 
+    /**
+     * set timer to current system time
+     * should only be called by Engine, exactly once per rendering loop
+     */
     public void updateLoopTime(){
         time.update(System.currentTimeMillis());
     }

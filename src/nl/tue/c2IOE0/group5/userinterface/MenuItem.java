@@ -10,6 +10,7 @@ import static org.lwjgl.nanovg.NanoVG.NVG_ALIGN_CENTER;
 
 /**
  * @author Geert van Ieperen
+ * a button with set shape and text
  */
 public class MenuItem extends UIButton {
 

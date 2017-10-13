@@ -1,7 +1,6 @@
 package nl.tue.c2IOE0.group5.providers;
 
 import nl.tue.c2IOE0.group5.engine.Engine;
-import nl.tue.c2IOE0.group5.engine.objects.GameObject;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
@@ -36,28 +35,6 @@ public class TestProvider implements Provider {
 
     @Override
     public void draw(Window window, Renderer renderer) {
-        // draw attached objects here, e.g.
-        float r = 0;
-        float g = 0;
-        float b = 0;
-
-        switch(updatecounter) {
-            case 0:
-                g = 1;
-            case 1:
-                r = 1;
-                break;
-            case 2:
-                g = 1;
-            case 3:
-                b = 1;
-                break;
-            case 4:
-                r = 1;
-                b = 1;
-        }
-
-       // window.setClearColor(r, g, b, 1f);
         object.setPosition(3f, 0f,3f);
         object.boink();
     }

@@ -45,7 +45,7 @@ public class TestObject extends GameObject {
     }
 
     public void boink() {
-        // update private members here
+        // updateFluent private members here
         boinkyness = (boinkyness + 0.01f);
         //renderer.boink((float)Math.sin(boinkyness) +1f, new Vector3f(0, 0, 0), new Vector3f(1f, 1f, 1f), ()->
     }
