@@ -2,19 +2,15 @@ package nl.tue.c2IOE0.group5.enemies;
 
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.objects.PositionInterpolator;
-import nl.tue.c2IOE0.group5.engine.rendering.*;
-import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
-import nl.tue.c2IOE0.group5.engine.rendering.shader.Texture;
+import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
+import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
+import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.providers.Cell;
-import nl.tue.c2IOE0.group5.providers.EnemyProvider;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
-import org.joml.Vector3fc;
 
-import java.io.IOException;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +21,8 @@ public class TestEnemy extends Enemy {
     private long timeToDoDamage;
     private PositionInterpolator interpolator;
 
+    //& private PositionsInterpolator inter;
+
 
     public TestEnemy(Mesh mesh, Timer loopTimer, GridProvider gridProvider,
                      Vector2i initialPosition, List<Vector2i> targetPositions, int maxHealth) {
@@ -33,16 +31,37 @@ public class TestEnemy extends Enemy {
 
         this.loopTimer = loopTimer;
         this.targetPositions = new ArrayList<>(targetPositions);
-        setPosition(gridProvider.getCell(initialPosition).getPosition());
+        setPosition(gridProvider.getCell(initialPosition).getPosition().add(0, 1f, 0));
+
         this.interpolator = new PositionInterpolator(this, SPEED);
-        System.out.println("Position: " + getPosition());
+        //System.out.println("Position: " + getPosition());
 
         setScale(0.01f);
+
+        //& this.inter = new PositionsInterpolator(this, 1f);
+        //& for (Vector2i target : targetPositions) {
+        //& Cell targetCell = gridProvider.getCell(target);
+        //&     inter.addTarget(targetCell.getPosition().add(0, 0.5f, 0));
+        //& }
     }
 
     @Override
     public void update() {
         super.update();
+
+        // psuedo
+        //& boolean reached = inter.update(loopTimer.getElapsedTickTime());
+        //& AbstractTower tower = getFirstTowerOn(inter.getTargets()); // get the first tower on its path
+        //& if (tower != null && inRange(tower)) {
+        //&     inter.hold();
+        //&     doDamage(tower);
+        //& } else {
+        //&     inter.release();
+        //& }
+        //& if (reached) {
+        //&     findNewTargets();
+        //& }
+
         boolean targetReached = interpolator.update(loopTimer.getLoopTime());
         if(targetReached) {
             if(targetPositions.size() > 0) {
@@ -70,9 +89,17 @@ public class TestEnemy extends Enemy {
 
     @Override
     public void draw(Window window, Renderer renderer) {
+
+        //& ugly example code which will be better with renderer changes
+        //& Vector3f offset = inter.draw(loopTimer.getElapsedTime());
+        //& Vector3f position = getPosition();
+        //& setPosition(offset.add(position));
+
         renderer.ambientLight(new Vector3f(0f, 0f,1f ), () -> {
             super.draw(window, renderer);
         });
+
+        //& setPosition(position);
 
         interpolator.draw(loopTimer.getElapsedTime());
     }
