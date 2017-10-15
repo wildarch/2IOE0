@@ -123,7 +123,7 @@ public class Window {
     }
 
     /**
-     * Update the {@link Window}. This will deal with basic OpenGL formalities. Besides it will also poll for events
+     * Updatable the {@link Window}. This will deal with basic OpenGL formalities. Besides it will also poll for events
      * which occurred on the window. Finally returns whether the window should close based on what GLFW thinks.
      *
      * @return Whether the {@link Window} should continue running.

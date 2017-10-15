@@ -12,7 +12,7 @@ import java.io.IOException;
  * provider should have an update method to notify it when there is a gameloop update. Furthermore, a Provider extends
  * {@link Drawable} in which the Provider can draw it's current state to the active window.
  */
-public interface Provider extends Drawable {
+public interface Provider extends Drawable, Updatable {
 
     /**
      * Initialize the provider. This method will only be called once at startup. The {@link Engine} parameter can be
@@ -21,11 +21,5 @@ public interface Provider extends Drawable {
      * @param engine The game engine.
      */
     void init(Engine engine);
-
-    /**
-     * Update the controller. Handle provider-specific timed tasks here. This method will be called every game tick.
-     * Any resources necessary should already be available from {@link #init(Engine)}.
-     */
-    void update();
 
 }

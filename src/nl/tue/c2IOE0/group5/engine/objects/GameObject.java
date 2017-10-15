@@ -1,5 +1,6 @@
 package nl.tue.c2IOE0.group5.engine.objects;
 
+import nl.tue.c2IOE0.group5.engine.provider.Updatable;
 import nl.tue.c2IOE0.group5.engine.rendering.Drawable;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
@@ -7,7 +8,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.Window;
 /**
  * @author Yoeri Poels, Jorren Hendriks
  */
-public abstract class GameObject extends Positionable implements Drawable {
+public abstract class GameObject extends Positionable implements Drawable, Updatable {
 
     private float scale;
 
@@ -42,7 +43,8 @@ public abstract class GameObject extends Positionable implements Drawable {
         // actually draw objects here
     }
 
+    @Override
     public void update() {
-        // Update the state of objects
+        // Updatable the state of objects
     }
 }

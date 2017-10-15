@@ -19,7 +19,7 @@ public interface Controller {
     void init(Engine engine);
 
     /**
-     * Update the controller. Handle controller-specific timed tasks here. This method will be called every game tick.
+     * Updatable the controller. Handle controller-specific timed tasks here. This method will be called every game tick.
      * Any resources necessary should already be available from {@link #init(Engine)}.
      */
     void update();

@@ -10,7 +10,6 @@ import nl.tue.c2IOE0.group5.providers.Cell;
 import nl.tue.c2IOE0.group5.providers.EnemyProvider;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
 import org.joml.Vector2i;
-import org.joml.Vector3f;
 
 import java.util.List;
 import java.util.Random;
@@ -38,7 +37,7 @@ public class AiController implements Controller, Listener {
         enemyProvider = engine.getProvider(EnemyProvider.class);
         loopTimer = engine.getGameloopTimer();
         gridProvider = engine.getProvider(GridProvider.class);
-        traingQLearner();
+        trainQLearner();
     }
 
     @Override
@@ -81,7 +80,7 @@ public class AiController implements Controller, Listener {
         }
     }
 
-    public void traingQLearner() {
+    public void trainQLearner() {
         int noIterations = 1000;
         qlearner = new QLearner(GridProvider.SIZE, noIterations);
         qlearner.updateRewardsMatrix(qlearner.getState(GridProvider.SIZE/2, GridProvider.SIZE/2), 1000);

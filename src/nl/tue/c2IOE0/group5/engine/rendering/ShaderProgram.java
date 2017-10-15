@@ -242,18 +242,18 @@ public class ShaderProgram {
     }
 
     /**
-     * Update the projection matrix, this has to do with the perspective of the activeCamera.
+     * Updatable the projection matrix, this has to do with the perspective of the activeCamera.
      *
      * @param window The window on which the scene will be rendered.
      */
     public void updateProjectionMatrix(Window window) {
-        // Update projection Matrix
+        // Updatable projection Matrix
         Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
         setUniform("projectionMatrix", projectionMatrix);
 
         Matrix4f viewMatrix = transformation.getViewMatrix(getActiveCamera());
 
-        // Update Light Uniforms
+        // Updatable Light Uniforms
         setUniform("ambientLight", ambientLight);
         setUniform("specularPower", specularPower);
         // Get a copy of the light object and transform its position to view coordinates

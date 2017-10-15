@@ -1,6 +1,7 @@
 package nl.tue.c2IOE0.group5.enemies;
 
 import nl.tue.c2IOE0.group5.engine.Timer;
+import nl.tue.c2IOE0.group5.engine.objects.PositionInterpolator;
 import nl.tue.c2IOE0.group5.engine.rendering.*;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Texture;
@@ -18,9 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TestEnemy extends Enemy {
+    private static final float SPEED = 1.5f;
     private Timer loopTimer;
     private List<Vector2i> targetPositions;
     private long timeToDoDamage;
+    private PositionInterpolator interpolator;
 
 
     public TestEnemy(Mesh mesh, Timer loopTimer, GridProvider gridProvider,
@@ -31,18 +34,30 @@ public class TestEnemy extends Enemy {
         this.loopTimer = loopTimer;
         this.targetPositions = new ArrayList<>(targetPositions);
         setPosition(gridProvider.getCell(initialPosition).getPosition());
+        this.interpolator = new PositionInterpolator(this, SPEED);
+        System.out.println("Position: " + getPosition());
+
         setScale(0.01f);
     }
 
     @Override
     public void update() {
         super.update();
-        if(targetPositions.size() > 0) {
-            Cell targetCell = gridProvider.getCell(targetPositions.get(0));
-            AbstractTower tower = targetCell.getTower();
-            if (tower != null) {
-                doDamage(tower);
+        boolean targetReached = interpolator.update(loopTimer.getLoopTime());
+        if(targetReached) {
+            if(targetPositions.size() > 0) {
+                targetPositions.remove(0);
             }
+        }
+        if(targetPositions.isEmpty()) return;
+        Cell targetCell = gridProvider.getCell(targetPositions.get(0));
+        AbstractTower tower = targetCell.getTower();
+        if (tower == null && targetReached) {
+            System.out.println("New target: " + targetCell.getPosition());
+            interpolator.setTarget(targetCell.getPosition().add(0, 0.5f, 0f), loopTimer.getLoopTime());
+        }
+        else if (tower != null) {
+            doDamage(tower);
         }
     }
 
@@ -59,25 +74,6 @@ public class TestEnemy extends Enemy {
             super.draw(window, renderer);
         });
 
-        if(targetPositions.size() == 0) {
-            return;
-        }
-
-        Cell targetCell = gridProvider.getCell(targetPositions.get(0));
-        AbstractTower tower = targetCell.getTower();
-        if (tower == null) {
-            // Cell empty, move towards it
-            float step = loopTimer.getElapsedTime() / 1000f;
-            Vector3f offset = targetCell.getPosition();
-            offset.add(0f, 0.5f, 0f);
-            offset.sub(getPosition().toImmutable());
-            if (offset.length() > 0.01f) {
-                offset = offset.normalize().mul(step);
-                move(offset);
-            }
-            else {
-                targetPositions.remove(0);
-            }
-        }
+        interpolator.draw(loopTimer.getElapsedTime());
     }
 }
