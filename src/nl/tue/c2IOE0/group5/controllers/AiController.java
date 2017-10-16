@@ -22,6 +22,8 @@ public class AiController implements Controller, Listener {
     private static int NR_WAVES = 10;
     private static int NR_SUB_WAVES = 5;
     private static long WAVE_TIME = 5000; // 5 seconds
+    private static int BIG_WAVE_SIZE = 20;
+    private static int SMALL_WAVE_SIZE = 10;
 
     private int wave = 0;
     private EnemyProvider enemyProvider;
@@ -56,7 +58,7 @@ public class AiController implements Controller, Listener {
         String size = big ? "Big  " : "Small";
         System.out.println(size + " wave at " + loopTimer.getLoopTime());
         Random r = new Random();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < SMALL_WAVE_SIZE; i++) {
             int random = r.nextInt(5);
             Cell startCell = gridProvider.getCell(qlearner.getOptimalNSpawnStates(5)[random]);
             Vector2i start = startCell.getGridPosition();
@@ -67,7 +69,7 @@ public class AiController implements Controller, Listener {
             );
         }
         if (big) {
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < BIG_WAVE_SIZE; i++) {
                 int random = r.nextInt(7);
                 Cell startCell = gridProvider.getCell(qlearner.getOptimalNSpawnStates(7)[random]);
                 Vector2i start = startCell.getGridPosition();

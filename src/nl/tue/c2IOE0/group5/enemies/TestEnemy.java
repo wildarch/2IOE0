@@ -10,6 +10,7 @@ import nl.tue.c2IOE0.group5.providers.GridProvider;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ public class TestEnemy extends Enemy {
     private List<Vector2i> targetPositions;
     private long timeToDoDamage;
     private PositionInterpolator interpolator;
+    private boolean attacking = false;
 
 
     public TestEnemy(Mesh mesh, Timer loopTimer, GridProvider gridProvider,
@@ -38,19 +40,26 @@ public class TestEnemy extends Enemy {
     @Override
     public void update() {
         super.update();
+
+        if(targetPositions.isEmpty()) {
+            return;
+        }
         boolean targetReached = interpolator.update(loopTimer.getLoopTime());
         if(targetReached) {
-            if(targetPositions.size() > 0) {
-                targetPositions.remove(0);
-            }
+            targetPositions.remove(0);
+            if(targetPositions.isEmpty()) return;
         }
-        if(targetPositions.isEmpty()) return;
         Cell targetCell = gridProvider.getCell(targetPositions.get(0));
         AbstractTower tower = targetCell.getTower();
-        if (tower == null && targetReached) {
-            interpolator.setTarget(targetCell.getPosition().add(0, 0.5f, 0f), loopTimer.getLoopTime());
+        Vector3f targetPosition = targetCell.getPosition().add(0, 0.5f, 0);
+        if (targetReached || (attacking && tower == null)) {
+            // Road is clear, move ahead
+            attacking = false;
+            interpolator.setTarget(targetPosition, loopTimer.getLoopTime());
         }
-        else if (tower != null) {
+        else if(tower != null) {
+            // Destroy the tower first
+            attacking = true;
             doDamage(tower);
         }
     }
@@ -68,6 +77,6 @@ public class TestEnemy extends Enemy {
             super.draw(window, renderer);
         });
 
-        interpolator.draw(loopTimer.getElapsedTime());
+        if(!attacking) interpolator.draw(loopTimer.getElapsedTime());
     }
 }

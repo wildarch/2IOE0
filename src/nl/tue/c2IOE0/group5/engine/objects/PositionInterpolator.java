@@ -5,7 +5,8 @@ import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
 /**
- * Interpolates between the current position of an object and its target
+ * Interpolates between the current position of an object and its target.
+ * @author Daan de Graaf
  */
 public class PositionInterpolator {
     /**
