@@ -1,19 +1,14 @@
 package nl.tue.c2IOE0.group5.providers;
 
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
-import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
-import nl.tue.c2IOE0.group5.engine.rendering.OBJLoader;
+import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
-import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
-import org.joml.Vector3f;
 
 /**
  * @author Jorren
  */
 public class TestObject extends GameObject {
-
-    private Mesh mesh;
 
     private float boinkyness;
 
@@ -27,14 +22,10 @@ public class TestObject extends GameObject {
     @Override
     public TestObject init(Renderer renderer) {
         try {
-            Mesh tower = renderer.linkMesh("/tower.obj", (mesh) -> {
+            InstancedMesh tower = renderer.linkMesh("/tower.obj", () -> {
                 setModelView(renderer);
-                mesh.draw();
-            }, (mesh) -> {
-                setModelLightView(renderer);
-                mesh.draw();
             });
-            tower.setMaterial(new Material("/tower.png"));
+            tower.getMesh().setMaterial(new Material("/tower.png"));
         } catch (Exception e) {
             e.printStackTrace();
         }

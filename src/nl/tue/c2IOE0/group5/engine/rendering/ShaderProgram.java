@@ -159,17 +159,6 @@ public class ShaderProgram {
         return this.pointLights;
     }
 
-    public void drawHealthBolletje(Runnable render) {
-        DirectionalLight directionalLightOff = new DirectionalLight(
-                new Vector3f(),
-                new Vector3f(),
-                0f
-        );
-        setDirectionalLight(directionalLightOff);
-        render.run();
-        setDirectionalLight(directionalLight);
-    }
-
     /**
      * Set a pointlight.
      *

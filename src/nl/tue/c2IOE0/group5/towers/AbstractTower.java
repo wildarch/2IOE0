@@ -6,16 +6,13 @@ import nl.tue.c2IOE0.group5.engine.objects.GameObject;
 import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
 import nl.tue.c2IOE0.group5.engine.rendering.OBJLoader;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
-import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.providers.BulletProvider;
 import nl.tue.c2IOE0.group5.providers.Cell;
 import nl.tue.c2IOE0.group5.providers.EnemyProvider;
-import org.joml.Vector2ic;
 import org.joml.Vector3f;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -165,7 +162,7 @@ public abstract class AbstractTower extends GameObject {
         public void draw(Window window, Renderer renderer) {
             super.draw(window, renderer);
             renderer.ambientLight(color, () ->
-                    renderer.drawHealthBolletje(() -> mesh.draw(renderer))
+                    renderer.noDirectionalLight(() -> mesh.draw(renderer))
             );
         }
         */
@@ -192,12 +189,9 @@ public abstract class AbstractTower extends GameObject {
         @Override
         public GameObject init(Renderer renderer) {
             setPosition(tower.getPosition().add(new Vector3f(0, 2.5f, 0)));
-            renderer.linkMesh("/health.obj",
-                    (mesh -> {
+            renderer.linkMesh("/health.obj", () -> {
                         setModelView(renderer);
-                        mesh.draw();
-                    }),
-                    (mesh -> setModelLightView(renderer)));
+                    });
             return this;
         }
     }

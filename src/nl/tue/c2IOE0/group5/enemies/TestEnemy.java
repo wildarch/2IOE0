@@ -2,7 +2,7 @@ package nl.tue.c2IOE0.group5.enemies;
 
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.objects.PositionInterpolator;
-import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
+import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.providers.Cell;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
@@ -12,7 +12,6 @@ import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class TestEnemy extends Enemy {
     private static final float SPEED = 1.5f;
@@ -22,9 +21,7 @@ public class TestEnemy extends Enemy {
     private PositionInterpolator interpolator;
     private boolean attacking = false;
     private Renderer renderer;
-    private Mesh mesh;
-    private Consumer<Mesh> render;
-    private Consumer<Mesh> shadowRender;
+    private InstancedMesh cube;
 
 
     public TestEnemy(Timer loopTimer, GridProvider gridProvider,
@@ -72,23 +69,17 @@ public class TestEnemy extends Enemy {
     @Override
     public TestEnemy init(Renderer renderer) {
         setScale(0.25f);
-        render = mesh -> {
-            setModelView(renderer);
-            renderer.ambientLight(new Vector3f(0f, 0f,1f ), mesh::draw);
 
-            if(!attacking) interpolator.draw(loopTimer.getElapsedTime());
-        };
-        shadowRender = mesh -> {
-            setModelLightView(renderer);
-            mesh.draw();
-        };
-        mesh = renderer.linkMesh("/cube.obj", render, shadowRender);
+        cube = renderer.linkMesh("/cube.obj", () -> {
+            setModelView(renderer);
+            renderer.ambientLight(new Vector3f(0f, 0f,1f ));
+        });
         this.renderer = renderer;
         return this;
     }
 
     @Override
     protected void onDie() {
-        renderer.unlinkMesh(mesh, render, shadowRender);
+        renderer.unlinkMesh(cube);
     }
 }

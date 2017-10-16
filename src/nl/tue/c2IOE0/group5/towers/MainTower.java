@@ -1,16 +1,12 @@
 package nl.tue.c2IOE0.group5.towers;
 
 import nl.tue.c2IOE0.group5.engine.Timer;
-import nl.tue.c2IOE0.group5.engine.objects.GameObject;
+import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
-import nl.tue.c2IOE0.group5.engine.rendering.OBJLoader;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
-import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.providers.BulletProvider;
 import nl.tue.c2IOE0.group5.providers.EnemyProvider;
-import sun.applet.Main;
 
-import java.io.IOException;
 import java.util.function.Consumer;
 
 public class MainTower extends AbstractTower {
@@ -20,6 +16,7 @@ public class MainTower extends AbstractTower {
     private static final int MAX_HEALTH = 100;
 
     private Renderer renderer;
+    private InstancedMesh iMesh;
     private Mesh mesh;
     private Consumer<Mesh> render;
     private Consumer<Mesh> shadowRender;
@@ -31,6 +28,12 @@ public class MainTower extends AbstractTower {
     @Override
     public MainTower init(Renderer renderer) {
         setScale(40f);
+
+        iMesh = renderer.linkMesh("/tower.obj", () -> {
+            setModelView(renderer);
+        });
+
+        /*
         render = mesh -> {
             setModelView(renderer);
             mesh.draw();
@@ -40,12 +43,15 @@ public class MainTower extends AbstractTower {
             mesh.draw();
         };
         mesh = renderer.linkMesh("/tower.obj", render, shadowRender);
+        */
+
         this.renderer = renderer;
         return this;
     }
 
     @Override
     protected void onDie() {
-        renderer.unlinkMesh(mesh, render, shadowRender);
+        //renderer.unlinkMesh(mesh, render, shadowRender);
+        renderer.unlinkMesh(iMesh);
     }
 }

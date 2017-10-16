@@ -1,18 +1,9 @@
 package nl.tue.c2IOE0.group5.towers;
 
 import nl.tue.c2IOE0.group5.enemies.Enemy;
-import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
-import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
-import nl.tue.c2IOE0.group5.engine.rendering.OBJLoader;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
-import nl.tue.c2IOE0.group5.engine.rendering.Window;
-import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
-import org.joml.Vector2i;
 import org.joml.Vector3f;
-
-import java.io.IOException;
-import java.util.Random;
 
 public class Bullet extends GameObject {
     private float speed;
@@ -68,15 +59,11 @@ public class Bullet extends GameObject {
 
     @Override
     public GameObject init(Renderer renderer) {
-        renderer.linkMesh("b4.obj", (mesh -> {
+        renderer.linkMesh("b4.obj", () -> {
             setModelView(renderer);
-            renderer.ambientLight(color, () -> {
-                renderer.drawHealthBolletje(() -> mesh.draw());
-            });
-        }), (mesh -> {
-            setModelLightView(renderer);
-            mesh.draw();
-        }));
+            renderer.ambientLight(color);
+            renderer.noDirectionalLight();
+        });
         return this;
     }
 }
