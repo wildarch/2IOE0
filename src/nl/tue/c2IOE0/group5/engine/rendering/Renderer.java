@@ -79,8 +79,7 @@ public class Renderer {
         }
     }
 
-    public InstancedMesh linkMesh(String filename, Runnable render) {
-        Mesh mesh = linkMesh(filename);
+    public InstancedMesh linkMesh(Mesh mesh, Runnable render) {
         InstancedMesh iMesh = new InstancedMesh(mesh, render);
         if (instancedMeshes.containsKey(mesh)) {
             instancedMeshes.get(mesh).add(iMesh);
@@ -88,6 +87,11 @@ public class Renderer {
             instancedMeshes.put(mesh, new ArrayList<>(Collections.singleton(iMesh)));
         }
         return iMesh;
+    }
+
+    public InstancedMesh linkMesh(String filename, Runnable render) {
+        Mesh mesh = linkMesh(filename);
+        return linkMesh(mesh, render);
     }
 
     public void unlinkMesh(InstancedMesh iMesh) {
@@ -215,7 +219,7 @@ public class Renderer {
         shader.setUniform("boundingMax", mesh.getMaxBoundingBox());
 
         modifiers.push(() ->
-                sceneShader.setUniform("bounceDegree", 0f));
+                shader.setUniform("bounceDegree", 0f));
     }
 
     /**

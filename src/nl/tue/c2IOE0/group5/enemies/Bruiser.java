@@ -1,7 +1,7 @@
 package nl.tue.c2IOE0.group5.enemies;
 
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
-import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
+import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.util.LinearlyUpdatable;
 import nl.tue.c2IOE0.group5.util.SmoothUpdatable;
@@ -16,10 +16,10 @@ import static nl.tue.c2IOE0.group5.enemies.AnimatedUnit.AnimationLoop.WALK;
  */
 public class Bruiser extends AnimatedUnit {
 
-    private Mesh body;
-    private Mesh head;
-    private Mesh leftArm;
-    private Mesh rightArm;
+    private InstancedMesh body;
+    private InstancedMesh head;
+    private InstancedMesh leftArm;
+    private InstancedMesh rightArm;
 
     private SmoothUpdatable headOffset;
     private SmoothUpdatable leftArmOffset;
@@ -27,34 +27,18 @@ public class Bruiser extends AnimatedUnit {
 
     @Override
     public GameObject init(Renderer renderer) {
-        try {
-            head = renderer.linkMesh("/bruiser_head.obj", (mesh)->{
-                setModelView(renderer, new Vector3f(0f, 1f + headOffset.current(), 1f));
-                setModelLightViewScene(renderer);
-            }, (mesh) -> {
-                setModelLightView(renderer, new Vector3f(0f, 1f + headOffset.current(), 1f), new Vector3f(), 1f);
-            });
-            body = renderer.linkMesh("/bruiser_body.obj", (mesh)->{
-                setModelView(renderer);
-                setModelLightViewScene(renderer);
-            }, (mesh) -> {
-                setModelLightView(renderer);
-            });
-            leftArm = renderer.linkMesh("/bruiser_lArm.obj", (mesh)->{
-                setModelView(renderer, new Vector3f(1f, 0f, leftArmOffset.current()));
-                setModelLightViewScene(renderer);
-            }, (mesh) -> {
-                setModelLightView(renderer, new Vector3f(0f, 1f + headOffset.current(), 1f), new Vector3f(), 1f);
-            });
-            rightArm = renderer.linkMesh("/bruiser_rArm.obj", (mesh)->{
-                setModelView(renderer, new Vector3f(1f, 0f, rightArmOffset.current()));
-                setModelLightViewScene(renderer);
-            }, (mesh) -> {
-                setModelLightView(renderer, new Vector3f(0f, 1f + headOffset.current(), 1f), new Vector3f(), 1f);
-            });
-        } catch (Exception e) {
-
-        }
+        head = renderer.linkMesh("/bruiser_head.obj", () -> {
+            setModelView(renderer, new Vector3f(0f, 1f + headOffset.current(), 1f));
+        });
+        body = renderer.linkMesh("/bruiser_body.obj", () -> {
+            setModelView(renderer);
+        });
+        leftArm = renderer.linkMesh("/bruiser_lArm.obj", () -> {
+            setModelView(renderer, new Vector3f(1f, 0f, leftArmOffset.current()));
+        });
+        rightArm = renderer.linkMesh("/bruiser_rArm.obj", () -> {
+            setModelView(renderer, new Vector3f(1f, 0f, rightArmOffset.current()));
+        });
 
         headOffset = new LinearlyUpdatable(headOffset(0), 0.1f);
         leftArmOffset = new LinearlyUpdatable(armOffset(0), 0.1f);
@@ -92,5 +76,10 @@ public class Bruiser extends AnimatedUnit {
         headOffset.updateFluent(headOffset(animTime), deltaTime);
         leftArmOffset.updateFluent(armOffset(animTime), deltaTime);
         rightArmOffset.updateFluent(-armOffset(animTime), deltaTime);
+    }
+
+    @Override
+    public void update() {
+
     }
 }

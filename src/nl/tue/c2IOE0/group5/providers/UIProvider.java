@@ -95,6 +95,14 @@ public class UIProvider implements Provider {
 
     }
 
+    private int bottom(int y) {
+        return this.wHeight - y;
+    }
+
+    private int right(int x) {
+        return this.wWidth - x;
+    }
+
     @Override
     public void update() {
         Window window = engine.getWindow();
@@ -102,11 +110,8 @@ public class UIProvider implements Provider {
         this.wHeight = window.getHeight();
     }
 
-    private int bottom(int y) {
-        return this.wHeight - y;
-    }
+    @Override
+    public void draw(Window window, Renderer renderer) {
 
-    private int right(int x) {
-        return this.wWidth - x;
     }
 }

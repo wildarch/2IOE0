@@ -67,14 +67,6 @@ public abstract class GameObject extends Positionable implements Updatable {
         renderer.setMatrix(posOffset.add(getPosition()), rotOffset.add(getRotation()), scaleOffset.add(new Vector3f(scale)));
     }
 
-    protected void setModelLightView(Renderer renderer, Vector3f posOffset, Vector3f rotOffset, float scaleOffset) {
-        renderer.setModelLightViewMatrix(posOffset.add(getPosition()), rotOffset.add(getRotation()), scaleOffset+getScale());
-    }
-
-    protected void setModelLightViewScene(Renderer renderer, Vector3f posOffset, Vector3f rotOffset, float scaleOffset) {
-        renderer.setModelLightViewMatrixScene(posOffset.add(getPosition()), rotOffset.add(getRotation()), scaleOffset+getScale());
-    }
-
     /**
      * Initialize the gameobject. Link meshes here and define their render methods.
      *

@@ -141,6 +141,7 @@ public class Engine {
                 window.updateProjectionMatrix();
 
                 // render everything
+                providers.forEach(provider -> provider.draw(window, renderer));
                 renderer.render();
 
                 // draw the hud

@@ -37,7 +37,7 @@ public class AiController implements Controller, Listener {
     @Override
     public void init(Engine engine) {
         enemyProvider = engine.getProvider(EnemyProvider.class);
-        loopTimer = engine.getGameloopTimer();
+        loopTimer = engine.getRenderLoopTimer();
         gridProvider = engine.getProvider(GridProvider.class);
         trainQLearner();
     }

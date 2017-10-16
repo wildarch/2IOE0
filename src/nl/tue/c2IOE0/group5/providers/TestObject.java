@@ -1,7 +1,7 @@
 package nl.tue.c2IOE0.group5.providers;
 
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
-import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
+import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 
@@ -21,11 +21,12 @@ public class TestObject extends GameObject {
     @Override
     public TestObject init(Renderer renderer) {
         try {
-            InstancedMesh tower = renderer.linkMesh("/tower1.obj", () -> {
+            Mesh tower = renderer.linkMesh("/tower1.obj");
+            tower.setMaterial(new Material("/tower1.png"));
+            renderer.linkMesh(tower, () -> {
                 setModelView(renderer);
-                renderer.boink(getBounceDegree());
+                renderer.boink(tower, getBounceDegree());
             });
-            tower.getMesh().setMaterial(new Material("/tower1.png"));
         } catch (Exception e) {
             e.printStackTrace();
         }

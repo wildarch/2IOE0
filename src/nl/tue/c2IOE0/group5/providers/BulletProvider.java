@@ -25,4 +25,9 @@ public class BulletProvider extends ObjectProvider<Bullet> {
         objects.removeIf(Bullet::isDone);
         super.update();
     }
+
+    @Override
+    public void draw(Window window, Renderer renderer) {
+
+    }
 }
