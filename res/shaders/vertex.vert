@@ -129,6 +129,6 @@ void main() {
 	outTexture = inTexture;
 
 	// shadow calculations
-	mlightviewVertexPos = orthoProjectionMatrix * modelLightViewMatrix * vec4(position, 1.0);
+	mlightviewVertexPos = orthoProjectionMatrix * modelLightViewMatrix * vec4(transformedPosition, 1.0);
     outModelViewMatrix = modelViewMatrix;
 }
