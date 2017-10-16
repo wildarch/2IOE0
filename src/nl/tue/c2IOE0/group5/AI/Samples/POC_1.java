@@ -22,7 +22,7 @@ public class POC_1 {
         //Loader.load(cudnn.class);
 
         int gridSize = 9, nrTowers = 5, nrDeployTypes = 5;
-        int numInputs = 10000, iterations = 10;
+        int numInputs = 20000, iterations = 2;
         File f = new File("test.dat");
         
         TacticalTrainer trainer = TacticalTrainer.FromGeneratedModel(9, 5, 5, iterations);
@@ -49,7 +49,7 @@ public class POC_1 {
                     }
                 }
 
-                output.putScalar(i, 0, res * input.getDouble(i, gridSize * gridSize * nrTowers + nrDeployTypes));
+                output.putScalar(i, 0, res * (input.getDouble(i, gridSize * gridSize * nrTowers + nrDeployTypes) > .5 ? 1 : -1));
                 //output.putScalar(i, 0, 0);
                 System.out.println(Math.round(i * 100.0 / (double)numInputs) + "%");
             }
