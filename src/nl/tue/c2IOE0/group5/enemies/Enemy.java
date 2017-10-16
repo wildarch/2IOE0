@@ -27,8 +27,12 @@ public abstract class Enemy extends GameObject {
     }
 
     public void die() {
+        if(dead) return;
         dead = true;
+        onDie();
     }
+
+    protected abstract void onDie();
 
     public boolean isDead() {
         return dead;

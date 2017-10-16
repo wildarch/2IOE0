@@ -1,20 +1,18 @@
 package nl.tue.c2IOE0.group5.enemies;
 
 import nl.tue.c2IOE0.group5.engine.Timer;
-import nl.tue.c2IOE0.group5.engine.objects.GameObject;
 import nl.tue.c2IOE0.group5.engine.objects.PositionInterpolator;
 import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
-import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.providers.Cell;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
-import org.joml.Vector3fc;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class TestEnemy extends Enemy {
     private static final float SPEED = 1.5f;
@@ -23,6 +21,10 @@ public class TestEnemy extends Enemy {
     private long timeToDoDamage;
     private PositionInterpolator interpolator;
     private boolean attacking = false;
+    private Renderer renderer;
+    private Mesh mesh;
+    private Consumer<Mesh> render;
+    private Consumer<Mesh> shadowRender;
 
 
     public TestEnemy(Timer loopTimer, GridProvider gridProvider,
@@ -70,16 +72,24 @@ public class TestEnemy extends Enemy {
     @Override
     public TestEnemy init(Renderer renderer) {
         setScale(0.25f);
-        renderer.linkMesh("/cube.obj", ((mesh) -> {
+        render = mesh -> {
             setModelView(renderer);
             renderer.ambientLight(new Vector3f(0f, 0f,1f ), mesh::draw);
-            //System.out.println("Draw!");
+            System.out.println("Draw!");
 
             if(!attacking) interpolator.draw(loopTimer.getElapsedTime());
-        }), (mesh -> {
+        };
+        shadowRender = mesh -> {
             setModelLightView(renderer);
             mesh.draw();
-        }));
+        };
+        mesh = renderer.linkMesh("/cube.obj", render, shadowRender);
+        this.renderer = renderer;
         return this;
+    }
+
+    @Override
+    protected void onDie() {
+        renderer.unlinkMesh(mesh, render, shadowRender);
     }
 }

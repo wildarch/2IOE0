@@ -92,8 +92,13 @@ public class Renderer {
         }
     }
 
-    public void unlinkMesh(Mesh mesh, Runnable runnable) {
-        meshBuffer.get(mesh).remove(runnable);
+    public void unlinkMesh(Mesh mesh, Consumer<Mesh> render, Consumer<Mesh> shadowRender) {
+        if(!meshBuffer.get(mesh).remove(render)) {
+            //throw new IllegalArgumentException("The given render consumer was not linked to this mesh");
+        };
+        if(!shadowBuffer.get(mesh).remove(shadowRender)) {
+            //throw new IllegalArgumentException("the given shadowRender consumer was not linked to this mesh");
+        }
     }
 
     /**
