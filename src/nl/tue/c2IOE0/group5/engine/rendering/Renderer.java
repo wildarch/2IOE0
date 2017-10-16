@@ -162,6 +162,11 @@ public class Renderer {
         depthShader.createFragmentShader(Resource.load("/shaders/fragment_depth.frag"));
         depthShader.link();
 
+        // Create uniforms for the bounce effect
+        depthShader.createUniform("bounceDegree");
+        depthShader.createUniform("boundingMax");
+        depthShader.createUniform("boundingMin");
+
         depthShader.createUniform("orthoProjectionMatrix");
         depthShader.createUniform("modelLightViewMatrix");
     }
@@ -214,6 +219,18 @@ public class Renderer {
      * @param scale The scale of the objects that will be rendered next.
      */
     public void setModelViewMatrix(Vector3f position, Vector3f rotation, float scale) {
+        setModelViewMatrix(position, rotation, new Vector3f(scale, scale, scale));
+    }
+
+    /**
+     * Set the modelview matrix. This sets the location, rotation and scale of the things to be rendered next. Besides
+     * it takes into account where the activeCamera is at.
+     *
+     * @param position The position of the objects that will be rendered next.
+     * @param rotation The rotation of the objects that will be rendered next.
+     * @param scale The scale of the objects that will be rendered next.
+     */
+    public void setModelViewMatrix(Vector3f position, Vector3f rotation, Vector3f scale) {
         Matrix4f transformationMatrix = transformation.getModelViewMatrix(position, rotation, scale, getActiveCamera());
         sceneShader.setUniform("modelViewMatrix", transformationMatrix);
     }
