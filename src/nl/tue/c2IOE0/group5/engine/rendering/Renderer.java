@@ -149,7 +149,7 @@ public class Renderer {
         sceneShader.setAmbientLight(new Vector3f(0.3f, 0.3f, 0.3f));
         directionalLight = new DirectionalLight(
                 new Vector3f(1f, 1f, 1f),
-                new Vector3f(-0.78f, 0.4f, 0.66f),
+                new Vector3f(0.78f, 0.4f, 0.66f),
                 1f
         );
         directionalLight.setOrthoCords(-10.0f, 10.0f, -10.0f, 10.0f, -7.0f, 20.0f);
@@ -340,7 +340,7 @@ public class Renderer {
         Vector3f lightDirection = light.getDirection();
 
         float lightAngleX = (float)Math.toDegrees(Math.acos(lightDirection.z));
-        float lightAngleY = (float)Math.toDegrees(Math.asin(lightDirection.x));
+        float lightAngleY = (float)Math.toDegrees(Math.asin(lightDirection.x*-1));
         float lightAngleZ = 0;
         lightViewMatrix = transformation.updateLightViewMatrix(new Vector3f(lightDirection).mul(light.getShadowStrength()), new Vector3f(lightAngleX, lightAngleY, lightAngleZ));
         //light.setOrthoCords(activeCamera.getPosition().x, 10.0f, -10.0f, 10.0f, -1.0f, 20.0f);
