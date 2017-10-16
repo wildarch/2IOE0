@@ -104,6 +104,9 @@ public class Engine {
 
             while (tickTimer >= TPS_INTERVAL) {
 
+
+                timer.updateTickTime();
+
                 // update all controllers and providers
                 controllers.forEach(Controller::update);
                 providers.forEach(Provider::update);
