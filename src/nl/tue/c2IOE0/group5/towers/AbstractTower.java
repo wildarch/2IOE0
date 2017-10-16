@@ -177,5 +177,14 @@ public abstract class AbstractTower extends GameObject {
                 throw new RuntimeException("Failed to load Tower model");
             }
         }
+
+        @Override
+        public GameObject init(Renderer renderer) {
+            setPosition(tower.getPosition().add(new Vector3f(0, 2.5f, 0)));
+            renderer.linkMesh("/health.obj", (mesh -> {
+                setModelView(renderer);
+            }));
+            return this;
+        }
     }
 }

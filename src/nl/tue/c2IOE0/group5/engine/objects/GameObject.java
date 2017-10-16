@@ -45,10 +45,6 @@ public abstract class GameObject extends Positionable implements Updatable {
      */
     protected void setModelView(Renderer renderer, Vector3f posOffset) {
         renderer.setModelViewMatrix(posOffset.add(getPosition()), getRotation(), getScale());
-
-    @Override
-    public void update() {
-        // Updatable the state of objects
     }
 
     /**

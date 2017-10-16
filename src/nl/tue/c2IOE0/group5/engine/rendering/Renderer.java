@@ -44,7 +44,7 @@ public class Renderer {
         transformation = new Transformation();
     }
 
-    public Mesh linkMesh(String filename, Consumer<Mesh> render) throws Exception {
+    public Mesh linkMesh(String filename, Consumer<Mesh> render) {
         Mesh mesh = linkMesh(filename);
         if (meshBuffer.containsKey(mesh)) {
             meshBuffer.get(mesh).add(render);
@@ -54,11 +54,16 @@ public class Renderer {
         return mesh;
     }
 
-    public Mesh linkMesh(String filename) throws Exception {
+    public Mesh linkMesh(String filename) {
         if (meshes.containsKey(filename)) {
             return meshes.get(filename);
         } else {
-            Mesh mesh = OBJLoader.loadMesh(filename);
+            Mesh mesh = null;
+            try {
+                mesh = OBJLoader.loadMesh(filename);
+            } catch (IOException e) {
+                new MeshException(e.getMessage());
+            }
             meshes.put(filename, mesh);
             return mesh;
         }
