@@ -8,6 +8,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.Hud;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.userinterface.MenuItem;
+import nl.tue.c2IOE0.group5.userinterface.PositionState;
 import nl.tue.c2IOE0.group5.userinterface.UIButton;
 import nl.tue.c2IOE0.group5.userinterface.UIElement;
 import org.joml.Vector2i;
@@ -19,8 +20,8 @@ import java.io.IOException;
  */
 public class MenuProvider implements Provider, Clickable {
 
-    private static final int HEIGHT_FROM_TOP = 150;
-    private static final int SPACE_BETWEEN_BUTTONS = 50;
+    private static final int HEIGHT_FROM_TOP = 100;
+    private static final int SPACE_BETWEEN_BUTTONS = 20;
 
     private UIButton[] mainMenu;
     private UIButton[] optionMenu;
@@ -38,18 +39,20 @@ public class MenuProvider implements Provider, Clickable {
         int y = HEIGHT_FROM_TOP;
         int offset = SPACE_BETWEEN_BUTTONS + MenuItem.BUTTON_HEIGHT;
 
-        UIButton startGame = new MenuItem("Start Game", x, y, (event) -> engine.pause(false));
-        UIButton options = new MenuItem("Options", x, y += offset, (event) -> activeElements = optionMenu);
+        PositionState position = new PositionState(x, y, offset);
+
+        UIButton startGame = new MenuItem("Start Game", position, (event) -> engine.pause(false));
+        UIButton options = new MenuItem("Options", position, (event) -> activeElements = optionMenu);
         {
-            int optionsY = HEIGHT_FROM_TOP;
-            UIButton graphics = new MenuItem("Graphics", x, optionsY, (event) -> {});
-            UIButton parameters = new MenuItem("Parameters", x, optionsY += offset, (event) -> {});
-            UIButton gameState = new MenuItem("Game state", x, optionsY += offset, (event) -> {});
-            UIButton backOptions = new MenuItem("Back", x, optionsY + offset, (event) -> activeElements = mainMenu);
+            PositionState optPos = new PositionState(x, y, offset);
+            UIButton graphics = new MenuItem("Graphics", optPos, (event) -> {});
+            UIButton parameters = new MenuItem("Parameters", optPos, (event) -> {});
+            UIButton gameState = new MenuItem("Game state", optPos, (event) -> {});
+            UIButton backOptions = new MenuItem("Back", optPos, (event) -> activeElements = mainMenu);
             optionMenu = new UIButton[]{graphics, parameters, gameState, backOptions};
         }
-        UIButton credits = new MenuItem("Credits", x, y += offset, (event) -> { });
-        UIButton exitGame = new MenuItem("Exit Game", x, y + offset, (event) -> engine.getWindow().close());
+        UIButton credits = new MenuItem("Credits", position, (event) -> { });
+        UIButton exitGame = new MenuItem("Exit Game", position, (event) -> engine.getWindow().close());
         mainMenu = new UIButton[]{startGame, options, credits, exitGame};
 
         this.hud = engine.getHud();
@@ -87,5 +90,4 @@ public class MenuProvider implements Provider, Clickable {
     public void draw(Window window, Renderer renderer) {
         // do no actual drawing (in 3d space)
     }
-
 }

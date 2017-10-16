@@ -14,8 +14,9 @@ import static org.lwjgl.nanovg.NanoVG.NVG_ALIGN_CENTER;
  */
 public class MenuItem extends UIButton {
 
-    public static final int BUTTON_WIDTH = 400;
-    public static final int BUTTON_HEIGHT = 50;
+    public static final int BUTTON_WIDTH = 500;
+    public static final int BUTTON_HEIGHT = 75;
+    private static final float TEXT_SIZE = 30f;
     private static final Vector4f BACK_COLOR = new Vector4f(0.3f, 0.3f, 0.8f, 0.8f);
     private static final Vector4f TEXT_COLOR = new Vector4f(1f, 1f, 1f, 1f);
     private static final Vector4f LINE_COLOR = new Vector4f(0.8f, 0.3f, 0.3f, 0.8f);;
@@ -34,12 +35,16 @@ public class MenuItem extends UIButton {
         this.click = click;
     }
 
+    public MenuItem(String text, PositionState state, Consumer<MouseEvent> click){
+        this(text, state.getX(), state.getY(), click);
+    }
+
     @Override
     public void draw(Hud hud) {
         hud.roundedRectangle(x, y, width, height, 10);
         hud.fill(BACK_COLOR.x, BACK_COLOR.y, BACK_COLOR.z, BACK_COLOR.w);
         hud.stroke(STROKE_WIDTH, LINE_COLOR.x, LINE_COLOR.y, LINE_COLOR.z, LINE_COLOR.w);
-        hud.text(x + width /2, y + height /2, 24f, Hud.Font.MEDIUM, NVG_ALIGN_CENTER, text, TEXT_COLOR);
+        hud.text(x + width /2, y + height /2, TEXT_SIZE, Hud.Font.MEDIUM, NVG_ALIGN_CENTER, text, TEXT_COLOR);
     }
 
     @Override
