@@ -10,7 +10,9 @@ import org.deeplearning4j.ui.stats.StatsListener;
 import org.deeplearning4j.ui.storage.InMemoryStatsStorage;
 import org.deeplearning4j.util.ModelSerializer;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.dataset.api.MultiDataSet;
+import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
 import org.nd4j.linalg.dataset.api.iterator.MultiDataSetIterator;
 
 import java.io.File;
@@ -72,7 +74,25 @@ public class TacticalTrainer {
         }
     }
 
+    public void fit(DataSetIterator data, int nEpochs){
+        for( int i=0; i<nEpochs; i++ ){
+            data.reset();
+            network.fit(data);
+        }
+    }
+
+    public void fit(DataSet data, int nEpochs){
+        for( int i=0; i<nEpochs; i++ ){
+            //data.reset();
+            network.fit(data);
+        }
+    }
+
     public INDArray[] eval(INDArray[] inputs){
+        return network.output(inputs);
+    }
+
+    public INDArray[] eval(INDArray inputs){
         return network.output(inputs);
     }
 

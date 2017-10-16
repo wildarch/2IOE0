@@ -1,6 +1,9 @@
 package nl.tue.c2IOE0.group5.AI;
 
-import org.nd4j.linalg.dataset.api.MultiDataSet;
+import nl.tue.c2IOE0.group5.AI.Data.InputGenerator;
+import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.dataset.DataSet;
+import org.nd4j.linalg.factory.Nd4j;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,7 +15,7 @@ import java.io.IOException;
  */
 public class TrainingManager extends JFrame{
     TacticalTrainer trainer = null;
-    MultiDataSet data = null;
+    DataSet data = null;
     boolean trainerActive = false;
 
     JPanel btnPanel = new JPanel();
@@ -28,6 +31,7 @@ public class TrainingManager extends JFrame{
     JButton saveDataBtn = new JButton("Save Data");
 
     JFileChooser modelSelector = new JFileChooser();
+    JFileChooser dataSelector = new JFileChooser();
 
     public TrainingManager(){
         super("Training Manager");
@@ -62,6 +66,55 @@ public class TrainingManager extends JFrame{
             setEnabled();
         });
 
+        loadDataBtn.addActionListener(a -> {
+            if(dataSelector.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
+                try {
+                    data = InputGenerator.fromFile(dataSelector.getSelectedFile());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                setEnabled();
+            }
+        });
+
+        saveDataBtn.addActionListener(a -> {
+            if(dataSelector.showSaveDialog(this) == JFileChooser.APPROVE_OPTION){
+                try {
+                    InputGenerator.export(dataSelector.getSelectedFile(), data);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                setEnabled();
+            }
+        });
+
+        generateDataBtn.addActionListener(a -> {
+            int numInputs = 10000;
+            int gridSize = 9;
+            int nrTowers = 5;
+            int nrDeployTypes = 5;
+            int nrTowerLevels = 5;
+            data = InputGenerator.getTrainingData(numInputs, gridSize, nrTowers, nrTowerLevels, nrDeployTypes, 5, input -> {
+                INDArray output = Nd4j.zeros(numInputs, 1);
+
+                for (int i = 0; i < numInputs; i++){
+                    double res = 0;
+                    for (int j = gridSize * gridSize * nrTowers; j < gridSize * gridSize * nrTowers + nrDeployTypes; j++){
+                        if (input.getDouble(i, j) > 1.0 / nrDeployTypes){
+                            res += 1.0 / nrDeployTypes;
+                        }
+                    }
+
+                    output.putScalar(i, 0, res * input.getDouble(i, gridSize * gridSize * nrTowers + nrDeployTypes));
+                    //output.putScalar(i, 0, 0);
+                    System.out.println(Math.round(i * 100.0 / (double)numInputs) + "%");
+                }
+
+                return output;
+            });
+            setEnabled();
+        });
+
         setEnabled();
 
         btnPanel.add(loadNetworkBtn);
@@ -89,7 +142,6 @@ public class TrainingManager extends JFrame{
 
 
     public void showUI(){
-
         this.setVisible(true);
     }
 
