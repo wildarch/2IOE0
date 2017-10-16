@@ -14,14 +14,13 @@ import org.joml.Vector2i;
 
 import java.io.IOException;
 
-import static nl.tue.c2IOE0.group5.userinterface.MenuItem.BUTTON_WIDTH;
-
 /**
  * @author Geert van Ieperen
  */
 public class MenuProvider implements Provider, Clickable {
 
-    private int middle;
+    private static final int HEIGHT_FROM_TOP = 150;
+    private static final int SPACE_BETWEEN_BUTTONS = 50;
 
     private UIButton[] mainMenu;
     private UIButton[] optionMenu;
@@ -35,15 +34,15 @@ public class MenuProvider implements Provider, Clickable {
         this.engine = engine;
         engine.pause(true);
 
-        int x = -BUTTON_WIDTH/2;
-        int y = 100;
-        int offset = 50;
+        int x = (engine.getWindow().getWidth()/2) - (MenuItem.BUTTON_WIDTH/2);
+        int y = HEIGHT_FROM_TOP;
+        int offset = SPACE_BETWEEN_BUTTONS + MenuItem.BUTTON_HEIGHT;
 
-        UIButton startGame = new MenuItem("Start Game", x, y += offset, (event) -> engine.pause(false));
+        UIButton startGame = new MenuItem("Start Game", x, y, (event) -> engine.pause(false));
         UIButton options = new MenuItem("Options", x, y += offset, (event) -> activeElements = optionMenu);
         {
-            int optionsY = 0;
-            UIButton graphics = new MenuItem("Graphics", x, optionsY += offset, (event) -> {});
+            int optionsY = HEIGHT_FROM_TOP;
+            UIButton graphics = new MenuItem("Graphics", x, optionsY, (event) -> {});
             UIButton parameters = new MenuItem("Parameters", x, optionsY += offset, (event) -> {});
             UIButton gameState = new MenuItem("Game state", x, optionsY += offset, (event) -> {});
             UIButton backOptions = new MenuItem("Back", x, optionsY + offset, (event) -> activeElements = mainMenu);
@@ -71,15 +70,7 @@ public class MenuProvider implements Provider, Clickable {
 
     @Override
     public void update() {
-        // set x-position of all elements to width/2
-        int middle = (engine.getWindow().getWidth())/2;
 
-        if (this.middle != middle) {
-            this.middle = middle;
-            for (UIElement element : activeElements) {
-                element.setX(middle - BUTTON_WIDTH/2);
-            }
-        }
     }
 
     @Override

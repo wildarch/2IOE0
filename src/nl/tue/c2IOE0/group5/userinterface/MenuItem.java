@@ -15,7 +15,7 @@ import static org.lwjgl.nanovg.NanoVG.NVG_ALIGN_CENTER;
 public class MenuItem extends UIButton {
 
     public static final int BUTTON_WIDTH = 400;
-    private static final int BUTTON_HEIGHT = 50;
+    public static final int BUTTON_HEIGHT = 50;
     private static final Vector4f BACK_COLOR = new Vector4f(0.3f, 0.3f, 0.8f, 0.8f);
     private static final Vector4f TEXT_COLOR = new Vector4f(1f, 1f, 1f, 1f);
     private static final Vector4f LINE_COLOR = new Vector4f(0.8f, 0.3f, 0.3f, 0.8f);;
