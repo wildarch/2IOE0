@@ -14,13 +14,13 @@ public class TestProvider implements Provider {
     // register resources here, e.g.
     private int updatecounter;
 
-    private GameObject object;
+    private TestObject object;
 
     @Override
     public void init(Engine engine) {
         // initialize resources here, e.g.
         updatecounter = 0;
-        this.object = new TestObject();
+        this.object = new TestObject().init(engine.getRenderer());
     }
 
     public void ud() {
@@ -58,7 +58,7 @@ public class TestProvider implements Provider {
         }
 
         window.setClearColor(r, g, b, 1f);
-        object.setPosition(3f, 0f,2f);
-        object.draw(window, renderer);
+        object.setPosition(3f, 0f,r);
+        object.boink();
     }
 }

@@ -4,11 +4,12 @@ import nl.tue.c2IOE0.group5.engine.provider.Updatable;
 import nl.tue.c2IOE0.group5.engine.rendering.Drawable;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
+import org.joml.Vector3f;
 
 /**
  * @author Yoeri Poels, Jorren Hendriks
  */
-public abstract class GameObject extends Positionable implements Drawable, Updatable {
+public abstract class GameObject extends Positionable implements Updatable {
 
     private float scale;
 
@@ -34,17 +35,46 @@ public abstract class GameObject extends Positionable implements Drawable, Updat
     public void setScale(float scale) {
         this.scale = scale;
     }
-
-
-    @Override
-    public void draw(Window window, Renderer renderer) {
-        renderer.setModelViewMatrix(getPosition(), getRotation(), getScale());
-
-        // actually draw objects here
+    /**
+     * {@link #setModelView(Renderer, Vector3f 0, Vector3f 0, float 0)}
+     */
+    protected void setModelView(Renderer renderer) {
     }
+    /**
+     * {@link #setModelView(Renderer, Vector3f, Vector3f 0, float 0)}
+     */
+    protected void setModelView(Renderer renderer, Vector3f posOffset) {
+        renderer.setModelViewMatrix(posOffset.add(getPosition()), getRotation(), getScale());
 
     @Override
     public void update() {
         // Updatable the state of objects
     }
+
+    /**
+     * {@link #setModelView(Renderer, Vector3f, Vector3f, float 0)}
+     */
+    protected void setModelView(Renderer renderer, Vector3f posOffset, Vector3f rotOffset) {
+        renderer.setModelViewMatrix(posOffset.add(getPosition()), rotOffset.add(getRotation()), getScale());
+    }
+
+    /**
+     * Set the modelview matrix for this object, possibly with some offset for sub-elements of this object.
+     *
+     * @param renderer An instance of the renderer that will draw this object.
+     * @param posOffset The offset for the position.
+     * @param rotOffset The offset for the rotation.
+     * @param scaleOffset The offset for the scale.
+     */
+    protected void setModelView(Renderer renderer, Vector3f posOffset, Vector3f rotOffset, float scaleOffset) {
+        renderer.setModelViewMatrix(posOffset.add(getPosition()), rotOffset.add(getRotation()), scaleOffset+getScale());
+    }
+
+    /**
+     * Initialize the gameobject. Link meshes here and define their render methods.
+     *
+     * @param renderer An instance of the renderer that will draw this object.
+     * @return this object.
+     */
+    public abstract GameObject init(Renderer renderer);
 }

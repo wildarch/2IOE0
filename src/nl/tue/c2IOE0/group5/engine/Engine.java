@@ -68,7 +68,7 @@ public class Engine {
     private void init() throws ShaderException, IOException, Exception {
         timer.init();
         window.init();
-        renderer.init();
+        renderer.init(window);
         renderer.setActiveCamera(camera);
         hud.init(window);
 
@@ -122,15 +122,12 @@ public class Engine {
 
                 // set main camera
                 renderer.setActiveCamera(camera);
-                // bind default shader program
-                renderer.bind();
+                // update projection matrix
+                window.updateProjectionMatrix();
 
-
-                renderer.updateProjectionMatrix(window);
+                // render everything
                 providers.forEach(provider -> provider.draw(window, renderer));
-
-                // unbind shader program
-                renderer.unbind();
+                renderer.render();
 
                 // draw the hud
                 hud.draw(window, renderer);

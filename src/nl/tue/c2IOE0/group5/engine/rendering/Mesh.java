@@ -6,9 +6,14 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE2;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
@@ -29,6 +34,8 @@ public class Mesh {
     private final int vertexCount;
 
     private Material material;
+
+    private boolean render;
 
     public Mesh(float[] positions, float[] texCoords, float[] normals, int[] indices) {
         FloatBuffer posBuffer = null;
@@ -135,30 +142,63 @@ public class Mesh {
         glDeleteVertexArrays(vaoId);
     }
 
-    public void draw(Renderer renderer) {
-        renderer.setMaterial(getMaterial());
-
-        // If we have a texture for our mesh
+    /**
+     * Initialize the render of this mesh.
+     */
+    private void initRender() {
         if (isTextured()) {
-            // Activate first texture bank
             glActiveTexture(GL_TEXTURE0);
-            // Bind the texture
             glBindTexture(GL_TEXTURE_2D, getTexture().getId());
         }
-        // Draw the mesh
+
         glBindVertexArray(getVaoId());
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
         glEnableVertexAttribArray(2);
 
-        glDrawElements(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0);
+        render = true;
+    }
 
-        // Restore state
+    /**
+     * Disable fields associated with rendering this mesh.
+     */
+    private void endRender() {
+        render = false;
+
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
         glDisableVertexAttribArray(2);
         glBindVertexArray(0);
+
         glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    /**
+     * Render this mesh based on a collection of consumers which set the variables needed to draw the mesh in the
+     * right conditions.
+     *
+     * @param consumers A collection of consumers of this mesh.
+     */
+    void renderAll(Collection<Consumer<Mesh>> consumers) {
+        initRender();
+
+        consumers.forEach(consumer -> {
+            consumer.accept(this);
+        });
+
+        endRender();
+    }
+
+    void render() {
+        initRender();
+
+        draw();
+
+        endRender();
+    }
+
+    public void draw() {
+        glDrawElements(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0);
     }
 
 }

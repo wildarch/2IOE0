@@ -12,6 +12,7 @@ import nl.tue.c2IOE0.group5.providers.GridProvider;
 import nl.tue.c2IOE0.group5.providers.TestProvider;
 import nl.tue.c2IOE0.group5.providers.UIProvider;
 import org.joml.Vector2i;
+import org.joml.Vector3f;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -54,23 +55,6 @@ public class PlayerController implements Controller,Listener {
         switch (event.getSubject()) {
             case GLFW_KEY_L:
                 camera.setRotation(0,0,0);
-                break;
-            case GLFW_KEY_T:
-                float xRotation = (camera.getRotation().x());
-                float yRotation = (camera.getRotation().y())%360;
-
-                float unitVX = (float)(Math.sin((yRotation*Math.PI)/180))*((float)(Math.sin((xRotation*Math.PI)/180)));
-                float unitVY = (float)Math.sin((xRotation*Math.PI)/180);
-                float unitVZ = (float)(Math.cos((yRotation*Math.PI)/180))*((float)(Math.sin((xRotation*Math.PI)/180)));
-
-                System.out.println("XRotation: " + Math.sin((xRotation*Math.PI)/180));
-                System.out.println("YRotation: " + Math.cos((yRotation*Math.PI)/180));
-
-                System.out.println("VX: " + unitVX);
-                System.out.println("VY: " + unitVY);
-                System.out.println("VZ: " + unitVZ);
-
-                camera.move(unitVX/2,-unitVY/2,-unitVZ/2);
                 break;
         }
     }
@@ -146,8 +130,11 @@ public class PlayerController implements Controller,Listener {
             float deltaxMouse = (x - oldx) * (sensitivity / 10);
             float deltayMouse = (y - oldy) * (sensitivity / 10);
 
+            //If Y-axis is threatening to
             if ((camera.getRotation().x() + deltayMouse <= 90) && (camera.getRotation().x() + deltayMouse > -35)){
                 camera.rotate(deltayMouse, deltaxMouse, 0);
+            } else {
+                camera.rotate(0,deltaxMouse,0);
             }
 
             //Set new old values
@@ -158,16 +145,8 @@ public class PlayerController implements Controller,Listener {
 
     @Override
     public void onMouseScroll(MouseEvent event) {
-        float scrollSpeed = event.getY()/10;
-        float xRotation = (camera.getRotation().x());
-        float yRotation = (camera.getRotation().y())%360;
-
-        float unitVX = (float)Math.sin((yRotation*Math.PI)/180);
-        float unitVY = (float)Math.sin((xRotation*Math.PI)/180);
-        float unitVZ = (float)(Math.cos((yRotation*Math.PI)/180) + Math.cos((yRotation*Math.PI)/180))/2;
-
-
-        camera.move(unitVX * scrollSpeed,-unitVY * scrollSpeed,-unitVZ * scrollSpeed);
+        Vector3f speed = gridProvider.getDirectionOfCamera(renderer, window, 0, 0);
+        camera.move((event.getY()/10) * speed.x(),(event.getY()/10) * speed.y(),(event.getY()/10) * speed.z());
     }
 
 }

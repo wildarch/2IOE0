@@ -5,18 +5,24 @@ import nl.tue.c2IOE0.group5.engine.rendering.shader.DepthMap;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.DirectionalLight;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.PointLight;
+import nl.tue.c2IOE0.group5.util.Resource;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Scanner;
+import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * @author Jorren Hendriks.
  */
 public class Renderer {
+    private Map<String, Mesh> meshes;
+    private Map<Mesh, List<Consumer<Mesh>>> meshBuffer;
 
+    private Window window;
+    private Camera activeCamera;
     // generic shader
     private ShaderProgram sceneShader;
     // shader for shadow maps
@@ -24,14 +30,42 @@ public class Renderer {
     // depth map used for shadows for the entire scene
     private DepthMap depthMap;
 
+    private Transformation transformation;
+
 
 
     /**
      * Constructor for initializing datastructures.
      */
     public Renderer() {
-        sceneShader = new ShaderProgram();
-        depthShader = new ShaderProgram();
+        meshes = new HashMap<>();
+        meshBuffer = new HashMap<>();
+
+        transformation = new Transformation();
+    }
+
+    public Mesh linkMesh(String filename, Consumer<Mesh> render) throws Exception {
+        Mesh mesh = linkMesh(filename);
+        if (meshBuffer.containsKey(mesh)) {
+            meshBuffer.get(mesh).add(render);
+        } else {
+            meshBuffer.put(mesh, new ArrayList<>(Collections.singleton(render)));
+        }
+        return mesh;
+    }
+
+    public Mesh linkMesh(String filename) throws Exception {
+        if (meshes.containsKey(filename)) {
+            return meshes.get(filename);
+        } else {
+            Mesh mesh = OBJLoader.loadMesh(filename);
+            meshes.put(filename, mesh);
+            return mesh;
+        }
+    }
+
+    public void unlinkMesh(Mesh mesh, Runnable runnable) {
+        meshBuffer.get(mesh).remove(runnable);
     }
 
     /**
@@ -39,9 +73,11 @@ public class Renderer {
      *
      * @throws ShaderException When an error occurred.
      */
-    public void init() throws ShaderException, IOException {
+    public void init(Window window) throws ShaderException, IOException {
         try {
+            this.window = window;
             initSceneShader();
+            initDepthShader();
             depthMap = new DepthMap();
             initDepthShader();
         } catch (Exception e) {
@@ -52,119 +88,210 @@ public class Renderer {
     }
 
     private void initSceneShader() throws ShaderException, IOException {
-        sceneShader.init();
-        sceneShader.createVertexShader(loadResource("/shaders/bounceShader.vert"));
-        sceneShader.createFragmentShader(loadResource("/shaders/fragment.frag"));
+        sceneShader = new ShaderProgram();
+        sceneShader.createVertexShader(Resource.load("/shaders/vertex.vert"));
+        sceneShader.createFragmentShader(Resource.load("/shaders/fragment.frag"));
         sceneShader.link();
 
         // Create uniforms for world and projection matrices
         sceneShader.createUniform("projectionMatrix");
         sceneShader.createUniform("modelViewMatrix");
         sceneShader.createUniform("texture_sampler");
-
         // Create the Material uniform
         sceneShader.createMaterialUniform("material");
-
         // Create the lighting uniforms
         sceneShader.createUniform("specularPower");
         sceneShader.createUniform("ambientLight");
-        sceneShader.createPointLightUniform("pointLight");
-
-        // current spread
+        sceneShader.createPointLightsUniform("pointLights", ShaderProgram.MAX_POINT_LIGHTS);
+        sceneShader.createDirectionalLightUniform("directionalLight");
+        // Create uniforms for the bounce effect
         sceneShader.createUniform("bounceDegree");
-        // height of middle of object/bounce
         sceneShader.createUniform("boundingMax");
-        // height from top to bottom (the heightrange that is expanded)
         sceneShader.createUniform("boundingMin");
 
-        // skybox uniform
+        // Create uniform for rendering the skybox
         sceneShader.createUniform("isSkybox");
 
-        sceneShader.createDirectionalLightUniform("directionalLight");
 
+        // Initialize some fields
         sceneShader.setAmbientLight(new Vector3f(0.3f, 0.3f, 0.3f));
         sceneShader.setDirectionalLight(new DirectionalLight(
                 new Vector3f(1f, 1f, 1f),
                 new Vector3f(-0.78f, 0.4f, 0.66f),
                 1f
         ));
-        PointLight pointLight = new PointLight(
-                new Vector3f(1f, 1f, 1f),
-                new Vector3f(0f, 0f, 1f),
-                10.0f);
-        pointLight.setAttenuation(new PointLight.Attenuation(0f, 0f, 1f));
-        sceneShader.setPointLight(pointLight);
     }
 
     private void initDepthShader() throws ShaderException, IOException {
-        depthShader.init();
-        depthShader.createVertexShader(loadResource("/shaders/vertex_depth.vert"));
-        depthShader.createFragmentShader(loadResource("/shaders/fragment_depth.frag"));
+        depthShader = new ShaderProgram();
+        depthShader.createVertexShader(Resource.load("/shaders/vertex_depth.vert"));
+        depthShader.createFragmentShader(Resource.load("/shaders/fragment_depth.frag"));
         depthShader.link();
 
         depthShader.createUniform("orthoProjectionMatrix");
         depthShader.createUniform("modelLightViewMatrix");
     }
 
-    //methods for passing information on to the scene shader
-    public void setModelViewMatrix(Vector3f position, Vector3f rotation) {
-        sceneShader.setModelViewMatrix(position, rotation, 1f);
-    }
-    public void setModelViewMatrix(Vector3f position, Vector3f rotation, float scale) {
-        sceneShader.setModelViewMatrix(position, rotation, scale);
-    }
-    public Matrix4f getViewMatrix() {
-        return sceneShader.getViewMatrix();
-    }
-    public Matrix4f getProjectionMatrix(Window window) {
-        return sceneShader.getProjectionMatrix(window);
-    }
-    public void setActiveCamera(Camera activeCamera) {
-        sceneShader.setActiveCamera(activeCamera);
-    }
-    public Camera getActiveCamera() {
-        return sceneShader.getActiveCamera();
-    }
     public void cleanup() {
         sceneShader.cleanup();
+        depthShader.cleanup();
     }
-    public void bind() {
-        sceneShader.bind();
+
+    /**
+     * Get the view matrix of the current scene.
+     *
+     * @return A View Matrix
+     */
+    public Matrix4f getViewMatrix() {
+        return transformation.getViewMatrix(getActiveCamera());
     }
-    public void unbind() {
-        sceneShader.unbind();
+
+    /**
+     * Set the camera which is currently active.
+     *
+     * @param activeCamera The camera to be active.
+     */
+    public void setActiveCamera(Camera activeCamera) {
+        this.activeCamera = activeCamera;
     }
-    public void updateProjectionMatrix(Window window) {
-        sceneShader.updateProjectionMatrix(window);
+
+    /**
+     * Get the currently active Camera.
+     *
+     * @return The active Camera.
+     */
+    public Camera getActiveCamera() {
+        return this.activeCamera;
     }
+
+    /**
+     * see {@link #setModelViewMatrix(Vector3f, Vector3f, float)}, with {@code float scale = 1f}
+     */
+    public void setModelViewMatrix(Vector3f position, Vector3f rotation) {
+        setModelViewMatrix(position, rotation, 1f);
+    }
+
+    /**
+     * Set the modelview matrix. This sets the location, rotation and scale of the things to be rendered next. Besides
+     * it takes into account where the activeCamera is at.
+     *
+     * @param position The position of the objects that will be rendered next.
+     * @param rotation The rotation of the objects that will be rendered next.
+     * @param scale The scale of the objects that will be rendered next.
+     */
+    public void setModelViewMatrix(Vector3f position, Vector3f rotation, float scale) {
+        Matrix4f transformationMatrix = transformation.getModelViewMatrix(position, rotation, scale, getActiveCamera());
+        sceneShader.setUniform("modelViewMatrix", transformationMatrix);
+    }
+
+    /**
+     * applies a bounce-effect around the given gravity-middle, stretching boundingMin/2 up and down.
+     * this effect applies only to subjects rendered inside the render parameter.
+     * @param bounceDegree the strength B of the effect, with B = 0 no effect,
+     *                     B > 0 a horizontal expansion and B < 0 a vertical stretch
+     * @param boundingMin the minimum coordinates of the 3D-model
+     * @param boundingMax idem maximum
+     * @param render the runnable where the bounce effect will apply to
+     */
+    public void boink(float bounceDegree, Vector3f boundingMin, Vector3f boundingMax, Runnable render){
+        sceneShader.setUniform("bounceDegree", bounceDegree);
+        sceneShader.setUniform("boundingMin", boundingMin);
+        sceneShader.setUniform("boundingMax", boundingMax);
+
+        render.run();
+
+        sceneShader.setUniform("bounceDegree", 0f);
+    }
+
+    /**
+     * Sets up the renderer to draw a skybox, e.g. an object that doesn't care but just draws its texture.
+     *
+     * @param render The code to render in skybox mode.
+     */
+    public void drawSkybox(Runnable render) {
+        sceneShader.setUniform("isSkybox", 1);
+
+        render.run();
+
+        sceneShader.setUniform("isSkybox", 0);
+    }
+
+    /**
+     * Temporarily change the ambient light of an object. This effect only applies to objects drawn inside the render
+     * parameter.
+     *
+     * @param color The ambient light color.
+     * @param render A runnable in which the objects to which this effect applies are drawn.
+     */
     public void ambientLight(Vector3f color, Runnable render) {
-        sceneShader.ambientLight(color, render);
+        sceneShader.setUniform("ambientLight", color);
+        render.run();
+        sceneShader.setUniform("ambientLight", sceneShader.getAmbientLight());
     }
+
+    /**
+     * Set the material of currently rendered object.
+     *
+     * @param material The material of the object.
+     */
     public void setMaterial(Material material) {
         sceneShader.setUniform("material", material);
     }
-    public void drawSkybox(Runnable render) {
-        sceneShader.drawSkybox(render);
-    }
+
     public void drawHealthBolletje(Runnable render) {
         sceneShader.drawHealthBolletje(render);
     }
 
+    /**
+     * Render the lights in the scene
+     *
+     * @param viewMatrix A viewmatrix on which the point lights need to be drawn.
+     */
+    private void renderLights(Matrix4f viewMatrix) {
+        sceneShader.setUniform("specularPower", sceneShader.getSpecularPower());
+        sceneShader.setUniform("ambientLight", sceneShader.getAmbientLight());
 
+        PointLight[] pointLights = sceneShader.getPointLights();
+        for (int i = 0; i < pointLights.length; i++) {
+            PointLight pointLight = new PointLight(pointLights[i]);
+            Vector4f pos = new Vector4f(pointLight.getPosition(), 1);
+            pos.mul(viewMatrix);
+            pointLight.setPosition(new Vector3f(pos.x, pos.y, pos.z));
+            sceneShader.setUniform("pointLights", pointLight, i);
+        }
 
+        DirectionalLight dirLight = new DirectionalLight(sceneShader.getDirectionalLight());
+        Vector4f dir = new Vector4f(dirLight.getDirection(), 0);
+        dir.mul(viewMatrix);
+        dirLight.setDirection(new Vector3f(dir.x, dir.y, dir.z));
+        sceneShader.setUniform("directionalLight", dirLight);
+    }
 
     /**
-     * Load a text file as a String
-     *
-     * @param fileName The name of the file to load.
-     * @return The contents of the file as a String.
-     * @throws IOException If a read error occures.
+     * Render the main objects of the scene.
      */
-    private String loadResource(String fileName) throws IOException {
-        try (InputStream in = this.getClass().getResourceAsStream(fileName)) {
-            Scanner scanner = new Scanner(in, "UTF-8");
-            return scanner.useDelimiter("\\A").next();
-        }
+    private void renderScene() {
+        sceneShader.bind();
+
+        Matrix4f projectionMatrix = window.getProjectionMatrix();
+        sceneShader.setUniform("projectionMatrix", projectionMatrix);
+
+        Matrix4f viewMatrix = getViewMatrix();
+
+        renderLights(viewMatrix);
+
+        sceneShader.setUniform("texture_sampler", 0);
+
+        meshBuffer.forEach((mesh, consumers) -> {
+            setMaterial(mesh.getMaterial());
+            mesh.renderAll(consumers);
+        });
+
+        sceneShader.unbind();
+    }
+
+    public void render() {
+        renderScene();
     }
 
 }

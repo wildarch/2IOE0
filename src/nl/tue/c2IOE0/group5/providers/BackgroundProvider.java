@@ -21,6 +21,7 @@ public class BackgroundProvider implements Provider {
         try {
             this.skybox = new Skybox("/skybox/skybox.obj", "/skybox/skybox.png");
             this.skybox.setScale(1000f);
+            this.skybox.init(engine.getRenderer());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -34,6 +35,5 @@ public class BackgroundProvider implements Provider {
     @Override
     public void draw(Window window, Renderer renderer) {
         skybox.setPosition(camera);
-        renderer.drawSkybox(() -> skybox.draw(window, renderer));
     }
 }

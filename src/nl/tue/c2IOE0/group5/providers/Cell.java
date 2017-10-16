@@ -2,6 +2,7 @@ package nl.tue.c2IOE0.group5.providers;
 
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
 import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
+import nl.tue.c2IOE0.group5.engine.rendering.OBJLoader;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
@@ -26,7 +27,7 @@ public class Cell extends GameObject {
     private Vector3f color;
 
     private final CellType cellType;
-    private Mesh mesh;
+    //private Mesh mesh;
 
     /**
      * The x and y coordinates are of the grid, not in 3d space!
@@ -40,47 +41,10 @@ public class Cell extends GameObject {
         this.position = new Vector2i(x, y);
 
         try {
-            this.mesh = new Mesh(new float[] {
-                    -0.5f,   0.5f,   0.5f,
-                    -0.5f,  -0.5f,   0.5f,
-                    0.5f,  -0.5f,   0.5f,
-                    0.5f,   0.5f,   0.5f,
-                    -0.5f,   0.5f,  -0.5f,
-                    0.5f,   0.5f,  -0.5f,
-                    -0.5f,  -0.5f,  -0.5f,
-                    0.5f,  -0.5f,  -0.5f,
-                    //from here to texture the top
-                    -0.5f,   0.5f,   0.5f,
-                    0.5f,   0.5f,   0.5f,
-                    -0.5f,   0.5f,  -0.5f,
-                    0.5f,   0.5f,  -0.5f,
-            }, new float[] {
-                    0f, 0f,
-                    0f, 1f,
-                    1f, 1f,
-                    1f, 0f,
-                    1f, 0f,
-                    0f, 0f,
-                    1f, 1f,
-                    0f, 1f,
-                    //from here to texture the top
-                    0f, 1f,
-                    0f, 0f,
-                    1f, 1f,
-                    1f, 0f,
-            }, new float[] {
-                1f, 1f, 1f,
-            }, new int[] {
-                            0, 1, 3, 3, 1, 2,
-                            10, 8, 9, 11, 10, 9,
-                            3, 2, 7, 5, 3, 7,
-                            6, 1, 0, 6, 0, 4,
-                            2, 1, 6, 2, 6, 7,
-                            7, 6, 4, 7, 4, 5,
-            });
+            //this.mesh = OBJLoader.loadMesh("/cube.obj");
 
             //initialize textures
-            mesh.setMaterial(new Material("/square.png"));
+            //mesh.setMaterial(new Material("/square.png"));
             switch (cellType) {
                 case BASE:
                     defaultColor = new Vector3f(0f, 1f, 0f);
@@ -160,11 +124,16 @@ public class Cell extends GameObject {
     }
 
     @Override
-    public void draw(Window window, Renderer renderer) {
-        super.draw(window, renderer);
+    public Cell init(Renderer renderer) {
+        try {
+            renderer.linkMesh("/cube.obj", (mesh) -> {
+                setModelView(renderer);
+                renderer.ambientLight(color, mesh::draw);
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        renderer.ambientLight(color, () ->
-                mesh.draw(renderer)
-        );
+        return this;
     }
 }
