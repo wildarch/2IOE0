@@ -43,7 +43,6 @@ public abstract class AbstractTower extends GameObject {
         this.maxLevel = maxLevel;
         this.maxHealth = maxHealth;
         this.health = maxHealth;
-        this.mesh = mesh;
         this.enemyProvider = enemyProvider;
         this.bulletProvider = bulletProvider;
         this.loopTimer = loopTimer;
@@ -80,11 +79,11 @@ public abstract class AbstractTower extends GameObject {
      * @param damage Damage to incur
      */
     public void takeDamage(int damage) {
-        health -= damage;
+/*        health -= damage;
         if (health <= 0) {
             health = 0;
             cell.destroyTower();
-        }
+        }*/
     }
 
     /**
@@ -109,7 +108,7 @@ public abstract class AbstractTower extends GameObject {
     }
 
     private void attack(Enemy e) {
-        Bullet b = new Bullet(0.5f, 1000, e, this, loopTimer);
+        Bullet b = new Bullet(0.05f, 1000, e, this);
         bulletProvider.addBullet(b);
     }
 
@@ -122,7 +121,7 @@ public abstract class AbstractTower extends GameObject {
     public void update() {
         if (timeToDoDamage < loopTimer.getLoopTime()) {
             attack();
-            timeToDoDamage = loopTimer.getLoopTime() + 500;
+            timeToDoDamage = loopTimer.getLoopTime() + 2;
         }
         this.healthBolletje.update();
     }

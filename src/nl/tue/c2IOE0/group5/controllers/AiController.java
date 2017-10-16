@@ -93,6 +93,7 @@ public class AiController implements Controller, Listener {
         for (int i = 0; i < 20; i++) {
             qlearner.generateRandomPath(100);
         }
+        //to prevent going to 0,0
         qlearner.generateRandomPath(100, 0);
         double gamma = 0.1d;
         qlearner.execute(gamma);

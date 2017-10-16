@@ -1,5 +1,7 @@
 package nl.tue.c2IOE0.group5.engine.objects;
 
+import nl.tue.c2IOE0.group5.util.Angle;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 /**
@@ -120,6 +122,12 @@ public abstract class Positionable {
         rotation.x = x;
         rotation.y = y;
         rotation.z = z;
+    }
+
+    public void setRotation(Vector3f d) {
+        Vector3f rotation = new Vector3f(1, 0, 0).rotationTo(d, new Quaternionf()).getEulerAnglesXYZ(new Vector3f());
+        Vector3f rotationDegrees = new Vector3f(-Angle.degf(rotation.x), Angle.degf(rotation.y), -Angle.degf(rotation.z));
+        this.rotation.set(rotationDegrees);
     }
 
     /**

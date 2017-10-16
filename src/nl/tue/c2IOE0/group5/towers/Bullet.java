@@ -18,29 +18,26 @@ public class Bullet extends GameObject {
     private float speed;
     private int damage;
     private Enemy target;
-    private Timer loopTimer;
-    private long timeToChange;
     private Mesh mesh;
     private Vector3f color;
     private boolean isDone = false; //When target is hit
     private Random r = new Random();
 
-    public Bullet(float speed, int damage, Enemy target, AbstractTower source, Timer loopTimer) {
+    public Bullet(float speed, int damage, Enemy target, AbstractTower source) {
         this.speed = speed;
         this.damage = damage;
         this.target = target;
-        this.loopTimer = loopTimer;
-        changeColor();
+        this.color = new Vector3f(0.5f, 0, 0.5f);
         setMesh();
         setPosition(source.getPosition().add(0f, 1f, 0f));
     }
 
     private void setMesh() {
         try {
-            Mesh m = OBJLoader.loadMesh("/cube_10mm_10mm.obj");
+            Mesh m = OBJLoader.loadMesh("/b4.obj");
             this.mesh = m;
             m.setMaterial(new Material("/square.png"));
-            setScale(0.005f);
+            setScale(0.05f);
         } catch (IOException e) {
             throw new RuntimeException("Failed to load cube model");
         }
@@ -56,6 +53,7 @@ public class Bullet extends GameObject {
         } else {
             Vector3f direction = targetPosition.sub(position);
             direction.normalize();
+            setRotation(direction);
             move(direction.mul(speed));
         }
     }
@@ -72,16 +70,8 @@ public class Bullet extends GameObject {
         );
     }
 
-    public void changeColor() {
-        color = new Vector3f(r.nextFloat(), r.nextFloat(), r.nextFloat());
-    }
-
     @Override
     public void update() {
-        if (timeToChange < loopTimer.getLoopTime()) {
-            changeColor();
-            timeToChange = loopTimer.getLoopTime() + 1;
-        }
         move();
     }
 }
