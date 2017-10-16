@@ -35,7 +35,7 @@ public class TestProvider implements Provider {
 
     @Override
     public void draw(Window window, Renderer renderer) {
-        object.setPosition(3f, 0f,3f);
+        object.setPosition(3f, 2f, 3f);
         object.boink();
     }
 }

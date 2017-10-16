@@ -10,34 +10,36 @@ import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
  */
 public class TestObject extends GameObject {
 
-    private Mesh mesh;
-
     private float boinkyness;
 
     public TestObject() {
         super();
         boinkyness = 0f;
-        this.setScale(40f);
-        this.setPosition(0f, -1f, 0f);
+        this.setScale(1f);
     }
 
     @Override
     public TestObject init(Renderer renderer) {
         try {
-            Mesh tower = renderer.linkMesh("/tower.obj", (mesh) -> {
+            Mesh tower = renderer.linkMesh("/tower1.obj", (mesh) -> {
                 setModelView(renderer);
                 setModelLightViewScene(renderer);
-                renderer.boink((float) Math.sin(boinkyness) +1f, mesh::draw, mesh, false);
+                renderer.boink(getBounceDegree(), mesh::draw, mesh, false);
             }, (mesh) -> {
                 setModelLightView(renderer);
-                renderer.boink((float) Math.sin(boinkyness) +1f, mesh::draw, mesh, true);
+                renderer.boink(getBounceDegree(), mesh::draw, mesh, true);
             });
-            tower.setMaterial(new Material("/tower.png"));
+            tower.setMaterial(new Material("/tower1.png"));
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return this;
+    }
+
+    private float getBounceDegree() {
+//        return 0;
+        return (float) Math.sin(boinkyness) +1f;
     }
 
     public void boink() {

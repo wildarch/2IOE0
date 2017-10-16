@@ -33,8 +33,8 @@ uniform mat4 orthoProjectionMatrix;
 
 // a value that is approximately 0, but large enough to prevent rounding errors
 float fragmentSize = 0.001;
-vec3 diffVec = boundingMax - boundingMin;
-vec3 gravityMiddle = boundingMin + (0.5 * boundingMax);
+vec3 diffVec = (boundingMax - boundingMin);
+vec3 gravityMiddle = 0.5 * (boundingMin + boundingMax);
 
 // bends out the vector of a mapToUnitd system
 vec3 bendOut(vec3 p) {
