@@ -13,8 +13,10 @@ import nl.tue.c2IOE0.group5.providers.*;
 public class TowerDefence {
 
     public static void main(String[] args) {
-        Engine e = new Engine();
+        Engine e = new Engine(true);
         e.addProviders(new Provider[] {
+                new MenuProvider(),
+                new TestProvider(),
                 new EnemyProvider(),
                 new GridProvider(),
                 new BackgroundProvider(),

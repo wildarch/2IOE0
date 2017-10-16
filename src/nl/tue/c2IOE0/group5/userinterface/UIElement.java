@@ -1,35 +1,36 @@
 package nl.tue.c2IOE0.group5.userinterface;
 
+import nl.tue.c2IOE0.group5.engine.rendering.HudElement;
 import org.joml.Vector2i;
-import org.joml.Vector4i;
 
 /**
  * @author Jorren Hendriks.
  */
-public class UIElement {
+public abstract class UIElement implements HudElement {
 
-    private int x1, y1, x2, y2;
-    private Runnable render;
+    protected int x;
+    protected int y;
+    protected int width;
+    protected int height;
 
-    public UIElement(int x1, int y1, int x2, int y2, Runnable render) {
-        this.x1 = x1;
-        this.y1 = y1;
-        this.x2 = x2;
-        this.y2 = y2;
-        this.render = render;
+    public UIElement(int x, int y, int width, int height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
     }
 
     public boolean contains(Vector2i v) {
-        return x1 <= v.x() && v.x() <= x2 &&
-                y1 <= v.y() && v.y() <= y2;
+        return x <= v.x() && v.x() <= x + width &&
+                y <= v.y() && v.y() <= y + height;
     }
 
-    public Vector4i getBounds() {
-        return new Vector4i(x1, y1, x2, y2);
+    public void setX(int x) {
+        this.x = x;
     }
 
-    public void draw() {
-        render.run();
+    public void setY(int y) {
+        this.y = y;
     }
 
 }

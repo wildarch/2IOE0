@@ -47,13 +47,13 @@ public class Cell extends GameObject {
             //mesh.setMaterial(new Material("/square.png"));
             switch (cellType) {
                 case BASE:
-                    defaultColor = new Vector3f(0f, 1f, 0f);
+                    defaultColor = new Vector3f(0f, 0.3f, 0f);
                     break;
                 case BORDER:
-                    defaultColor = new Vector3f(1f, 0f, 0f);
+                    defaultColor = new Vector3f(0.3f, 0f, 0f);
                     break;
                 case SPAWN:
-                    defaultColor = new Vector3f(1f);
+                    defaultColor = new Vector3f(0.3f);
                     break;
             }
             color = defaultColor;
@@ -128,7 +128,11 @@ public class Cell extends GameObject {
         try {
             renderer.linkMesh("/cube.obj", (mesh) -> {
                 setModelView(renderer);
+                setModelLightViewScene(renderer);
                 renderer.ambientLight(color, mesh::draw);
+            }, (mesh) -> {
+                setModelLightView(renderer);
+                mesh.draw();
             });
         } catch (Exception e) {
             e.printStackTrace();

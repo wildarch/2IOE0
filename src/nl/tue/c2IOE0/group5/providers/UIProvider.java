@@ -23,6 +23,7 @@ import static org.lwjgl.nanovg.NanoVG.NVG_ALIGN_TOP;
  */
 public class UIProvider implements Provider {
 
+    private Engine engine;
     private Hud hud;
 
     private int wHeight = 0;
@@ -39,39 +40,39 @@ public class UIProvider implements Provider {
     public void init(Engine engine) {
         this.hud = engine.getHud();
         mainTower = engine.getProvider(TowerProvider.class).getMainTower();
+        this.engine = engine;
 
         elements = new ArrayList<>();
 
-        UIButton button = new UIButton(10, 10, 40, 40, () -> {
-            try {
-                hud.image("/texture.png", 10, 10, 40, 40, 1);
-            } catch (IOException e) {
-                e.printStackTrace();
+        UIButton button = new UIButton(10, 10, 40, 40) {
+            @Override
+            public void onClick(MouseEvent event) {
+                System.out.println("HUD is being sexually harassed");
             }
-        }, (event) -> {
-            System.out.println("HUD is being sexually harrased");
-        });
+
+            @Override
+            public void draw(Hud hud) throws IOException {
+                hud.image("/texture.png", 10, 10, 40, 40, 1);
+            }
+        };
 
         elements.add(button);
 
         hud.create(() -> {
-            elements.forEach(UIElement::draw);
+            if (engine.isPaused()) return;
 
             try {
-                hud.polygon(30, bottom(20),
-                        20,             bottom(30),
-                        20,             bottom(60),
-                        30,             bottom(70),
-                        right(30),    bottom(70),
-                        right(20),    bottom(60),
-                        right(20),    bottom(30),
-                        right(30),    bottom(20)
-                );
+                for (UIElement element : elements) {
+                    element.draw(hud);
+                }
+
+                hud.roundedRectangle(20, bottom(80), wWidth - 40, 60, 10);
+
                 hud.fill(color.x, color.y, color.z, color.w);
                 hud.stroke(5, 0.6f, 0.1f, 1f, 1f);
                 hud.image("/texture.png", wWidth-70, wHeight-60, 30, 30, 0.6f);
                 hud.text(40, wHeight - 52, 25f, Hud.Font.MEDIUM, NVG_ALIGN_LEFT | NVG_ALIGN_TOP, "Main tower health: " + mainTower.getHealth(), textColor);
-            } catch (Exception e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 
@@ -96,7 +97,6 @@ public class UIProvider implements Provider {
 
     @Override
     public void update() {
-
     }
 
     @Override

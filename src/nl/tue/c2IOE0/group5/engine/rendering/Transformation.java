@@ -9,10 +9,73 @@ class Transformation {
 
     private final Matrix4f modelMatrix;
     private final Matrix4f viewMatrix;
+    private final Matrix4f orthoProjMatrix;
+    private final Matrix4f lightViewMatrix;
+    private final Matrix4f modelLightViewMatrix;
+    private final Matrix4f modelViewMatrix;
+    private final Matrix4f modelLightMatrix;
 
     Transformation() {
         modelMatrix = new Matrix4f();
         viewMatrix = new Matrix4f();
+        orthoProjMatrix = new Matrix4f();
+        lightViewMatrix = new Matrix4f();
+        modelLightViewMatrix = new Matrix4f();
+        modelViewMatrix = new Matrix4f();
+        modelLightMatrix = new Matrix4f();
+    }
+
+
+    public final Matrix4f getOrthoProjectionMatrix() {
+        return orthoProjMatrix;
+    }
+
+    public Matrix4f updateOrthoProjectionMatrix(float left, float right, float bottom, float top, float zNear, float zFar) {
+        orthoProjMatrix.identity();
+        orthoProjMatrix.setOrtho(left, right, bottom, top, zNear, zFar);
+        return orthoProjMatrix;
+    }
+
+    public Matrix4f getLightViewMatrix() {
+        return lightViewMatrix;
+    }
+
+    public void setLightViewMatrix(Matrix4f lightViewMatrix) {
+        this.lightViewMatrix.set(lightViewMatrix);
+    }
+
+    public Matrix4f updateLightViewMatrix(Vector3f position, Vector3f rotation) {
+        return updateGenericViewMatrix(position, rotation, lightViewMatrix);
+    }
+
+    private Matrix4f updateGenericViewMatrix(Vector3f position, Vector3f rotation, Matrix4f matrix) {
+        matrix.identity();
+        // First do the rotation so camera rotates over its position
+        matrix.rotate((float)Math.toRadians(rotation.x), new Vector3f(1, 0, 0))
+                .rotate((float)Math.toRadians(rotation.y), new Vector3f(0, 1, 0));
+        // Then do the translation
+        matrix.translate(-position.x, -position.y, -position.z);
+        return matrix;
+    }
+
+    public Matrix4f buildModelViewMatrix(Vector3f position, Vector3f rotation, float scale, Matrix4f matrix) {
+        modelMatrix.identity().translate(position).
+                rotateX((float)Math.toRadians(-rotation.x)).
+                rotateY((float)Math.toRadians(-rotation.y)).
+                rotateZ((float)Math.toRadians(-rotation.z)).
+                scale(scale);
+        modelViewMatrix.set(matrix);
+        return modelViewMatrix.mul(modelMatrix);
+    }
+
+    public Matrix4f buildModelLightViewMatrix(Vector3f position, Vector3f rotation, float scale, Matrix4f matrix) {
+        modelLightMatrix.identity().translate(position).
+                rotateX((float)Math.toRadians(-rotation.x)).
+                rotateY((float)Math.toRadians(-rotation.y)).
+                rotateZ((float)Math.toRadians(-rotation.z)).
+                scale(scale);
+        modelLightViewMatrix.set(matrix);
+        return modelLightViewMatrix.mul(modelLightMatrix);
     }
 
     /**

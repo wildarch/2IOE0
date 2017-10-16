@@ -50,6 +50,13 @@ public interface Listener {
     void onMouseMove(MouseEvent event);
 
     /**
+     * Fired when the user hovers on the window.
+     *
+     * @param event The associated {@link MouseEvent}
+     */
+    void onMouseHover(MouseEvent event);
+
+    /**
      * Fired when the user scrolls their mouse.
      *
      * @param event The associated {@link MouseEvent}

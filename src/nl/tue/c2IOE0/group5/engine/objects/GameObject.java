@@ -1,15 +1,12 @@
 package nl.tue.c2IOE0.group5.engine.objects;
 
-import nl.tue.c2IOE0.group5.engine.provider.Updatable;
-import nl.tue.c2IOE0.group5.engine.rendering.Drawable;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
-import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import org.joml.Vector3f;
 
 /**
  * @author Yoeri Poels, Jorren Hendriks
  */
-public abstract class GameObject extends Positionable implements Updatable {
+public abstract class GameObject extends Positionable implements nl.tue.c2IOE0.group5.engine.provider.Updatable {
 
     private float scale;
 
@@ -35,11 +32,22 @@ public abstract class GameObject extends Positionable implements Updatable {
     public void setScale(float scale) {
         this.scale = scale;
     }
+
     /**
      * {@link #setModelView(Renderer, Vector3f 0, Vector3f 0, float 0)}
      */
     protected void setModelView(Renderer renderer) {
+        renderer.setModelViewMatrix(getPosition(), getRotation(), getScale());
     }
+
+    protected void setModelLightView(Renderer renderer) {
+        renderer.setModelLightViewMatrix(getPosition(), getRotation(), getScale());
+    }
+
+    protected void setModelLightViewScene(Renderer renderer) {
+        renderer.setModelLightViewMatrixScene(getPosition(), getRotation(), getScale());
+    }
+
     /**
      * {@link #setModelView(Renderer, Vector3f, Vector3f 0, float 0)}
      */
@@ -65,6 +73,12 @@ public abstract class GameObject extends Positionable implements Updatable {
     protected void setModelView(Renderer renderer, Vector3f posOffset, Vector3f rotOffset, float scaleOffset) {
         renderer.setModelViewMatrix(posOffset.add(getPosition()), rotOffset.add(getRotation()), scaleOffset+getScale());
     }
+
+    protected void setModelLightView(Renderer renderer, Vector3f posOffset, Vector3f rotOffset, float scaleOffset) {
+        renderer.setModelLightViewMatrix(posOffset.add(getPosition()), rotOffset.add(getRotation()), scaleOffset+getScale());
+    }
+
+
 
     /**
      * Initialize the gameobject. Link meshes here and define their render methods.

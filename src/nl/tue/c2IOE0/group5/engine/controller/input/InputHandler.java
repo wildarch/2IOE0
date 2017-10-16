@@ -56,6 +56,9 @@ public class InputHandler {
                 listeners.forEach(listener -> listener.onKeyHold(event));
             }
         }
+        Vector2i mPos = window.getMousePosition();
+        MouseEvent event = new MouseEvent(window, -1, mPos.x, mPos.y);
+        listeners.forEach(listener -> listener.onMouseHover(event));
     }
 
     /**
@@ -72,6 +75,8 @@ public class InputHandler {
     private class KeyEventHandler extends GLFWKeyCallback {
         @Override
         public void invoke(long windowHandle, int keyCode, int scancode, int action, int mods) {
+            if (keyCode < 0) return;
+
             Event event = new Event(window, keyCode);
             if (action == GLFW_PRESS) {
                 keyBuffer[keyCode] = true;

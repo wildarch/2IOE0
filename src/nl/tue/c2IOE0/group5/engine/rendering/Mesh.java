@@ -2,6 +2,7 @@ package nl.tue.c2IOE0.group5.engine.rendering;
 
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Texture;
+import org.joml.Vector3f;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
@@ -34,6 +35,9 @@ public class Mesh {
     private final int vertexCount;
 
     private Material material;
+
+    private final Vector3f minBoundingBox;
+    private final Vector3f maxBoundingBox;
 
     private boolean render;
 
@@ -95,6 +99,22 @@ public class Mesh {
             if (indicesBuffer != null) {
                 MemoryUtil.memFree(indicesBuffer);
             }
+        }
+
+        minBoundingBox = new Vector3f();
+        maxBoundingBox = new Vector3f();
+        for (int i = 0; i < positions.length; i += 3) {
+            float x = positions[i];
+            float y = positions[i+1];
+            float z = positions[i+2];
+
+            minBoundingBox.x = Math.min(minBoundingBox.x, x);
+            minBoundingBox.y = Math.min(minBoundingBox.y, y);
+            minBoundingBox.z = Math.min(minBoundingBox.z, z);
+
+            maxBoundingBox.x = Math.max(maxBoundingBox.x, x);
+            maxBoundingBox.y = Math.max(maxBoundingBox.y, y);
+            maxBoundingBox.z = Math.max(maxBoundingBox.z, z);
         }
     }
 
@@ -199,6 +219,14 @@ public class Mesh {
 
     public void draw() {
         glDrawElements(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0);
+    }
+
+    public Vector3f getMinBoundingBox() {
+        return minBoundingBox;
+    }
+
+    public Vector3f getMaxBoundingBox() {
+        return maxBoundingBox;
     }
 
 }
