@@ -79,7 +79,7 @@ class Transformation {
     }
 
     /**
-     * Get the modelview matrix. combining the model matrix with the view matrix to get a matrix representing model
+     * Get the modelview matrix with multi-axis scaling. combining the model matrix with the view matrix to get a matrix representing model
      * positioning relative to the camera.
      *
      * @param position The position of the model.
@@ -88,7 +88,7 @@ class Transformation {
      * @param camera The camera that will look at the model.
      * @return A modelview matrix.
      */
-    Matrix4f getModelViewMatrix(Vector3f position, Vector3f rotation, float scale, Camera camera) {
+    Matrix4f getModelViewMatrix(Vector3f position, Vector3f rotation, Vector3f scale, Camera camera) {
         modelMatrix.identity().translate(position).
                 rotateX(Angle.radf(-rotation.x)).
                 rotateY(Angle.radf(-rotation.y)).

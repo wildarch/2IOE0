@@ -5,12 +5,10 @@ import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.util.LinearlyUpdatable;
 import nl.tue.c2IOE0.group5.util.SmoothUpdatable;
+import org.joml.Vector3f;
 
 import static java.lang.Math.sin;
 import static nl.tue.c2IOE0.group5.enemies.AnimatedUnit.AnimationLoop.WALK;
-import static org.lwjgl.opengl.GL11.glPopMatrix;
-import static org.lwjgl.opengl.GL11.glPushMatrix;
-import static org.lwjgl.opengl.GL11.glTranslated;
 
 /**
  * @author Geert van Ieperen
@@ -20,7 +18,8 @@ public class Bruiser extends AnimatedUnit {
 
     private Mesh body;
     private Mesh head;
-    private Mesh arm;
+    private Mesh leftArm;
+    private Mesh rightArm;
 
     private SmoothUpdatable headOffset;
     private SmoothUpdatable leftArmOffset;
@@ -29,9 +28,30 @@ public class Bruiser extends AnimatedUnit {
     @Override
     public GameObject init(Renderer renderer) {
         try {
-            head = renderer.linkMesh("/bruiser_head.obj");
-            body = renderer.linkMesh("/bruiser_body.obj");
-            arm = renderer.linkMesh("/bruiser_arm.obj");
+            head = renderer.linkMesh("/bruiser_head.obj", (mesh)->{
+                setModelView(renderer, new Vector3f(0f, 1f + headOffset.current(), 1f));
+                setModelLightViewScene(renderer);
+            }, (mesh) -> {
+                setModelLightView(renderer, new Vector3f(0f, 1f + headOffset.current(), 1f), new Vector3f(), 1f);
+            });
+            body = renderer.linkMesh("/bruiser_body.obj", (mesh)->{
+                setModelView(renderer);
+                setModelLightViewScene(renderer);
+            }, (mesh) -> {
+                setModelLightView(renderer);
+            });
+            leftArm = renderer.linkMesh("/bruiser_lArm.obj", (mesh)->{
+                setModelView(renderer, new Vector3f(1f, 0f, leftArmOffset.current()));
+                setModelLightViewScene(renderer);
+            }, (mesh) -> {
+                setModelLightView(renderer, new Vector3f(0f, 1f + headOffset.current(), 1f), new Vector3f(), 1f);
+            });
+            rightArm = renderer.linkMesh("/bruiser_rArm.obj", (mesh)->{
+                setModelView(renderer, new Vector3f(1f, 0f, rightArmOffset.current()));
+                setModelLightViewScene(renderer);
+            }, (mesh) -> {
+                setModelLightView(renderer, new Vector3f(0f, 1f + headOffset.current(), 1f), new Vector3f(), 1f);
+            });
         } catch (Exception e) {
 
         }
@@ -48,9 +68,9 @@ public class Bruiser extends AnimatedUnit {
      * @param loopTime time since the last animation loop
      * @return offset based on current animation
      */
-    private double armOffset(float loopTime){
+    private float armOffset(float loopTime){
         if (currentAnim == WALK) {
-            return sin(loopTime);
+            return (float) sin(loopTime);
         }
         return 0;
     }
@@ -60,37 +80,17 @@ public class Bruiser extends AnimatedUnit {
      * @param loopTime time since the last animation loop
      * @return offset based on current animation
      */
-    private double headOffset(float loopTime){
+    private float headOffset(float loopTime){
         if (currentAnim == WALK) {
-            return 0.2 * sin(2 * loopTime);
+            return (float) (0.2 * sin(2 * loopTime));
         }
         return 0;
     }
 
     @Override
-    public void createStructure(float animTime, float deltaTime) {
+    public void updateAngles(float animTime, float deltaTime) {
         headOffset.updateFluent(headOffset(animTime), deltaTime);
         leftArmOffset.updateFluent(armOffset(animTime), deltaTime);
         rightArmOffset.updateFluent(-armOffset(animTime), deltaTime);
-
-        body.draw();
-        glPushMatrix();
-        {
-            glTranslated(0, 1 + headOffset.current(), 1);
-            head.draw();
-        }
-        glPopMatrix();
-        glPushMatrix();
-        {
-            glTranslated(1, 0, leftArmOffset.current());
-            arm.draw();
-        }
-        glPopMatrix();
-        glPushMatrix();
-        {
-            glTranslated(-1, 0, rightArmOffset.current());
-            arm.draw();
-        }
-        glPopMatrix();
     }
 }

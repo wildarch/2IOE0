@@ -22,10 +22,10 @@ public abstract class AnimatedUnit extends GameObject implements Animatable {
     @Override
     public void animationUpdate(float deltaT) {
         animationTimer += deltaT;
-        createStructure(animationTimer, deltaT);
+        updateAngles(animationTimer, deltaT);
     }
 
-    public abstract void createStructure(float animTime, float deltaTime);
+    public abstract void updateAngles(float animTime, float deltaTime);
 
     /**
      * initiates this unit to start with a walking animation

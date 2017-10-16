@@ -6,11 +6,11 @@ package nl.tue.c2IOE0.group5.util;
  */
 public class LinearlyUpdatable extends SmoothUpdatable {
 
-    public LinearlyUpdatable(Double initial, float acceleration) {
+    public LinearlyUpdatable(Float initial, float acceleration) {
         super(initial, acceleration);
     }
 
-    public LinearlyUpdatable(Double current, Double previous, float acceleration) {
+    public LinearlyUpdatable(Float current, Float previous, float acceleration) {
         super(current, previous, acceleration);
     }
 
@@ -27,7 +27,7 @@ public class LinearlyUpdatable extends SmoothUpdatable {
      * @param target the target value
      */
     @Override
-    public void updateFluent(double target, float deltaTime){
+    public void updateFluent(float target, float deltaTime){
         if (current() < target){
             super.update(
                     Math.min(target, current() + (acceleration * deltaTime))
