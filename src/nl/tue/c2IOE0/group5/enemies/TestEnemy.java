@@ -75,7 +75,6 @@ public class TestEnemy extends Enemy {
         render = mesh -> {
             setModelView(renderer);
             renderer.ambientLight(new Vector3f(0f, 0f,1f ), mesh::draw);
-            System.out.println("Draw!");
 
             if(!attacking) interpolator.draw(loopTimer.getElapsedTime());
         };

@@ -81,10 +81,17 @@ public abstract class AbstractTower extends GameObject {
     public void takeDamage(int damage) {
         health -= damage;
         if (health <= 0) {
-            health = 0;
-            cell.destroyTower();
+            die();
         }
     }
+
+    private void die() {
+        health = 0;
+        cell.destroyTower();
+        onDie();
+    }
+
+    protected abstract void onDie();
 
     /**
      * @return Remaining health

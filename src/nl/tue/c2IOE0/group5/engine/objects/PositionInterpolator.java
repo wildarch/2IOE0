@@ -51,7 +51,8 @@ public class PositionInterpolator {
      */
     public boolean update(long currentTime) {
         if (currentTime > targetReachTime) {
-            targetReached();
+            if (target != null) p.setPosition(target);
+            target = null;
             targetReachTime = Long.MAX_VALUE;
             return true;
         }
@@ -70,7 +71,7 @@ public class PositionInterpolator {
         p.move(getDirection().mul(step));
         float distance = p.getPosition().distance(target.toImmutable());
         if (distance < EPSILON) {
-            targetReached();
+            target = null;
             return true;
         }
         return false;
@@ -82,10 +83,5 @@ public class PositionInterpolator {
         offset.sub(p.getPosition().toImmutable());
         offset.normalize();
         return offset;
-    }
-
-    private void targetReached() {
-        if(target != null) p.setPosition(target);
-        target = null;
     }
 }

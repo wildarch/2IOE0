@@ -54,8 +54,6 @@ public class AiController implements Controller, Listener {
     }
 
     private void wave(boolean big) {
-        //HACK
-        if (wave > 0) return;
 
         // Do a wave!
         String size = big ? "Big  " : "Small";
@@ -70,9 +68,6 @@ public class AiController implements Controller, Listener {
                     start,
                     path.stream().map(QLearner::getPoint).collect(Collectors.toList())
             );
-            // HACK
-            wave++;
-            return;
         }
         if (big) {
             for (int i = 0; i < BIG_WAVE_SIZE; i++) {

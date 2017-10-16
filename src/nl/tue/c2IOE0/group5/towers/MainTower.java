@@ -11,12 +11,18 @@ import nl.tue.c2IOE0.group5.providers.EnemyProvider;
 import sun.applet.Main;
 
 import java.io.IOException;
+import java.util.function.Consumer;
 
 public class MainTower extends AbstractTower {
 
     private static final int RANGE = 2;
     private static final int MAX_LEVEL = 1;
     private static final int MAX_HEALTH = 100;
+
+    private Renderer renderer;
+    private Mesh mesh;
+    private Consumer<Mesh> render;
+    private Consumer<Mesh> shadowRender;
 
     public MainTower(EnemyProvider enemyProvider, BulletProvider bulletProvider, Timer timer) {
         super(RANGE, MAX_LEVEL, MAX_HEALTH, enemyProvider, bulletProvider, timer);
@@ -25,13 +31,21 @@ public class MainTower extends AbstractTower {
     @Override
     public MainTower init(Renderer renderer) {
         setScale(40f);
-        renderer.linkMesh("/tower.obj", (mesh -> {
+        render = mesh -> {
             setModelView(renderer);
             mesh.draw();
-        }), (mesh -> {
+        };
+        shadowRender = mesh -> {
             setModelLightView(renderer);
             mesh.draw();
-        }));
+        };
+        mesh = renderer.linkMesh("/tower.obj", render, shadowRender);
+        this.renderer = renderer;
         return this;
+    }
+
+    @Override
+    protected void onDie() {
+        renderer.unlinkMesh(mesh, render, shadowRender);
     }
 }
