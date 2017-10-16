@@ -6,6 +6,7 @@ import nl.tue.c2IOE0.group5.engine.provider.Provider;
 import nl.tue.c2IOE0.group5.engine.rendering.Hud;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
+import nl.tue.c2IOE0.group5.towers.MainTower;
 import nl.tue.c2IOE0.group5.userinterface.UIButton;
 import nl.tue.c2IOE0.group5.userinterface.UIElement;
 import org.joml.Vector4f;
@@ -25,7 +26,6 @@ public class UIProvider implements Provider {
     private Engine engine;
     private Hud hud;
 
-    private int x = 3;
     private int wHeight = 0;
     private int wWidth = 0;
 
@@ -34,9 +34,12 @@ public class UIProvider implements Provider {
 
     List<UIElement> elements;
 
+    private MainTower mainTower;
+
     @Override
     public void init(Engine engine) {
         this.hud = engine.getHud();
+        mainTower = engine.getProvider(TowerProvider.class).getMainTower();
         this.engine = engine;
 
         elements = new ArrayList<>();
@@ -68,7 +71,7 @@ public class UIProvider implements Provider {
                 hud.fill(color.x, color.y, color.z, color.w);
                 hud.stroke(5, 0.6f, 0.1f, 1f, 1f);
                 hud.image("/texture.png", wWidth-70, wHeight-60, 30, 30, 0.6f);
-                hud.text(40, wHeight - 52, 25f, Hud.Font.MEDIUM, NVG_ALIGN_LEFT | NVG_ALIGN_TOP, "Welcome to the HUD " + x, textColor);
+                hud.text(40, wHeight - 52, 25f, Hud.Font.MEDIUM, NVG_ALIGN_LEFT | NVG_ALIGN_TOP, "Main tower health: " + mainTower.getHealth(), textColor);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -94,14 +97,7 @@ public class UIProvider implements Provider {
 
     @Override
     public void update() {
-        if (engine.isPaused()) return;
-
-        this.x ++;
-        this.x %= 100;
-    }
-
-    @Override
-    public void draw(Window window, Renderer renderer) {
+        Window window = engine.getWindow();
         this.wWidth = window.getWidth();
         this.wHeight = window.getHeight();
     }

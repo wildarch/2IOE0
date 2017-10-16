@@ -12,20 +12,23 @@ import org.joml.Vector4f;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.*;
-import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE1;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
+import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
+import static org.lwjgl.opengl.GL30.glBindFramebuffer;
 
 /**
  * @author Jorren Hendriks.
  */
 public class Renderer {
-    private Map<String, Mesh> meshes;
-    private Map<Mesh, List<Consumer<Mesh>>> meshBuffer;
 
-    private Map<Mesh, List<Consumer<Mesh>>> shadowBuffer;
+    private ArrayDeque<Runnable> modifiers;
+
+    private Map<String, Mesh> meshes;
+    private Map<Mesh, List<InstancedMesh>> instancedMeshes;
 
     private Window window;
     private Camera activeCamera;
@@ -34,7 +37,7 @@ public class Renderer {
     // shader for shadow maps
     private ShaderProgram depthShader;
     // depth map used for shadows for the entire scene
-    public DepthMap depthMap;
+    private DepthMap depthMap;
 
     private Transformation transformation;
 
@@ -44,55 +47,58 @@ public class Renderer {
     // light matrix for usage shadow map
     private Matrix4f sceneLightViewMatrix;
 
-
     private DirectionalLight directionalLight;
 
-
-
-
+    private Task task;
+    private enum Task {
+        SCENE,
+        DEPTH_MAP
+    }
 
     /**
      * Constructor for initializing datastructures.
      */
     public Renderer() {
+        modifiers = new ArrayDeque<>();
         meshes = new HashMap<>();
-        meshBuffer = new HashMap<>();
-        shadowBuffer = new HashMap<>();
+        instancedMeshes = new HashMap<>();
         transformation = new Transformation();
     }
 
-    public Mesh linkMesh(String filename, Consumer<Mesh> render, Consumer<Mesh> shadowrender) throws Exception {
+    public Mesh linkMesh(String filename) {
+        if (meshes.containsKey(filename)) {
+            return meshes.get(filename);
+        } else {
+            try {
+                Mesh mesh = OBJLoader.loadMesh(filename);
+                meshes.put(filename, mesh);
+                return mesh;
+            } catch (IOException e) {
+                throw new MeshException("Could not load " + filename);
+            }
+        }
+    }
+
+    public InstancedMesh linkMesh(String filename, Runnable render) {
         Mesh mesh = linkMesh(filename);
-        if (meshBuffer.containsKey(mesh)) {
-            meshBuffer.get(mesh).add(render);
+        InstancedMesh iMesh = new InstancedMesh(mesh, render);
+        if (instancedMeshes.containsKey(mesh)) {
+            instancedMeshes.get(mesh).add(iMesh);
         } else {
-            meshBuffer.put(mesh, new ArrayList<>(Collections.singleton(render)));
+            instancedMeshes.put(mesh, new ArrayList<>(Collections.singleton(iMesh)));
         }
-        if (shadowBuffer.containsKey(mesh)) {
-            shadowBuffer.get(mesh).add(shadowrender);
-        } else {
-            shadowBuffer.put(mesh, new ArrayList<>(Collections.singleton(shadowrender)));
+        return iMesh;
+    }
+
+    public void unlinkMesh(InstancedMesh iMesh) {
+        if (!instancedMeshes.get(iMesh.getMesh()).remove(iMesh)) {
+            throw new IllegalArgumentException("The given instanced mesh was not linked to its mesh");
         }
-        return mesh;
     }
 
     public void changeOrtho(float left, float right, float bottom, float top, float near, float far) {
         DirectionalLight.OrthoCoords c = directionalLight.getOrthoCoords();
         directionalLight.setOrthoCords(c.left+left, c.right+right, c.bottom+bottom, c.top+top, c.near+near, c.far+far);
-    }
-
-    public Mesh linkMesh(String filename) throws Exception {
-        if (meshes.containsKey(filename)) {
-            return meshes.get(filename);
-        } else {
-            Mesh mesh = OBJLoader.loadMesh(filename);
-            meshes.put(filename, mesh);
-            return mesh;
-        }
-    }
-
-    public void unlinkMesh(Mesh mesh, Runnable runnable) {
-        meshBuffer.get(mesh).remove(runnable);
     }
 
     /**
@@ -109,7 +115,6 @@ public class Renderer {
             initDepthShader();
         } catch (Exception e) {
             e.printStackTrace();
-            //critical error, so close program
             System.exit(0);
         }
     }
@@ -172,17 +177,9 @@ public class Renderer {
     }
 
     public void cleanup() {
+        meshes.values().forEach(Mesh::cleanup);
         sceneShader.cleanup();
         depthShader.cleanup();
-    }
-
-    /**
-     * Get the view matrix of the current scene.
-     *
-     * @return A View Matrix
-     */
-    public Matrix4f getViewMatrix() {
-        return transformation.getViewMatrix(getActiveCamera());
     }
 
     /**
@@ -204,83 +201,61 @@ public class Renderer {
     }
 
     /**
-     * see {@link #setModelViewMatrix(Vector3f, Vector3f, float)}, with {@code float scale = 1f}
-     */
-    public void setModelViewMatrix(Vector3f position, Vector3f rotation) {
-        setModelViewMatrix(position, rotation, 1f);
-    }
-
-    /**
-     * Set the modelview matrix. This sets the location, rotation and scale of the things to be rendered next. Besides
-     * it takes into account where the activeCamera is at.
-     *
-     * @param position The position of the objects that will be rendered next.
-     * @param rotation The rotation of the objects that will be rendered next.
-     * @param scale The scale of the objects that will be rendered next.
-     */
-    public void setModelViewMatrix(Vector3f position, Vector3f rotation, float scale) {
-        setModelViewMatrix(position, rotation, new Vector3f(scale, scale, scale));
-    }
-
-    /**
-     * Set the modelview matrix. This sets the location, rotation and scale of the things to be rendered next. Besides
-     * it takes into account where the activeCamera is at.
-     *
-     * @param position The position of the objects that will be rendered next.
-     * @param rotation The rotation of the objects that will be rendered next.
-     * @param scale The scale of the objects that will be rendered next.
-     */
-    public void setModelViewMatrix(Vector3f position, Vector3f rotation, Vector3f scale) {
-        Matrix4f transformationMatrix = transformation.getModelViewMatrix(position, rotation, scale, getActiveCamera());
-        sceneShader.setUniform("modelViewMatrix", transformationMatrix);
-    }
-
-    /**
      * applies a bounce-effect around the given gravity-middle, stretching boundingMin/2 up and down.
      * this effect applies only to subjects rendered inside the render parameter.
      * @param bounceDegree the strength B of the effect, with B = 0 no effect,
      *                     B > 0 a horizontal expansion and B < 0 a vertical stretch
-     * @param render the runnable where the bounce effect will apply to
      * @param mesh mesh to be boinked
-     * @param isShadowMap true if this is called for the shadowmap renderer
-     *                    false if this is called for normal renderer
      */
-    public void boink(float bounceDegree, Runnable render, Mesh mesh, boolean isShadowMap){
-        ShaderProgram shader = isShadowMap ? depthShader : sceneShader;
+    public void boink(Mesh mesh, float bounceDegree) {
+        ShaderProgram shader = task == Task.SCENE ? sceneShader : depthShader;
 
         shader.setUniform("bounceDegree", bounceDegree);
         shader.setUniform("boundingMin", mesh.getMinBoundingBox());
         shader.setUniform("boundingMax", mesh.getMaxBoundingBox());
 
-        render.run();
-
-        shader.setUniform("bounceDegree", 0f);
+        modifiers.push(() ->
+                sceneShader.setUniform("bounceDegree", 0f));
     }
 
     /**
      * Sets up the renderer to draw a skybox, e.g. an object that doesn't care but just draws its texture.
      *
-     * @param render The code to render in skybox mode.
      */
-    public void drawSkybox(Runnable render) {
+    public void drawSkybox() {
+        if (task == Task.DEPTH_MAP) return;
         sceneShader.setUniform("isSkybox", 1);
-
-        render.run();
-
-        sceneShader.setUniform("isSkybox", 0);
+        modifiers.push(() ->
+                sceneShader.setUniform("isSkybox", 0));
     }
 
     /**
-     * Temporarily change the ambient light of an object. This effect only applies to objects drawn inside the render
-     * parameter.
+     * Temporarily change the ambient light of an object. This effect applies to the object currently rendered.
      *
      * @param color The ambient light color.
-     * @param render A runnable in which the objects to which this effect applies are drawn.
      */
-    public void ambientLight(Vector3f color, Runnable render) {
+    public void ambientLight(Vector3f color) {
+        if (task == Task.DEPTH_MAP) return;
+
         sceneShader.setUniform("ambientLight", color);
-        render.run();
-        sceneShader.setUniform("ambientLight", sceneShader.getAmbientLight());
+        modifiers.push(() ->
+                sceneShader.setUniform("ambientLight", sceneShader.getAmbientLight()));
+    }
+
+    /**
+     * Disable directional light for the currently rendered object.
+     */
+    public void noDirectionalLight() {
+        if (task == Task.DEPTH_MAP) return;
+
+        DirectionalLight directionalLightOff = new DirectionalLight(
+                new Vector3f(),
+                new Vector3f(),
+                0f
+        );
+        sceneShader.setDirectionalLight(directionalLightOff);
+        modifiers.push(() ->
+                sceneShader.setDirectionalLight(directionalLight));
     }
 
     /**
@@ -290,6 +265,77 @@ public class Renderer {
      */
     public void setMaterial(Material material) {
         sceneShader.setUniform("material", material);
+    }
+
+
+    /**
+     * Get the ViewMatrix of the currently active camera.
+     *
+     * @return The ViewMatrix.
+     */
+    public Matrix4f getViewMatrix() {
+        return transformation.getViewMatrix(getActiveCamera());
+    }
+
+    /**
+     * Set the view matricces for the current {@link Renderer#task}. Sets the modelView and modelLightView matrix for
+     * the scene if task is Task.SCENE. Sets the modelLightView for the depthmap if task is Task.DEPTH_MAP.
+     *
+     * @param position The position of the objects that will be rendered next.
+     * @param rotation The rotation of the objects that will be rendered next.
+     * @param scale The scale of the objects that will be rendered next.
+     */
+    public void setMatrix(Vector3f position, Vector3f rotation, Vector3f scale) {
+        if (task == Task.SCENE) {
+            setModelViewMatrix(position, rotation, scale);
+        } else if (task == Task.DEPTH_MAP) {
+            setModelLightViewMatrix(position, rotation, scale);
+        }
+    }
+
+    /**
+     * Set the modelview matrix. This sets the location, rotation and scale of the things to be rendered next. Besides
+     * it takes into account where the activeCamera is at.
+     *
+     * @param position The position of the objects that will be rendered next.
+     * @param rotation The rotation of the objects that will be rendered next.
+     * @param scale The scale of the objects that will be rendered next.
+     */
+    private void setModelViewMatrix(Vector3f position, Vector3f rotation, Vector3f scale) {
+        Matrix4f transformationMatrix = transformation.getModelViewMatrix(position, rotation, scale, getActiveCamera());
+        sceneShader.setUniform("modelViewMatrix", transformationMatrix);
+        setModelLightViewMatrixScene(position, rotation, scale);
+    }
+
+    /**
+     * Set the modelLightView in case you're drawing the scene.
+     *
+     * @param position The position of the objects that will be rendered next.
+     * @param rotation The rotation of the objects that will be rendered next.
+     * @param scale The scale of the objects that will be rendered next.
+     */
+    private void setModelLightViewMatrixScene(Vector3f position, Vector3f rotation, Vector3f scale) {
+        Matrix4f modelLightViewMatrix = transformation.buildModelViewMatrix(position, rotation, scale, sceneLightViewMatrix);
+        sceneShader.setUniform("modelLightViewMatrix", modelLightViewMatrix);
+    }
+
+    /**
+     * Set the modelLightView in case you're drawing the depthmap.
+     *
+     * @param position The position of the objects that will be rendered next.
+     * @param rotation The rotation of the objects that will be rendered next.
+     * @param scale The scale of the objects that will be rendered next.
+     */
+    private void setModelLightViewMatrix(Vector3f position, Vector3f rotation, Vector3f scale) {
+        Matrix4f modelLightViewMatrix = transformation.buildModelViewMatrix(position, rotation, scale, lightViewMatrix);
+        depthShader.setUniform("modelLightViewMatrix", modelLightViewMatrix);
+    }
+
+    /**
+     * Reset all applied modifiers.
+     */
+    private void resetModifiers() {
+        while (!modifiers.isEmpty()) modifiers.pop().run();
     }
 
     /**
@@ -319,9 +365,29 @@ public class Renderer {
 
 
     /**
+     * Render a mesh based on a collection of renderers which set the variables needed to draw the mesh in the
+     * right conditions.
+     *
+     * @param renderers A collection of runnables.
+     */
+    private void renderAll(Mesh mesh, Stream<Runnable> renderers) {
+        mesh.initRender();
+
+        renderers.forEach((render) -> {
+            render.run();
+            mesh.draw();
+            resetModifiers();
+        });
+
+        mesh.endRender();
+    }
+
+    /**
      * Render the main objects of the scene.
      */
     private void renderScene() {
+        task = Task.SCENE;
+
         sceneShader.bind();
 
         Matrix4f projectionMatrix = window.getProjectionMatrix();
@@ -337,18 +403,21 @@ public class Renderer {
         sceneShader.setUniform("texture_sampler", 0);
         sceneShader.setUniform("depthMap", 1);
 
-        meshBuffer.forEach((mesh, consumers) -> {
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, depthMap.getDepthMapTexture().getId());
+
+        instancedMeshes.forEach((mesh, consumers) -> {
             setMaterial(mesh.getMaterial());
-            glActiveTexture(GL_TEXTURE1);
-            glBindTexture(GL_TEXTURE_2D, depthMap.getDepthMapTexture().getId());
-            //setMaterial(new Material(depthMap.getDepthMapTexture()));
-            mesh.renderAll(consumers);
+
+            renderAll(mesh, consumers.stream().map(InstancedMesh::getRender));
         });
 
         sceneShader.unbind();
     }
 
-    public void renderDepthMap() {
+    private void renderDepthMap() {
+        task = Task.DEPTH_MAP;
+
         // Setup view port to match the texture size
         glBindFramebuffer(GL_FRAMEBUFFER, depthMap.getDepthMapFBO());
         glViewport(0, 0, depthMap.width, depthMap.height);
@@ -363,14 +432,14 @@ public class Renderer {
         float lightAngleY = (float)Math.toDegrees(Math.asin(lightDirection.x*-1));
         float lightAngleZ = 0;
         lightViewMatrix = transformation.updateLightViewMatrix(new Vector3f(lightDirection).mul(light.getShadowStrength()), new Vector3f(lightAngleX, lightAngleY, lightAngleZ));
-        //light.setOrthoCords(activeCamera.getPosition().x, 10.0f, -10.0f, 10.0f, -1.0f, 20.0f);
+
         DirectionalLight.OrthoCoords orthCoords = light.getOrthoCoords();
         Matrix4f orthoProjMatrix = transformation.updateOrthoProjectionMatrix(orthCoords.left, orthCoords.right, orthCoords.bottom, orthCoords.top, orthCoords.near, orthCoords.far);
 
         depthShader.setUniform("orthoProjectionMatrix", orthoProjMatrix);
 
-        shadowBuffer.forEach((mesh, consumers) -> {
-            mesh.renderAll(consumers);
+        instancedMeshes.forEach((mesh, consumers) -> {
+            renderAll(mesh, consumers.stream().map(InstancedMesh::getRender));
         });
 
         // Unbind
@@ -378,14 +447,6 @@ public class Renderer {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    public void setModelLightViewMatrix(Vector3f position, Vector3f rotation, float scale) {
-        Matrix4f modelLightViewMatrix = transformation.buildModelViewMatrix(position, rotation, scale, lightViewMatrix);
-        depthShader.setUniform("modelLightViewMatrix", modelLightViewMatrix);
-    }
-    public void setModelLightViewMatrixScene(Vector3f position, Vector3f rotation, float scale) {
-        Matrix4f modelLightViewMatrix = transformation.buildModelViewMatrix(position, rotation, scale, sceneLightViewMatrix);
-        sceneShader.setUniform("modelLightViewMatrix", modelLightViewMatrix);
-    }
     public void render() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         renderDepthMap();
@@ -393,5 +454,4 @@ public class Renderer {
         glViewport(0, 0, window.getWidth(), window.getHeight());
         renderScene();
     }
-
 }

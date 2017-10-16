@@ -62,18 +62,18 @@ public class PlayerController implements Controller,Listener {
         this.renderer = engine.getRenderer();
         //this.window = engine.getWindow();
 
-        camera.setPosition(gridProvider.SIZE/2, 6f, gridProvider.SIZE/2);
+        camera.setPosition(GridProvider.SIZE /2, 6f, GridProvider.SIZE /2);
         camera.setRotation(90, 90, 0);
         calculateXYZ();
     }
 
     private void calculateXYZ(){
-        maxX = gridProvider.SIZE/2 + gridProvider.SIZE;
-        maxY = gridProvider.SIZE;
-        maxZ = gridProvider.SIZE/2 + gridProvider.SIZE;
+        maxX = GridProvider.SIZE /2 + GridProvider.SIZE;
+        maxY = GridProvider.SIZE;
+        maxZ = GridProvider.SIZE /2 + GridProvider.SIZE;
 
-        minX = gridProvider.SIZE/2 - gridProvider.SIZE;
-        minZ = gridProvider.SIZE/2 - gridProvider.SIZE;
+        minX = GridProvider.SIZE /2 - GridProvider.SIZE;
+        minZ = GridProvider.SIZE /2 - GridProvider.SIZE;
     }
 
     @Override
@@ -122,48 +122,6 @@ public class PlayerController implements Controller,Listener {
             case GLFW_KEY_LEFT_SHIFT:
                 moveRelativeLocal(0f,-movement,0f);
                 break;
-
-            //shadow ortho, for debugging purposes
-            /*
-            case GLFW_KEY_R:
-                renderer.changeOrtho(0.1f, 0, 0, 0, 0, 0);
-                break;
-            case GLFW_KEY_T:
-                renderer.changeOrtho(0, 0.1f, 0, 0, 0, 0);
-                break;
-            case GLFW_KEY_Y:
-                renderer.changeOrtho(0, 0, 0.1f, 0, 0, 0);
-                break;
-            case GLFW_KEY_U:
-                renderer.changeOrtho(0, 0, 0, 0.1f, 0, 0);
-                break;
-            case GLFW_KEY_I:
-                renderer.changeOrtho(0, 0, 0, 0, 0.1f, 0);
-                break;
-            case GLFW_KEY_O:
-                renderer.changeOrtho(0, 0, 0, 0, 0, 0.1f);
-                break;
-            case GLFW_KEY_F:
-                renderer.changeOrtho(-0.1f, 0, 0, 0, 0, 0);
-                break;
-            case GLFW_KEY_G:
-                renderer.changeOrtho(0, -0.1f, 0, 0, 0, 0);
-                break;
-            case GLFW_KEY_H:
-                renderer.changeOrtho(0, 0, -0.1f, 0, 0, 0);
-                break;
-            case GLFW_KEY_J:
-                renderer.changeOrtho(0, 0, 0, -0.1f, 0, 0);
-                break;
-            case GLFW_KEY_K:
-                renderer.changeOrtho(0, 0, 0, 0, -0.1f, 0);
-                break;
-            case GLFW_KEY_L:
-                renderer.changeOrtho(0, 0, 0, 0, 0, -0.1f);
-                break;
-            */
-
-
         }
     }
 
@@ -243,8 +201,8 @@ public class PlayerController implements Controller,Listener {
                 menuProvider.onClick(event);
             } else {
                 if (uiProvider.onClick(event)) {
-                    //System.out.println("Click at (" + event.getX() + ", " + event.getY() + ")");
-                    this.gridProvider.click();
+                    System.out.println("Click at (" + event.getX() + ", " + event.getY() + ")");
+                    //this.gridProvider.click();
                 }
             }
         }
@@ -300,6 +258,8 @@ public class PlayerController implements Controller,Listener {
 
     @Override
     public void onMouseHover(MouseEvent event) {
+        if(true) return;
+
         if (engine.isPaused()) return;
 
         Window window = event.getSource();

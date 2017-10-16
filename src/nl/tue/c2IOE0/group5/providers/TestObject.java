@@ -1,7 +1,7 @@
 package nl.tue.c2IOE0.group5.providers;
 
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
-import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
+import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 
@@ -21,15 +21,11 @@ public class TestObject extends GameObject {
     @Override
     public TestObject init(Renderer renderer) {
         try {
-            Mesh tower = renderer.linkMesh("/tower1.obj", (mesh) -> {
+            InstancedMesh tower = renderer.linkMesh("/tower1.obj", () -> {
                 setModelView(renderer);
-                setModelLightViewScene(renderer);
-                renderer.boink(getBounceDegree(), mesh::draw, mesh, false);
-            }, (mesh) -> {
-                setModelLightView(renderer);
-                renderer.boink(getBounceDegree(), mesh::draw, mesh, true);
+                renderer.boink(getBounceDegree());
             });
-            tower.setMaterial(new Material("/tower1.png"));
+            tower.getMesh().setMaterial(new Material("/tower1.png"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -45,7 +41,10 @@ public class TestObject extends GameObject {
     public void boink() {
         // updateFluent private members here
         boinkyness = (boinkyness + 0.01f);
-        //renderer.boink((float)Math.sin(boinkyness) +1f, new Vector3f(0, 0, 0), new Vector3f(1f, 1f, 1f), ()->
     }
 
+    @Override
+    public void update() {
+        // I'm a lazy motherfucker
+    }
 }

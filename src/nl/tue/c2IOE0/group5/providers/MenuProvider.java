@@ -85,9 +85,4 @@ public class MenuProvider implements Provider, Clickable {
             }
         }
     }
-
-    @Override
-    public void draw(Window window, Renderer renderer) {
-        // do no actual drawing (in 3d space)
-    }
 }

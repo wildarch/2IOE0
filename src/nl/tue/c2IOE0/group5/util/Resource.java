@@ -27,6 +27,8 @@ public class Resource {
         try (InputStream in = Resource.class.getClass().getResourceAsStream(fileName);
              Scanner scanner = new Scanner(in, "UTF-8")) {
             result = scanner.useDelimiter("\\A").next();
+        } catch(NullPointerException e) {
+            throw new IOException("Resource not found: " + fileName);
         }
         return result;
     }

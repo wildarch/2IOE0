@@ -7,14 +7,9 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.Collection;
-import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE2;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
@@ -165,7 +160,7 @@ public class Mesh {
     /**
      * Initialize the render of this mesh.
      */
-    private void initRender() {
+    void initRender() {
         if (isTextured()) {
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, getTexture().getId());
@@ -182,7 +177,7 @@ public class Mesh {
     /**
      * Disable fields associated with rendering this mesh.
      */
-    private void endRender() {
+    void endRender() {
         render = false;
 
         glDisableVertexAttribArray(0);
@@ -193,31 +188,7 @@ public class Mesh {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    /**
-     * Render this mesh based on a collection of consumers which set the variables needed to draw the mesh in the
-     * right conditions.
-     *
-     * @param consumers A collection of consumers of this mesh.
-     */
-    void renderAll(Collection<Consumer<Mesh>> consumers) {
-        initRender();
-
-        consumers.forEach(consumer -> {
-            consumer.accept(this);
-        });
-
-        endRender();
-    }
-
-    void render() {
-        initRender();
-
-        draw();
-
-        endRender();
-    }
-
-    public void draw() {
+    void draw() {
         glDrawElements(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0);
     }
 
