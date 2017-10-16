@@ -35,7 +35,6 @@ public class TestEnemy extends Enemy {
         this.targetPositions = new ArrayList<>(targetPositions);
         setPosition(gridProvider.getCell(initialPosition).getPosition());
         this.interpolator = new PositionInterpolator(this, SPEED);
-        System.out.println("Position: " + getPosition());
 
         setScale(0.01f);
     }
@@ -53,7 +52,6 @@ public class TestEnemy extends Enemy {
         Cell targetCell = gridProvider.getCell(targetPositions.get(0));
         AbstractTower tower = targetCell.getTower();
         if (tower == null && targetReached) {
-            System.out.println("New target: " + targetCell.getPosition());
             interpolator.setTarget(targetCell.getPosition().add(0, 0.5f, 0f), loopTimer.getLoopTime());
         }
         else if (tower != null) {

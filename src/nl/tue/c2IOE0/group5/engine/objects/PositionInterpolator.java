@@ -80,7 +80,6 @@ public class PositionInterpolator {
         Vector3f offset = new Vector3f(target);
         offset.sub(p.getPosition().toImmutable());
         offset.normalize();
-        System.out.println(offset);
         return offset;
     }
 
