@@ -1,6 +1,7 @@
 package nl.tue.c2IOE0.group5.enemies;
 
 import nl.tue.c2IOE0.group5.engine.Timer;
+import nl.tue.c2IOE0.group5.engine.objects.GameObject;
 import nl.tue.c2IOE0.group5.engine.objects.PositionInterpolator;
 import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
@@ -24,23 +25,18 @@ public class TestEnemy extends Enemy {
     private boolean attacking = false;
 
 
-    public TestEnemy(Mesh mesh, Timer loopTimer, GridProvider gridProvider,
+    public TestEnemy(Timer loopTimer, GridProvider gridProvider,
                      Vector2i initialPosition, List<Vector2i> targetPositions, int maxHealth) {
         super(gridProvider, maxHealth);
-        setMesh(mesh);
 
         this.loopTimer = loopTimer;
         this.targetPositions = new ArrayList<>(targetPositions);
-        setPosition(gridProvider.getCell(initialPosition).getPosition());
+        setPosition(gridProvider.getCell(initialPosition).getPosition().add(0, 2f, 0f));
         this.interpolator = new PositionInterpolator(this, SPEED);
-
-        setScale(0.01f);
     }
 
     @Override
     public void update() {
-        super.update();
-
         if(targetPositions.isEmpty()) {
             return;
         }
@@ -72,11 +68,18 @@ public class TestEnemy extends Enemy {
     }
 
     @Override
-    public void draw(Window window, Renderer renderer) {
-        renderer.ambientLight(new Vector3f(0f, 0f,1f ), () -> {
-            super.draw(window, renderer);
-        });
+    public TestEnemy init(Renderer renderer) {
+        setScale(0.25f);
+        renderer.linkMesh("/cube.obj", ((mesh) -> {
+            setModelView(renderer);
+            renderer.ambientLight(new Vector3f(0f, 0f,1f ), mesh::draw);
+            //System.out.println("Draw!");
 
-        if(!attacking) interpolator.draw(loopTimer.getElapsedTime());
+            if(!attacking) interpolator.draw(loopTimer.getElapsedTime());
+        }), (mesh -> {
+            setModelLightView(renderer);
+            mesh.draw();
+        }));
+        return this;
     }
 }

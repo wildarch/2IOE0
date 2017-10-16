@@ -79,11 +79,11 @@ public abstract class AbstractTower extends GameObject {
      * @param damage Damage to incur
      */
     public void takeDamage(int damage) {
-/*        health -= damage;
+        health -= damage;
         if (health <= 0) {
             health = 0;
             cell.destroyTower();
-        }*/
+        }
     }
 
     /**
@@ -130,12 +130,14 @@ public abstract class AbstractTower extends GameObject {
         mesh = m;
     }
 
+    /*
     @Override
     public void draw(Window window, Renderer renderer) {
         super.draw(window, renderer);
         mesh.draw(renderer);
         this.healthBolletje.draw(window, renderer);
     }
+    */
 
     protected class HealthBolletje extends GameObject {
 
@@ -151,6 +153,7 @@ public abstract class AbstractTower extends GameObject {
             color =  new Vector3f(0f, 1f, 0f);
         }
 
+        /*
         @Override
         public void draw(Window window, Renderer renderer) {
             super.draw(window, renderer);
@@ -158,6 +161,7 @@ public abstract class AbstractTower extends GameObject {
                     renderer.drawHealthBolletje(() -> mesh.draw(renderer))
             );
         }
+        */
 
         @Override
         public void update() {
@@ -181,9 +185,12 @@ public abstract class AbstractTower extends GameObject {
         @Override
         public GameObject init(Renderer renderer) {
             setPosition(tower.getPosition().add(new Vector3f(0, 2.5f, 0)));
-            renderer.linkMesh("/health.obj", (mesh -> {
-                setModelView(renderer);
-            }));
+            renderer.linkMesh("/health.obj",
+                    (mesh -> {
+                        setModelView(renderer);
+                        mesh.draw();
+                    }),
+                    (mesh -> setModelLightView(renderer)));
             return this;
         }
     }

@@ -17,11 +17,4 @@ public abstract class ObjectProvider<T extends GameObject> implements Provider {
             o.update();
         }
     }
-
-    @Override
-    public void draw(Window window, Renderer renderer) {
-        for (T o : objects) {
-            o.draw(window, renderer);
-        }
-    }
 }

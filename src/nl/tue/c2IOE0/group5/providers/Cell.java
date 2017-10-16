@@ -128,7 +128,6 @@ public class Cell extends GameObject {
         try {
             renderer.linkMesh("/cube.obj", (mesh) -> {
                 setModelView(renderer);
-                setModelLightViewScene(renderer);
                 renderer.ambientLight(color, mesh::draw);
             }, (mesh) -> {
                 setModelLightView(renderer);
@@ -139,5 +138,10 @@ public class Cell extends GameObject {
         }
 
         return this;
+    }
+
+    @Override
+    public void update() {
+        // I'm a lazy motherfucker
     }
 }

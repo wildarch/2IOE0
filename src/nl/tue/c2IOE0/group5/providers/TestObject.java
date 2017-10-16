@@ -29,9 +29,7 @@ public class TestObject extends GameObject {
         try {
             Mesh tower = renderer.linkMesh("/tower.obj", (mesh) -> {
                 setModelView(renderer);
-                setModelLightViewScene(renderer);
                 mesh.draw();
-                //renderer.boink((float) Math.sin(boinkyness) +1f, new Vector3f(0), new Vector3f(1), mesh::draw);
             }, (mesh) -> {
                 setModelLightView(renderer);
                 mesh.draw();
@@ -47,7 +45,10 @@ public class TestObject extends GameObject {
     public void boink() {
         // update private members here
         boinkyness = (boinkyness + 0.01f);
-        //renderer.boink((float)Math.sin(boinkyness) +1f, new Vector3f(0, 0, 0), new Vector3f(1f, 1f, 1f), ()->
     }
 
+    @Override
+    public void update() {
+        // I'm a lazy motherfucker
+    }
 }

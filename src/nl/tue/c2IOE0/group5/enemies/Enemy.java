@@ -7,7 +7,6 @@ import nl.tue.c2IOE0.group5.providers.GridProvider;
 import org.joml.Vector3f;
 
 public abstract class Enemy extends GameObject {
-    private Mesh mesh;
     private boolean dead = false;
     protected GridProvider gridProvider;
     private final int maxHealth;
@@ -19,27 +18,12 @@ public abstract class Enemy extends GameObject {
         this.health = maxHealth;
     }
 
-    @Override
-    public void draw(Window window, Renderer renderer) {
-        super.draw(window, renderer);
-        if (mesh != null)
-            mesh.draw(renderer);
-    }
-
     public void getDamage(int damage) {
         health -= damage;
         if (health <= 0) {
             health = 0;
             this.die();
         }
-    }
-
-    public void setMesh(Mesh mesh) {
-        this.mesh = mesh;
-    }
-
-    public Mesh getMesh() {
-        return mesh;
     }
 
     public void die() {

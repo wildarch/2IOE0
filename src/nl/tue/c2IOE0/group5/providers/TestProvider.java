@@ -20,7 +20,7 @@ public class TestProvider implements Provider {
     public void init(Engine engine) {
         // initialize resources here, e.g.
         updatecounter = 0;
-        this.object = new TestObject().init(engine.getRenderer());
+        //this.object = new TestObject().init(engine.getRenderer());
     }
 
     public void ud() {
@@ -32,33 +32,5 @@ public class TestProvider implements Provider {
     public void update() {
         // do updates here using resources, e.g.
 
-    }
-
-    @Override
-    public void draw(Window window, Renderer renderer) {
-        // draw attached objects here, e.g.
-        float r = 0;
-        float g = 0;
-        float b = 0;
-
-        switch(updatecounter) {
-            case 0:
-                b = 1;
-            case 1:
-                r = 1;
-                break;
-            case 2:
-                g = 1;
-            case 3:
-                b = 1;
-                break;
-            case 4:
-                r = 1;
-                b = 1;
-        }
-
-       // window.setClearColor(r, g, b, 1f);
-        object.setPosition(3f, 0f,3f);
-        object.boink();
     }
 }

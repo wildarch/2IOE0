@@ -1,12 +1,13 @@
 package nl.tue.c2IOE0.group5.engine.objects;
 
+import nl.tue.c2IOE0.group5.engine.provider.Updatable;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import org.joml.Vector3f;
 
 /**
  * @author Yoeri Poels, Jorren Hendriks
  */
-public abstract class GameObject extends Positionable implements nl.tue.c2IOE0.group5.engine.provider.Updatable {
+public abstract class GameObject extends Positionable implements Updatable {
 
     private float scale;
 
@@ -38,14 +39,11 @@ public abstract class GameObject extends Positionable implements nl.tue.c2IOE0.g
      */
     protected void setModelView(Renderer renderer) {
         renderer.setModelViewMatrix(getPosition(), getRotation(), getScale());
+        renderer.setModelLightViewMatrixScene(getPosition(), getRotation(), getScale());
     }
 
     protected void setModelLightView(Renderer renderer) {
         renderer.setModelLightViewMatrix(getPosition(), getRotation(), getScale());
-    }
-
-    protected void setModelLightViewScene(Renderer renderer) {
-        renderer.setModelLightViewMatrixScene(getPosition(), getRotation(), getScale());
     }
 
     /**
@@ -73,12 +71,6 @@ public abstract class GameObject extends Positionable implements nl.tue.c2IOE0.g
     protected void setModelView(Renderer renderer, Vector3f posOffset, Vector3f rotOffset, float scaleOffset) {
         renderer.setModelViewMatrix(posOffset.add(getPosition()), rotOffset.add(getRotation()), scaleOffset+getScale());
     }
-
-    protected void setModelLightView(Renderer renderer, Vector3f posOffset, Vector3f rotOffset, float scaleOffset) {
-        renderer.setModelLightViewMatrix(posOffset.add(getPosition()), rotOffset.add(getRotation()), scaleOffset+getScale());
-    }
-
-
 
     /**
      * Initialize the gameobject. Link meshes here and define their render methods.

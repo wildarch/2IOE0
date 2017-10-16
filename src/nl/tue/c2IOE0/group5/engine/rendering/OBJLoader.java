@@ -1,15 +1,13 @@
 package nl.tue.c2IOE0.group5.engine.rendering;
 
+import nl.tue.c2IOE0.group5.util.Resource;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class OBJLoader {
@@ -20,7 +18,7 @@ public class OBJLoader {
         if (cache.containsKey(fileName)) {
             return cache.get(fileName);
         }
-        List<String> lines = readAllLines(fileName);
+        List<String> lines = Arrays.asList(Resource.load(fileName).split(System.lineSeparator()));
 
         List<Vector3f> vertices = new ArrayList<>();
         List<Vector2f> textures = new ArrayList<>();

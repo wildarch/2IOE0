@@ -47,10 +47,6 @@ public class Renderer {
 
     private DirectionalLight directionalLight;
 
-
-
-
-
     /**
      * Constructor for initializing datastructures.
      */
@@ -89,7 +85,7 @@ public class Renderer {
             try {
                 mesh = OBJLoader.loadMesh(filename);
             } catch (IOException e) {
-                throw new MeshException(e.getMessage());
+                throw new MeshException("Could not load " + filename);
             }
             meshes.put(filename, mesh);
             return mesh;
@@ -114,7 +110,6 @@ public class Renderer {
             initDepthShader();
         } catch (Exception e) {
             e.printStackTrace();
-            //critical error, so close program
             System.exit(0);
         }
     }
@@ -221,6 +216,7 @@ public class Renderer {
     public void setModelViewMatrix(Vector3f position, Vector3f rotation, float scale) {
         Matrix4f transformationMatrix = transformation.getModelViewMatrix(position, rotation, scale, getActiveCamera());
         sceneShader.setUniform("modelViewMatrix", transformationMatrix);
+        setModelLightViewMatrixScene(position, rotation, scale);
     }
 
     /**
@@ -330,7 +326,6 @@ public class Renderer {
             setMaterial(mesh.getMaterial());
             glActiveTexture(GL_TEXTURE1);
             glBindTexture(GL_TEXTURE_2D, depthMap.getDepthMapTexture().getId());
-            //setMaterial(new Material(depthMap.getDepthMapTexture()));
             mesh.renderAll(consumers);
         });
 
@@ -352,15 +347,13 @@ public class Renderer {
         float lightAngleY = (float)Math.toDegrees(Math.asin(lightDirection.x*-1));
         float lightAngleZ = 0;
         lightViewMatrix = transformation.updateLightViewMatrix(new Vector3f(lightDirection).mul(light.getShadowStrength()), new Vector3f(lightAngleX, lightAngleY, lightAngleZ));
-        //light.setOrthoCords(activeCamera.getPosition().x, 10.0f, -10.0f, 10.0f, -1.0f, 20.0f);
+
         DirectionalLight.OrthoCoords orthCoords = light.getOrthoCoords();
         Matrix4f orthoProjMatrix = transformation.updateOrthoProjectionMatrix(orthCoords.left, orthCoords.right, orthCoords.bottom, orthCoords.top, orthCoords.near, orthCoords.far);
 
         depthShader.setUniform("orthoProjectionMatrix", orthoProjMatrix);
 
-        shadowBuffer.forEach((mesh, consumers) -> {
-            mesh.renderAll(consumers);
-        });
+        shadowBuffer.forEach(Mesh::renderAll);
 
         // Unbind
         depthShader.unbind();
@@ -382,5 +375,4 @@ public class Renderer {
         glViewport(0, 0, window.getWidth(), window.getHeight());
         renderScene();
     }
-
 }

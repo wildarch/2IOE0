@@ -97,10 +97,7 @@ public class UIProvider implements Provider {
 
     @Override
     public void update() {
-    }
-
-    @Override
-    public void draw(Window window, Renderer renderer) {
+        Window window = engine.getWindow();
         this.wWidth = window.getWidth();
         this.wHeight = window.getHeight();
     }

@@ -43,4 +43,9 @@ public class Skybox extends GameObject {
 
         return this;
     }
+
+    @Override
+    public void update() {
+        // I'm a lazy motherfucker
+    }
 }
