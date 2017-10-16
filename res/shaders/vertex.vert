@@ -70,7 +70,7 @@ vec3 revert(vec3 p){
 // @param newO position of fragment after translation (to prevent recalculation)
 vec3 normalVector(vec3 O, vec3 N, vec3 newO) {
 
-	vec3 Henk = vec3(0.0, 0.0, 1.0);	// Henk, random vector;
+	vec3 Henk = vec3(0.0, 1.0, 1.0);	// Henk, random vector;
 	if (N == Henk){
 		Henk = vec3(1.0, 1.0, 0.0); // make sure it is not equal to N
 	}
@@ -106,19 +106,23 @@ vec3 normalVector(vec3 O, vec3 N, vec3 newO) {
 void main() {
 
     vec3 transformedPosition;
+    vec3 mvNormal;
 
 	// calculate normal and transform to view space
-	if (bounceDegree == 0.0){
+	if (bounceDegree == 0.0 ){
 	    transformedPosition = position;
-		mvVertexNormal = normalize(modelViewMatrix * vec4(vertexNormal, 0.0)).xyz;
+		mvNormal = vertexNormal;
 	} else {
         // calculate new vector
         transformedPosition = revert(bendOut(mapToUnit(position)));
-		mvVertexNormal = normalize(modelViewMatrix * vec4(normalVector(position, vertexNormal, mvVertexPosition), 0.0)).xyz;
+		mvNormal = vertexNormal;
+//		mvNormal = normalVector(position, vertexNormal, mvVertexPosition);
 	}
 
 	vec4 mvPosition = modelViewMatrix * vec4(transformedPosition, 1.0);
     gl_Position = projectionMatrix * mvPosition;
+
+	mvVertexNormal = normalize(modelViewMatrix * vec4(mvNormal, 0.0)).xyz;
     mvVertexPosition = mvPosition.xyz;
 
 	// pass texture

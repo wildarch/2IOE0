@@ -240,18 +240,21 @@ public class Renderer {
      * this effect applies only to subjects rendered inside the render parameter.
      * @param bounceDegree the strength B of the effect, with B = 0 no effect,
      *                     B > 0 a horizontal expansion and B < 0 a vertical stretch
-     * @param boundingMin the minimum coordinates of the 3D-model
-     * @param boundingMax idem maximum
      * @param render the runnable where the bounce effect will apply to
+     * @param mesh mesh to be boinked
+     * @param isShadowMap true if this is called for the shadowmap renderer
+     *                    false if this is called for normal renderer
      */
-    public void boink(float bounceDegree, Vector3f boundingMin, Vector3f boundingMax, Runnable render){
-        sceneShader.setUniform("bounceDegree", bounceDegree);
-        sceneShader.setUniform("boundingMin", boundingMin);
-        sceneShader.setUniform("boundingMax", boundingMax);
+    public void boink(float bounceDegree, Runnable render, Mesh mesh, boolean isShadowMap){
+        ShaderProgram shader = isShadowMap ? depthShader : sceneShader;
+
+        shader.setUniform("bounceDegree", bounceDegree);
+        shader.setUniform("boundingMin", mesh.getMinBoundingBox());
+        shader.setUniform("boundingMax", mesh.getMaxBoundingBox());
 
         render.run();
 
-        sceneShader.setUniform("bounceDegree", 0f);
+        shader.setUniform("bounceDegree", 0f);
     }
 
     /**

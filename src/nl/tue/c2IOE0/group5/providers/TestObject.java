@@ -2,11 +2,8 @@ package nl.tue.c2IOE0.group5.providers;
 
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
 import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
-import nl.tue.c2IOE0.group5.engine.rendering.OBJLoader;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
-import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
-import org.joml.Vector3f;
 
 /**
  * @author Jorren
@@ -30,11 +27,10 @@ public class TestObject extends GameObject {
             Mesh tower = renderer.linkMesh("/tower.obj", (mesh) -> {
                 setModelView(renderer);
                 setModelLightViewScene(renderer);
-                mesh.draw();
-                //renderer.boink((float) Math.sin(boinkyness) +1f, new Vector3f(0), new Vector3f(1), mesh::draw);
+                renderer.boink((float) Math.sin(boinkyness) +1f, mesh::draw, mesh, false);
             }, (mesh) -> {
                 setModelLightView(renderer);
-                mesh.draw();
+                renderer.boink((float) Math.sin(boinkyness) +1f, mesh::draw, mesh, true);
             });
             tower.setMaterial(new Material("/tower.png"));
         } catch (Exception e) {
