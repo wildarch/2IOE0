@@ -15,8 +15,6 @@ import nl.tue.c2IOE0.group5.providers.UIProvider;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 
-import java.awt.*;
-
 import static org.lwjgl.glfw.GLFW.*;
 
 /**
@@ -90,6 +88,8 @@ public class PlayerController implements Controller,Listener {
             case GLFW_KEY_L:
                 camera.setRotation(0,0,0);
                 break;
+            case GLFW_KEY_ESCAPE:
+                engine.pause(true);
         }
     }
 

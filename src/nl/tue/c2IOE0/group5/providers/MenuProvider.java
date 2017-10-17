@@ -27,17 +27,15 @@ public class MenuProvider implements Provider, Clickable {
     private UIButton[] optionMenu;
     private UIButton[] activeElements;
 
-    private Engine engine;
     private Hud hud;
 
     @Override
     public void init(Engine engine) {
-        this.engine = engine;
         engine.pause(true);
 
-        int x = (engine.getWindow().getWidth()/2) - (MenuItem.BUTTON_WIDTH/2);
-        int y = HEIGHT_FROM_TOP;
-        int offset = SPACE_BETWEEN_BUTTONS + MenuItem.BUTTON_HEIGHT;
+        final int x = (engine.getWindow().getWidth()/2) - (MenuItem.BUTTON_WIDTH/2);
+        final int y = HEIGHT_FROM_TOP;
+        final int offset = SPACE_BETWEEN_BUTTONS + MenuItem.BUTTON_HEIGHT;
 
         PositionState position = new PositionState(x, y, offset);
 
