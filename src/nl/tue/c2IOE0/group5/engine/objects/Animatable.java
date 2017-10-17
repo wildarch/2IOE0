@@ -8,9 +8,18 @@ package nl.tue.c2IOE0.group5.engine.objects;
  */
 public interface Animatable {
 
+    enum AnimationLoop {
+        DEFAULT, WALK, SHOOT
+    }
+
     /**
      * is called every rendering frame, object should set its current animationframe forward according to deltaT
-     * @param deltaT passed time since last frame (determined beforehand: all animations will use the same value)
+     * @param deltaTime passed time since last frame (determined beforehand: all animations will use the same value)
+     * @param animTime time since last change of animation
      */
-    void animationUpdate(float deltaT);
+    void updateAnimation(float animTime, float deltaTime);
+
+    void setCurrentAnim(AnimationLoop newAnim);
+
+    boolean mustBeRemoved();
 }

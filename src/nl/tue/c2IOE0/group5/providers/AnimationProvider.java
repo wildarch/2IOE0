@@ -1,5 +1,6 @@
 package nl.tue.c2IOE0.group5.providers;
 
+import nl.tue.c2IOE0.group5.enemies.AnimatedObjectRecord;
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.objects.Animatable;
@@ -15,8 +16,8 @@ import java.util.Set;
  * a provider that lets all Animatables make their animations and movements based on frames
  * created on 13-10-2017.
  */
-public class AnimationManager implements Provider {
-    private Set<Animatable> targets;
+public class AnimationProvider implements Provider {
+    private Set<AnimatedObjectRecord> targets;
     private Timer timer;
 
     @Override
@@ -26,20 +27,17 @@ public class AnimationManager implements Provider {
     }
 
     public void add(Animatable newTarget){
-        targets.add(newTarget);
-    }
-
-    public void remove(Animatable newTarget){
-        targets.remove(newTarget);
+        AnimatedObjectRecord newUnit = new AnimatedObjectRecord(newTarget);
+        targets.add(newUnit);
     }
 
     @Override
     public void draw(Window window, Renderer renderer) {
-        targets.forEach(t -> t.animationUpdate(timer.getElapsedTime()));
+        targets.forEach(t -> t.updateAnimation(timer.getElapsedTime()));
     }
 
     @Override
     public void update() {
-
+        targets.removeIf(AnimatedObjectRecord::mustBeRemoved);
     }
 }

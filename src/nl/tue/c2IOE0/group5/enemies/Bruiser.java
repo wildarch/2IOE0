@@ -1,48 +1,57 @@
 package nl.tue.c2IOE0.group5.enemies;
 
-import nl.tue.c2IOE0.group5.engine.objects.GameObject;
+import nl.tue.c2IOE0.group5.engine.objects.Animatable;
 import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
+import nl.tue.c2IOE0.group5.providers.AnimationProvider;
+import nl.tue.c2IOE0.group5.providers.GridProvider;
 import nl.tue.c2IOE0.group5.util.LinearlyUpdatable;
 import nl.tue.c2IOE0.group5.util.SmoothUpdatable;
 import org.joml.Vector3f;
 
 import static java.lang.Math.sin;
-import static nl.tue.c2IOE0.group5.enemies.AnimatedUnit.AnimationLoop.WALK;
+import static nl.tue.c2IOE0.group5.engine.objects.Animatable.AnimationLoop.DEFAULT;
+import static nl.tue.c2IOE0.group5.engine.objects.Animatable.AnimationLoop.WALK;
 
 /**
  * @author Geert van Ieperen
  *         created on 13-10-2017.
  */
-public class Bruiser extends AnimatedUnit {
+public class Bruiser extends Enemy implements Animatable {
 
-    private InstancedMesh body;
     private InstancedMesh head;
     private InstancedMesh leftArm;
     private InstancedMesh rightArm;
+
+    private AnimationLoop currentAnim = DEFAULT;
 
     private SmoothUpdatable headOffset;
     private SmoothUpdatable leftArmOffset;
     private SmoothUpdatable rightArmOffset;
 
-    @Override
-    public GameObject init(Renderer renderer) {
-        head = renderer.linkMesh("/bruiser_head.obj", () -> {
-            setModelView(renderer, new Vector3f(0f, 1f + headOffset.current(), 1f));
-        });
-        body = renderer.linkMesh("/bruiser_body.obj", () -> {
-            setModelView(renderer);
-        });
-        leftArm = renderer.linkMesh("/bruiser_lArm.obj", () -> {
-            setModelView(renderer, new Vector3f(1f, 0f, leftArmOffset.current()));
-        });
-        rightArm = renderer.linkMesh("/bruiser_rArm.obj", () -> {
-            setModelView(renderer, new Vector3f(1f, 0f, rightArmOffset.current()));
-        });
+    public Bruiser(GridProvider gridProvider, int maxHealth, AnimationProvider manager) {
+        super(gridProvider, maxHealth);
+        manager.add(this);
+    }
 
+    @Override
+    public Bruiser init(Renderer renderer) {
         headOffset = new LinearlyUpdatable(headOffset(0), 0.1f);
         leftArmOffset = new LinearlyUpdatable(armOffset(0), 0.1f);
         rightArmOffset = new LinearlyUpdatable(-armOffset(0), 0.1f);
+
+        renderer.linkMesh("/bruiser_head.obj", () ->
+                setModelView(renderer, new Vector3f(0f, 1f + headOffset.current(), 1f)));
+
+        renderer.linkMesh("/bruiser_body.obj", () ->
+                setModelView(renderer));
+
+        renderer.linkMesh("/bruiser_lArm.obj", () ->
+                setModelView(renderer, new Vector3f(1f, 0f, leftArmOffset.current())));
+
+        renderer.linkMesh("/bruiser_rArm.obj", () ->
+                setModelView(renderer, new Vector3f(1f, 0f, rightArmOffset.current())));
+
 
         return this;
     }
@@ -72,7 +81,7 @@ public class Bruiser extends AnimatedUnit {
     }
 
     @Override
-    public void updateAngles(float animTime, float deltaTime) {
+    public void updateAnimation(float animTime, float deltaTime) {
         headOffset.updateFluent(headOffset(animTime), deltaTime);
         leftArmOffset.updateFluent(armOffset(animTime), deltaTime);
         rightArmOffset.updateFluent(-armOffset(animTime), deltaTime);
@@ -81,5 +90,21 @@ public class Bruiser extends AnimatedUnit {
     @Override
     public void update() {
 
+    }
+
+    @Override
+    public void setCurrentAnim(AnimationLoop newAnim) {
+        currentAnim = newAnim;
+    }
+
+    @Override
+    public boolean mustBeRemoved() {
+        return isDead();
+    }
+
+    @Override
+    protected void onDie() {
+        // unnecessary
+        currentAnim = DEFAULT;
     }
 }

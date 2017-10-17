@@ -1,4 +1,4 @@
-package nl.tue.c2IOE0.group5.userinterface;
+package nl.tue.c2IOE0.group5.util;
 
 /**
  * @author Geert van Ieperen
