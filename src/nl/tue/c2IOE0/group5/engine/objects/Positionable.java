@@ -1,5 +1,7 @@
 package nl.tue.c2IOE0.group5.engine.objects;
 
+import nl.tue.c2IOE0.group5.util.Angle;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 /**
@@ -28,7 +30,7 @@ public abstract class Positionable {
      * @return The position of the object.
      */
     public Vector3f getPosition() {
-        return position;
+        return new Vector3f(position);
     }
 
     /**
@@ -45,6 +47,14 @@ public abstract class Positionable {
     }
 
     /**
+     * Set the current position of the object
+     * @param p new coordinates of the object
+     */
+    public void setPosition(Vector3f p) {
+        position.set(p);
+    }
+
+    /**
      * Move the object relative to its previous location.
      *
      * @param offsetX The movement in the x direction.
@@ -52,9 +62,16 @@ public abstract class Positionable {
      * @param offsetZ The movement in the z direction.
      */
     public void move(float offsetX, float offsetY, float offsetZ) {
-        position.x += offsetX;
-        position.y += offsetY;
-        position.z += offsetZ;
+        move(new Vector3f(offsetX, offsetY, offsetZ));
+    }
+
+    /**
+     * Move the object relative to its previous location.
+     *
+     * @param offset The movement
+     */
+    public void move(Vector3f offset) {
+        position.add(offset);
     }
 
     /**
@@ -77,6 +94,15 @@ public abstract class Positionable {
     }
 
     /**
+     * Move the object relative to its previous location and its panning from the center
+     *
+     * @param offset The movement
+     */
+    public void moveRelative(Vector3f offset) {
+        moveRelative(offset.x(), offset.y(), offset.z());
+    }
+
+    /**
      * Get the current rotation of the object in degrees.
      *
      * @return The rotation of the object in degrees.
@@ -96,6 +122,12 @@ public abstract class Positionable {
         rotation.x = x;
         rotation.y = y;
         rotation.z = z;
+    }
+
+    public void setRotation(Vector3f d) {
+        Vector3f rotation = new Vector3f(1, 0, 0).rotationTo(d, new Quaternionf()).getEulerAnglesXYZ(new Vector3f());
+        Vector3f rotationDegrees = new Vector3f(-Angle.degf(rotation.x), Angle.degf(rotation.y), -Angle.degf(rotation.z));
+        this.rotation.set(rotationDegrees);
     }
 
     /**

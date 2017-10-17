@@ -70,11 +70,6 @@ public class MenuProvider implements Provider, Clickable {
     }
 
     @Override
-    public void update() {
-
-    }
-
-    @Override
     public void onClick(MouseEvent event) {
         Vector2i mousePosition = new Vector2i(event.getX(), event.getY());
         for (UIElement element : activeElements){
@@ -85,7 +80,12 @@ public class MenuProvider implements Provider, Clickable {
     }
 
     @Override
+    public void update() {
+
+    }
+
+    @Override
     public void draw(Window window, Renderer renderer) {
-        // do no actual drawing (in 3d space)
+
     }
 }

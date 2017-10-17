@@ -1,11 +1,10 @@
 package nl.tue.c2IOE0.group5.engine.objects;
 
-import nl.tue.c2IOE0.group5.engine.rendering.*;
+import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
+import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Texture;
 import org.joml.Vector3f;
-
-import java.io.IOException;
 
 /**
  * @author Jorren Hendriks.
@@ -31,16 +30,21 @@ public class Skybox extends GameObject {
     @Override
     public Skybox init(Renderer renderer) {
         try {
-            Mesh mesh = renderer.linkMesh(model, (m) -> {
+            InstancedMesh mesh = renderer.linkMesh(model, () -> {
                 setModelView(renderer);
-                renderer.drawSkybox(m::draw);
-            }, (m) -> {});
+                renderer.drawSkybox();
+            });
 
-            mesh.setMaterial(material);
+            mesh.getMesh().setMaterial(material);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return this;
+    }
+
+    @Override
+    public void update() {
+        // I'm a lazy motherfucker
     }
 }

@@ -21,15 +21,12 @@ public class TestObject extends GameObject {
     @Override
     public TestObject init(Renderer renderer) {
         try {
-            Mesh tower = renderer.linkMesh("/tower1.obj", (mesh) -> {
-                setModelView(renderer);
-                setModelLightViewScene(renderer);
-                renderer.boink(getBounceDegree(), mesh::draw, mesh, false);
-            }, (mesh) -> {
-                setModelLightView(renderer);
-                renderer.boink(getBounceDegree(), mesh::draw, mesh, true);
-            });
+            Mesh tower = renderer.linkMesh("/tower1.obj");
             tower.setMaterial(new Material("/tower1.png"));
+            renderer.linkMesh(tower, () -> {
+                setModelView(renderer);
+                renderer.boink(tower, getBounceDegree());
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -45,7 +42,10 @@ public class TestObject extends GameObject {
     public void boink() {
         // updateFluent private members here
         boinkyness = (boinkyness + 0.01f);
-        //renderer.boink((float)Math.sin(boinkyness) +1f, new Vector3f(0, 0, 0), new Vector3f(1f, 1f, 1f), ()->
     }
 
+    @Override
+    public void update() {
+        // I'm a lazy motherfucker
+    }
 }

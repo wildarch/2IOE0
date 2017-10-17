@@ -1,16 +1,10 @@
 package nl.tue.c2IOE0.group5.providers;
 
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
-import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
-import nl.tue.c2IOE0.group5.engine.rendering.OBJLoader;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
-import nl.tue.c2IOE0.group5.engine.rendering.Window;
-import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
-
-import java.util.Vector;
 
 /**
  * @author Tom Peters
@@ -83,6 +77,8 @@ public class Cell extends GameObject {
             throw new ArrayIndexOutOfBoundsException("This ("+position.x()+","+position.y()+" is a bordercell, you cannot place a tower here.");
         } else {
             this.tower = t;
+            t.setCell(this);
+            t.setPosition(this.getPosition().add(0, 0.5f, 0f));
         }
     }
 
@@ -123,18 +119,19 @@ public class Cell extends GameObject {
     @Override
     public Cell init(Renderer renderer) {
         try {
-            renderer.linkMesh("/cube.obj", (mesh) -> {
+            renderer.linkMesh("/cube.obj", () -> {
                 setModelView(renderer);
-                setModelLightViewScene(renderer);
-                renderer.ambientLight(color, mesh::draw);
-            }, (mesh) -> {
-                setModelLightView(renderer);
-                mesh.draw();
+                renderer.ambientLight(color);
             });
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return this;
+    }
+
+    @Override
+    public void update() {
+        // I'm a lazy motherfucker
     }
 }

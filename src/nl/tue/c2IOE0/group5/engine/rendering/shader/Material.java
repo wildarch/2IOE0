@@ -1,5 +1,6 @@
 package nl.tue.c2IOE0.group5.engine.rendering.shader;
 
+import nl.tue.c2IOE0.group5.engine.rendering.MeshException;
 import org.joml.Vector4f;
 
 import java.io.IOException;
@@ -37,11 +38,11 @@ public class Material {
         this(DEFAULT_COLOUR, DEFAULT_COLOUR, DEFAULT_COLOUR, texture, 0);
     }
 
-    public Material(String texture) throws IOException {
+    public Material(String texture) throws MeshException {
         this(texture, 0);
     }
 
-    public Material(String texture, float reflectance) throws IOException {
+    public Material(String texture, float reflectance) throws MeshException {
         this(new Texture(texture), reflectance);
     }
 

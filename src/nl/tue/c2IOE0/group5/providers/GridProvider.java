@@ -1,10 +1,11 @@
 package nl.tue.c2IOE0.group5.providers;
 
-import nl.tue.c2IOE0.group5.QLearner;
+import nl.tue.c2IOE0.group5.controllers.QLearner;
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.objects.Camera;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
-import nl.tue.c2IOE0.group5.engine.rendering.*;
+import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
+import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
@@ -22,23 +23,18 @@ import java.util.List;
  */
 public class GridProvider implements Provider {
 
-    //total size of the grid. Change this to change the total grid
-    public final int SIZE = 13;
+    //total size of the grid (including spawn cells). Change this to change the total grid
+    public static final int SIZE = 13;
     //size of the grid in which towers can be placed
-    public final int PLAYFIELDSIZE = 9;
+    public static final int PLAYFIELDSIZE = 9;
     //the actual grid
     private final Cell[][] grid = new Cell[SIZE][SIZE];
 
     //the cell currently active (pointed to)
     private Cell activeCell;
 
-    private QLearner qlearner;
-    private List<Integer> optimalPath; //the current optimal path for the active cell
-
     @Override
     public void init(Engine engine) {
-        doQLearnerStuffForTesting();
-
         try {
             // Setup cell mesh
             Mesh cell = engine.getRenderer().linkMesh("/cube.obj");
@@ -47,15 +43,17 @@ public class GridProvider implements Provider {
             e.printStackTrace();
         }
 
-        int bordersize = (SIZE - PLAYFIELDSIZE)/2;
-        for (int x = bordersize; x < SIZE - bordersize; x++) {
-            for (int y = bordersize; y < SIZE - bordersize; y++) {
+        // Create the player base cells
+        int bordersize = (SIZE - PLAYFIELDSIZE - 1)/2;
+        for (int x = bordersize+1; x < SIZE - bordersize-1; x++) {
+            for (int y = bordersize+1; y < SIZE - bordersize-1; y++) {
                 //initialize the playfield as non-bordercells
                 grid[x][y] = new Cell(CellType.BASE, x, y).init(engine.getRenderer());
                 //initialize the estimated damage per cell to 0
             }
         }
 
+        // Create the borders
         for (int x = 0; x < SIZE; x++) {
             for (int y = 0; y < SIZE; y++) {
                 if (grid[x][y] == null) {
@@ -64,24 +62,8 @@ public class GridProvider implements Provider {
                 }
             }
         }
-        setActiveCell(1, 1);
-    }
 
-    public void doQLearnerStuffForTesting() {
-        int noIterations = 1000;
-        qlearner = new QLearner(SIZE, noIterations);
-        qlearner.updateRewardsMatrix(qlearner.getState(SIZE/2, SIZE/2), 1000);
-        qlearner.updateRewardsMatrix(qlearner.getState(3, 3), 500);
-        qlearner.updateRewardsMatrix(qlearner.getState(2, 3), -5);
-        qlearner.updateRewardsMatrix(qlearner.getState(4, 3), -5);
-        qlearner.updateRewardsMatrix(qlearner.getState(3, 2), -5);
-        qlearner.updateRewardsMatrix(qlearner.getState(3, 4), -5);
-        for (int i = 0; i < 10; i++) {
-            qlearner.generateRandomPath(100);
-        }
-        qlearner.generateRandomPath(100, 0);
-        double gamma = 0.1d;
-        qlearner.execute(gamma);
+        activeCell = getCell(0, 0);
     }
 
     /**
@@ -143,22 +125,13 @@ public class GridProvider implements Provider {
         cell.destroyTower();
     }
 
-    private boolean isInRange(Cell cellWithTower, Cell cellToCheck) {
-        int range = cellWithTower.getTower().getRange();
-        Vector2i positionToCheck = cellToCheck.getGridPosition();
-        Vector2i positionWithTower = cellWithTower.getGridPosition();
-        return positionToCheck.x() - positionWithTower.x() + positionToCheck.y() - positionWithTower.y() < range;
-    }
-
     /**
      * Set the active cell and color it
      * @param x the x coordinate of the active cell
      * @param y the y coordinate of the active cell
      */
     public void setActiveCell(int x, int y) {
-        if (activeCell != null) {
-            activeCell.deactivate();
-        }
+        activeCell.deactivate();
         this.activeCell = getCell(x, y);
         activeCell.activate();
     }
@@ -174,7 +147,6 @@ public class GridProvider implements Provider {
         //the ray is now defined using the position of the camera and direction
         if (direction3f.y() >= 0) {
             activeCell.deactivate();
-            return;
         }
         float lambda = -c.getPosition().y()/direction3f.y(); //assuming the y = 0
         float x = c.getPosition().x() + lambda * direction3f.x();
@@ -183,8 +155,7 @@ public class GridProvider implements Provider {
         int gridY = Math.round(z);
         if (!(gridX < 0 || gridY < 0 || gridX >= SIZE || gridY >= SIZE)) {
             setActiveCell(gridX, gridY);
-        } else {
-            activeCell.deactivate();
+            activeCell.activate();
         }
     }
 
@@ -205,20 +176,7 @@ public class GridProvider implements Provider {
     }
 
     /**
-     * To be called on a click, currently shows the qlearner output
-     */
-    public void click() {
-        //assuming the active cell is set correctly
-        List<Integer> optimalPath = qlearner.getOptimalPath(qlearner.getState(activeCell.getGridPosition()));
-        deactivateAll();
-        for (int state : optimalPath) {
-            Cell cell = getCell(qlearner.getPoint(state));
-            cell.activate();
-        }
-    }
-
-    /**
-     * A helper method to show the qlearner output
+     * A helper method to show the qlearner output, by first deactivating all the cells and then activating the cells on the path
      */
     private void deactivateAll() {
         for (int x = 0; x < SIZE; x++) {
@@ -228,6 +186,18 @@ public class GridProvider implements Provider {
         }
     }
 
+    public void drawPath(List<Integer> path) {
+        deactivateAll();
+        for (int state : path) {
+            Vector2i position = QLearner.getPoint(state);
+            getCell(position).activate();
+        }
+    }
+
+    public Vector2i getActiveCell() {
+        return this.activeCell.getGridPosition();
+    }
+
     @Override
     public void update() {
 
@@ -235,10 +205,6 @@ public class GridProvider implements Provider {
 
     @Override
     public void draw(Window window, Renderer renderer) {
-        for (int x = 0; x < SIZE; x++) {
-            for (int y = 0; y < SIZE; y++) {
-                //getCell(x, y).draw(window, renderer);
-            }
-        }
+
     }
 }

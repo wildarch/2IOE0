@@ -19,8 +19,11 @@ public class TowerDefence {
                 new TestProvider(),
                 new EnemyProvider(),
                 new GridProvider(),
-                new UIProvider(),
                 new BackgroundProvider(),
+                new TowerProvider(),
+                new UIProvider(),
+                new BulletProvider(),
+                new MusicProvider(),
         });
         e.addControllers(new Controller[] {
                 new PlayerController(),

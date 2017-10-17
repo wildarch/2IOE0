@@ -8,12 +8,14 @@ import nl.tue.c2IOE0.group5.util.Updatable;
 public class Timer {
 
     private Updatable<Long> time;
+    private Updatable<Long> tickTime;
 
     /**
      * Initialize the timer, set previous time to current.
      */
     public void init() {
         time = new Updatable<>(System.currentTimeMillis());
+        tickTime = new Updatable<>(System.currentTimeMillis());
     }
 
     /**
@@ -37,6 +39,8 @@ public class Timer {
         return time.current() - time.previous();
     }
 
+    public long getElapsedTickTime() { return tickTime.current() - tickTime.previous(); }
+
     /**
      * @return The previous time at which the timer was requested.
      */
@@ -51,4 +55,6 @@ public class Timer {
     public void updateLoopTime(){
         time.update(System.currentTimeMillis());
     }
+
+    public void updateTickTime() { tickTime.update(System.currentTimeMillis()); }
 }
