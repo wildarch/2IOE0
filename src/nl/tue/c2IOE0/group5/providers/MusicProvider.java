@@ -18,6 +18,7 @@ public class MusicProvider extends Thread implements Provider {
     private long duration;
     private Timer loopTimer;
     private long timeToPlay;
+    private float baseVolume = 1f;
 
     @Override
     public void init(Engine engine) {
@@ -43,14 +44,18 @@ public class MusicProvider extends Thread implements Provider {
     @Override
     public void update() {
         if (engine.isPaused()) {
-            fadeVolumeTo(0f);
+            fadeVolumeTo(-60 * (1-baseVolume));
         } else {
-            fadeVolumeTo(-20);
+            fadeVolumeTo(-60 * (1-(baseVolume*0.6f)));
         }
         if (timeToPlay < loopTimer.getLoopTime()) { //start again after 2 times the duration
             clip.start();
             timeToPlay = loopTimer.getLoopTime() + duration * 2;
         }
+    }
+
+    public void setBaseVolume(float volume) {
+        this.baseVolume = volume;
     }
 
     private float targetVolume;

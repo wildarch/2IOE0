@@ -13,6 +13,7 @@ public abstract class UIElement implements HudElement {
     public static final int BUTTON_HEIGHT = 75;
     static final float TEXT_SIZE = 42f;
     static final Vector4f BACK_COLOR = new Vector4f(0.3f, 0.3f, 0.8f, 0.8f);
+    static final Vector4f BACK_COLOR_DARK = new Vector4f(0f, 0f, 0f, 0.6f);
     static final Vector4f TEXT_COLOR = new Vector4f(1f, 1f, 1f, 1f);
     static final Vector4f LINE_COLOR = new Vector4f(0.8f, 0.3f, 0.3f, 0.8f);
     static final int STROKE_WIDTH = 5;

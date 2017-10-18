@@ -7,10 +7,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.Clickable;
 import nl.tue.c2IOE0.group5.engine.rendering.Hud;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
-import nl.tue.c2IOE0.group5.userinterface.MenuButton;
-import nl.tue.c2IOE0.group5.userinterface.UIButton;
-import nl.tue.c2IOE0.group5.userinterface.UIElement;
-import nl.tue.c2IOE0.group5.userinterface.UITextField;
+import nl.tue.c2IOE0.group5.userinterface.*;
 import nl.tue.c2IOE0.group5.util.PositionState;
 import org.joml.Vector2i;
 
@@ -41,15 +38,23 @@ public class MenuProvider implements Provider, Clickable {
 
     private UIButton[] mainMenu;
     private UIButton[] optionMenu;
+    private UIButton[] graphicsMenu;
+    private UIButton[] audioMenu;
     private UIElement[] creditScreen;
 
     private UIElement[] activeElements;
 
     private Hud hud;
+    private Renderer renderer;
+    private MusicProvider musicProvider;
 
     @Override
     public void init(Engine engine) {
         engine.pause(true);
+
+        renderer = engine.getRenderer();
+        musicProvider = engine.getProvider(MusicProvider.class);
+
 
         final Window window = engine.getWindow();
         final int x = (window.getWidth()/2) - (BUTTON_WIDTH/2);
@@ -62,11 +67,25 @@ public class MenuProvider implements Provider, Clickable {
         UIButton options = new MenuButton("Options", position, (event) -> activeElements = optionMenu);
         {
             PositionState optPos = new PositionState(x, y, offset);
-            UIButton graphics = new MenuButton("Graphics", optPos, (event) -> {});
+            UIButton graphics = new MenuButton("Graphics", optPos, (event) -> { activeElements = graphicsMenu; });
+            {
+                PositionState graPos = new PositionState(x, y, offset);
+                UIButton shadow = new MenuToggle("Shadow", graPos, (b) -> renderer.setShadowMapping(b));
+                UIButton backGraphics = new MenuButton("Back", graPos, (event) -> activeElements = optionMenu);
+                graphicsMenu = new UIButton[]{shadow, backGraphics};
+            }
+            UIButton audio = new MenuButton("Audio", optPos, (event) -> activeElements = audioMenu);
+            {
+                PositionState audPos = new PositionState(x, y, offset);
+                UIButton master = new MenuSlider("Volume", audPos, (i) -> musicProvider.setBaseVolume((i < 0.05f ? 0.05f : i)));
+                UIButton backAudio = new MenuButton("Back", audPos, (event) -> activeElements = optionMenu);
+                audioMenu = new UIButton[]{master, backAudio};
+            }
+
             UIButton parameters = new MenuButton("Parameters", optPos, (event) -> {});
             UIButton gameState = new MenuButton("Game state", optPos, (event) -> {});
             UIButton backOptions = new MenuButton("Back", optPos, (event) -> activeElements = mainMenu);
-            optionMenu = new UIButton[]{graphics, parameters, gameState, backOptions};
+            optionMenu = new UIButton[]{graphics, audio, parameters, gameState, backOptions};
         }
         UIButton credits = new MenuButton("Credits", position, (event) -> activeElements = creditScreen);
         UIButton exitGame = new MenuButton("Exit Game", position, (event) -> window.close());
