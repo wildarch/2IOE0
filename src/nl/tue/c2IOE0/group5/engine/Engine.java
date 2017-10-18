@@ -42,7 +42,7 @@ public class Engine {
     public Engine(boolean render) {
         this.render = render;
         renderTimer = new Timer();
-        window = new Window("Tower Defence", 1600, 900, false, new Window.Options());
+        window = new Window("Tower Defence", 1600, 900, true, new Window.Options());
         renderer = new Renderer();
         hud = new Hud();
         inputHandler = new InputHandler();

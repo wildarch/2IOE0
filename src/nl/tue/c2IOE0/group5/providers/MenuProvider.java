@@ -46,6 +46,7 @@ public class MenuProvider implements Provider, Clickable {
 
     private Hud hud;
     private Renderer renderer;
+    private Window window;
     private MusicProvider musicProvider;
 
     @Override
@@ -53,6 +54,7 @@ public class MenuProvider implements Provider, Clickable {
         engine.pause(true);
 
         renderer = engine.getRenderer();
+        window = engine.getWindow();
         musicProvider = engine.getProvider(MusicProvider.class);
 
 
@@ -71,8 +73,10 @@ public class MenuProvider implements Provider, Clickable {
             {
                 PositionState graPos = new PositionState(x, y, offset);
                 UIButton shadow = new MenuToggle("Shadow", graPos, (b) -> renderer.setShadowMapping(b));
+                UIButton vsync = new MenuToggle("vSync", graPos, (b) -> window.getOptions().vSync = b);
+                UIButton antia = new MenuToggle("Anti Aliasing", graPos, (b) -> window.getOptions().antialiasing = b ? 4 : 0);
                 UIButton backGraphics = new MenuButton("Back", graPos, (event) -> activeElements = optionMenu);
-                graphicsMenu = new UIButton[]{shadow, backGraphics};
+                graphicsMenu = new UIButton[]{shadow, vsync, antia, backGraphics};
             }
             UIButton audio = new MenuButton("Audio", optPos, (event) -> activeElements = audioMenu);
             {
@@ -130,6 +134,10 @@ public class MenuProvider implements Provider, Clickable {
 
     @Override
     public void draw(Window window, Renderer renderer) {
-
+        PositionState position = new PositionState((window.getWidth()/2) - (BUTTON_WIDTH/2), HEIGHT_FROM_TOP,
+                SPACE_BETWEEN_BUTTONS + UIElement.BUTTON_HEIGHT);
+        for (UIElement element : activeElements) {
+            element.setX(position.getX()); element.setY(position.getY());
+        }
     }
 }
