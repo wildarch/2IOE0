@@ -9,6 +9,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.Hud;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.ShaderException;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
+import nl.tue.c2IOE0.group5.providers.MusicProvider;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -90,6 +91,7 @@ public class Engine {
             window.cleanup();
             renderer.cleanup();
             hud.cleanup();
+            getProvider(MusicProvider.class).cleanup();
         }
     }
 
