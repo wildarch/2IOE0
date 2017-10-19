@@ -1,5 +1,7 @@
 package nl.tue.c2IOE0.group5.engine.rendering;
 
+import org.joml.Matrix4f;
+import org.joml.Vector2i;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
@@ -17,30 +19,46 @@ import static org.lwjgl.system.MemoryUtil.NULL;
  * A window which initializes GLFW and manages it.
  */
 public class Window {
+
+    // FOV in radians
+    public static final float FOV = (float) Math.toRadians(60.0f);
+    // z-coordinates relative to the activeCamera.
+    public static final float Z_NEAR = 0.01f;
+    public static final float Z_FAR = 1000.0f;
+
+    private Matrix4f projectionMatrix;
+
     private final String title;
     private final boolean resizable;
     // buffers for mouse input
     private final DoubleBuffer mousePosX;
     private final DoubleBuffer mousePosY;
+    private double lastTime = glfwGetTime();
+    private int nbFrames = 0;
+    private double frametime;
 
     private long window;
     private int width;
     private int height;
-    private boolean vSync;
+
+    private Options options;
 
     public Window(String title) {
-        this(title, 960, 720, true, false);
+        this(title, 960, 720, true, new Options());
     }
 
-    public Window(String title, int width, int height, boolean vSync, boolean resizable) {
+    public Window(String title, int width, int height, boolean resizable, Options options) {
         this.title = title;
         this.width = width;
         this.height = height;
-        this.vSync = vSync;
         this.resizable = resizable;
+
+        this.options = options;
 
         this.mousePosX = BufferUtils.createDoubleBuffer(1);
         this.mousePosY = BufferUtils.createDoubleBuffer(1);
+
+        this.projectionMatrix = new Matrix4f();
     }
 
     public void init() {
@@ -61,6 +79,10 @@ public class Window {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        if (getOptions().antialiasing()) {
+            glfwWindowHint(GLFW_STENCIL_BITS, getOptions().antialiasing);
+            glfwWindowHint(GLFW_SAMPLES, getOptions().antialiasing);
+        }
 
         // Create window
         window = glfwCreateWindow(this.width, this.height, this.title, NULL, NULL);
@@ -103,17 +125,32 @@ public class Window {
 
         // Enable Depth Test
         glEnable(GL_DEPTH_TEST);
-        // Enable 2d Texture
-        glEnable(GL_TEXTURE_2D);
+        // Enable Stencil Test
+        glEnable(GL_STENCIL_TEST);
+        // Support transparencies
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        // Cull backfaces
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
     }
 
     /**
-     * Update the {@link Window}. This will deal with basic OpenGL formalities. Besides it will also poll for events
+     * Updatable the {@link Window}. This will deal with basic OpenGL formalities. Besides it will also poll for events
      * which occurred on the window. Finally returns whether the window should close based on what GLFW thinks.
      *
      * @return Whether the {@link Window} should continue running.
      */
     public boolean update() {
+        // Measure speed
+        double currentTime = glfwGetTime();
+        nbFrames++;
+        if ( currentTime - lastTime >= 0.25 ){ // If last prinf() was more than 1 sec ago
+            // printf and reset timer
+            frametime = (250.0/((double)(nbFrames)));
+            nbFrames = 0;
+            lastTime += 0.25;
+        }
         // Swap buffers
         glfwSwapBuffers(window);
 
@@ -138,6 +175,14 @@ public class Window {
      */
     public void close() {
         glfwSetWindowShouldClose(window, true);
+    }
+
+    /**
+     * Restore the state of the window. Needed to restore the state after the HUD changes it.
+     */
+    void restoreState() {
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_STENCIL_TEST);
     }
 
     /**
@@ -186,9 +231,9 @@ public class Window {
      *
      * @return The position of the mouse.
      */
-    public MousePos getMousePosition() {
+    public Vector2i getMousePosition() {
         glfwGetCursorPos(window, mousePosX, mousePosY);
-        return new MousePos(mousePosX.get(0), mousePosY.get(0));
+        return new Vector2i((int) mousePosX.get(0), (int) mousePosY.get(0));
     }
 
     /**
@@ -245,6 +290,9 @@ public class Window {
     public void resize(int width, int height) {
         glfwSetWindowSize(window, width, height);
 
+        this.width = width;
+        this.height = height;
+
         // Get primary display resolution
         GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         // Center window on display
@@ -261,7 +309,16 @@ public class Window {
      * @return Whether vSync is enabled.
      */
     public boolean vSyncEnabled() {
-        return this.vSync;
+        return getOptions().vSync;
+    }
+
+    public Matrix4f updateProjectionMatrix() {
+        float aspectRatio = (float) width / (float) height;
+        return projectionMatrix.setPerspective(FOV, aspectRatio, Z_NEAR, Z_FAR);
+    }
+
+    public Matrix4f getProjectionMatrix() {
+        return projectionMatrix;
     }
 
     /**
@@ -269,7 +326,14 @@ public class Window {
      */
     public void clear() {
         // Clear framebuffer
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    }
+
+    /**
+     * Returns the current frametime, used for player movement.
+     */
+    public double getFrameTime() {
+        return frametime;
     }
 
     /**
@@ -287,23 +351,24 @@ public class Window {
         if (callback instanceof GLFWCursorPosCallbackI) {
             glfwSetCursorPosCallback(window, (GLFWCursorPosCallbackI) callback);
         }
+        if (callback instanceof GLFWScrollCallbackI) {
+            glfwSetScrollCallback(window, (GLFWScrollCallbackI) callback);
+        }
     }
 
-    public class MousePos {
-        private int x;
-        private int y;
+    public Options getOptions() {
+        return options;
+    }
 
-        private MousePos(double x, double y) {
-            this.x = (int) x;
-            this.y = (int) y;
+    public static class Options {
+
+        public boolean vSync = true;
+
+        public int antialiasing = 4;
+
+        public boolean antialiasing() {
+            return antialiasing > 0;
         }
 
-        public int getX() {
-            return x;
-        }
-
-        public int getY() {
-            return y;
-        }
     }
 }

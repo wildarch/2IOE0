@@ -1,17 +1,24 @@
 package nl.tue.c2IOE0.group5.engine.rendering;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+import nl.tue.c2IOE0.group5.util.Resource;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.*;
 
 
 public class OBJLoader {
 
-    public static Mesh loadMesh(String fileName) throws Exception {
-        List<String> lines = readAllLines(fileName);
+    private static Map<String, Mesh> cache = new HashMap<>();
+
+    public static Mesh loadMesh(String fileName) throws IOException {
+        if (cache.containsKey(fileName)) {
+            return cache.get(fileName);
+        }
+        List<String> lines = Arrays.asList(Resource.load(fileName).split(System.lineSeparator()));
 
         List<Vector3f> vertices = new ArrayList<>();
         List<Vector2f> textures = new ArrayList<>();
@@ -53,7 +60,10 @@ public class OBJLoader {
                     break;
             }
         }
-        return reorderLists(vertices, textures, normals, faces);
+        Mesh mesh = reorderLists(vertices, textures, normals, faces);
+        cache.put(fileName, mesh);
+
+        return mesh;
     }
 
     private static Mesh reorderLists(List<Vector3f> posList, List<Vector2f> textCoordList,
@@ -162,7 +172,7 @@ public class OBJLoader {
             idxVecNormal = NO_VALUE;
         }
     }
-    private static List<String> readAllLines(String fileName) throws Exception {
+    private static List<String> readAllLines(String fileName) throws IOException {
         List<String> list = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new InputStreamReader(OBJLoader.class.getResourceAsStream(fileName)))) {
             String line;

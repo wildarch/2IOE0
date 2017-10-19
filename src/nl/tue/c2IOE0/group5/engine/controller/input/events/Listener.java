@@ -22,6 +22,13 @@ public interface Listener {
     void onKeyReleased(Event event);
 
     /**
+     * Fired when the user holds a key on their keyboard.
+     *
+     * @param event The asociated {@link Event}
+     */
+    void onKeyHold(Event event);
+
+    /**
      * Fired when the user presses a button on their mouse.
      *
      * @param event The associated {@link MouseEvent}
@@ -42,4 +49,17 @@ public interface Listener {
      */
     void onMouseMove(MouseEvent event);
 
+    /**
+     * Fired when the user hovers on the window.
+     *
+     * @param event The associated {@link MouseEvent}
+     */
+    void onMouseHover(MouseEvent event);
+
+    /**
+     * Fired when the user scrolls their mouse.
+     *
+     * @param event The associated {@link MouseEvent}
+     */
+    void onMouseScroll(MouseEvent event);
 }

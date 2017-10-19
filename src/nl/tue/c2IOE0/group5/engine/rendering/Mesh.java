@@ -1,5 +1,8 @@
 package nl.tue.c2IOE0.group5.engine.rendering;
 
+import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
+import nl.tue.c2IOE0.group5.engine.rendering.shader.Texture;
+import org.joml.Vector3f;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
@@ -26,7 +29,12 @@ public class Mesh {
 
     private final int vertexCount;
 
-    private Texture texture;
+    private Material material;
+
+    private final Vector3f minBoundingBox;
+    private final Vector3f maxBoundingBox;
+
+    private boolean render;
 
     public Mesh(float[] positions, float[] texCoords, float[] normals, int[] indices) {
         FloatBuffer posBuffer = null;
@@ -87,20 +95,39 @@ public class Mesh {
                 MemoryUtil.memFree(indicesBuffer);
             }
         }
+
+        minBoundingBox = new Vector3f();
+        maxBoundingBox = new Vector3f();
+        for (int i = 0; i < positions.length; i += 3) {
+            float x = positions[i];
+            float y = positions[i+1];
+            float z = positions[i+2];
+
+            minBoundingBox.x = Math.min(minBoundingBox.x, x);
+            minBoundingBox.y = Math.min(minBoundingBox.y, y);
+            minBoundingBox.z = Math.min(minBoundingBox.z, z);
+
+            maxBoundingBox.x = Math.max(maxBoundingBox.x, x);
+            maxBoundingBox.y = Math.max(maxBoundingBox.y, y);
+            maxBoundingBox.z = Math.max(maxBoundingBox.z, z);
+        }
     }
 
     public boolean isTextured() {
-        return this.texture != null;
+        return this.material!= null && this.material.isTextured();
     }
 
     public Texture getTexture() {
-        return this.texture;
+        return this.material.getTexture();
     }
 
-    public void setTexture(Texture texture) {
-        this.texture = texture;
+    public Material getMaterial() {
+        return this.material;
     }
 
+    public void setMaterial(Material material) {
+        this.material = material;
+    }
 
     private int getVaoId() {
         return vaoId;
@@ -111,8 +138,8 @@ public class Mesh {
     }
 
     public void cleanup() {
-        if (texture != null) {
-            texture.cleanup();
+        if (isTextured()) {
+            getMaterial().getTexture().cleanup();
         }
 
         glDisableVertexAttribArray(0);
@@ -130,28 +157,47 @@ public class Mesh {
         glDeleteVertexArrays(vaoId);
     }
 
-    public void draw() {
-        // If we have a texture for our mesh
-        if (texture != null) {
-            // Activate first texture bank
+    /**
+     * Initialize the render of this mesh.
+     */
+    void initRender() {
+        if (isTextured()) {
             glActiveTexture(GL_TEXTURE0);
-            // Bind the texture
-            glBindTexture(GL_TEXTURE_2D, texture.getId());
+            glBindTexture(GL_TEXTURE_2D, getTexture().getId());
         }
-        // Draw the mesh
+
         glBindVertexArray(getVaoId());
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
         glEnableVertexAttribArray(2);
 
-        glDrawElements(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0);
+        render = true;
+    }
 
-        // Restore state
+    /**
+     * Disable fields associated with rendering this mesh.
+     */
+    void endRender() {
+        render = false;
+
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
         glDisableVertexAttribArray(2);
         glBindVertexArray(0);
+
         glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    void draw() {
+        glDrawElements(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0);
+    }
+
+    public Vector3f getMinBoundingBox() {
+        return minBoundingBox;
+    }
+
+    public Vector3f getMaxBoundingBox() {
+        return maxBoundingBox;
     }
 
 }

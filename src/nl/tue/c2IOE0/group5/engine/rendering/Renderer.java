@@ -1,65 +1,110 @@
 package nl.tue.c2IOE0.group5.engine.rendering;
 
 import nl.tue.c2IOE0.group5.engine.objects.Camera;
+import nl.tue.c2IOE0.group5.engine.rendering.shader.DepthMap;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.DirectionalLight;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.PointLight;
+import nl.tue.c2IOE0.group5.util.Resource;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import org.lwjgl.system.MemoryStack;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.FloatBuffer;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Stream;
 
-import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE1;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
+import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
+import static org.lwjgl.opengl.GL30.glBindFramebuffer;
 
 /**
  * @author Jorren Hendriks.
  */
 public class Renderer {
 
-    // FOV in radians
-    private static final float FOV = (float) Math.toRadians(60.0f);
-    // z-coordinates relative to the activeCamera.
-    private static final float Z_NEAR = 0.01f;
-    private static final float Z_FAR = 1000.0f;
+    private ArrayDeque<Runnable> modifiers;
 
-    private final Transformation transformation;
+    private Map<String, Mesh> meshes;
+    private Map<Mesh, List<InstancedMesh>> instancedMeshes;
 
-    private final Map<String, Integer> uniforms;
-
-    private float specularPower = 10f;
-    private Vector3f ambientLight = new Vector3f(0.3f, 0.3f, 0.3f);
-    private DirectionalLight directionalLight = new DirectionalLight(
-            new Vector3f(1f, 1f, 1f),
-            new Vector3f(16.4f, -11.6f, 0f),
-            1f
-    );
-    private PointLight pointLight = new PointLight(
-                    new Vector3f(1f, 1f, 1f),
-                    new Vector3f(0f, 0f, 1f),
-                    10.0f);
-    private PointLight.Attenuation pointLightAtt = new PointLight.Attenuation(0f, 0f, 1f);
-
-    private int programId;
-    private int vertexShaderId;
-    private int fragmentShaderId;
-
+    private Window window;
     private Camera activeCamera;
+    // generic shader
+    private ShaderProgram sceneShader;
+    // shader for shadow maps
+    private ShaderProgram depthShader;
+    // depth map used for shadows for the entire scene
+    private DepthMap depthMap;
+
+    private Transformation transformation;
+
+    // light matrix for shadow map
+    private Matrix4f lightViewMatrix;
+
+    // light matrix for usage shadow map
+    private Matrix4f sceneLightViewMatrix;
+
+    private DirectionalLight directionalLight;
+
+    private Task task;
+    private enum Task {
+        SCENE,
+        DEPTH_MAP
+    }
+
+    private boolean shadowMapping = true;
 
     /**
      * Constructor for initializing datastructures.
      */
     public Renderer() {
-        uniforms = new HashMap<>();
+        modifiers = new ArrayDeque<>();
+        meshes = new HashMap<>();
+        instancedMeshes = new HashMap<>();
         transformation = new Transformation();
+    }
 
-        pointLight.setAttenuation(pointLightAtt);
+    public Mesh linkMesh(String filename) {
+        if (meshes.containsKey(filename)) {
+            return meshes.get(filename);
+        } else {
+            try {
+                Mesh mesh = OBJLoader.loadMesh(filename);
+                meshes.put(filename, mesh);
+                return mesh;
+            } catch (IOException e) {
+                throw new MeshException("Could not load " + filename);
+            }
+        }
+    }
+
+    public InstancedMesh linkMesh(Mesh mesh, Runnable render) {
+        InstancedMesh iMesh = new InstancedMesh(mesh, render);
+        if (instancedMeshes.containsKey(mesh)) {
+            instancedMeshes.get(mesh).add(iMesh);
+        } else {
+            instancedMeshes.put(mesh, new ArrayList<>(Collections.singleton(iMesh)));
+        }
+        return iMesh;
+    }
+
+    public InstancedMesh linkMesh(String filename, Runnable render) {
+        Mesh mesh = linkMesh(filename);
+        return linkMesh(mesh, render);
+    }
+
+    public void unlinkMesh(InstancedMesh iMesh) {
+        if (!instancedMeshes.get(iMesh.getMesh()).remove(iMesh)) {
+            throw new IllegalArgumentException("The given instanced mesh was not linked to its mesh");
+        }
+    }
+
+    public void changeOrtho(float left, float right, float bottom, float top, float near, float far) {
+        DirectionalLight.OrthoCoords c = directionalLight.getOrthoCoords();
+        directionalLight.setOrthoCords(c.left+left, c.right+right, c.bottom+bottom, c.top+top, c.near+near, c.far+far);
     }
 
     /**
@@ -67,37 +112,82 @@ public class Renderer {
      *
      * @throws ShaderException When an error occurred.
      */
-    public void init() throws ShaderException, IOException {
-        programId = glCreateProgram();
-        if (programId == 0) {
-            throw new ShaderException("Could not create Shader");
+    public void init(Window window) throws ShaderException, IOException {
+        try {
+            this.window = window;
+            initSceneShader();
+            initDepthShader();
+            depthMap = new DepthMap();
+            initDepthShader();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(0);
         }
+    }
 
-        createVertexShader(loadResource("/bounceShader.vert"));
-        createFragmentShader(loadResource("/fragment.frag"));
-        link();
+    private void initSceneShader() throws ShaderException, IOException {
+        sceneShader = new ShaderProgram();
+        sceneShader.createVertexShader(Resource.load("/shaders/vertex.vert"));
+        sceneShader.createFragmentShader(Resource.load("/shaders/fragment.frag"));
+        sceneShader.link();
 
         // Create uniforms for world and projection matrices
-        createUniform("projectionMatrix");
-        createUniform("modelViewMatrix");
-        createUniform("texture_sampler");
-
+        sceneShader.createUniform("projectionMatrix");
+        sceneShader.createUniform("modelViewMatrix");
+        sceneShader.createUniform("texture_sampler");
         // Create the Material uniform
-        createMaterialUniform("material");
-
+        sceneShader.createMaterialUniform("material");
         // Create the lighting uniforms
-        createUniform("specularPower");
-        createUniform("ambientLight");
-        createPointLightUniform("pointLight");
+        sceneShader.createUniform("specularPower");
+        sceneShader.createUniform("ambientLight");
+        sceneShader.createPointLightsUniform("pointLights", ShaderProgram.MAX_POINT_LIGHTS);
+        sceneShader.createDirectionalLightUniform("directionalLight");
+        // Create uniforms for the bounce effect
+        sceneShader.createUniform("bounceDegree");
+        sceneShader.createUniform("boundingMax");
+        sceneShader.createUniform("boundingMin");
 
-        // current spread
-        createUniform("bounceDegree");
-        // height of middle of object/bounce
-        createUniform("gravityMiddle");
-        // height from top to bottom (the heightrange that is expanded)
-        createUniform("totalHeight");
+        // Create uniform for rendering the skybox
+        sceneShader.createUniform("isSkybox");
 
-        createDirectionalLightUniform("directionalLight");
+        // Create uniforms for shadow mapping
+        sceneShader.createUniform("depthMap");
+        sceneShader.createUniform("orthoProjectionMatrix");
+        sceneShader.createUniform("modelLightViewMatrix");
+
+
+        // Initialize some fields
+        sceneShader.setAmbientLight(new Vector3f(0.3f, 0.3f, 0.3f));
+        directionalLight = new DirectionalLight(
+                new Vector3f(1f, 1f, 1f),
+                new Vector3f(0.78f, 0.4f, 0.66f),
+                1f
+        );
+        directionalLight.setOrthoCords(-10.0f, 10.0f, -10.0f, 10.0f, -7.0f, 20.0f);
+        sceneShader.setDirectionalLight(directionalLight);
+
+        sceneShader.setUniform("texture_sampler", 0);
+    }
+
+    private void initDepthShader() throws ShaderException, IOException {
+        depthShader = new ShaderProgram();
+        depthShader.createVertexShader(Resource.load("/shaders/vertex_depth.vert"));
+        depthShader.createFragmentShader(Resource.load("/shaders/fragment_depth.frag"));
+        depthShader.link();
+
+        // Create uniforms for the bounce effect
+        depthShader.createUniform("bounceDegree");
+        depthShader.createUniform("boundingMax");
+        depthShader.createUniform("boundingMin");
+
+        depthShader.createUniform("orthoProjectionMatrix");
+        depthShader.createUniform("modelLightViewMatrix");
+    }
+
+    public void cleanup() {
+        meshes.values().forEach(Mesh::cleanup);
+        sceneShader.cleanup();
+        depthShader.cleanup();
     }
 
     /**
@@ -118,82 +208,101 @@ public class Renderer {
         return this.activeCamera;
     }
 
-    /**
-     * Bind the renderer to the current rendering state
-     */
-    public void bind() {
-        glUseProgram(programId);
+    public void setShadowMapping(boolean value) {
+        this.shadowMapping = value;
     }
 
     /**
-     * Unbind the renderer from the current rendering state
-     */
-    public void unbind() {
-        glUseProgram(0);
-    }
-
-    /**
-     * Cleanup the renderer after it's done
-     */
-    public void cleanup() {
-        unbind();
-        if (programId != 0) {
-            glDeleteProgram(programId);
-        }
-    }
-
-    /**
-     * Link the program and cleanup the shaders.
-     *
-     * @throws ShaderException If an error occures linking the shader code.
-     */
-    private void link() throws ShaderException {
-        glLinkProgram(programId);
-        if (glGetProgrami(programId, GL_LINK_STATUS) == 0) {
-            throw new ShaderException("Error linking Shader code: " + glGetProgramInfoLog(programId, 1024));
-        }
-
-        if (vertexShaderId != 0) {
-            glDetachShader(programId, vertexShaderId);
-        }
-        if (fragmentShaderId != 0) {
-            glDetachShader(programId, fragmentShaderId);
-        }
-
-        glValidateProgram(programId);
-        if (glGetProgrami(programId, GL_VALIDATE_STATUS) == 0) {
-            System.err.println("Warning validating Shader code: " + glGetProgramInfoLog(programId, 1024));
-        }
-
-    }
-
-    /**
-     * applies a bounce-effect around the given gravity-middle, stretching totalheight/2 up and down.
-     * this effect stays until {@link #unboink()} has been called
+     * applies a bounce-effect around the given gravity-middle, stretching boundingMin/2 up and down.
+     * this effect applies only to subjects rendered inside the render parameter.
      * @param bounceDegree the strength B of the effect, with B = 0 no effect,
      *                     B > 0 a horizontal expansion and B < 0 a vertical stretch
-     * @param totalHeight the height of the object, measured from the lowest vertex to the highest vertex.
-     * @param gravityMiddle the center of the effect
+     * @param mesh mesh to be boinked
      */
-    public void boink(float bounceDegree, float totalHeight, Vector3f gravityMiddle){
-        setUniform("bounceDegree", bounceDegree);
-        setUniform("totalHeight", totalHeight);
-        setUniform("gravityMiddle", gravityMiddle);
+    public void boink(Mesh mesh, float bounceDegree) {
+        ShaderProgram shader = task == Task.SCENE ? sceneShader : depthShader;
+
+        shader.setUniform("bounceDegree", bounceDegree);
+        shader.setUniform("boundingMin", mesh.getMinBoundingBox());
+        shader.setUniform("boundingMax", mesh.getMaxBoundingBox());
+
+        modifiers.push(() ->
+                shader.setUniform("bounceDegree", 0f));
     }
 
     /**
-     * disables previously activated bounce-effects
-     * @see #boink(float, float, Vector3f)
+     * Sets up the renderer to draw a skybox, e.g. an object that doesn't care but just draws its texture.
+     *
      */
-    public void unboink(){
-        setUniform("bounceDegree", 0f);
+    public void drawSkybox() {
+        if (task == Task.DEPTH_MAP) return;
+        sceneShader.setUniform("isSkybox", 1);
+        modifiers.push(() ->
+                sceneShader.setUniform("isSkybox", 0));
     }
 
     /**
-     * see {@link #setModelViewMatrix(Vector3f, Vector3f, float)}, with {@code float scale = 1f}
+     * Temporarily change the ambient light of an object. This effect applies to the object currently rendered.
+     *
+     * @param color The ambient light color.
      */
-    public void setModelViewMatrix(Vector3f position, Vector3f rotation) {
-        setModelViewMatrix(position, rotation, 1f);
+    public void ambientLight(Vector3f color) {
+        if (task == Task.DEPTH_MAP) return;
+
+        sceneShader.setUniform("ambientLight", color);
+        modifiers.push(() ->
+                sceneShader.setUniform("ambientLight", sceneShader.getAmbientLight()));
+    }
+
+    /**
+     * Disable directional light for the currently rendered object.
+     */
+    public void noDirectionalLight() {
+        if (task == Task.DEPTH_MAP) return;
+
+        DirectionalLight directionalLightOff = new DirectionalLight(
+                new Vector3f(),
+                new Vector3f(),
+                0f
+        );
+        sceneShader.setDirectionalLight(directionalLightOff);
+        modifiers.push(() ->
+                sceneShader.setDirectionalLight(directionalLight));
+    }
+
+    /**
+     * Set the material of currently rendered object.
+     *
+     * @param material The material of the object.
+     */
+    public void setMaterial(Material material) {
+        sceneShader.setUniform("material", material);
+    }
+
+
+    /**
+     * Get the ViewMatrix of the currently active camera.
+     *
+     * @return The ViewMatrix.
+     */
+    public Matrix4f getViewMatrix() {
+        return transformation.getViewMatrix(getActiveCamera());
+    }
+
+    /**
+     * Set the view matricces for the current {@link Renderer#task}. Sets the modelView and modelLightView matrix for
+     * the scene if task is Task.SCENE. Sets the modelLightView for the depthmap if task is Task.DEPTH_MAP.
+     *
+     * @param position The position of the objects that will be rendered next.
+     * @param rotation The rotation of the objects that will be rendered next.
+     * @param scale The scale of the objects that will be rendered next.
+     */
+    public void setMatrix(Vector3f position, Vector3f rotation, Vector3f scale) {
+        if (task == Task.SCENE) {
+            setModelViewMatrix(position, rotation, scale);
+        } else if (task == Task.DEPTH_MAP) {
+            setModelLightViewMatrix(position, rotation, scale);
+        }
     }
 
     /**
@@ -204,272 +313,164 @@ public class Renderer {
      * @param rotation The rotation of the objects that will be rendered next.
      * @param scale The scale of the objects that will be rendered next.
      */
-    public void setModelViewMatrix(Vector3f position, Vector3f rotation, float scale) {
+    private void setModelViewMatrix(Vector3f position, Vector3f rotation, Vector3f scale) {
         Matrix4f transformationMatrix = transformation.getModelViewMatrix(position, rotation, scale, getActiveCamera());
-        setUniform("modelViewMatrix", transformationMatrix);
+        sceneShader.setUniform("modelViewMatrix", transformationMatrix);
+        setModelLightViewMatrixScene(position, rotation, scale);
     }
 
     /**
-     * Set the material of currently rendered object.
+     * Set the modelLightView in case you're drawing the scene.
      *
-     * @param material The material of the object.
+     * @param position The position of the objects that will be rendered next.
+     * @param rotation The rotation of the objects that will be rendered next.
+     * @param scale The scale of the objects that will be rendered next.
      */
-    public void setMaterial(Material material) {
-        setUniform("material", material);
+    private void setModelLightViewMatrixScene(Vector3f position, Vector3f rotation, Vector3f scale) {
+        Matrix4f modelLightViewMatrix = transformation.buildModelViewMatrix(position, rotation, scale, sceneLightViewMatrix);
+        sceneShader.setUniform("modelLightViewMatrix", modelLightViewMatrix);
     }
 
     /**
-     * Update the projection matrix, this has to do with the perspective of the activeCamera.
+     * Set the modelLightView in case you're drawing the depthmap.
      *
-     * @param window The window on which the scene will be rendered.
+     * @param position The position of the objects that will be rendered next.
+     * @param rotation The rotation of the objects that will be rendered next.
+     * @param scale The scale of the objects that will be rendered next.
      */
-    public void updateProjectionMatrix(Window window) {
-        // Update projection Matrix
-        Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
-        setUniform("projectionMatrix", projectionMatrix);
+    private void setModelLightViewMatrix(Vector3f position, Vector3f rotation, Vector3f scale) {
+        Matrix4f modelLightViewMatrix = transformation.buildModelViewMatrix(position, rotation, scale, lightViewMatrix);
+        depthShader.setUniform("modelLightViewMatrix", modelLightViewMatrix);
+    }
 
-        Matrix4f viewMatrix = transformation.getViewMatrix(getActiveCamera());
+    /**
+     * Reset all applied modifiers.
+     */
+    private void resetModifiers() {
+        while (!modifiers.isEmpty()) modifiers.pop().run();
+    }
 
-        // Update Light Uniforms
-        setUniform("ambientLight", ambientLight);
-        setUniform("specularPower", specularPower);
-        // Get a copy of the light object and transform its position to view coordinates
-        PointLight currPointLight = new PointLight(pointLight);
-        Vector3f lightPos = currPointLight.getPosition();
-        Vector4f aux = new Vector4f(lightPos, 1);
-        aux.mul(viewMatrix);
-        lightPos.x = aux.x;
-        lightPos.y = aux.y;
-        lightPos.z = aux.z;
-        setUniform("pointLight", currPointLight);
-        // Get a copy of the directional light object and transform its position to view coordinates
-        DirectionalLight currDirLight = new DirectionalLight(directionalLight);
-        Vector4f dir = new Vector4f(currDirLight.getDirection(), 0);
+    /**
+     * Render the lights in the scene
+     *
+     * @param viewMatrix A viewmatrix on which the point lights need to be drawn.
+     */
+    private void renderLights(Matrix4f viewMatrix) {
+        sceneShader.setUniform("specularPower", sceneShader.getSpecularPower());
+        sceneShader.setUniform("ambientLight", sceneShader.getAmbientLight());
+
+        PointLight[] pointLights = sceneShader.getPointLights();
+        for (int i = 0; i < pointLights.length; i++) {
+            PointLight pointLight = new PointLight(pointLights[i]);
+            Vector4f pos = new Vector4f(pointLight.getPosition(), 1);
+            pos.mul(viewMatrix);
+            pointLight.setPosition(new Vector3f(pos.x, pos.y, pos.z));
+            sceneShader.setUniform("pointLights", pointLight, i);
+        }
+
+        DirectionalLight dirLight = new DirectionalLight(sceneShader.getDirectionalLight());
+        Vector4f dir = new Vector4f(dirLight.getDirection(), 0);
         dir.mul(viewMatrix);
-        currDirLight.setDirection(new Vector3f(dir.x, dir.y, dir.z));
-        setUniform("directionalLight", currDirLight);
-
-        setUniform("texture_sampler", 0);
+        dirLight.setDirection(new Vector3f(dir.x, dir.y, dir.z));
+        sceneShader.setUniform("directionalLight", dirLight);
     }
 
-    public Matrix4f getViewMatrix() {
-        return transformation.getViewMatrix(getActiveCamera());
-    }
 
-    public Matrix4f getProjectionMatrix(Window window) {
-        return transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
+    /**
+     * Render a mesh based on a collection of renderers which set the variables needed to draw the mesh in the
+     * right conditions.
+     *
+     * @param renderers A collection of runnables.
+     */
+    private void renderAll(Mesh mesh, Stream<Runnable> renderers) {
+        mesh.initRender();
+
+        renderers.forEach((render) -> {
+            render.run();
+            mesh.draw();
+            resetModifiers();
+        });
+
+        mesh.endRender();
     }
 
     /**
-     * Create the uniforms required for a PointLight
-     *
-     * @param uniformName The name of the uniform
-     * @throws ShaderException If an error occurs getting the memory location.
+     * Render the main objects of the scene.
      */
-    public void createPointLightUniform(String uniformName) throws ShaderException {
-        createUniform(uniformName + ".colour");
-        createUniform(uniformName + ".position");
-        createUniform(uniformName + ".intensity");
-        createUniform(uniformName + ".att.constant");
-        createUniform(uniformName + ".att.linear");
-        createUniform(uniformName + ".att.exponent");
-    }
+    private void renderScene() {
+        task = Task.SCENE;
 
-    /**
-     * Create the uniforms required for a DirectionalLight
-     *
-     * @param uniformName The name of the uniform
-     * @throws ShaderException If an error occurs getting the memory location.
-     */
-    public void createDirectionalLightUniform(String uniformName) throws ShaderException {
-        createUniform(uniformName + ".colour");
-        createUniform(uniformName + ".direction");
-        createUniform(uniformName + ".intensity");
-    }
+        sceneShader.bind();
 
-    /**
-     * Create the uniforms required for a Material
-     *
-     * @param uniformName The name of the uniform
-     * @throws ShaderException If an error occurs getting the memory location.
-     */
-    public void createMaterialUniform(String uniformName) throws ShaderException {
-        createUniform(uniformName + ".ambient");
-        createUniform(uniformName + ".diffuse");
-        createUniform(uniformName + ".specular");
-        createUniform(uniformName + ".hasTexture");
-        createUniform(uniformName + ".reflectance");
-    }
+        Matrix4f projectionMatrix = window.getProjectionMatrix();
+        sceneShader.setUniform("projectionMatrix", projectionMatrix);
+        Matrix4f orthoProjMatrix = transformation.getOrthoProjectionMatrix();
+        sceneShader.setUniform("orthoProjectionMatrix", orthoProjMatrix);
+        sceneLightViewMatrix = transformation.getLightViewMatrix();
 
-    /**
-     * Create a new uniform and get its memory location.
-     *
-     * @param uniformName The name of the uniform.
-     * @throws ShaderException If an error occurs getting the memory location.
-     */
-    private void createUniform(String uniformName) throws ShaderException {
-        int uniformLocation = glGetUniformLocation(programId, uniformName);
-        if (uniformLocation < 0) {
-            throw new ShaderException("Could not find uniform:" + uniformName);
-        }
-        uniforms.put(uniformName, uniformLocation);
-    }
+        Matrix4f viewMatrix = getViewMatrix();
 
-    /**
-     * Set the value of a certain 4x4 matrix shader uniform.
-     *
-     * @param uniformName The name of the uniform.
-     * @param value The new value of the uniform.
-     */
-    private void setUniform(String uniformName, Matrix4f value) {
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            // Dump the matrix into a float buffer
-            FloatBuffer fb = stack.mallocFloat(16);
-            value.get(fb);
-            glUniformMatrix4fv(uniforms.get(uniformName), false, fb);
-        }
-    }
+        renderLights(viewMatrix);
 
-    /**
-     * Set the value of a certain integer shader uniform
-     *
-     * @param uniformName The name of the uniform.
-     * @param value The new value of the uniform.
-     */
-    private void setUniform(String uniformName, int value) {
-        glUniform1i(uniforms.get(uniformName), value);
-    }
 
-    /**
-     * Set the value of a certain float shader uniform
-     *
-     * @param uniformName The name of the uniform.
-     * @param value The new value of the uniform.
-     */
-    public void setUniform(String uniformName, float value) {
-        glUniform1f(uniforms.get(uniformName), value);
-    }
 
-    /**
-     * Set the value of a certain 3D Vector shader uniform
-     *
-     * @param uniformName The name of the uniform.
-     * @param value The new value of the uniform.
-     */
-    public void setUniform(String uniformName, Vector3f value) {
-        glUniform3f(uniforms.get(uniformName), value.x, value.y, value.z);
-    }
+        if (shadowMapping) {
+            sceneShader.setUniform("depthMap", 1);
 
-    /**
-     * Set the value of a certain 4D Vector shader uniform
-     *
-     * @param uniformName The name of the uniform.
-     * @param value The new value of the uniform.
-     */
-    public void setUniform(String uniformName, Vector4f value) {
-        glUniform4f(uniforms.get(uniformName), value.x, value.y, value.z, value.w);
-    }
-
-    /**
-     * Set the value of a certain PointLight shader uniform
-     *
-     * @param uniformName The name of the uniform.
-     * @param pointLight The new value of the uniform.
-     */
-    public void setUniform(String uniformName, PointLight pointLight) {
-        setUniform(uniformName + ".colour", pointLight.getColor() );
-        setUniform(uniformName + ".position", pointLight.getPosition());
-        setUniform(uniformName + ".intensity", pointLight.getIntensity());
-        PointLight.Attenuation att = pointLight.getAttenuation();
-        setUniform(uniformName + ".att.constant", att.getConstant());
-        setUniform(uniformName + ".att.linear", att.getLinear());
-        setUniform(uniformName + ".att.exponent", att.getExponent());
-    }
-
-    /**
-     * Set the value of a certain DirecionalLight shader uniform
-     *
-     * @param uniformName The name of the uniform.
-     * @param directionalLight The new value of the uniform.
-     */
-    public void setUniform(String uniformName, DirectionalLight directionalLight) {
-        setUniform(uniformName + ".colour", directionalLight.getColor() );
-        setUniform(uniformName + ".direction", directionalLight.getDirection());
-        setUniform(uniformName + ".intensity", directionalLight.getIntensity());
-    }
-
-    /**
-     * Set the value of a certain Material shader uniform
-     *
-     * @param uniformName The name of the uniform.
-     * @param material The new value of the uniform.
-     */
-    public void setUniform(String uniformName, Material material) {
-        setUniform(uniformName + ".ambient", material.getAmbientColour());
-        setUniform(uniformName + ".diffuse", material.getDiffuseColour());
-        setUniform(uniformName + ".specular", material.getSpecularColour());
-        setUniform(uniformName + ".hasTexture", material.isTextured() ? 1 : 0);
-        setUniform(uniformName + ".reflectance", material.getReflectance());
-    }
-
-    /**
-     * Create a new vertexshader and set the vertexshader id field to that of the newly created shader.
-     *
-     * @param shaderCode The shaderCode as a String.
-     * @throws ShaderException If an error occurs during the creation of a shader.
-     */
-    private void createVertexShader(String shaderCode) throws ShaderException {
-        vertexShaderId = createShader(shaderCode, GL_VERTEX_SHADER);
-    }
-
-    /**
-     * Create a new fragmentshader and set the fragmentshader id field to that of the newly created shader.
-     *
-     * @param shaderCode The shaderCode as a String.
-     * @throws ShaderException If an error occurs during the creation of a shader.
-     */
-    private void createFragmentShader(String shaderCode) throws ShaderException {
-        fragmentShaderId = createShader(shaderCode, GL_FRAGMENT_SHADER);
-    }
-
-    /**
-     * Create a new shader and return the id of the newly created shader.
-     *
-     * @param shaderCode The shaderCode as a String.
-     * @param shaderType The type of shader, e.g. GL_VERTEX_SHADER.
-     * @return The id of the newly created shader.
-     * @throws ShaderException If an error occurs during the creation of a shader.
-     */
-    private int createShader(String shaderCode, int shaderType) throws ShaderException {
-        int shaderId = glCreateShader(shaderType);
-        if (shaderId == 0) {
-            throw new ShaderException("Error creating shader. Type: " + shaderType);
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, depthMap.getDepthMapTexture().getId());
+        } else {
+            sceneShader.setUniform("depthMap", 0);
         }
 
-        glShaderSource(shaderId, shaderCode);
-        glCompileShader(shaderId);
+        instancedMeshes.forEach((mesh, consumers) -> {
+            setMaterial(mesh.getMaterial());
 
-        if (glGetShaderi(shaderId, GL_COMPILE_STATUS) == 0) {
-            throw new ShaderException("Error compiling Shader code: " + glGetShaderInfoLog(shaderId, 1024));
-        }
+            renderAll(mesh, consumers.stream().map(InstancedMesh::getRender));
+        });
 
-        glAttachShader(programId, shaderId);
-
-        return shaderId;
+        sceneShader.unbind();
     }
 
-    /**
-     * Load a text file as a String
-     *
-     * @param fileName The name of the file to load.
-     * @return The contents of the file as a String.
-     * @throws IOException If a read error occures.
-     */
-    private String loadResource(String fileName) throws IOException {
-        try (InputStream in = this.getClass().getResourceAsStream(fileName)) {
-            Scanner scanner = new Scanner(in, "UTF-8");
-            return scanner.useDelimiter("\\A").next();
-        }
+    private void renderDepthMap() {
+        task = Task.DEPTH_MAP;
+
+        // Setup view port to match the texture size
+        glBindFramebuffer(GL_FRAMEBUFFER, depthMap.getDepthMapFBO());
+        glViewport(0, 0, depthMap.width, depthMap.height);
+        glClear(GL_DEPTH_BUFFER_BIT);
+
+        depthShader.bind();
+
+        DirectionalLight light = sceneShader.getDirectionalLight();
+        Vector3f lightDirection = light.getDirection();
+
+        float lightAngleX = (float)Math.toDegrees(Math.acos(lightDirection.z));
+        float lightAngleY = (float)Math.toDegrees(Math.asin(lightDirection.x*-1));
+        float lightAngleZ = 0;
+        lightViewMatrix = transformation.updateLightViewMatrix(new Vector3f(lightDirection).mul(light.getShadowStrength()), new Vector3f(lightAngleX, lightAngleY, lightAngleZ));
+
+        DirectionalLight.OrthoCoords orthCoords = light.getOrthoCoords();
+        Matrix4f orthoProjMatrix = transformation.updateOrthoProjectionMatrix(orthCoords.left, orthCoords.right, orthCoords.bottom, orthCoords.top, orthCoords.near, orthCoords.far);
+
+        depthShader.setUniform("orthoProjectionMatrix", orthoProjMatrix);
+
+        instancedMeshes.forEach((mesh, consumers) -> {
+            renderAll(mesh, consumers.stream().map(InstancedMesh::getRender));
+        });
+
+        // Unbind
+        depthShader.unbind();
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
+    public void render() {
+        if (shadowMapping) {
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            renderDepthMap();
+        }
+
+        glViewport(0, 0, window.getWidth(), window.getHeight());
+        renderScene();
+    }
 }

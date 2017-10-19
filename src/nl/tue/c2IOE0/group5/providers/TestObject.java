@@ -3,46 +3,49 @@ package nl.tue.c2IOE0.group5.providers;
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
 import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
-import nl.tue.c2IOE0.group5.engine.rendering.Texture;
-import nl.tue.c2IOE0.group5.engine.rendering.Window;
-import nl.tue.c2IOE0.group5.engine.rendering.OBJLoader;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
-import org.joml.Vector3f;
-
-import java.io.IOException;
 
 /**
  * @author Jorren
  */
 public class TestObject extends GameObject {
 
-    private Mesh mesh;
-
     private float boinkyness;
 
     public TestObject() {
         super();
-
         boinkyness = 0f;
-
-        try {
-            this.mesh = OBJLoader.loadMesh("/tower.obj");
-            this.mesh.setTexture(new Texture("/tower.png"));
-            this.setScale(40f);
-            this.setPosition(0f, -1f, 0f);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.setScale(1f);
     }
 
     @Override
-    public void draw(Window window, Renderer renderer) {
-        super.draw(window, renderer);
-        boinkyness = (boinkyness + 0.01f);
-        renderer.setMaterial(new Material(mesh.getTexture()));
-        renderer.boink((float)Math.sin(boinkyness) +1f, 2f, new Vector3f(0, 1f, 0));
-        mesh.draw();
-        renderer.unboink();
+    public TestObject init(Renderer renderer) {
+        try {
+            Mesh tower = renderer.linkMesh("/tower1.obj");
+            tower.setMaterial(new Material("/tower1.png"));
+            renderer.linkMesh(tower, () -> {
+                setModelView(renderer);
+                renderer.boink(tower, getBounceDegree());
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return this;
     }
 
+    private float getBounceDegree() {
+//        return 0;
+        return (float) Math.sin(boinkyness) +1f;
+    }
+
+    public void boink() {
+        // updateFluent private members here
+        boinkyness = (boinkyness + 0.01f);
+    }
+
+    @Override
+    public void update() {
+        // I'm a lazy motherfucker
+    }
 }

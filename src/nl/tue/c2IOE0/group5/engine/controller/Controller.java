@@ -6,7 +6,7 @@ import nl.tue.c2IOE0.group5.engine.Engine;
  * @author Jorren Hendriks
  *
  * Interface of a Controller. A controller can be initialized inside the {@link #init(Engine)} method. After that, each
- * controller should have an update method to notify it when there is a gameloop update.
+ * controller should have an updateFluent method to notify it when there is a gameloop updateFluent.
  */
 public interface Controller {
 
@@ -19,7 +19,7 @@ public interface Controller {
     void init(Engine engine);
 
     /**
-     * Update the controller. Handle controller-specific timed tasks here. This method will be called every game tick.
+     * Updatable the controller. Handle controller-specific timed tasks here. This method will be called every game tick.
      * Any resources necessary should already be available from {@link #init(Engine)}.
      */
     void update();

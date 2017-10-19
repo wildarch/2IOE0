@@ -4,9 +4,11 @@ import nl.tue.c2IOE0.group5.engine.controller.input.events.Event;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.Listener;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.MouseEvent;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
+import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
+import org.lwjgl.glfw.GLFWScrollCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +25,11 @@ public class InputHandler {
     private Window window;
     private List<Listener> listeners;
 
+    private boolean[] keyBuffer;
+
     public InputHandler() {
         listeners = new ArrayList<>();
+        keyBuffer = new boolean[350];
     }
 
     /**
@@ -38,6 +43,22 @@ public class InputHandler {
         window.registerListener(new KeyEventHandler());
         window.registerListener(new MouseButtonEventHandler());
         window.registerListener(new MouseMoveEventHandler());
+        window.registerListener(new MouseScrollEventHandler());
+    }
+
+    /**
+     * Fire non-native events
+     */
+    public void fire() {
+        for (int key = 0; key < keyBuffer.length; key++) {
+            if (keyBuffer[key]) {
+                Event event = new Event(window, key);
+                listeners.forEach(listener -> listener.onKeyHold(event));
+            }
+        }
+        Vector2i mPos = window.getMousePosition();
+        MouseEvent event = new MouseEvent(window, -1, mPos.x, mPos.y);
+        listeners.forEach(listener -> listener.onMouseHover(event));
     }
 
     /**
@@ -54,14 +75,15 @@ public class InputHandler {
     private class KeyEventHandler extends GLFWKeyCallback {
         @Override
         public void invoke(long windowHandle, int keyCode, int scancode, int action, int mods) {
+            if (keyCode < 0) return;
+
+            Event event = new Event(window, keyCode);
             if (action == GLFW_PRESS) {
-                Event event = new Event(window, keyCode);
+                keyBuffer[keyCode] = true;
                 listeners.forEach(listener -> listener.onKeyPressed(event));
             } else if (action == GLFW_RELEASE) {
-                Event event = new Event(window, keyCode);
+                keyBuffer[keyCode] = false;
                 listeners.forEach(listener -> listener.onKeyReleased(event));
-            } else if (action == GLFW_REPEAT) {
-                // implement if needed
             }
         }
     }
@@ -69,8 +91,8 @@ public class InputHandler {
     private class MouseButtonEventHandler extends GLFWMouseButtonCallback {
         @Override
         public void invoke(long windowHandle, int button, int action, int mods) {
-            Window.MousePos pos = window.getMousePosition();
-            MouseEvent event = new MouseEvent(window, button, pos.getX(), pos.getY());
+            Vector2i pos = window.getMousePosition();
+            MouseEvent event = new MouseEvent(window, button, pos.x(), pos.y());
             if (action == GLFW_PRESS) {
                 listeners.forEach(listener -> listener.onMouseButtonPressed(event));
             } else if (action == GLFW_RELEASE) {
@@ -84,6 +106,14 @@ public class InputHandler {
         public void invoke(long windowHandle, double xPos, double yPos) {
             MouseEvent event = new MouseEvent(window, -1, (int) xPos, (int) yPos);
             listeners.forEach(listener -> listener.onMouseMove(event));
+        }
+    }
+
+    private class MouseScrollEventHandler extends GLFWScrollCallback {
+        @Override
+        public void invoke(long windowHandle, double xScroll, double yScroll) {
+            MouseEvent event = new MouseEvent(window, -1, (int) (xScroll*10), (int) (yScroll*10));
+            listeners.forEach(listener -> listener.onMouseScroll(event));
         }
     }
 }
