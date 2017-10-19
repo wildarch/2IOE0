@@ -91,15 +91,8 @@ public class Engine extends Simulator {
             // update all controllers and providers
             controllers.forEach(Controller::update);
             providers.forEach(Provider::update);
-            // only executes TARGET_TPS times per second, it is often skipped
-            while (tickTimer >= TPS_INTERVAL) {
-                // updateFluent all controllers and providers
-                controllers.forEach(Controller::update);
-                providers.forEach(Provider::update);
-
-                // tick has been processed, remove 1 interval from tick timer
-                tickTimer -= TPS_INTERVAL;
-            }
+            // tick has been processed, remove 1 interval from tick timer
+            tickTimer -= TPS_INTERVAL;
         }
 
         // draw
