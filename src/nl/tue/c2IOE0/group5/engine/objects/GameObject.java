@@ -1,6 +1,5 @@
 package nl.tue.c2IOE0.group5.engine.objects;
 
-import nl.tue.c2IOE0.group5.engine.GameState;
 import nl.tue.c2IOE0.group5.engine.provider.Updatable;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import org.joml.Vector3f;
