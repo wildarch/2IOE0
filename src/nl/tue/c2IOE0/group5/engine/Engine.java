@@ -86,7 +86,6 @@ public class Engine extends Simulator {
         long elapsedTime = timer.getElapsedTime();
 
         while (elapsedTime >= TPS_INTERVAL) {
-            System.out.println(elapsedTime);
             // update all controllers and providers
             controllers.forEach(Controller::update);
             providers.forEach(Provider::update);

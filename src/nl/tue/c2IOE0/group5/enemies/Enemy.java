@@ -22,8 +22,8 @@ public abstract class Enemy extends GameObject {
     protected Timer loopTimer;
     protected Timer renderTimer;
     protected boolean attacking = false;
-    private final float SPEED;
-    private final long ATTACKSPEED;
+    private final float speed;
+    private final long attackSpeed;
 
     public Enemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider,
                  Vector2i initialPosition, List<Vector2i> targetPositions, int maxHealth, float speed, long attackSpeed) {
@@ -34,9 +34,9 @@ public abstract class Enemy extends GameObject {
         this.loopTimer = loopTimer;
         this.renderTimer = renderTimer;
         setPosition(gridProvider.getCell(initialPosition).getPosition().add(0, 2f, 0f));
-        this.SPEED = speed;
-        this.interpolator = new PositionInterpolator(this, SPEED);
-        this.ATTACKSPEED = attackSpeed;
+        this.speed = speed;
+        this.interpolator = new PositionInterpolator(this, this.speed);
+        this.attackSpeed = attackSpeed;
     }
 
     @Override
@@ -71,7 +71,7 @@ public abstract class Enemy extends GameObject {
     private void doDamage(AbstractTower tower) {
         if (timeToDoDamage < loopTimer.getLoopTime()) {
             tower.takeDamage(1);
-            timeToDoDamage = loopTimer.getLoopTime() + ATTACKSPEED;
+            timeToDoDamage = loopTimer.getLoopTime() + attackSpeed;
         }
     }
 
