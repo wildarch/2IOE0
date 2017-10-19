@@ -3,7 +3,6 @@ package nl.tue.c2IOE0.group5.enemies;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
 import nl.tue.c2IOE0.group5.engine.objects.PositionInterpolator;
-import nl.tue.c2IOE0.group5.engine.rendering.*;
 import nl.tue.c2IOE0.group5.providers.Cell;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
@@ -37,6 +36,8 @@ public abstract class Enemy extends GameObject {
         this.interpolator = new PositionInterpolator(this, SPEED);
         this.ATTACKSPEED = attackSpeed;
     }
+
+    public abstract EnemyType getType();
 
     @Override
     public void update() {
