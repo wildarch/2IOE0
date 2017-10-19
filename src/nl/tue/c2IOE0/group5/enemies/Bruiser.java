@@ -41,28 +41,6 @@ public class Bruiser extends Enemy implements Animatable {
         super(loopTimer, gridProvider, initialPosition, targetPositions, maxHealth, SPEED, ATTACKSPEED);
     }
 
-    @Override
-    public Bruiser init(Renderer renderer) {
-        headOffset = new LinearlyUpdatable(headOffset(0), 0.1f);
-        leftArmOffset = new LinearlyUpdatable(armOffset(0), 0.1f);
-        rightArmOffset = new LinearlyUpdatable(-armOffset(0), 0.1f);
-
-        renderer.linkMesh("/bruiser_head.obj", () ->
-                setModelView(renderer, new Vector3f(0f, 1f + headOffset.current(), 1f)));
-
-        renderer.linkMesh("/bruiser_body.obj", () ->
-                setModelView(renderer));
-
-        renderer.linkMesh("/bruiser_lArm.obj", () ->
-                setModelView(renderer, new Vector3f(1f, 0f, leftArmOffset.current())));
-
-        renderer.linkMesh("/bruiser_rArm.obj", () ->
-                setModelView(renderer, new Vector3f(1f, 0f, rightArmOffset.current())));
-
-
-        return this;
-    }
-
     /**
      * returns the offset of the arm on the given timestamp
      * @param loopTime time since the last animation loop
@@ -113,5 +91,25 @@ public class Bruiser extends Enemy implements Animatable {
     protected void onDie() {
         // unnecessary
         currentAnim = DEFAULT;
+    }
+
+    @Override
+    protected void renderInit(Renderer renderer) {
+        headOffset = new LinearlyUpdatable(headOffset(0), 0.1f);
+        leftArmOffset = new LinearlyUpdatable(armOffset(0), 0.1f);
+        rightArmOffset = new LinearlyUpdatable(-armOffset(0), 0.1f);
+
+        renderer.linkMesh("/bruiser_head.obj", () ->
+                setModelView(renderer, new Vector3f(0f, 1f + headOffset.current(), 1f)));
+
+        renderer.linkMesh("/bruiser_body.obj", () ->
+                setModelView(renderer));
+
+        renderer.linkMesh("/bruiser_lArm.obj", () ->
+                setModelView(renderer, new Vector3f(1f, 0f, leftArmOffset.current())));
+
+        renderer.linkMesh("/bruiser_rArm.obj", () ->
+                setModelView(renderer, new Vector3f(1f, 0f, rightArmOffset.current())));
+
     }
 }

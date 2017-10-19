@@ -21,7 +21,8 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
 
     @Override
     public void init(Simulator engine) {
-        loopTimer = engine.getRenderLoopTimer();
+        super.init(engine);
+        loopTimer = engine.getGameloopTimer();
         gridProvider = engine.getProvider(GridProvider.class);
     }
 

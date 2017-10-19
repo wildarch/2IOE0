@@ -27,11 +27,11 @@ public class Engine extends Simulator {
 
     protected List<Controller> controllers;
     private long tickTimer;
-    private Timer renderTimer;
+    private Timer loopTimer;
 
     public Engine() {
         super(sim -> ((Engine) sim).getWindow().shouldClose());
-        renderTimer = new Timer();
+        loopTimer = new Timer();
         window = new Window("Tower Defence", 1600, 900, false, new Window.Options());
         renderer = new Renderer();
         hud = new Hud();
@@ -46,7 +46,7 @@ public class Engine extends Simulator {
      */
     @Override
     protected void init() throws ShaderException, IOException {
-        renderTimer.init();
+        loopTimer.init();
         window.init();
         renderer.init(window);
         renderer.setActiveCamera(camera);
@@ -126,17 +126,6 @@ public class Engine extends Simulator {
                 } catch (InterruptedException ignored) {
                     
                 }
-                // sync up frame rate as desired
-                if (!window.vSyncEnabled()) {
-                    // manually sync up frame rate with the renderTimer if vSync is disabled
-                    long endTime = renderTimer.getPreviousTime() + FPS_INTERVAL;
-                    while (renderTimer.getSystemTime() < endTime) {
-                        try { // use sleep(1) for more accurate intervals
-                            Thread.sleep(1);
-                        } catch (InterruptedException ignored) {
-                        }
-                    }
-                }
             }
         }
     }
@@ -194,7 +183,7 @@ public class Engine extends Simulator {
     }
 
     public Timer getRenderLoopTimer(){
-        return renderTimer;
+        return loopTimer;
     }
 
     public Renderer getRenderer() {

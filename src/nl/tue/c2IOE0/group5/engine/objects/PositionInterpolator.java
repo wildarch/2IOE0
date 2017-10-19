@@ -69,7 +69,7 @@ public class PositionInterpolator {
         if(target == null) return true;
         float step = deltaTime * speed;
         // TODO find out why we need to multiply by 0.5
-        p.move(getDirection().mul(step * 0.5f));
+        p.move(getDirection().mul(step * 0.25f));
         float distance = p.getPosition().distance(target.toImmutable());
         if (distance < EPSILON) {
             target = null;
