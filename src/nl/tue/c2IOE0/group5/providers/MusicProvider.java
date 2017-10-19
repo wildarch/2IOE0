@@ -33,7 +33,8 @@ public class MusicProvider extends Thread implements Provider {
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(file));
             AudioFormat format = audioInputStream.getFormat();
             long frames = audioInputStream.getFrameLength();
-            this.duration = (long)((frames+0.0) / format.getFrameRate());
+            this.duration = (long)((frames+0.0) / format.getFrameRate()); //in seconds
+            System.err.println(duration);
             this.clip = AudioSystem.getClip();
             this.clip.open(audioInputStream);
             this.gainControl =
@@ -54,12 +55,17 @@ public class MusicProvider extends Thread implements Provider {
         }
         if (timeToPlay < loopTimer.getLoopTime()) { //start again after 2 times the duration
             clip.start();
-            timeToPlay = loopTimer.getLoopTime() + duration * 2;
+            timeToPlay = loopTimer.getLoopTime() + duration * 1000 * 2; //1000 to convert to miliseconds
         }
     }
 
     public void stopMusic() {
         clip.stop();
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setBaseVolume(float volume) {
