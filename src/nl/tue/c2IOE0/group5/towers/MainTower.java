@@ -15,18 +15,17 @@ public class MainTower extends AbstractTower {
     private Renderer renderer;
     private InstancedMesh iMesh;
 
-    public MainTower(EnemyProvider enemyProvider, BulletProvider bulletProvider, Timer timer, Renderer renderer) {
-        super(RANGE, MAX_LEVEL, MAX_HEALTH, 500, 0.05f, 1000, enemyProvider, bulletProvider, timer, renderer);
+    public MainTower(EnemyProvider enemyProvider, BulletProvider bulletProvider, Timer timer) {
+        super(RANGE, MAX_LEVEL, MAX_HEALTH, 500, 0.05f, 1000, enemyProvider, bulletProvider, timer);
     }
 
     @Override
-    public MainTower init(Renderer renderer) {
+    public void renderInit(Renderer renderer) {
         setScale(40f);
 
         iMesh = renderer.linkMesh("/tower.obj", () -> setModelView(renderer));
 
         this.renderer = renderer;
-        return this;
     }
 
     @Override

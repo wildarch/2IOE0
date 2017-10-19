@@ -12,7 +12,7 @@ public class PositionInterpolator {
     /**
      * Difference in position so small that nobody cares anymore
      */
-    private static final double EPSILON = 0.001;
+    private static final double EPSILON = 0.01;
 
     private Positionable p;
     private Vector3f position;
@@ -68,7 +68,8 @@ public class PositionInterpolator {
     public boolean draw(float deltaTime) {
         if(target == null) return true;
         float step = deltaTime * speed;
-        p.move(getDirection().mul(step));
+        // TODO find out why we need to multiply by 0.5
+        p.move(getDirection().mul(step * 0.25f));
         float distance = p.getPosition().distance(target.toImmutable());
         if (distance < EPSILON) {
             target = null;

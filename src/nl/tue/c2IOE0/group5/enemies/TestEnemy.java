@@ -26,19 +26,19 @@ public class TestEnemy extends Enemy {
     }
 
     @Override
-    public TestEnemy init(Renderer renderer) {
+    public void renderInit(Renderer renderer) {
         setScale(0.25f);
 
         cube = renderer.linkMesh("/cube.obj", () -> {
             setModelView(renderer);
             renderer.ambientLight(new Vector3f(0f, 0f,1f ));
+            if(!attacking) interpolator.draw(loopTimer.getElapsedTime());
         });
         this.renderer = renderer;
-        return this;
     }
 
     @Override
     protected void onDie() {
-        renderer.unlinkMesh(cube);
+        if(renderer != null) renderer.unlinkMesh(cube);
     }
 }

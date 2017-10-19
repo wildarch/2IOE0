@@ -18,7 +18,7 @@ public class OBJLoader {
         if (cache.containsKey(fileName)) {
             return cache.get(fileName);
         }
-        List<String> lines = Arrays.asList(Resource.load(fileName).split(System.lineSeparator()));
+        List<String> lines = Resource.readAllLines(fileName);
 
         List<Vector3f> vertices = new ArrayList<>();
         List<Vector2f> textures = new ArrayList<>();

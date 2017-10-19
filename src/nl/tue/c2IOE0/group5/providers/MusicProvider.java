@@ -13,7 +13,7 @@ import java.io.File;
  * @author Tom Peters
  */
 
-public class MusicProvider extends Thread implements Provider {
+public class MusicProvider extends Thread implements Provider<Engine> {
 
     private Engine engine;
     private Clip clip;
@@ -23,7 +23,7 @@ public class MusicProvider extends Thread implements Provider {
     private long timeToPlay;
     private final float maxVolume = 6f;
     private float baseVolume = 5f;
-    private float playVolume = -10f;
+    private final float minVolume = -20f;
 
     @Override
     public void init(Engine engine) {
@@ -77,7 +77,7 @@ public class MusicProvider extends Thread implements Provider {
     }
 
     public void setBaseVolume(float percentage) {
-        this.baseVolume = percentage * (maxVolume - playVolume) + playVolume;
+        this.baseVolume = percentage * (maxVolume - minVolume) + minVolume;
         fadeVolumeTo(baseVolume, true);
     }
 
@@ -148,7 +148,6 @@ public class MusicProvider extends Thread implements Provider {
         }
         cancelled = false;
         fading = false;
-        System.err.println("fading ended, currVol: " + currentVolume);
     }
 
     @Override

@@ -18,9 +18,9 @@ public abstract class Enemy extends GameObject {
     private final int maxHealth;
     private int health;
     private List<Vector2i> targetPositions;
-    private PositionInterpolator interpolator;
-    private Timer loopTimer;
-    private boolean attacking = false;
+    protected PositionInterpolator interpolator;
+    protected Timer loopTimer;
+    protected boolean attacking = false;
     private final float SPEED;
     private final long ATTACKSPEED;
 
@@ -47,12 +47,15 @@ public abstract class Enemy extends GameObject {
         boolean targetReached = interpolator.update(loopTimer.getLoopTime());
         if(targetReached) {
             targetPositions.remove(0);
-            if(targetPositions.isEmpty()) return;
+            if(targetPositions.isEmpty()) {
+                System.out.println("Target reached!");
+                return;
+            }
         }
         Cell targetCell = gridProvider.getCell(targetPositions.get(0));
         AbstractTower tower = targetCell.getTower();
         Vector3f targetPosition = targetCell.getPosition().add(0, 0.5f, 0);
-        if (targetReached || (attacking && tower == null)) {
+        if (tower == null || (targetReached && attacking)) {
             // Road is clear, move ahead
             attacking = false;
             interpolator.setTarget(targetPosition, loopTimer.getLoopTime());

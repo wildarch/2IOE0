@@ -66,7 +66,7 @@ public class Bullet extends GameObject {
     }
 
     @Override
-    public Bullet init(Renderer renderer) {
+    public void renderInit(Renderer renderer) {
         setScale(0.05f);
         Mesh bullet = renderer.linkMesh("/b4.obj");
         bullet.setMaterial(new Material("/square.png"));
@@ -75,6 +75,5 @@ public class Bullet extends GameObject {
             renderer.ambientLight(color);
             renderer.noDirectionalLight();
         });
-        return this;
     }
 }
