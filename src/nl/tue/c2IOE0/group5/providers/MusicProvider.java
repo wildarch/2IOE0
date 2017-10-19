@@ -23,7 +23,7 @@ public class MusicProvider extends Thread implements Provider {
     private long timeToPlay;
     private final float maxVolume = 6f;
     private float baseVolume = 5f;
-    private float playVolume = -10f;
+    private final float minVolume = -20f;
 
     @Override
     public void init(Engine engine) {
@@ -75,7 +75,7 @@ public class MusicProvider extends Thread implements Provider {
     }
 
     public void setBaseVolume(float percentage) {
-        this.baseVolume = percentage * (maxVolume - playVolume) + playVolume;
+        this.baseVolume = percentage * (maxVolume - minVolume) + minVolume;
         fadeVolumeTo(baseVolume, true);
     }
 
