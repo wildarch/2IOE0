@@ -9,6 +9,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.Hud;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.ShaderException;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
+import nl.tue.c2IOE0.group5.providers.MusicProvider;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -65,6 +66,11 @@ public class Engine extends Simulator {
         window.cleanup();
         renderer.cleanup();
         hud.cleanup();
+        try {
+            getProvider(MusicProvider.class).cleanup();
+        } catch (IllegalArgumentException e) {
+            // Don't need to clean what you don't use
+        }
     }
 
 
@@ -124,7 +130,7 @@ public class Engine extends Simulator {
                 try { // use sleep(1) for more accurate intervals
                     Thread.sleep(1);
                 } catch (InterruptedException ignored) {
-                    
+
                 }
             }
         }
