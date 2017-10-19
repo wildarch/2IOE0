@@ -27,12 +27,11 @@ public class Engine extends Simulator {
     private Camera camera;
 
     protected List<Controller> controllers;
-    private long tickTimer;
-    private Timer loopTimer;
+    private Timer renderTimer;
 
     public Engine() {
         super(sim -> ((Engine) sim).getWindow().shouldClose());
-        loopTimer = new Timer();
+        renderTimer = new Timer();
         window = new Window("Tower Defence", 1600, 900, false, new Window.Options());
         renderer = new Renderer();
         hud = new Hud();
@@ -47,7 +46,7 @@ public class Engine extends Simulator {
      */
     @Override
     protected void init() throws ShaderException, IOException {
-        loopTimer.init();
+        renderTimer.init();
         window.init();
         renderer.init(window);
         renderer.setActiveCamera(camera);
@@ -85,18 +84,19 @@ public class Engine extends Simulator {
     protected void step() {
         timer.updateLoopTime();
         long elapsedTime = timer.getElapsedTime();
-        tickTimer += elapsedTime;
 
-        while (tickTimer >= TPS_INTERVAL) {
+        while (elapsedTime >= TPS_INTERVAL) {
+            System.out.println(elapsedTime);
             // update all controllers and providers
             controllers.forEach(Controller::update);
             providers.forEach(Provider::update);
             // tick has been processed, remove 1 interval from tick timer
-            tickTimer -= TPS_INTERVAL;
+            elapsedTime -= TPS_INTERVAL;
         }
 
         // draw
         if (window.update()) {
+            renderTimer.updateLoopTime();
             // fire non-native events
             inputHandler.fire();
 
@@ -182,7 +182,7 @@ public class Engine extends Simulator {
     }
 
     public Timer getRenderLoopTimer(){
-        return loopTimer;
+        return renderTimer;
     }
 
     public Renderer getRenderer() {

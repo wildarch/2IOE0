@@ -20,17 +20,19 @@ public abstract class Enemy extends GameObject {
     private List<Vector2i> targetPositions;
     protected PositionInterpolator interpolator;
     protected Timer loopTimer;
+    protected Timer renderTimer;
     protected boolean attacking = false;
     private final float SPEED;
     private final long ATTACKSPEED;
 
-    public Enemy(Timer loopTimer, GridProvider gridProvider,
+    public Enemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider,
                  Vector2i initialPosition, List<Vector2i> targetPositions, int maxHealth, float speed, long attackSpeed) {
         this.gridProvider = gridProvider;
         this.maxHealth = maxHealth;
         this.health = maxHealth;
         this.targetPositions = new ArrayList<>(targetPositions);
         this.loopTimer = loopTimer;
+        this.renderTimer = renderTimer;
         setPosition(gridProvider.getCell(initialPosition).getPosition().add(0, 2f, 0f));
         this.SPEED = speed;
         this.interpolator = new PositionInterpolator(this, SPEED);

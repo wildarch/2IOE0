@@ -36,9 +36,9 @@ public class Bruiser extends Enemy implements Animatable {
     private SmoothUpdatable leftArmOffset;
     private SmoothUpdatable rightArmOffset;
 
-    public Bruiser(Timer loopTimer, GridProvider gridProvider,
+    public Bruiser(Timer loopTimer, Timer renderTimer, GridProvider gridProvider,
                      Vector2i initialPosition, List<Vector2i> targetPositions, int maxHealth) {
-        super(loopTimer, gridProvider, initialPosition, targetPositions, maxHealth, SPEED, ATTACKSPEED);
+        super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, maxHealth, SPEED, ATTACKSPEED);
     }
 
     /**
