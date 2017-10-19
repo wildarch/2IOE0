@@ -18,6 +18,7 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
 
     private Timer loopTimer;
     private GridProvider gridProvider;
+    private Timer renderTimer;
 
     @Override
     public void init(Simulator engine) {
@@ -30,6 +31,7 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
     public void renderInit(Engine engine) {
         Mesh m = engine.getRenderer().linkMesh("/cube.obj");
         m.setMaterial(new Material("/square.png"));
+        renderTimer = engine.getRenderLoopTimer();
     }
 
     public List<Enemy> getEnemies() {
@@ -43,6 +45,7 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
     public void putEnemy(Vector2i initialPosition, List<Vector2i> targets) {
         objects.add(new TestEnemy(
                 loopTimer,
+                renderTimer,
                 gridProvider,
                 initialPosition,
                 targets, 20

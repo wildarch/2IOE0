@@ -25,14 +25,13 @@ public class Simulator {
     protected List<Provider> providers;
 
     protected Timer timer;
-    private Predicate<Simulator> stopCondition;
     private long time;
+    private Predicate<Simulator> stopCondition;
 
     public Simulator(Predicate<Simulator> stopCondition) {
         this.stopCondition = stopCondition;
         timer = new Timer();
         providers = new ArrayList<>();
-        time = System.currentTimeMillis();
     }
 
     /**
@@ -52,7 +51,6 @@ public class Simulator {
      * The game loop
      */
     private void loop() {
-        timer.updateLoopTime(time);
         while(running && !stopCondition.test(this)) {
             step();
         }
@@ -69,6 +67,7 @@ public class Simulator {
      */
     protected void init() throws IOException {
         timer.init();
+        time = timer.getLoopTime();
         providers.forEach(provider -> provider.init(this));
     }
 

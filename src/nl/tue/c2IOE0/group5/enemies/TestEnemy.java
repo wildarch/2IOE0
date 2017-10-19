@@ -20,9 +20,9 @@ public class TestEnemy extends Enemy {
     private InstancedMesh cube;
 
 
-    public TestEnemy(Timer loopTimer, GridProvider gridProvider,
+    public TestEnemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider,
                      Vector2i initialPosition, List<Vector2i> targetPositions, int maxHealth) {
-        super(loopTimer, gridProvider, initialPosition, targetPositions, maxHealth, SPEED, ATTACKSPEED);
+        super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, maxHealth, SPEED, ATTACKSPEED);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class TestEnemy extends Enemy {
         cube = renderer.linkMesh("/cube.obj", () -> {
             setModelView(renderer);
             renderer.ambientLight(new Vector3f(0f, 0f,1f ));
-            if(!attacking) interpolator.draw(loopTimer.getElapsedTime());
+            if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
         });
         this.renderer = renderer;
     }
