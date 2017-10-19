@@ -202,7 +202,6 @@ public class PlayerController implements Controller,Listener {
             } else {
                 if (uiProvider.onClick(event)) {
                     System.out.println("Click at (" + event.getX() + ", " + event.getY() + ")");
-                    //this.gridProvider.click();
                 }
             }
         }

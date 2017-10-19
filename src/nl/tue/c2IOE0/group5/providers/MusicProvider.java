@@ -34,7 +34,6 @@ public class MusicProvider extends Thread implements Provider {
             AudioFormat format = audioInputStream.getFormat();
             long frames = audioInputStream.getFrameLength();
             this.duration = (long)((frames+0.0) / format.getFrameRate()); //in seconds
-            System.err.println(duration);
             this.clip = AudioSystem.getClip();
             this.clip.open(audioInputStream);
             this.gainControl =
@@ -73,6 +72,7 @@ public class MusicProvider extends Thread implements Provider {
         fadeVolumeTo(baseVolume, true);
     }
 
+    //thread parameters
     private float targetVolume;
     private float currentVolume;
     private boolean fading = false;
