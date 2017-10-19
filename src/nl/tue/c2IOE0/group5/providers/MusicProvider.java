@@ -21,8 +21,9 @@ public class MusicProvider extends Thread implements Provider {
     private long duration;
     private Timer loopTimer;
     private long timeToPlay;
+    private final float maxVolume = 6f;
     private float baseVolume = 5f;
-    private float playVolume = 0f;
+    private float playVolume = -10f;
 
     @Override
     public void init(Engine engine) {
@@ -47,11 +48,6 @@ public class MusicProvider extends Thread implements Provider {
 
     @Override
     public void update() {
-        if (engine.isPaused()) {
-            fadeVolumeTo(baseVolume, false);
-        } else {
-            fadeVolumeTo(playVolume, false);
-        }
         if (timeToPlay < loopTimer.getLoopTime()) { //start again after 2 times the duration
             clip.start();
             timeToPlay = loopTimer.getLoopTime() + duration * 1000 * 2; //1000 to convert to miliseconds
@@ -78,8 +74,8 @@ public class MusicProvider extends Thread implements Provider {
         }
     }
 
-    public void setBaseVolume(float volume) {
-        this.baseVolume = volume;
+    public void setBaseVolume(float percentage) {
+        this.baseVolume = percentage * (maxVolume - playVolume) + playVolume;
         fadeVolumeTo(baseVolume, true);
     }
 
@@ -117,11 +113,11 @@ public class MusicProvider extends Thread implements Provider {
     @Override
     public void run() {
         fading = true;
-
         if (currentVolume > targetVolume) {
             while (currentVolume > targetVolume) {
                 if (cancelled) {
                     cancelled = false;
+                    fading = false;
                     return;
                 }
                 currentVolume -= fadeStep;
@@ -136,6 +132,7 @@ public class MusicProvider extends Thread implements Provider {
             while (currentVolume < targetVolume) {
                 if (cancelled) {
                     cancelled = false;
+                    fading = false;
                     return;
                 }
                 currentVolume += fadeStep;
@@ -149,6 +146,7 @@ public class MusicProvider extends Thread implements Provider {
         }
         cancelled = false;
         fading = false;
+        System.err.println("fading ended, currVol: " + currentVolume);
     }
 
     @Override
