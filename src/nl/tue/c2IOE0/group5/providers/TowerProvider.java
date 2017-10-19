@@ -26,7 +26,7 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
         enemyProvider = engine.getProvider(EnemyProvider.class);
         bulletProvider = engine.getProvider(BulletProvider.class);
         loopTimer = engine.getGameloopTimer();
-        putMainTower();
+        //putMainTower();
     }
 
     @Override

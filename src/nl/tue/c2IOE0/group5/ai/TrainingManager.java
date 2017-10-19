@@ -1,10 +1,10 @@
 package nl.tue.c2IOE0.group5.AI;
 
+import nl.tue.c2IOE0.group5.AI.Data.DataSimulator;
 import nl.tue.c2IOE0.group5.AI.Data.InputGenerator;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
-import org.nd4j.linalg.factory.Nd4j;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,14 +20,18 @@ public class TrainingManager extends JFrame{
     DataSet data = null;
     DataSetIterator iterator = null;
     boolean trainerActive = false;
+    INDArray inputs = null;
+    DataSimulator simulator = null;
 
     Random random = new Random();
 
     JPanel btnPanel = new JPanel();
     JPanel statusPanel = new JPanel();
     JTabbedPane optionsPanel = new JTabbedPane();
+
     JPanel modelOptionsPanel = new JPanel();
     JPanel dataOptionsPanel = new JPanel();
+
 
     JButton loadNetworkBtn = new JButton("Load NN");
     JButton saveNetworkBtn = new JButton("Save NN");
@@ -39,16 +43,19 @@ public class TrainingManager extends JFrame{
     JButton saveDataBtn = new JButton("Save Data");
     JButton resetBtn = new JButton("Reset");
     JButton batchBtn = new JButton("Create Batches");
+    JButton simulateBtn = new JButton("Simulate Output");
 
-    SpinnerModel intModel1 = new SpinnerNumberModel(5, 0, 1000000, 1);
-    SpinnerModel intModel2 = new SpinnerNumberModel(5, 0, 1000000, 1);
+    SpinnerModel intModel1 = new SpinnerNumberModel(50000, 0, 1000000, 1);
+    SpinnerModel intModel2 = new SpinnerNumberModel(9, 0, 1000000, 1);
     SpinnerModel intModel3 = new SpinnerNumberModel(5, 0, 1000000, 1);
     SpinnerModel intModel4 = new SpinnerNumberModel(5, 0, 1000000, 1);
     SpinnerModel intModel5 = new SpinnerNumberModel(5, 0, 1000000, 1);
     SpinnerModel intModel6 = new SpinnerNumberModel(5, 0, 1000000, 1);
-    SpinnerModel intModel7 = new SpinnerNumberModel(5, 0, 1000000, 1);
+    SpinnerModel intModel7 = new SpinnerNumberModel(50, 0, 1000000, 1);
     SpinnerModel intModel8 = new SpinnerNumberModel(5, 0, 1000000, 1);
     SpinnerModel intModel9 = new SpinnerNumberModel(5, 0, 1000000, 1);
+    SpinnerModel intModel10 = new SpinnerNumberModel(4, 1, 500, 1);
+    SpinnerModel intModel11 = new SpinnerNumberModel(5, 0, 50000, 1);
 
     JLabel labelDataSetSize = new JLabel("input size: ");
     JLabel labelGridSize = new JLabel("grid size: ");
@@ -59,6 +66,8 @@ public class TrainingManager extends JFrame{
     JLabel labelBatchSize = new JLabel("batch size: ");
     JLabel labelIterations = new JLabel("iterations: ");
     JLabel labelEpochs = new JLabel("epochs: ");
+    JLabel labelNumThreads = new JLabel("num threads: ");
+    JLabel labelBufferSize = new JLabel("buffer size: ");
 
     //DATASET INPUTS
     //numin
@@ -76,9 +85,13 @@ public class TrainingManager extends JFrame{
     //batchsize
     JSpinner inputBatchSize = new JSpinner(intModel7);
 
+    JSpinner inputBufferSize = new JSpinner(intModel11);
+
     //MODEL INPUTS
     JSpinner inputNumIterations = new JSpinner(intModel8);
     JSpinner inputNumEpochs = new JSpinner(intModel9);
+
+    JSpinner inputNumThreads = new JSpinner(intModel10);
 
     JFileChooser modelSelector = new JFileChooser();
     JFileChooser dataSelector = new JFileChooser();
@@ -101,6 +114,7 @@ public class TrainingManager extends JFrame{
             if(modelSelector.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
                 status("Loading model from: " + modelSelector.getSelectedFile().toString());
                 new Thread(() -> {
+                    lockButtons();
                     try {
                         trainer = TacticalTrainer.FromFile(modelSelector.getSelectedFile());
 
@@ -117,6 +131,7 @@ public class TrainingManager extends JFrame{
             if(modelSelector.showSaveDialog(this) == JFileChooser.APPROVE_OPTION){
                 status("Saving model to: " + modelSelector.getSelectedFile().toString());
                 new Thread(() -> {
+                    lockButtons();
                     try {
                         trainer.saveNetwork(modelSelector.getSelectedFile());
                     } catch (IOException e) {
@@ -136,6 +151,7 @@ public class TrainingManager extends JFrame{
             int nrDeployTypes = (int)inputNumDeployTypes.getValue();
 
             new Thread(() -> {
+                lockButtons();
                 status("Generating model...");
                 trainer = TacticalTrainer.FromGeneratedModel(gridSize, nrTowers, nrDeployTypes, nrIterations);
                 setEnabled();
@@ -147,6 +163,7 @@ public class TrainingManager extends JFrame{
             if(dataSelector.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
                 status("Loading data from: " + dataSelector.getSelectedFile().toString());
                 new Thread(() -> {
+                    lockButtons();
                     try {
                         data = InputGenerator.fromFile(dataSelector.getSelectedFile());
                     } catch (IOException e) {
@@ -162,6 +179,7 @@ public class TrainingManager extends JFrame{
             if(dataSelector.showSaveDialog(this) == JFileChooser.APPROVE_OPTION){
                 status("Saving dataset to: " + dataSelector.getSelectedFile().toString());
                 new Thread(() -> {
+                    lockButtons();
                     try {
                         InputGenerator.export(dataSelector.getSelectedFile(), data);
                     } catch (IOException e) {
@@ -182,50 +200,55 @@ public class TrainingManager extends JFrame{
             int qtruststeps = (int)inputQTrustSteps.getValue();
 
             new Thread(() -> {
+                lockButtons();
                 status("generating input data...");
-                data = InputGenerator.getTrainingData(numInputs, gridSize, nrTowers, nrTowerLevels, nrDeployTypes, qtruststeps, input -> {
-                    INDArray output = Nd4j.zeros(numInputs, 1);
-
-                    for (int i = 0; i < numInputs; i++){
-                        double res = 0;
-                        for (int j = gridSize * gridSize * nrTowers; j < gridSize * gridSize * nrTowers + nrDeployTypes; j++){
-                            if (input.getDouble(i, j) > 1.0 / nrDeployTypes){
-                                res += 1.0 / nrDeployTypes;
-                            }
-                        }
-
-                        output.putScalar(i, 0, res * input.getDouble(i, gridSize * gridSize * nrTowers + nrDeployTypes));
-                        //output.putScalar(i, 0, 0);
-
-                        status("generating input data... " + Math.round(i * 100.0 / (double)numInputs) + "%");
-                    }
-
-                    return output;
-                });
+                inputs = InputGenerator.getInputs(numInputs, gridSize, nrTowers, nrTowerLevels, nrDeployTypes, qtruststeps);
                 setEnabled();
                 status("done generating input data!");
             }).start();
         });
 
-        resetBtn.addActionListener(a -> {
-            trainerActive = false;
-            trainer = null;
-            data = null;
-            iterator = null;
-            setEnabled();
-            status("State reset");
+        simulateBtn.addActionListener(a -> {
+            int numThreads = (int) inputNumThreads.getValue();
+            int gridSize = (int)inputGridSize.getValue();
+            int nrTowers = (int)inputNumTowers.getValue();
+            int nrDeployTypes = (int)inputNumDeployTypes.getValue();
+            int bufferSize = (int)inputBufferSize.getValue();
+
+            new Thread(() -> {
+                lockButtons();
+                status("Creating simulator");
+                simulator = new DataSimulator(numThreads, inputs, gridSize, nrTowers, nrDeployTypes, bufferSize);
+                simulator.initialize();
+                status("Done creating simulator");
+                status("Starting simulation..");
+                simulator.run();
+                status("Simulation started, waiting for completion...");
+                simulator.waitTillDone();
+                status("Simulation completed, creating dataset...");
+                data = new DataSet(inputs, simulator.getOutputs());
+                status("Done.");
+                setEnabled();
+            }).start();
         });
+
+        resetBtn.addActionListener(a -> resetState());
 
         batchBtn.addActionListener(a -> {
             int bSize = (int) inputBatchSize.getValue();
-            status("Creating batches with size " + bSize);
-            iterator = InputGenerator.getTrainingData(data, bSize, random);
-            status("Done");
+            new Thread(() -> {
+                lockButtons();
+                status("Creating batches with size " + bSize);
+                iterator = InputGenerator.getTrainingData(data, bSize, random);
+                status("Done");
+                setEnabled();
+            }).start();
         });
 
         trainBtn.addActionListener(a -> {
             trainerActive = true;
             new Thread(() -> {
+                //lockButtons();
                 status("Starting trainer...");
                 int c = 1;
                 int numEpochs = (int) inputNumEpochs.getValue();
@@ -242,8 +265,8 @@ public class TrainingManager extends JFrame{
                     c++;
                 }
                 status("Trainer aborted");
+                setEnabled();
             }).start();
-            setEnabled();
         });
 
         stopTrainBtn.addActionListener(a -> {
@@ -266,6 +289,8 @@ public class TrainingManager extends JFrame{
         dataOptionsPanel.add(inputNumDeployTypes);
         dataOptionsPanel.add(inputQTrustSteps);
         dataOptionsPanel.add(inputBatchSize);
+        dataOptionsPanel.add(inputNumThreads);
+        dataOptionsPanel.add(inputBufferSize);
 
         dataOptionsPanel.add(labelDataSetSize);
         dataOptionsPanel.add(labelGridSize);
@@ -274,6 +299,8 @@ public class TrainingManager extends JFrame{
         dataOptionsPanel.add(labelDeployTypes);
         dataOptionsPanel.add(labelQtrustSteps);
         dataOptionsPanel.add(labelBatchSize);
+        dataOptionsPanel.add(labelNumThreads);
+        dataOptionsPanel.add(labelBufferSize);
 
         dataLayout.putConstraint(SpringLayout.WEST, labelDataSetSize, 5, SpringLayout.WEST, dataOptionsPanel);
         dataLayout.putConstraint(SpringLayout.WEST, labelGridSize, 5, SpringLayout.WEST, dataOptionsPanel);
@@ -282,6 +309,8 @@ public class TrainingManager extends JFrame{
         dataLayout.putConstraint(SpringLayout.WEST, labelDeployTypes, 5, SpringLayout.WEST, dataOptionsPanel);
         dataLayout.putConstraint(SpringLayout.WEST, labelQtrustSteps, 5, SpringLayout.WEST, dataOptionsPanel);
         dataLayout.putConstraint(SpringLayout.WEST, labelBatchSize, 5, SpringLayout.WEST, dataOptionsPanel);
+        dataLayout.putConstraint(SpringLayout.WEST, labelNumThreads, 5, SpringLayout.WEST, dataOptionsPanel);
+        dataLayout.putConstraint(SpringLayout.WEST, labelBufferSize, 5, SpringLayout.WEST, dataOptionsPanel);
 
         dataLayout.putConstraint(SpringLayout.NORTH, labelDataSetSize, 5, SpringLayout.NORTH, dataOptionsPanel);
         dataLayout.putConstraint(SpringLayout.NORTH, labelGridSize, 5, SpringLayout.SOUTH, labelDataSetSize);
@@ -290,6 +319,8 @@ public class TrainingManager extends JFrame{
         dataLayout.putConstraint(SpringLayout.NORTH, labelDeployTypes, 5, SpringLayout.SOUTH, labelNumTowerLevels);
         dataLayout.putConstraint(SpringLayout.NORTH, labelQtrustSteps, 5, SpringLayout.SOUTH, labelDeployTypes);
         dataLayout.putConstraint(SpringLayout.NORTH, labelBatchSize, 5, SpringLayout.SOUTH, labelQtrustSteps);
+        dataLayout.putConstraint(SpringLayout.NORTH, labelNumThreads, 5, SpringLayout.SOUTH, labelBatchSize);
+        dataLayout.putConstraint(SpringLayout.NORTH, labelBufferSize, 5, SpringLayout.SOUTH, labelNumThreads);
 
         dataLayout.putConstraint(SpringLayout.WEST, inputDataSetSize, 5, SpringLayout.EAST, labelDataSetSize);
         dataLayout.putConstraint(SpringLayout.WEST, inputGridSize, 5, SpringLayout.EAST, labelGridSize);
@@ -298,6 +329,8 @@ public class TrainingManager extends JFrame{
         dataLayout.putConstraint(SpringLayout.WEST, inputNumDeployTypes, 5, SpringLayout.EAST, labelDeployTypes);
         dataLayout.putConstraint(SpringLayout.WEST, inputQTrustSteps, 5, SpringLayout.EAST, labelQtrustSteps);
         dataLayout.putConstraint(SpringLayout.WEST, inputBatchSize, 5, SpringLayout.EAST, labelBatchSize);
+        dataLayout.putConstraint(SpringLayout.WEST, inputNumThreads, 5, SpringLayout.EAST, labelNumThreads);
+        dataLayout.putConstraint(SpringLayout.WEST, inputBufferSize, 5, SpringLayout.EAST, labelBufferSize);
 
         dataLayout.putConstraint(SpringLayout.NORTH, inputDataSetSize, 0, SpringLayout.NORTH, labelDataSetSize);
         dataLayout.putConstraint(SpringLayout.NORTH, inputGridSize, 0, SpringLayout.NORTH, labelGridSize);
@@ -306,6 +339,8 @@ public class TrainingManager extends JFrame{
         dataLayout.putConstraint(SpringLayout.NORTH, inputNumDeployTypes, 0, SpringLayout.NORTH, labelDeployTypes);
         dataLayout.putConstraint(SpringLayout.NORTH, inputQTrustSteps, 0, SpringLayout.NORTH, labelQtrustSteps);
         dataLayout.putConstraint(SpringLayout.NORTH, inputBatchSize, 0, SpringLayout.NORTH, labelBatchSize);
+        dataLayout.putConstraint(SpringLayout.NORTH, inputNumThreads, 0, SpringLayout.NORTH, labelNumThreads);
+        dataLayout.putConstraint(SpringLayout.NORTH, inputBufferSize, 0, SpringLayout.NORTH, labelBufferSize);
 
         modelOptionsPanel.add(inputNumIterations);
         modelOptionsPanel.add(inputNumEpochs);
@@ -336,6 +371,7 @@ public class TrainingManager extends JFrame{
         btnPanel.add(saveDataBtn);
         btnPanel.add(generateDataBtn);
         btnPanel.add(batchBtn);
+        btnPanel.add(simulateBtn);
 
         btnPanel.add(resetBtn);
 
@@ -356,13 +392,49 @@ public class TrainingManager extends JFrame{
     }
 
     void setEnabled(){
-        saveDataBtn.setEnabled(data != null);
-        saveNetworkBtn.setEnabled(trainer != null);
-        trainBtn.setEnabled((data != null || iterator != null) && trainer != null && !trainerActive);
-        stopTrainBtn.setEnabled(trainerActive);
-        batchBtn.setEnabled(data != null);
+        SwingUtilities.invokeLater(() -> {
+            saveDataBtn.setEnabled(data != null);
+            saveNetworkBtn.setEnabled(trainer != null);
+            trainBtn.setEnabled((data != null || iterator != null) && trainer != null && !trainerActive);
+            stopTrainBtn.setEnabled(trainerActive);
+            batchBtn.setEnabled(data != null);
+            simulateBtn.setEnabled(inputs != null);
+
+            loadNetworkBtn.setEnabled(true);
+            generateNetworkBtn.setEnabled(true);
+            loadDataBtn.setEnabled(true);
+            generateDataBtn.setEnabled(true);
+            resetBtn.setEnabled(true);
+        });
     }
 
+    void lockButtons(){
+        SwingUtilities.invokeLater(() -> {
+            saveDataBtn.setEnabled(false);
+            saveNetworkBtn.setEnabled(false);
+            trainBtn.setEnabled(false);
+            stopTrainBtn.setEnabled(false);
+            batchBtn.setEnabled(false);
+            simulateBtn.setEnabled(false);
+            loadNetworkBtn.setEnabled(false);
+            generateNetworkBtn.setEnabled(false);
+            loadDataBtn.setEnabled(false);
+            generateDataBtn.setEnabled(false);
+            resetBtn.setEnabled(false);
+        });
+    }
+
+
+    public void resetState(){
+        trainerActive = false;
+        trainer = null;
+        data = null;
+        iterator = null;
+        inputs = null;
+        simulator = null;
+        setEnabled();
+        status("State reset");
+    }
 
     public void showUI(){
         SwingUtilities.invokeLater(() -> this.setVisible(true));

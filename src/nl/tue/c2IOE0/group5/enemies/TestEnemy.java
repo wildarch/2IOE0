@@ -1,16 +1,12 @@
 package nl.tue.c2IOE0.group5.enemies;
 
 import nl.tue.c2IOE0.group5.engine.Timer;
-import nl.tue.c2IOE0.group5.engine.objects.PositionInterpolator;
 import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
-import nl.tue.c2IOE0.group5.providers.Cell;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
-import nl.tue.c2IOE0.group5.towers.AbstractTower;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class TestEnemy extends Enemy {
@@ -35,6 +31,11 @@ public class TestEnemy extends Enemy {
             if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
         });
         this.renderer = renderer;
+    }
+
+    @Override
+    public EnemyType getType() {
+        return EnemyType.DROID;
     }
 
     @Override

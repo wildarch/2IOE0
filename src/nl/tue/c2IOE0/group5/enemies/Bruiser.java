@@ -4,7 +4,6 @@ import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.objects.Animatable;
 import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
-import nl.tue.c2IOE0.group5.providers.AnimationProvider;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
 import nl.tue.c2IOE0.group5.util.LinearlyUpdatable;
 import nl.tue.c2IOE0.group5.util.SmoothUpdatable;
@@ -70,6 +69,11 @@ public class Bruiser extends Enemy implements Animatable {
         headOffset.updateFluent(headOffset(animTime), deltaTime);
         leftArmOffset.updateFluent(armOffset(animTime), deltaTime);
         rightArmOffset.updateFluent(-armOffset(animTime), deltaTime);
+    }
+
+    @Override
+    public EnemyType getType() {
+        return EnemyType.ARCHER;
     }
 
     @Override

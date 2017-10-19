@@ -1,11 +1,9 @@
 package nl.tue.c2IOE0.group5.providers;
 
-import nl.tue.c2IOE0.group5.ai.QLearner;
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.Simulator;
 import nl.tue.c2IOE0.group5.engine.objects.Camera;
 import nl.tue.c2IOE0.group5.engine.provider.ObjectProvider;
-import nl.tue.c2IOE0.group5.engine.provider.Provider;
 import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
@@ -38,7 +36,6 @@ public class GridProvider extends ObjectProvider<Cell> {
     @Override
     public void init(Simulator engine) {
         super.init(engine);
-
         // Create the player base cells
         int bordersize = (SIZE - PLAYFIELDSIZE - 1)/2;
         for (int x = bordersize+1; x < SIZE - bordersize-1; x++) {
@@ -195,7 +192,7 @@ public class GridProvider extends ObjectProvider<Cell> {
     public void drawPath(List<Integer> path) {
         deactivateAll();
         for (int state : path) {
-            Vector2i position = QLearner.getPoint(state);
+            Vector2i position = nl.tue.c2IOE0.group5.AI.QLearner.getPoint(state);
             getCell(position).activate();
         }
     }

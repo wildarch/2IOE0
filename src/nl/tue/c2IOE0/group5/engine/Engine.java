@@ -139,7 +139,7 @@ public class Engine extends Simulator {
     }
 
     /**
-     * Add a {@link Controller} (User or AI) to the {@link Engine} to keep track of. In case the {@link Controller} is also an
+     * Add a {@link Controller} (User or ai) to the {@link Engine} to keep track of. In case the {@link Controller} is also an
      * instanceof {@link Listener} it is possible to handle several events happening on the {@link Window}.
      *
      * @param controller The controller to add to the engine
