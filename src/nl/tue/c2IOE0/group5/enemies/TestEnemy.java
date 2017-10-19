@@ -73,6 +73,7 @@ public class TestEnemy extends Enemy {
         cube = renderer.linkMesh("/cube.obj", () -> {
             setModelView(renderer);
             renderer.ambientLight(new Vector3f(0f, 0f,1f ));
+            if(!attacking) interpolator.draw(loopTimer.getElapsedTime());
         });
         this.renderer = renderer;
     }
