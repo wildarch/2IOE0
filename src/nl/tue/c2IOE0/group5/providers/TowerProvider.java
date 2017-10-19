@@ -11,6 +11,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
 import nl.tue.c2IOE0.group5.towers.CannonTower;
 import nl.tue.c2IOE0.group5.towers.MainTower;
+import nl.tue.c2IOE0.group5.towers.RocketTower;
 
 public class TowerProvider extends ObjectProvider<AbstractTower> {
 
@@ -29,6 +30,7 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
         loopTimer = engine.getGameloopTimer();
         putMainTower();
         putCannonTower();
+        putRocketTower();
     }
 
     @Override
@@ -41,6 +43,13 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
         CannonTower ct = new CannonTower(enemyProvider, bulletProvider, loopTimer).init(getRenderer());
         gridProvider.getCell(2, 2).placeTower(ct);
         objects.add(ct);
+    }
+
+
+    private void putRocketTower() {
+        RocketTower rt = new RocketTower(enemyProvider, bulletProvider, loopTimer).init(getRenderer());
+        gridProvider.getCell(2, 4).placeTower(rt);
+        objects.add(rt);
     }
     private void putMainTower() {
         int x = GridProvider.SIZE / 2;
