@@ -81,13 +81,11 @@ public class MusicProvider extends Thread implements Provider {
             t = new Thread(this);
             t.start();
         } else if (overridePrevious) {
-            System.err.println("Overriden");
             //cancel t
             cancelled = true;
             //wait for it to finish
             try {
                 t.join();
-                System.err.println("t stopped");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -96,7 +94,6 @@ public class MusicProvider extends Thread implements Provider {
             targetVolume = value;
             t = new Thread(this);
             t.start();
-            System.err.println("t started again");
         }
     }
 
@@ -133,7 +130,6 @@ public class MusicProvider extends Thread implements Provider {
                 }
             }
         }
-        System.err.println("Volume now at: " + currentVolume);
         cancelled = false;
         fading = false;
     }
