@@ -1,11 +1,11 @@
 package nl.tue.c2IOE0.group5.userinterface;
 
 import nl.tue.c2IOE0.group5.engine.rendering.Hud;
-import nl.tue.c2IOE0.group5.engine.rendering.Window;
-import nl.tue.c2IOE0.group5.util.PositionState;
-import org.joml.Vector4f;
+import org.joml.Vector2i;
 
+import static nl.tue.c2IOE0.group5.providers.MenuProvider.*;
 import static org.lwjgl.nanovg.NanoVG.NVG_ALIGN_CENTER;
+import static org.lwjgl.nanovg.NanoVG.NVG_ALIGN_TOP;
 
 /**
  * @author Geert van Ieperen
@@ -14,28 +14,16 @@ import static org.lwjgl.nanovg.NanoVG.NVG_ALIGN_CENTER;
  */
 public class MenuTextField extends UIElement {
 
-    private static final float TEXT_SIZE = 30f;
-
-    private static final Vector4f BACK_COLOR = new Vector4f(0.3f, 0.3f, 0.8f, 0.8f);
-    private static final Vector4f TEXT_COLOR = new Vector4f(1f, 1f, 1f, 1f);
-    private static final Vector4f LINE_COLOR = new Vector4f(0.8f, 0.3f, 0.3f, 0.8f);;
-    private static final int STROKE_WIDTH = 5;
-    public static final int OFF_TOP = 50;
-    public static final int SIDE_OFFSET = 300;
     private final String title;
     private final String[] content;
-
-    private UIElement titleBar;
-    private MenuButton back;
-
 
     public MenuTextField(String title, String[] content, int width, int height) {
         this (title, content, 0, 0, width, height);
     }
 
     /**
-     * creates a field that spreads across the screen.
-     * @param title
+     * Creates a textfield
+     * @param title The title of the field
      * @param content the content this textbox has to display
      */
     public MenuTextField(String title, String[] content, int x, int y, int width, int heigth) {
@@ -48,15 +36,17 @@ public class MenuTextField extends UIElement {
     @Override
     public void draw(Hud hud) {
         hud.roundedRectangle(x, y, width, height, INDENT);
-        hud.fill(BACK_COLOR.x, BACK_COLOR.y, BACK_COLOR.z, BACK_COLOR.w);
-        hud.stroke(STROKE_WIDTH, LINE_COLOR.x, LINE_COLOR.y, LINE_COLOR.z, LINE_COLOR.w);
+        hud.fill(COLOR_BACK.x, COLOR_BACK.y, COLOR_BACK.z, COLOR_BACK.w);
+        hud.stroke(STROKE_WIDTH, COLOR_STROKE.x, COLOR_STROKE.y, COLOR_STROKE.z, COLOR_STROKE.w);
 
-        hud.text(x + width /2, (y + BUTTON_HEIGHT - (int) UIElement.TEXT_SIZE/2), UIElement.TEXT_SIZE, Hud.Font.MEDIUM,
-                NVG_ALIGN_CENTER, title, TEXT_COLOR);
+        hud.text(x + width /2, y + MARGIN, TEXT_LARGE, Hud.Font.MEDIUM,
+                NVG_ALIGN_CENTER | NVG_ALIGN_TOP, title, COLOR_TEXT);
 
-        PositionState pos = new PositionState(x + width/2, (int) (y + BUTTON_HEIGHT + 20 + TEXT_SIZE), (int) (TEXT_SIZE * 1.2));
+        //PositionState pos = new PositionState(x + width/2, (int) (y + BUTTON_HEIGHT + 20 + TEXT_SIZE), (int) (TEXT_SIZE * 1.2));
+        MenuPositioner pos = new MenuPositioner(x + width/2, (int) (y + TEXT_LARGE + 2*MARGIN), 6);
         for (String line : content) {
-            hud.text(pos.getX(), pos.getY(), TEXT_SIZE, Hud.Font.MEDIUM, NVG_ALIGN_CENTER, line, TEXT_COLOR);
+            Vector2i p = pos.place(0, (int) TEXT_SMALL, true);
+            hud.text(p.x, p.y, TEXT_SMALL, Hud.Font.MEDIUM, NVG_ALIGN_CENTER | NVG_ALIGN_TOP, line, COLOR_TEXT);
         }
     }
 }

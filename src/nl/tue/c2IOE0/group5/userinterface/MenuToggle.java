@@ -7,6 +7,7 @@ import org.joml.Vector2i;
 
 import java.util.function.Consumer;
 
+import static nl.tue.c2IOE0.group5.providers.MenuProvider.*;
 import static org.lwjgl.nanovg.NanoVG.NVG_ALIGN_CENTER;
 
 /**
@@ -63,9 +64,10 @@ public class MenuToggle extends UIButton {
     @Override
     public void draw(Hud hud) {
         hud.roundedRectangle(x, y, width, height, INDENT);
-        hud.fill(BACK_COLOR.x, BACK_COLOR.y, BACK_COLOR.z, BACK_COLOR.w);
-        hud.stroke(STROKE_WIDTH, LINE_COLOR.x, LINE_COLOR.y, LINE_COLOR.z, LINE_COLOR.w);
-        hud.text(x + width /2, (int) (y + TEXT_SIZE + 10), TEXT_SIZE, Hud.Font.MEDIUM, NVG_ALIGN_CENTER, String.format("%1$s: %2$s", text, names[value ? 0 : 1]), TEXT_COLOR);
+        hud.fill(COLOR_BACK.x, COLOR_BACK.y, COLOR_BACK.z, COLOR_BACK.w);
+        hud.stroke(STROKE_WIDTH, COLOR_STROKE.x, COLOR_STROKE.y, COLOR_STROKE.z, COLOR_STROKE.w);
+        hud.text(x + width /2, (int) (y + TEXT_LARGE + 10), TEXT_LARGE, Hud.Font.MEDIUM, NVG_ALIGN_CENTER,
+                String.format("%1$s: %2$s", text, names[value ? 0 : 1]), COLOR_TEXT);
     }
 
     @Override

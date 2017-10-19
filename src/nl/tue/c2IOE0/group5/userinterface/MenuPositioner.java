@@ -7,20 +7,16 @@ import org.joml.Vector2i;
  */
 public class MenuPositioner {
 
-    private final static int MARGIN = 10;
-
     private int x;
     private int y;
+    private final int margin;
 
     private final Vector2i pos = new Vector2i();
 
-    public MenuPositioner(int x, int y) {
+    public MenuPositioner(int x, int y, int margin) {
         this.x = x;
         this.y = y;
-    }
-
-    public Vector2i place(boolean newline) {
-        return place(UIElement.BUTTON_WIDTH, UIElement.BUTTON_HEIGHT, newline);
+        this.margin = margin;
     }
 
     public Vector2i place(UIElement element, boolean newline) {
@@ -30,9 +26,9 @@ public class MenuPositioner {
     public Vector2i place(int width, int height, boolean newline) {
         pos.set(x, y);
         if (newline) {
-            y += height + MARGIN;
+            y += height + margin;
         } else {
-            x += width + MARGIN;
+            x += width + margin;
         }
         return pos;
     }

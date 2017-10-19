@@ -8,14 +8,11 @@ import nl.tue.c2IOE0.group5.engine.rendering.Hud;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.userinterface.*;
-import nl.tue.c2IOE0.group5.util.PositionState;
 import org.joml.Vector2i;
-
-import static nl.tue.c2IOE0.group5.userinterface.UIElement.BUTTON_HEIGHT;
-import static nl.tue.c2IOE0.group5.userinterface.UIElement.BUTTON_WIDTH;
+import org.joml.Vector4f;
 
 /**
- * @author Geert van Ieperen
+ * @author Geert van Ieperen, Jorren Hendriks
  */
 public class MenuProvider implements Provider<Engine>, Clickable {
 
@@ -34,7 +31,21 @@ public class MenuProvider implements Provider<Engine>, Clickable {
 
 
     private static final int HEIGHT_FROM_TOP = 100;
-    private static final int SPACE_BETWEEN_BUTTONS = 20;
+    private static final int TEXTFIELD_WIDTH = 750;
+    private static final int TEXTFIELD_HEIGHT = 450;
+
+    public static final int MARGIN = 20;
+    public static final int BUTTON_WIDTH = 500;
+    public static final int BUTTON_HEIGHT = 75;
+    public static final float TEXT_LARGE = 42f;
+    public static final float TEXT_SMALL = 30f;
+    public static final int STROKE_WIDTH = 5;
+    public static final int INDENT = 10;
+
+    public static final Vector4f COLOR_BACK = new Vector4f(0.3f, 0.3f, 0.8f, 0.8f);
+    public static final Vector4f COLOR_BACK_DARK = new Vector4f(0f, 0f, 0f, 0.6f);
+    public static final Vector4f COLOR_TEXT = new Vector4f(1f, 1f, 1f, 1f);
+    public static final Vector4f COLOR_STROKE = new Vector4f(0.8f, 0.3f, 0.3f, 0.8f);
 
     private UIButton[] mainMenu;
     private UIButton[] optionMenu;
@@ -56,12 +67,6 @@ public class MenuProvider implements Provider<Engine>, Clickable {
         renderer = engine.getRenderer();
         window = engine.getWindow();
         musicProvider = engine.getProvider(MusicProvider.class);
-
-
-        final Window window = engine.getWindow();
-        final int x = (window.getWidth()/2) - (BUTTON_WIDTH/2);
-        final int y = HEIGHT_FROM_TOP;
-        final int offset = SPACE_BETWEEN_BUTTONS + UIElement.BUTTON_HEIGHT;
 
         UIButton startGame = new MenuButton("Start Game", (event) -> engine.pause(false));
         UIButton options = new MenuButton("Options", (event) -> activeElements = optionMenu);
@@ -89,7 +94,7 @@ public class MenuProvider implements Provider<Engine>, Clickable {
         }
         UIButton credits = new MenuButton("Credits", (event) -> activeElements = creditScreen);
         {
-            UIElement credit = new MenuTextField("Credits", creditTextfield, (int) (BUTTON_WIDTH*1.5), 500);
+            UIElement credit = new MenuTextField("Credits", creditTextfield, TEXTFIELD_WIDTH, TEXTFIELD_HEIGHT);
             MenuButton creditBackButton = new MenuButton("Back", (event) -> activeElements = mainMenu);
             creditScreen = new UIElement[]{credit, creditBackButton};
         }
@@ -125,9 +130,7 @@ public class MenuProvider implements Provider<Engine>, Clickable {
 
     @Override
     public void draw(Window window, Renderer renderer) {
-        PositionState position = new PositionState((window.getWidth()/2) - (BUTTON_WIDTH/2), HEIGHT_FROM_TOP,
-                SPACE_BETWEEN_BUTTONS + UIElement.BUTTON_HEIGHT);
-        MenuPositioner pos = new MenuPositioner((window.getWidth()/2), HEIGHT_FROM_TOP);
+        MenuPositioner pos = new MenuPositioner((window.getWidth()/2), HEIGHT_FROM_TOP, MARGIN);
 
         for (UIElement element : activeElements) {
             Vector2i p = pos.place(element, true);
