@@ -26,7 +26,6 @@ public class PlayerController implements Controller,Listener {
     // define required resources here, e.g.
     private Engine engine;
     private MenuProvider menuProvider;
-    private TestProvider testProvider;
     private UIProvider uiProvider;
     private GridProvider gridProvider;
     private Camera camera;
@@ -54,7 +53,6 @@ public class PlayerController implements Controller,Listener {
         // you can initialize resources here, e.g.
         this.engine = engine;
         this.menuProvider = engine.getProvider(MenuProvider.class);
-        this.testProvider = engine.getProvider(TestProvider.class);
         this.uiProvider = engine.getProvider(UIProvider.class);
         this.gridProvider = engine.getProvider(GridProvider.class);
         this.camera = engine.getCamera();
