@@ -21,7 +21,7 @@ public class PositionInterpolator {
     private float speed;    // In milliseconds
 
 
-    private int time = 0;
+    private float time = 0;
 
     /**
      * Creates a new PositionInterpolator
@@ -43,7 +43,7 @@ public class PositionInterpolator {
         this.position = p.getPosition();
         this.target = new Vector3f(target);
         float distance = target.distance(position.toImmutable());
-        targetReachTime = currentTime + (long)(speed / distance);
+        targetReachTime = currentTime + (long)(distance / speed);
         time = 0;
     }
 
@@ -57,6 +57,7 @@ public class PositionInterpolator {
         if (currentTime > targetReachTime) {
             if (target != null) p.setPosition(target);
             target = null;
+            time = 0;
             targetReachTime = Long.MAX_VALUE;
             return true;
         }

@@ -55,10 +55,8 @@ public class AiController implements Controller, Listener {
     }
 
     private void wave(boolean big) {
-
         // Do a wave!
         String size = big ? "Big  " : "Small";
-        System.out.println(size + " wave at " + loopTimer.getLoopTime());
         Random r = new Random();
         for (int i = 0; i < SMALL_WAVE_SIZE; i++) {
             int random = r.nextInt(5);

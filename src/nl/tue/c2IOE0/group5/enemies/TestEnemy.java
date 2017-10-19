@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TestEnemy extends Enemy {
-    private static final float SPEED = 1.5f;
+    private static final float SPEED = 0.5f;
     private static final long ATTACKSPEED = 500;
     private Renderer renderer;
     private InstancedMesh cube;
