@@ -32,13 +32,14 @@ public abstract class AbstractTower extends GameObject {
     private final int attackTime;
     private final float bulletSpeed;
     private final int bulletDamage;
+    private float healthHeight;
 
     private Mesh mesh;
     private Cell cell;
     private Renderer renderer;
 
 
-    public AbstractTower(int range, int maxLevel, int maxHealth, int attackTime, float bulletSpeed, int bulletDamage,
+    public AbstractTower(int range, int maxLevel, int maxHealth, int attackTime, float bulletSpeed, int bulletDamage, float healthHeight,
                          EnemyProvider enemyProvider, BulletProvider bulletProvider, Timer loopTimer) {
         this.range = range;
         this.maxLevel = maxLevel;
@@ -52,6 +53,7 @@ public abstract class AbstractTower extends GameObject {
         this.attackTime = attackTime;
         this.bulletSpeed = bulletSpeed;
         this.bulletDamage = bulletDamage;
+        this.healthHeight = healthHeight;
     }
 
     public void setCell(Cell cell) {
@@ -120,7 +122,7 @@ public abstract class AbstractTower extends GameObject {
         }
     }
 
-    private void attack(Enemy e) {
+    protected void attack(Enemy e) {
         Bullet b = new Bullet(bulletSpeed, bulletDamage, e, this, renderer).init(renderer);
         bulletProvider.addBullet(b);
     }
@@ -170,12 +172,11 @@ public abstract class AbstractTower extends GameObject {
             float percentage = (float)tower.health / (float)tower.maxHealth;
             this.setScale(percentage * (MAX_SIZE-MIN_SIZE) + MIN_SIZE);
             color =  new Vector3f(1-percentage, percentage, 0f);
-            this.setPosition(tower.getPosition().add(new Vector3f(0, 2.5f, 0)));
+            this.setPosition(tower.getPosition().add(new Vector3f(0, healthHeight, 0)));
         }
 
         @Override
         public void renderInit(Renderer renderer) {
-            setPosition(tower.getPosition().add(new Vector3f(0, 2.5f, 0)));
             setScale(10f);
             Mesh mesh = renderer.linkMesh("/health.obj");
             mesh.setMaterial(new Material("/square.png"));

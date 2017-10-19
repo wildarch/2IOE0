@@ -9,6 +9,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
+import nl.tue.c2IOE0.group5.towers.CannonTower;
 import nl.tue.c2IOE0.group5.towers.MainTower;
 
 public class TowerProvider extends ObjectProvider<AbstractTower> {
@@ -27,6 +28,7 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
         bulletProvider = engine.getProvider(BulletProvider.class);
         loopTimer = engine.getGameloopTimer();
         putMainTower();
+        putCannonTower();
     }
 
     @Override
@@ -35,6 +37,11 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
         m.setMaterial(new Material("/tower.png"));
     }
 
+    private void putCannonTower() {
+        CannonTower ct = new CannonTower(enemyProvider, bulletProvider, loopTimer).init(getRenderer());
+        gridProvider.getCell(2, 2).placeTower(ct);
+        objects.add(ct);
+    }
     private void putMainTower() {
         int x = GridProvider.SIZE / 2;
         Cell baseCell = gridProvider.getCell(x, x);

@@ -15,14 +15,14 @@ public class TestObject extends GameObject {
     public TestObject() {
         super();
         boinkyness = 0f;
-        this.setScale(1f);
+        this.setScale(5f);
     }
 
     @Override
     public void renderInit(Renderer renderer) {
         try {
-            Mesh tower = renderer.linkMesh("/tower1.obj");
-            tower.setMaterial(new Material("/tower1.png"));
+            Mesh tower = renderer.linkMesh("/tower.obj");
+            tower.setMaterial(new Material("/tower.png"));
             renderer.linkMesh(tower, () -> {
                 setModelView(renderer);
                 renderer.boink(tower, getBounceDegree());
