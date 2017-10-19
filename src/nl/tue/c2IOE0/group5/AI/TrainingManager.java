@@ -221,7 +221,6 @@ public class TrainingManager extends JFrame{
             status("Creating batches with size " + bSize);
             iterator = InputGenerator.getTrainingData(data, bSize, random);
             status("Done");
-            data = null;
         });
 
         trainBtn.addActionListener(a -> {
@@ -359,7 +358,7 @@ public class TrainingManager extends JFrame{
     void setEnabled(){
         saveDataBtn.setEnabled(data != null);
         saveNetworkBtn.setEnabled(trainer != null);
-        trainBtn.setEnabled(data != null && trainer != null && !trainerActive);
+        trainBtn.setEnabled((data != null || iterator != null) && trainer != null && !trainerActive);
         stopTrainBtn.setEnabled(trainerActive);
         batchBtn.setEnabled(data != null);
     }
