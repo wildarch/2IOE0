@@ -40,10 +40,10 @@ public class CannonTower extends AbstractTower {
     @Override
     public void renderInit(Renderer renderer) {
         setScale(1f);
-        Mesh base = renderer.linkMesh("/models/towers/cannontower/base.obj");
-        Mesh cannon = renderer.linkMesh("/models/towers/cannontower/cannon.obj");
-        base.setMaterial(new Material("/models/towers/cannontower/base.png"));
-        cannon.setMaterial(new Material("/models/towers/cannontower/cannon.png"));
+        Mesh base = renderer.linkMesh("/models/towers/cannontower/BASE.obj");
+        Mesh cannon = renderer.linkMesh("/models/towers/cannontower/CANNON.obj");
+        base.setMaterial(new Material("/models/towers/cannontower/Base.png"));
+        cannon.setMaterial(new Material("/models/towers/cannontower/Cannon.png"));
 
         iBaseMesh = renderer.linkMesh(base, () -> setModelView(renderer));
         iCannonMesh = renderer.linkMesh(cannon, () -> setModelView(renderer, new Vector3f(0f, 0.269f, 0f), cannonRotation));
