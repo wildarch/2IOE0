@@ -41,11 +41,9 @@ public class InputGenerator {
         List<double[]> data = new ArrayList<>(numInputs);
         Random r = new Random();
 
-        INDArray result = Nd4j.create(numInputs, gridSize * gridSize * nrTowers + nrDeployTypes + 1);
-
-        INDArray gridResult = Nd4j.create(numInputs, gridSize * gridSize * nrTowers);
-        INDArray bufferResult = Nd4j.create(numInputs, nrDeployTypes);
-        INDArray qTrustResult = Nd4j.create(numInputs, 1);
+//        INDArray gridResult = Nd4j.create(numInputs, gridSize * gridSize * nrTowers);
+//        INDArray bufferResult = Nd4j.create(numInputs, nrDeployTypes);
+//        INDArray qTrustResult = Nd4j.create(numInputs, 1);
 
 
         for (int i = 0; i < numInputs; i++){
@@ -55,9 +53,9 @@ public class InputGenerator {
             double[] buffer = randomBuffer(nrDeployTypes, r);
             double[] qtrust = new double[]{r.nextDouble()};
 
-            gridResult.putRow(i, Nd4j.create(grid));
-            bufferResult.putRow(i, Nd4j.create(buffer));
-            qTrustResult.putRow(i, Nd4j.create(qtrust));
+//            gridResult.putRow(i, Nd4j.create(grid));
+//            bufferResult.putRow(i, Nd4j.create(buffer));
+//            qTrustResult.putRow(i, Nd4j.create(qtrust));
 
             System.arraycopy(grid, 0, row, 0, grid.length);
             System.arraycopy(buffer, 0, row, grid.length, buffer.length);
@@ -67,6 +65,8 @@ public class InputGenerator {
 
             //System.out.println(Arrays.toString(row));
         }
+
+        INDArray result = Nd4j.create(numInputs, gridSize * gridSize * nrTowers + nrDeployTypes + 1);
 
         for (int i = 0; i < data.size(); i++){
             double[] row = data.get(i);

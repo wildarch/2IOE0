@@ -27,7 +27,7 @@ public class InputConverter {
      * @return INDArray input row vector
      */
     public INDArray convert() {
-        double[] result = new double[getBufferInputSize() + getGridInputSize() + getQTrustInputSize()];
+        double[] result = new double[getGridInputSize() + getBufferInputSize() + getQTrustInputSize()];
 
         double[] gridResult = convertGrid();
         double[] bufferResult = convertBuffer();
