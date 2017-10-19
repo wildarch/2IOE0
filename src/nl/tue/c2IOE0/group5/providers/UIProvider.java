@@ -52,8 +52,10 @@ public class UIProvider implements Provider<Engine> {
             }
 
             @Override
-            public void draw(Hud hud) throws IOException {
-                hud.image("/texture.png", 10, 10, 40, 40, 1);
+            public void draw(Hud hud) {
+                try {
+                    hud.image("/texture.png", 10, 10, 40, 40, 1);
+                } catch (IOException ignored) {}
             }
         };
 
@@ -96,6 +98,14 @@ public class UIProvider implements Provider<Engine> {
 
     }
 
+    private int bottom(int y) {
+        return this.wHeight - y;
+    }
+
+    private int right(int x) {
+        return this.wWidth - x;
+    }
+
     @Override
     public void update() {
         Window window = engine.getWindow();
@@ -103,11 +113,8 @@ public class UIProvider implements Provider<Engine> {
         this.wHeight = window.getHeight();
     }
 
-    private int bottom(int y) {
-        return this.wHeight - y;
-    }
+    @Override
+    public void draw(Window window, Renderer renderer) {
 
-    private int right(int x) {
-        return this.wWidth - x;
     }
 }

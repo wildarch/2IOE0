@@ -22,6 +22,7 @@ public class TowerDefence {
                 new MenuProvider(),
                 new TestProvider(),
                 new EnemyProvider(),
+                new AnimationProvider(),
                 new GridProvider(),
                 new BackgroundProvider(),
                 new TowerProvider(),

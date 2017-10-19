@@ -14,7 +14,7 @@ public class UpdatableFloat extends Updatable<Float> {
     }
 
     /**
-     * @return the increase of the last update, defined as (current - previous)
+     * @return the increase of the last updateFluent, defined as (current - previous)
      */
     public float difference() {
         return current() - previous();

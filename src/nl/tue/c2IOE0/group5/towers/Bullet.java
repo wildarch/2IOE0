@@ -20,6 +20,19 @@ public class Bullet extends GameObject {
         setPosition(source.getPosition().add(0f, 1f, 0f));
     }
 
+    /**
+     * Copies the bullet, but with a different target
+     * @param b
+     * @param target
+     */
+    public Bullet(Bullet b, Enemy target) {
+        this.speed = b.speed;
+        this.damage = b.damage;
+        this.target = target;
+        this.color = new Vector3f(0.5f, 0, 0.5f);
+        setPosition(b.getPosition());
+    }
+
     private void move() {
         Vector3f position = this.getPosition();
         Vector3f targetPosition = target.getPosition();

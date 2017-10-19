@@ -21,7 +21,10 @@ public class TestProvider implements Provider {
     public void init(Simulator engine) {
         // initialize resources here, e.g.
         updatecounter = 0;
-        //this.object = new TestObject().init(engine.getRenderer());
+        if (engine instanceof Engine) {
+            Engine e = (Engine) engine;
+            this.object = new TestObject().init(e.getRenderer());
+        }
     }
 
     public void ud() {
@@ -33,5 +36,14 @@ public class TestProvider implements Provider {
     public void update() {
         // do updates here using resources, e.g.
 
+    }
+
+    @Override
+    public void draw(Window window, Renderer renderer) {
+        if(object == null) {
+            return;
+        }
+        object.setPosition(3f, 0.2f, 3f);
+        object.boink();
     }
 }

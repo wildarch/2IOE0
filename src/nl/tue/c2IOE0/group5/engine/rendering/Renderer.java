@@ -55,6 +55,8 @@ public class Renderer {
         DEPTH_MAP
     }
 
+    private boolean shadowMapping = true;
+
     /**
      * Constructor for initializing datastructures.
      */
@@ -79,8 +81,7 @@ public class Renderer {
         }
     }
 
-    public InstancedMesh linkMesh(String filename, Runnable render) {
-        Mesh mesh = linkMesh(filename);
+    public InstancedMesh linkMesh(Mesh mesh, Runnable render) {
         InstancedMesh iMesh = new InstancedMesh(mesh, render);
         if (instancedMeshes.containsKey(mesh)) {
             instancedMeshes.get(mesh).add(iMesh);
@@ -88,6 +89,11 @@ public class Renderer {
             instancedMeshes.put(mesh, new ArrayList<>(Collections.singleton(iMesh)));
         }
         return iMesh;
+    }
+
+    public InstancedMesh linkMesh(String filename, Runnable render) {
+        Mesh mesh = linkMesh(filename);
+        return linkMesh(mesh, render);
     }
 
     public void unlinkMesh(InstancedMesh iMesh) {
@@ -159,6 +165,8 @@ public class Renderer {
         );
         directionalLight.setOrthoCords(-10.0f, 10.0f, -10.0f, 10.0f, -7.0f, 20.0f);
         sceneShader.setDirectionalLight(directionalLight);
+
+        sceneShader.setUniform("texture_sampler", 0);
     }
 
     private void initDepthShader() throws ShaderException, IOException {
@@ -166,6 +174,11 @@ public class Renderer {
         depthShader.createVertexShader(Resource.load("/shaders/vertex_depth.vert"));
         depthShader.createFragmentShader(Resource.load("/shaders/fragment_depth.frag"));
         depthShader.link();
+
+        // Create uniforms for the bounce effect
+        depthShader.createUniform("bounceDegree");
+        depthShader.createUniform("boundingMax");
+        depthShader.createUniform("boundingMin");
 
         depthShader.createUniform("orthoProjectionMatrix");
         depthShader.createUniform("modelLightViewMatrix");
@@ -195,19 +208,26 @@ public class Renderer {
         return this.activeCamera;
     }
 
+    public void setShadowMapping(boolean value) {
+        this.shadowMapping = value;
+    }
+
     /**
      * applies a bounce-effect around the given gravity-middle, stretching boundingMin/2 up and down.
      * this effect applies only to subjects rendered inside the render parameter.
      * @param bounceDegree the strength B of the effect, with B = 0 no effect,
      *                     B > 0 a horizontal expansion and B < 0 a vertical stretch
+     * @param mesh mesh to be boinked
      */
     public void boink(Mesh mesh, float bounceDegree) {
-        sceneShader.setUniform("bounceDegree", bounceDegree);
-        sceneShader.setUniform("boundingMin", mesh.getMinBoundingBox());
-        sceneShader.setUniform("boundingMax", mesh.getMaxBoundingBox());
+        ShaderProgram shader = task == Task.SCENE ? sceneShader : depthShader;
+
+        shader.setUniform("bounceDegree", bounceDegree);
+        shader.setUniform("boundingMin", mesh.getMinBoundingBox());
+        shader.setUniform("boundingMax", mesh.getMaxBoundingBox());
 
         modifiers.push(() ->
-                sceneShader.setUniform("bounceDegree", 0f));
+                shader.setUniform("bounceDegree", 0f));
     }
 
     /**
@@ -392,11 +412,16 @@ public class Renderer {
 
         renderLights(viewMatrix);
 
-        sceneShader.setUniform("texture_sampler", 0);
-        sceneShader.setUniform("depthMap", 1);
 
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, depthMap.getDepthMapTexture().getId());
+
+        if (shadowMapping) {
+            sceneShader.setUniform("depthMap", 1);
+
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, depthMap.getDepthMapTexture().getId());
+        } else {
+            sceneShader.setUniform("depthMap", 0);
+        }
 
         instancedMeshes.forEach((mesh, consumers) -> {
             setMaterial(mesh.getMaterial());
@@ -440,8 +465,10 @@ public class Renderer {
     }
 
     public void render() {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        renderDepthMap();
+        if (shadowMapping) {
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            renderDepthMap();
+        }
 
         glViewport(0, 0, window.getWidth(), window.getHeight());
         renderScene();

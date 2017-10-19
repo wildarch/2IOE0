@@ -32,4 +32,9 @@ public class BackgroundProvider implements Provider<Engine> {
     public void update() {
 
     }
+
+    @Override
+    public void draw(Window window, Renderer renderer) {
+        skybox.setPosition(camera);
+    }
 }

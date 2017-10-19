@@ -7,13 +7,11 @@ import nl.tue.c2IOE0.group5.engine.Simulator;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.provider.ObjectProvider;
 import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
-import nl.tue.c2IOE0.group5.engine.rendering.OBJLoader;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import org.joml.Vector2i;
 
-import java.io.IOException;
 import java.util.List;
 
 public class EnemyProvider extends ObjectProvider<Enemy> {
@@ -23,8 +21,7 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
 
     @Override
     public void init(Simulator engine) {
-        super.init(engine);
-        loopTimer = engine.getGameloopTimer();
+        loopTimer = engine.getRenderLoopTimer();
         gridProvider = engine.getProvider(GridProvider.class);
     }
 
@@ -32,13 +29,6 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
     public void renderInit(Engine engine) {
         Mesh m = engine.getRenderer().linkMesh("/cube.obj");
         m.setMaterial(new Material("/square.png"));
-    }
-
-    @Override
-    public void update() {
-        objects.removeIf(Enemy::isDead);
-        super.update();
-
     }
 
     public List<Enemy> getEnemies() {
@@ -56,5 +46,17 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
                 initialPosition,
                 targets, 20
         ).init(getRenderer()));
+    }
+
+    @Override
+    public void update() {
+        objects.removeIf(Enemy::isDead);
+        super.update();
+
+    }
+
+    @Override
+    public void draw(Window window, Renderer renderer) {
+
     }
 }

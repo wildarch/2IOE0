@@ -208,4 +208,9 @@ public class GridProvider extends ObjectProvider<Cell> {
     public void update() {
 
     }
+
+    @Override
+    public void draw(Window window, Renderer renderer) {
+
+    }
 }

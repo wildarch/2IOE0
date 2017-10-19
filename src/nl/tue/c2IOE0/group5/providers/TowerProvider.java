@@ -9,7 +9,6 @@ import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
-import nl.tue.c2IOE0.group5.towers.Bullet;
 import nl.tue.c2IOE0.group5.towers.MainTower;
 
 public class TowerProvider extends ObjectProvider<AbstractTower> {
@@ -52,5 +51,10 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
     public void update() {
         objects.removeIf((t -> t.isDead()));
         super.update();
+    }
+
+    @Override
+    public void draw(Window window, Renderer renderer) {
+
     }
 }

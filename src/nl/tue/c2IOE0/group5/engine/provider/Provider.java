@@ -4,8 +4,6 @@ import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.Simulator;
 import nl.tue.c2IOE0.group5.engine.rendering.Drawable;
 
-import java.io.IOException;
-
 /**
  * @author Jorren Hendriks
  *
@@ -13,7 +11,7 @@ import java.io.IOException;
  * provider should have an update method to notify it when there is a gameloop update. Furthermore, a Provider extends
  * {@link Drawable} in which the Provider can draw it's current state to the active window.
  */
-public interface Provider<T extends Simulator> extends Updatable {
+public interface Provider<T extends Simulator> extends Updatable, Drawable {
 
     /**
      * Initialize the provider. This method will only be called once at startup. The {@link Engine} parameter can be

@@ -15,55 +15,14 @@ import java.util.List;
 
 public class TestEnemy extends Enemy {
     private static final float SPEED = 1.5f;
-    private Timer loopTimer;
-    private List<Vector2i> targetPositions;
-    private long timeToDoDamage;
-    private PositionInterpolator interpolator;
-    private boolean attacking = false;
+    private static final long ATTACKSPEED = 500;
     private Renderer renderer;
     private InstancedMesh cube;
 
 
     public TestEnemy(Timer loopTimer, GridProvider gridProvider,
                      Vector2i initialPosition, List<Vector2i> targetPositions, int maxHealth) {
-        super(gridProvider, maxHealth);
-
-        this.loopTimer = loopTimer;
-        this.targetPositions = new ArrayList<>(targetPositions);
-        setPosition(gridProvider.getCell(initialPosition).getPosition().add(0, 2f, 0f));
-        this.interpolator = new PositionInterpolator(this, SPEED);
-    }
-
-    @Override
-    public void update() {
-        if(targetPositions.isEmpty()) {
-            return;
-        }
-        boolean targetReached = interpolator.update(loopTimer.getLoopTime());
-        if(targetReached) {
-            targetPositions.remove(0);
-            if(targetPositions.isEmpty()) return;
-        }
-        Cell targetCell = gridProvider.getCell(targetPositions.get(0));
-        AbstractTower tower = targetCell.getTower();
-        Vector3f targetPosition = targetCell.getPosition().add(0, 0.5f, 0);
-        if (targetReached || (attacking && tower == null)) {
-            // Road is clear, move ahead
-            attacking = false;
-            interpolator.setTarget(targetPosition, loopTimer.getLoopTime());
-        }
-        else if(tower != null) {
-            // Destroy the tower first
-            attacking = true;
-            doDamage(tower);
-        }
-    }
-
-    private void doDamage(AbstractTower tower) {
-        if (timeToDoDamage < loopTimer.getLoopTime()) {
-            tower.takeDamage(1);
-            timeToDoDamage = loopTimer.getLoopTime() + 500;
-        }
+        super(loopTimer, gridProvider, initialPosition, targetPositions, maxHealth, SPEED, ATTACKSPEED);
     }
 
     @Override
