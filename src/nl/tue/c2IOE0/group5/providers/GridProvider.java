@@ -1,8 +1,10 @@
 package nl.tue.c2IOE0.group5.providers;
 
-import nl.tue.c2IOE0.group5.controllers.QLearner;
+import nl.tue.c2IOE0.group5.ai.QLearner;
 import nl.tue.c2IOE0.group5.engine.Engine;
+import nl.tue.c2IOE0.group5.engine.Simulator;
 import nl.tue.c2IOE0.group5.engine.objects.Camera;
+import nl.tue.c2IOE0.group5.engine.provider.ObjectProvider;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
 import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
@@ -21,7 +23,7 @@ import java.util.List;
  * The grid is a double array containing cells. The x and y coordinates work as expected in a mathematical system, with
  * [0][0] lying in the bottom left corner and [1][0] the cell adjacent to it on the right side.
  */
-public class GridProvider implements Provider {
+public class GridProvider extends ObjectProvider<Cell> {
 
     //total size of the grid (including spawn cells). Change this to change the total grid
     public static final int SIZE = 13;
@@ -34,22 +36,17 @@ public class GridProvider implements Provider {
     private Cell activeCell;
 
     @Override
-    public void init(Engine engine) {
-        try {
-            // Setup cell mesh
-            Mesh cell = engine.getRenderer().linkMesh("/cube.obj");
-            cell.setMaterial(new Material("/square.png"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void init(Simulator engine) {
+        super.init(engine);
 
         // Create the player base cells
         int bordersize = (SIZE - PLAYFIELDSIZE - 1)/2;
         for (int x = bordersize+1; x < SIZE - bordersize-1; x++) {
             for (int y = bordersize+1; y < SIZE - bordersize-1; y++) {
                 //initialize the playfield as non-bordercells
-                grid[x][y] = new Cell(CellType.BASE, x, y).init(engine.getRenderer());
-                //initialize the estimated damage per cell to 0
+                Cell c = new Cell(CellType.BASE, x, y).init(getRenderer());
+                grid[x][y] = c;
+                objects.add(c);
             }
         }
 
@@ -58,12 +55,21 @@ public class GridProvider implements Provider {
             for (int y = 0; y < SIZE; y++) {
                 if (grid[x][y] == null) {
                     //initialize all cells not yet initialized as a bordercell
-                    grid[x][y] = new Cell(CellType.BORDER, x, y).init(engine.getRenderer());
+                    Cell c = new Cell(CellType.BORDER, x, y).init(getRenderer());
+                    grid[x][y] = c;
+                    objects.add(c);
                 }
             }
         }
 
         activeCell = getCell(0, 0);
+    }
+
+    @Override
+    public void renderInit(Engine engine) {
+        // Setup cell mesh
+        Mesh cell = engine.getRenderer().linkMesh("/cube.obj");
+        cell.setMaterial(new Material("/square.png"));
     }
 
     /**

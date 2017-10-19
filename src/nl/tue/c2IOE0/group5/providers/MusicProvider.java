@@ -13,7 +13,7 @@ import java.io.File;
  * @author Tom Peters
  */
 
-public class MusicProvider extends Thread implements Provider {
+public class MusicProvider extends Thread implements Provider<Engine> {
 
     private Engine engine;
     private Clip clip;
@@ -54,20 +54,22 @@ public class MusicProvider extends Thread implements Provider {
         }
     }
 
-    public void stopMusic() {
+    public void cleanup() {
         clip.stop();
+        cancelled = true;
         try {
             t.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        cancelled = false;
     }
 
     private boolean on = true;
     public void toggle() {
         if (on) {
             on = false;
-            stopMusic();
+            cleanup();
         } else {
             on = true;
             init(engine);

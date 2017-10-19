@@ -17,7 +17,7 @@ import static nl.tue.c2IOE0.group5.userinterface.UIElement.BUTTON_WIDTH;
 /**
  * @author Geert van Ieperen
  */
-public class MenuProvider implements Provider, Clickable {
+public class MenuProvider implements Provider<Engine>, Clickable {
 
     private final static String[] creditTextfield = // newlines with backslash because of Regex splitting
             ("Staff:\n" +

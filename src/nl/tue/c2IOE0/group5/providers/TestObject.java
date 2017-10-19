@@ -19,7 +19,7 @@ public class TestObject extends GameObject {
     }
 
     @Override
-    public TestObject init(Renderer renderer) {
+    public void renderInit(Renderer renderer) {
         try {
             Mesh tower = renderer.linkMesh("/tower1.obj");
             tower.setMaterial(new Material("/tower1.png"));
@@ -30,8 +30,6 @@ public class TestObject extends GameObject {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return this;
     }
 
     private float getBounceDegree() {

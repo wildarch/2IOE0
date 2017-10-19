@@ -2,7 +2,10 @@ package nl.tue.c2IOE0.group5.towers;
 
 import nl.tue.c2IOE0.group5.enemies.Enemy;
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
+import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
+import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
+import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import org.joml.Vector3f;
 
 public class Bullet extends GameObject {
@@ -10,14 +13,17 @@ public class Bullet extends GameObject {
     private int damage;
     private Enemy target;
     private Vector3f color;
+    private Renderer renderer;
+    private InstancedMesh iMesh;
     private boolean isDone = false; //When target is hit
 
-    public Bullet(float speed, int damage, Enemy target, AbstractTower source) {
+    public Bullet(float speed, int damage, Enemy target, AbstractTower source, Renderer renderer) {
         this.speed = speed;
         this.damage = damage;
         this.target = target;
         this.color = new Vector3f(0.5f, 0, 0.5f);
         setPosition(source.getPosition().add(0f, 1f, 0f));
+        this.renderer = renderer;
     }
 
     /**
@@ -25,26 +31,14 @@ public class Bullet extends GameObject {
      * @param b
      * @param target
      */
-    public Bullet(Bullet b, Enemy target) {
+    public Bullet(Bullet b, Enemy target, Renderer renderer) {
         this.speed = b.speed;
         this.damage = b.damage;
         this.target = target;
         this.color = new Vector3f(0.5f, 0, 0.5f);
         setPosition(b.getPosition());
+        this.renderer = renderer;
     }
-
-    /*
-    private void setMesh() {
-        try {
-            Mesh m = OBJLoader.loadMesh("/b4.obj");
-            this.mesh = m;
-            m.setMaterial(new Material("/square.png"));
-            setScale(0.05f);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to load cube model");
-        }
-    }
-    */
 
     private void move() {
         Vector3f position = this.getPosition();
@@ -53,6 +47,7 @@ public class Bullet extends GameObject {
         if (distance <= speed) {
             target.getDamage(damage);
             isDone = true; //target is hit and it should be removed
+            renderer.unlinkMesh(iMesh);
         } else {
             Vector3f direction = targetPosition.sub(position);
             direction.normalize();
@@ -71,12 +66,14 @@ public class Bullet extends GameObject {
     }
 
     @Override
-    public GameObject init(Renderer renderer) {
-        renderer.linkMesh("b4.obj", () -> {
+    public void renderInit(Renderer renderer) {
+        setScale(0.05f);
+        Mesh bullet = renderer.linkMesh("/b4.obj");
+        bullet.setMaterial(new Material("/square.png"));
+        iMesh = renderer.linkMesh(bullet, () -> {
             setModelView(renderer);
             renderer.ambientLight(color);
             renderer.noDirectionalLight();
         });
-        return this;
     }
 }

@@ -3,8 +3,8 @@ package nl.tue.c2IOE0.group5.towers;
 import nl.tue.c2IOE0.group5.enemies.Enemy;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
+import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
-import nl.tue.c2IOE0.group5.engine.rendering.OBJLoader;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.providers.BulletProvider;
@@ -12,7 +12,6 @@ import nl.tue.c2IOE0.group5.providers.Cell;
 import nl.tue.c2IOE0.group5.providers.EnemyProvider;
 import org.joml.Vector3f;
 
-import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +20,7 @@ import java.util.stream.Collectors;
 public abstract class AbstractTower extends GameObject {
 
     private int range;
-    private int level;
+    private int level = 1;
     private final int maxLevel;
     private final int maxHealth;
     private int health;
@@ -36,6 +35,7 @@ public abstract class AbstractTower extends GameObject {
 
     private Mesh mesh;
     private Cell cell;
+    private Renderer renderer;
 
 
     public AbstractTower(int range, int maxLevel, int maxHealth, int attackTime, float bulletSpeed, int bulletDamage,
@@ -47,7 +47,8 @@ public abstract class AbstractTower extends GameObject {
         this.enemyProvider = enemyProvider;
         this.bulletProvider = bulletProvider;
         this.loopTimer = loopTimer;
-        this.healthBolletje = new HealthBolletje(this);
+        this.renderer = enemyProvider.getRenderer();
+        this.healthBolletje = new HealthBolletje(this).init(renderer);
         this.attackTime = attackTime;
         this.bulletSpeed = bulletSpeed;
         this.bulletDamage = bulletDamage;
@@ -92,6 +93,7 @@ public abstract class AbstractTower extends GameObject {
     private void die() {
         health = 0;
         cell.destroyTower();
+        healthBolletje.stopDrawing();
         onDie();
     }
 
@@ -119,7 +121,7 @@ public abstract class AbstractTower extends GameObject {
     }
 
     private void attack(Enemy e) {
-        Bullet b = new Bullet(bulletSpeed, bulletDamage, e, this);
+        Bullet b = new Bullet(bulletSpeed, bulletDamage, e, this, renderer).init(renderer);
         bulletProvider.addBullet(b);
     }
 
@@ -155,24 +157,13 @@ public abstract class AbstractTower extends GameObject {
         final float MAX_SIZE = 0.15f;
         final float MIN_SIZE = 0.075f;
         private AbstractTower tower;
-        private Mesh mesh;
         private Vector3f color;
+        private InstancedMesh iMesh;
 
         public HealthBolletje(AbstractTower t) {
             this.tower = t;
-            setMesh();
             color =  new Vector3f(0f, 1f, 0f);
         }
-
-        /*
-        @Override
-        public void draw(Window window, Renderer renderer) {
-            super.draw(window, renderer);
-            renderer.ambientLight(color, () ->
-                    renderer.noDirectionalLight(() -> mesh.draw(renderer))
-            );
-        }
-        */
 
         @Override
         public void update() {
@@ -182,24 +173,22 @@ public abstract class AbstractTower extends GameObject {
             this.setPosition(tower.getPosition().add(new Vector3f(0, 2.5f, 0)));
         }
 
-        private void setMesh() {
-            try {
-                Mesh m = OBJLoader.loadMesh("/health.obj");
-                this.mesh = m;
-                m.setMaterial(new Material("/square.png"));
-                setScale(10f);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to load Tower model");
-            }
+        @Override
+        public void renderInit(Renderer renderer) {
+            setPosition(tower.getPosition().add(new Vector3f(0, 2.5f, 0)));
+            setScale(10f);
+            Mesh mesh = renderer.linkMesh("/health.obj");
+            mesh.setMaterial(new Material("/square.png"));
+            iMesh = renderer.linkMesh(mesh, () -> {
+                setModelView(renderer);
+                renderer.ambientLight(color);
+                renderer.noDirectionalLight();
+            });;
         }
 
-        @Override
-        public GameObject init(Renderer renderer) {
-            setPosition(tower.getPosition().add(new Vector3f(0, 2.5f, 0)));
-            renderer.linkMesh("/health.obj", () -> {
-                        setModelView(renderer);
-                    });
-            return this;
+        public void stopDrawing() {
+            if(renderer != null)
+                renderer.unlinkMesh(iMesh);
         }
     }
 }

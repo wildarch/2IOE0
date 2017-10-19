@@ -53,8 +53,15 @@ public class Timer {
      * should only be called by Engine, exactly once per rendering loop
      */
     public void updateLoopTime(){
-        time.update(System.currentTimeMillis());
+        updateLoopTime(System.currentTimeMillis());
     }
 
-    public void updateTickTime() { tickTime.update(System.currentTimeMillis()); }
+    /**
+     * Set the loop time (useful for mocking a timer)
+     * @param millis
+     */
+    public void updateLoopTime(long millis){
+        time.update(millis);
+    }
+
 }

@@ -117,17 +117,11 @@ public class Cell extends GameObject {
     }
 
     @Override
-    public Cell init(Renderer renderer) {
-        try {
-            renderer.linkMesh("/cube.obj", () -> {
-                setModelView(renderer);
-                renderer.ambientLight(color);
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return this;
+    public void renderInit(Renderer renderer) {
+        renderer.linkMesh("/cube.obj", () -> {
+            setModelView(renderer);
+            renderer.ambientLight(color);
+        });
     }
 
     @Override
