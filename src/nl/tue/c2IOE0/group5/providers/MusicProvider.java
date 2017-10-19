@@ -48,9 +48,9 @@ public class MusicProvider extends Thread implements Provider {
     @Override
     public void update() {
         if (engine.isPaused()) {
-            fadeVolumeTo(baseVolume);
+            fadeVolumeTo(baseVolume, false);
         } else {
-            fadeVolumeTo(playVolume);
+            fadeVolumeTo(playVolume, false);
         }
         if (timeToPlay < loopTimer.getLoopTime()) { //start again after 2 times the duration
             clip.start();
@@ -64,19 +64,39 @@ public class MusicProvider extends Thread implements Provider {
 
     public void setBaseVolume(float volume) {
         this.baseVolume = volume;
+        fadeVolumeTo(baseVolume, true);
     }
 
     private float targetVolume;
     private float currentVolume;
     private boolean fading = false;
     private float fadeStep = 0.1f;
+    Thread t = new Thread();
+    private volatile boolean cancelled = false;
 
-    public void fadeVolumeTo(float value) {
+    public void fadeVolumeTo(float value, boolean overridePrevious) {
         currentVolume = gainControl.getValue();
-        if (!fading && currentVolume != value) {  //prevent running it twice
+        if (!fading && currentVolume != value && !overridePrevious) {  //prevent running it twice
             targetVolume = value;
-            Thread t = new Thread(this);
+            t = new Thread(this);
             t.start();
+        } else if (overridePrevious) {
+            System.err.println("Overriden");
+            //cancel t
+            cancelled = true;
+            //wait for it to finish
+            try {
+                t.join();
+                System.err.println("t stopped");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            cancelled = false;
+            //start t again
+            targetVolume = value;
+            t = new Thread(this);
+            t.start();
+            System.err.println("t started again");
         }
     }
 
@@ -86,6 +106,10 @@ public class MusicProvider extends Thread implements Provider {
 
         if (currentVolume > targetVolume) {
             while (currentVolume > targetVolume) {
+                if (cancelled) {
+                    cancelled = false;
+                    return;
+                }
                 currentVolume -= fadeStep;
                 gainControl.setValue(currentVolume);
                 try {
@@ -96,6 +120,10 @@ public class MusicProvider extends Thread implements Provider {
             }
         } else if (currentVolume < targetVolume) {
             while (currentVolume < targetVolume) {
+                if (cancelled) {
+                    cancelled = false;
+                    return;
+                }
                 currentVolume += fadeStep;
                 gainControl.setValue(currentVolume);
                 try {
@@ -105,6 +133,8 @@ public class MusicProvider extends Thread implements Provider {
                 }
             }
         }
+        System.err.println("Volume now at: " + currentVolume);
+        cancelled = false;
         fading = false;
     }
 
