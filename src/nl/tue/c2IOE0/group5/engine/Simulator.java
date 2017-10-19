@@ -89,7 +89,8 @@ public class Simulator {
      * @param provider The Provider to attach to the engine
      */
     public void addProvider(Provider provider) {
-        if (isRunning()) return;
+        if (running)
+            throw new IllegalStateException("Can't add providers after start!");
 
         providers.add(provider);
     }

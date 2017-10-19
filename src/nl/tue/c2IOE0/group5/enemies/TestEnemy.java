@@ -79,6 +79,6 @@ public class TestEnemy extends Enemy {
 
     @Override
     protected void onDie() {
-        renderer.unlinkMesh(cube);
+        if(renderer != null) renderer.unlinkMesh(cube);
     }
 }

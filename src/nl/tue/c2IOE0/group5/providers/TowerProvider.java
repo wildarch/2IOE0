@@ -22,6 +22,7 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
 
     @Override
     public void init(Simulator engine) {
+        super.init(engine);
         gridProvider = engine.getProvider(GridProvider.class);
         enemyProvider = engine.getProvider(EnemyProvider.class);
         bulletProvider = engine.getProvider(BulletProvider.class);

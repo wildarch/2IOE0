@@ -37,6 +37,7 @@ public class GridProvider extends ObjectProvider<Cell> {
 
     @Override
     public void init(Simulator engine) {
+        super.init(engine);
 
         // Create the player base cells
         int bordersize = (SIZE - PLAYFIELDSIZE - 1)/2;
