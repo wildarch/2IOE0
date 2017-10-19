@@ -3,6 +3,9 @@ package nl.tue.c2IOE0.group5.providers;
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
+import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
+import nl.tue.c2IOE0.group5.engine.rendering.Window;
+
 import javax.sound.sampled.*;
 import java.io.File;
 
@@ -18,10 +21,12 @@ public class MusicProvider extends Thread implements Provider {
     private long duration;
     private Timer loopTimer;
     private long timeToPlay;
+    private float baseVolume = 5f;
+    private float playVolume = 0f;
 
     @Override
     public void init(Engine engine) {
-        this.loopTimer = engine.getGameloopTimer();
+        this.loopTimer = engine.getRenderLoopTimer();
         this.engine = engine;
         try {
             String file = "res/soundfile.wav";
@@ -33,7 +38,7 @@ public class MusicProvider extends Thread implements Provider {
             this.clip.open(audioInputStream);
             this.gainControl =
                     (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-            gainControl.setValue(5f);
+            gainControl.setValue(baseVolume);
             this.clip.start();
         } catch (Exception e) {
             e.printStackTrace();
@@ -43,9 +48,9 @@ public class MusicProvider extends Thread implements Provider {
     @Override
     public void update() {
         if (engine.isPaused()) {
-            fadeVolumeTo(5f);
+            fadeVolumeTo(baseVolume);
         } else {
-            fadeVolumeTo(0);
+            fadeVolumeTo(playVolume);
         }
         if (timeToPlay < loopTimer.getLoopTime()) { //start again after 2 times the duration
             clip.start();
@@ -55,6 +60,10 @@ public class MusicProvider extends Thread implements Provider {
 
     public void stopMusic() {
         clip.stop();
+    }
+
+    public void setBaseVolume(float volume) {
+        this.baseVolume = volume;
     }
 
     private float targetVolume;
@@ -99,4 +108,8 @@ public class MusicProvider extends Thread implements Provider {
         fading = false;
     }
 
+    @Override
+    public void draw(Window window, Renderer renderer) {
+
+    }
 }

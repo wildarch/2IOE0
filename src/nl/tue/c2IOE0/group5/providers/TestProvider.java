@@ -1,7 +1,6 @@
 package nl.tue.c2IOE0.group5.providers;
 
 import nl.tue.c2IOE0.group5.engine.Engine;
-import nl.tue.c2IOE0.group5.engine.objects.GameObject;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
@@ -20,7 +19,7 @@ public class TestProvider implements Provider {
     public void init(Engine engine) {
         // initialize resources here, e.g.
         updatecounter = 0;
-        //this.object = new TestObject().init(engine.getRenderer());
+        this.object = new TestObject().init(engine.getRenderer());
     }
 
     public void ud() {
@@ -32,5 +31,11 @@ public class TestProvider implements Provider {
     public void update() {
         // do updates here using resources, e.g.
 
+    }
+
+    @Override
+    public void draw(Window window, Renderer renderer) {
+        object.setPosition(3f, 0.2f, 3f);
+        object.boink();
     }
 }

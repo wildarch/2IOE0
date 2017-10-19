@@ -79,7 +79,7 @@ class Transformation {
     }
 
     /**
-     * Get the modelview matrix. combining the model matrix with the view matrix to get a matrix representing model
+     * Get the modelview matrix with multi-axis scaling. combining the model matrix with the view matrix to get a matrix representing model
      * positioning relative to the camera.
      *
      * @param position The position of the model.

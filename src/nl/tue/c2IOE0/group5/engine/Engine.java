@@ -33,7 +33,7 @@ public class Engine {
     private Renderer renderer;
     private Hud hud;
     private InputHandler inputHandler;
-    private Timer timer;
+    private Timer renderTimer;
     private Camera camera;
 
     private List<Provider> providers;
@@ -41,8 +41,8 @@ public class Engine {
 
     public Engine(boolean render) {
         this.render = render;
-        timer = new Timer();
-        window = new Window("Tower Defence", 1600, 900, false, new Window.Options());
+        renderTimer = new Timer();
+        window = new Window("Tower Defence", 1600, 900, true, new Window.Options());
         renderer = new Renderer();
         hud = new Hud();
         inputHandler = new InputHandler();
@@ -72,7 +72,7 @@ public class Engine {
      * Initialize necessary objects
      */
     private void init() throws ShaderException, IOException {
-        timer.init();
+        renderTimer.init();
         window.init();
         renderer.init(window);
         renderer.setActiveCamera(camera);
@@ -94,7 +94,7 @@ public class Engine {
     }
 
     /**
-     * The gameloop in case of no rendering. Only update gamestate and don't do anything with regard to rendering.
+     * The gameloop in case of no rendering. Only updateFluent gamestate and don't do anything with regard to rendering.
      */
     private void renderlessLoop() {
         while(running && !window.shouldClose()) {
@@ -112,20 +112,21 @@ public class Engine {
      * tick-speed might cause missed events.
      */
     private void loop() {
-        long elapsedTime;
+        // milliseconds until next game-loop
         long tickTimer = 0;
 
+        // loop runs up to TARGET_FPS times per second
         while (running && !window.shouldClose()) {
-            timer.updateLoopTime();
-            elapsedTime = timer.getElapsedTime();
-            tickTimer += elapsedTime;
+            renderTimer.updateLoopTime();
+            tickTimer += renderTimer.getElapsedTime();
 
+            // only executes TARGET_TPS times per second, it is often skipped
             while (tickTimer >= TPS_INTERVAL) {
-                // update all controllers and providers
+                // updateFluent all controllers and providers
                 controllers.forEach(Controller::update);
                 providers.forEach(Provider::update);
 
-                // tick has been processed, remove 1 interval from tick timer
+                // tick has been processed, remove 1 interval from tick renderTimer
                 tickTimer -= TPS_INTERVAL;
             }
 
@@ -136,10 +137,11 @@ public class Engine {
 
                 // set main camera
                 renderer.setActiveCamera(camera);
-                // update projection matrix
+                // updateFluent projection matrix
                 window.updateProjectionMatrix();
 
                 // render everything
+                providers.forEach(provider -> provider.draw(window, renderer));
                 renderer.render();
 
                 // draw the hud
@@ -148,9 +150,9 @@ public class Engine {
 
             // sync up frame rate as desired
             if (!window.vSyncEnabled()) {
-                // manually sync up frame rate with the timer if vSync is disabled
-                long endTime = timer.getPreviousTime() + FPS_INTERVAL;
-                while (timer.getSystemTime() < endTime) {
+                // manually sync up frame rate with the renderTimer if vSync is disabled
+                long endTime = renderTimer.getPreviousTime() + FPS_INTERVAL;
+                while (renderTimer.getSystemTime() < endTime) {
                     try { // use sleep(1) for more accurate intervals
                         Thread.sleep(1);
                     } catch (InterruptedException ignored) {}
@@ -198,7 +200,7 @@ public class Engine {
 
     /**
      * Add a {@link Provider} to the Engine to keep track of. Providers should provide their own rendering and
-     * update logic. Furthermore, a Provider can be retrieved from the Engine by invoking {@link #getProvider(Class)}
+     * updateFluent logic. Furthermore, a Provider can be retrieved from the Engine by invoking {@link #getProvider(Class)}
      * using it's class as identifier (each provider class can only run once on the engine).
      *
      * @param provider The Provider to attach to the engine
@@ -263,8 +265,8 @@ public class Engine {
         this.paused = value;
     }
 
-    public Timer getGameloopTimer(){
-        return timer;
+    public Timer getRenderLoopTimer(){
+        return renderTimer;
     }
 
     public Renderer getRenderer() {
