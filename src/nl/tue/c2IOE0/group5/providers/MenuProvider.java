@@ -63,48 +63,38 @@ public class MenuProvider implements Provider<Engine>, Clickable {
         final int y = HEIGHT_FROM_TOP;
         final int offset = SPACE_BETWEEN_BUTTONS + UIElement.BUTTON_HEIGHT;
 
-
-        PositionState position = new PositionState(x, y, offset);
-        UIButton startGame = new MenuButton("Start Game", position, (event) -> engine.pause(false));
-        UIButton options = new MenuButton("Options", position, (event) -> activeElements = optionMenu);
+        UIButton startGame = new MenuButton("Start Game", (event) -> engine.pause(false));
+        UIButton options = new MenuButton("Options", (event) -> activeElements = optionMenu);
         {
-            PositionState optPos = new PositionState(x, y, offset);
-            UIButton graphics = new MenuButton("Graphics", optPos, (event) -> { activeElements = graphicsMenu; });
+            UIButton graphics = new MenuButton("Graphics", (event) -> { activeElements = graphicsMenu; });
             {
-                PositionState graPos = new PositionState(x, y, offset);
-                UIButton shadow = new MenuToggle("Shadow", graPos, (b) -> renderer.setShadowMapping(b));
-                UIButton vsync = new MenuToggle("vSync", graPos, (b) -> window.getOptions().vSync = b);
-                UIButton antia = new MenuToggle("Anti Aliasing", graPos, (b) -> window.getOptions().antialiasing = b ? 4 : 0);
-                UIButton backGraphics = new MenuButton("Back", graPos, (event) -> activeElements = optionMenu);
+                UIButton shadow = new MenuToggle("Shadow", (b) -> renderer.setShadowMapping(b));
+                UIButton vsync = new MenuToggle("vSync", (b) -> window.getOptions().vSync = b);
+                UIButton antia = new MenuToggle("Anti Aliasing", (b) -> window.getOptions().antialiasing = b ? 4 : 0);
+                UIButton backGraphics = new MenuButton("Back", (event) -> activeElements = optionMenu);
                 graphicsMenu = new UIButton[]{shadow, vsync, antia, backGraphics};
             }
-            UIButton audio = new MenuButton("Audio", optPos, (event) -> activeElements = audioMenu);
+            UIButton audio = new MenuButton("Audio", (event) -> activeElements = audioMenu);
             {
-                PositionState audPos = new PositionState(x, y, offset);
-                UIButton master = new MenuSlider("Volume", audPos, (i) -> musicProvider.setBaseVolume((i < 0.05f ? 0.05f : i)));
-                UIButton toggleAudio = new MenuToggle("Music", audPos, (i) -> musicProvider.toggle());
-                UIButton backAudio = new MenuButton("Back", audPos, (event) -> activeElements = optionMenu);
+                UIButton master = new MenuSlider("Volume", (i) -> musicProvider.setBaseVolume((i < 0.05f ? 0.05f : i)));
+                UIButton toggleAudio = new MenuToggle("Music", (i) -> musicProvider.toggle());
+                UIButton backAudio = new MenuButton("Back", (event) -> activeElements = optionMenu);
                 audioMenu = new UIButton[]{master, toggleAudio, backAudio};
             }
 
-            UIButton parameters = new MenuButton("Parameters", optPos, (event) -> {});
-            UIButton gameState = new MenuButton("Game state", optPos, (event) -> {});
-            UIButton backOptions = new MenuButton("Back", optPos, (event) -> activeElements = mainMenu);
+            UIButton parameters = new MenuButton("Parameters", (event) -> {});
+            UIButton gameState = new MenuButton("Game state", (event) -> {});
+            UIButton backOptions = new MenuButton("Back", (event) -> activeElements = mainMenu);
             optionMenu = new UIButton[]{graphics, audio, parameters, gameState, backOptions};
         }
-        UIButton credits = new MenuButton("Credits", position, (event) -> activeElements = creditScreen);
-        UIButton exitGame = new MenuButton("Exit Game", position, (event) -> window.close());
+        UIButton credits = new MenuButton("Credits", (event) -> activeElements = creditScreen);
+        {
+            UIElement credit = new MenuTextField("Credits", creditTextfield, (int) (BUTTON_WIDTH*1.5), 500);
+            MenuButton creditBackButton = new MenuButton("Back", (event) -> activeElements = mainMenu);
+            creditScreen = new UIElement[]{credit, creditBackButton};
+        }
+        UIButton exitGame = new MenuButton("Exit Game", (event) -> window.close());
         mainMenu = new UIButton[]{startGame, options, credits, exitGame};
-
-        MenuButton creditBackButton = new MenuButton("Back",
-                ((window.getWidth() + UITextField.getWidth(window)) / 2) - BUTTON_WIDTH,
-                window.getHeight() - (BUTTON_HEIGHT + 100),
-                (event) -> activeElements = mainMenu
-        );
-        creditScreen = new UIElement[]{
-                new UITextField("Credits", creditTextfield, window),
-                creditBackButton
-        };
 
         this.hud = engine.getHud();
         activeElements = mainMenu;
@@ -137,8 +127,12 @@ public class MenuProvider implements Provider<Engine>, Clickable {
     public void draw(Window window, Renderer renderer) {
         PositionState position = new PositionState((window.getWidth()/2) - (BUTTON_WIDTH/2), HEIGHT_FROM_TOP,
                 SPACE_BETWEEN_BUTTONS + UIElement.BUTTON_HEIGHT);
+        MenuPositioner pos = new MenuPositioner((window.getWidth()/2), HEIGHT_FROM_TOP);
+
         for (UIElement element : activeElements) {
-            element.setX(position.getX()); element.setY(position.getY());
+            Vector2i p = pos.place(element, true);
+            element.setX(p.x - element.getWidth()/2);
+            element.setY(p.y);
         }
     }
 }

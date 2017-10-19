@@ -44,4 +44,11 @@ public abstract class UIElement implements HudElement {
         this.y = y;
     }
 
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
 }

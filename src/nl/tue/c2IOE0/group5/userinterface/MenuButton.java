@@ -3,6 +3,7 @@ package nl.tue.c2IOE0.group5.userinterface;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.MouseEvent;
 import nl.tue.c2IOE0.group5.engine.rendering.Hud;
 import nl.tue.c2IOE0.group5.util.PositionState;
+import org.joml.Vector2i;
 
 import java.util.function.Consumer;
 
@@ -18,6 +19,10 @@ public class MenuButton extends UIButton {
 
     private Consumer<MouseEvent> click;
 
+    public MenuButton(String text, Consumer<MouseEvent> click) {
+        this(text, 0, 0, click);
+    }
+
     public MenuButton(String text, int x, int y, Consumer<MouseEvent> click) {
         this(text, x, y, BUTTON_WIDTH, BUTTON_HEIGHT, click);
     }
@@ -26,6 +31,10 @@ public class MenuButton extends UIButton {
         super(x, y, width, height);
         this.text = text;
         this.click = click;
+    }
+
+    public MenuButton(String text, Vector2i pos, Consumer<MouseEvent> click){
+        this(text, pos.x, pos.y, click);
     }
 
     public MenuButton(String text, PositionState state, Consumer<MouseEvent> click){

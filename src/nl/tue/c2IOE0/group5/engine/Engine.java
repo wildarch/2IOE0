@@ -32,7 +32,7 @@ public class Engine extends Simulator {
     public Engine() {
         super(sim -> ((Engine) sim).getWindow().shouldClose());
         renderTimer = new Timer();
-        window = new Window("Tower Defence", 1600, 900, false, new Window.Options());
+        window = new Window("Tower Defence", 1600, 900, true, new Window.Options());
         renderer = new Renderer();
         hud = new Hud();
         inputHandler = new InputHandler();

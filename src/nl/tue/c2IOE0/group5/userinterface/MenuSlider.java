@@ -3,6 +3,7 @@ package nl.tue.c2IOE0.group5.userinterface;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.MouseEvent;
 import nl.tue.c2IOE0.group5.engine.rendering.Hud;
 import nl.tue.c2IOE0.group5.util.PositionState;
+import org.joml.Vector2i;
 
 import java.util.function.Consumer;
 
@@ -26,6 +27,10 @@ public class MenuSlider extends UIButton {
 
     public MenuSlider(String text, int x, int y, Consumer<Float> handler) {
         this(text, x, y, BUTTON_WIDTH, BUTTON_HEIGHT, handler);
+    }
+
+    public MenuSlider(String text, Consumer<Float> handler) {
+        this(text, 0, 0, handler);
     }
 
     public MenuSlider(String name, PositionState pos, Consumer<Float> handler) {
