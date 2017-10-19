@@ -20,6 +20,9 @@ public class PositionInterpolator {
     private long targetReachTime = 0;
     private float speed;    // In milliseconds
 
+
+    private float time = 0;
+
     /**
      * Creates a new PositionInterpolator
      * @param p The positionable to move
@@ -41,6 +44,7 @@ public class PositionInterpolator {
         this.target = new Vector3f(target);
         float distance = target.distance(position.toImmutable());
         targetReachTime = currentTime + (long)(distance / speed);
+        time = 0;
     }
 
     /**
@@ -53,6 +57,7 @@ public class PositionInterpolator {
         if (currentTime > targetReachTime) {
             if (target != null) p.setPosition(target);
             target = null;
+            time = 0;
             targetReachTime = Long.MAX_VALUE;
             return true;
         }
@@ -67,11 +72,13 @@ public class PositionInterpolator {
      */
     public boolean draw(float deltaTime) {
         if(target == null) return true;
+        time += deltaTime;
         float step = deltaTime * speed;
-        p.move(getDirection().mul(step * 0.125f));
+        p.move(getDirection().mul(step));
         float distance = p.getPosition().distance(target.toImmutable());
         if (distance < EPSILON) {
             target = null;
+            System.out.println("Time: " + time + " should be " + (distance / speed));
             return true;
         }
         return false;

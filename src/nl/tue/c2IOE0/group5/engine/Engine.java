@@ -82,11 +82,10 @@ public class Engine extends Simulator {
      */
     @Override
     protected void step() {
-        timer.updateLoopTime();
-        long elapsedTime = timer.getElapsedTime();
+        long elapsedTime = timer.getSystemTime() - timer.getLoopTime();
 
         while (elapsedTime >= TPS_INTERVAL) {
-            System.out.println(elapsedTime);
+            timer.updateLoopTime();
             // update all controllers and providers
             controllers.forEach(Controller::update);
             providers.forEach(Provider::update);
