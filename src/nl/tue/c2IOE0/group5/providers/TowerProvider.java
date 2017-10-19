@@ -26,11 +26,11 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
         enemyProvider = engine.getProvider(EnemyProvider.class);
         bulletProvider = engine.getProvider(BulletProvider.class);
         loopTimer = engine.getGameloopTimer();
+        putMainTower();
     }
 
     @Override
     public void renderInit(Engine engine) {
-        putMainTower();
         Mesh m = engine.getRenderer().linkMesh("/tower.obj");
         m.setMaterial(new Material("/tower.png"));
     }

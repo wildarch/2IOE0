@@ -35,7 +35,7 @@ public class Simulator {
         this.stopCondition = stopCondition;
         timer = new Timer();
         providers = new ArrayList<>();
-        time = 0;
+        time = System.currentTimeMillis();
     }
 
     /**
