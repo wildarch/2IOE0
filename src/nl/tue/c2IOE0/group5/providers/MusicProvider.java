@@ -146,7 +146,6 @@ public class MusicProvider extends Thread implements Provider {
         }
         cancelled = false;
         fading = false;
-        System.err.println("fading ended, currVol: " + currentVolume);
     }
 
     @Override
