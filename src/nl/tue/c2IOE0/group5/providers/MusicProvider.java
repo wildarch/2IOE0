@@ -67,6 +67,17 @@ public class MusicProvider extends Thread implements Provider {
         }
     }
 
+    private boolean on = true;
+    public void toggle() {
+        if (on) {
+            on = false;
+            stopMusic();
+        } else {
+            on = true;
+            init(engine);
+        }
+    }
+
     public void setBaseVolume(float volume) {
         this.baseVolume = volume;
         fadeVolumeTo(baseVolume, true);

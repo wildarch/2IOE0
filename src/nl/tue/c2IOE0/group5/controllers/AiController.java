@@ -83,13 +83,13 @@ public class AiController implements Controller, Listener {
         }
     }
 
-    public void trainQLearner() {
+    private void trainQLearner() {
         int noIterations = 1000;
         qlearner = new QLearner(GridProvider.SIZE, noIterations);
-        qlearner.updateRewardsMatrix(qlearner.getState(GridProvider.SIZE/2, GridProvider.SIZE/2), 1000);
+        qlearner.updateRewardsMatrix(QLearner.getState(GridProvider.SIZE/2, GridProvider.SIZE/2), 1000);
         for (int i = 3; i <= 9; i++) {
-            qlearner.updateRewardsMatrix(qlearner.getState(3, i), -5);
-            qlearner.updateRewardsMatrix(qlearner.getState(9, i), -5);
+            qlearner.updateRewardsMatrix(QLearner.getState(3, i), -5);
+            qlearner.updateRewardsMatrix(QLearner.getState(9, i), -5);
         }
         for (int i = 0; i < 20; i++) {
             qlearner.generateRandomPath(100);
@@ -118,7 +118,7 @@ public class AiController implements Controller, Listener {
     @Override
     public void onMouseButtonPressed(MouseEvent event) {
         if (event.getSubject() == GLFW_MOUSE_BUTTON_1) {
-            optimalPath = qlearner.getOptimalPath(qlearner.getState(gridProvider.getActiveCell()));
+            optimalPath = qlearner.getOptimalPath(QLearner.getState(gridProvider.getActiveCell()));
             gridProvider.drawPath(optimalPath);
         }
     }

@@ -82,8 +82,9 @@ public class MenuProvider implements Provider, Clickable {
             {
                 PositionState audPos = new PositionState(x, y, offset);
                 UIButton master = new MenuSlider("Volume", audPos, (i) -> musicProvider.setBaseVolume((i < 0.05f ? 0.05f : i)));
+                UIButton toggleAudio = new MenuToggle("Music", audPos, (i) -> musicProvider.toggle());
                 UIButton backAudio = new MenuButton("Back", audPos, (event) -> activeElements = optionMenu);
-                audioMenu = new UIButton[]{master, backAudio};
+                audioMenu = new UIButton[]{master, toggleAudio, backAudio};
             }
 
             UIButton parameters = new MenuButton("Parameters", optPos, (event) -> {});

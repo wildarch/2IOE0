@@ -19,13 +19,13 @@ import java.util.Random;
 
 public class QLearner {
 
-    Integer[][] rewards;
-    int[] policy;
-    List<Integer[]> paths;
-    int noIterations;
-    List<Integer> outerStates;
+    private Integer[][] rewards;
+    private int[] policy;
+    private List<Integer[]> paths;
+    private int noIterations;
+    private List<Integer> outerStates;
 
-    Double[][] Q;
+    private Double[][] Q;
 
     /**
      * @param gridSize obvious
@@ -257,8 +257,8 @@ public class QLearner {
 
     /**
      * Get the n best spawnstates
-     * @param n
-     * @return
+     * @param n the number of spawnstates to get
+     * @return the best n spawnstates
      */
     public Vector2i[] getOptimalNSpawnStates(int n) {
         int[] maxQ = new int[n];
