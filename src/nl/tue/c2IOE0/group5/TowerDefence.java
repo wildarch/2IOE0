@@ -20,7 +20,7 @@ public class TowerDefence {
         Engine e = new Engine();
         e.addProviders(new Provider[] {
                 new MenuProvider(),
-                new TestProvider(),
+                //new TestProvider(),
                 new EnemyProvider(),
                 new AnimationProvider(),
                 new GridProvider(),
