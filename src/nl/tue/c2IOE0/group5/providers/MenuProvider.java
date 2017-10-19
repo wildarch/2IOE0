@@ -20,17 +20,17 @@ import static nl.tue.c2IOE0.group5.userinterface.UIElement.BUTTON_WIDTH;
 public class MenuProvider implements Provider, Clickable {
 
     private final static String[] creditTextfield = // newlines with backslash because of Regex splitting
-            ("Staff:/" +
-                    "Tim Beurskens/" +
-                    "Daan Drijver/" +
-                    "Daan de Graaf/" +
-                    "Jorren Hendriks/" +
-                    "Geert van Ieperen/" +
-                    "Tom Peters/" +
-                    "Yoeri Poels/" +
-                    "/" +
+            ("Staff:\n" +
+                    "Tim Beurskens\n" +
+                    "Daan Drijver\n" +
+                    "Daan de Graaf\n" +
+                    "Jorren Hendriks\n" +
+                    "Geert van Ieperen\n" +
+                    "Tom Peters\n" +
+                    "Yoeri Poels\n" +
+                    "\n" +
             "Produced by TU/entertainment"
-            ).split("/");
+            ).split("\n");
 
 
     private static final int HEIGHT_FROM_TOP = 100;
