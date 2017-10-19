@@ -55,7 +55,8 @@ public class MusicProvider extends Thread implements Provider<Engine> {
     }
 
     public void cleanup() {
-        clip.stop();
+        if (clip != null)
+            clip.stop();
         cancelled = true;
         try {
             t.join();
