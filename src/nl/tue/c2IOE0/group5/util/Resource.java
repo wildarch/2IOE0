@@ -33,7 +33,7 @@ public class Resource {
         return result;
     }
 
-    public static List<String> readAllLines(String fileName) throws Exception {
+    public static List<String> readAllLines(String fileName) throws IOException {
         List<String> list = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new InputStreamReader(Resource.class.getClass().getResourceAsStream(fileName)))) {
             String line;
