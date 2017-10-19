@@ -2,7 +2,9 @@ package nl.tue.c2IOE0.group5.towers;
 
 import nl.tue.c2IOE0.group5.enemies.Enemy;
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
+import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
+import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import org.joml.Vector3f;
 
 public class Bullet extends GameObject {
@@ -32,6 +34,8 @@ public class Bullet extends GameObject {
         this.color = new Vector3f(0.5f, 0, 0.5f);
         setPosition(b.getPosition());
     }
+
+
 
     /*
     private void setMesh() {
@@ -71,8 +75,11 @@ public class Bullet extends GameObject {
     }
 
     @Override
-    public GameObject init(Renderer renderer) {
-        renderer.linkMesh("b4.obj", () -> {
+    public Bullet init(Renderer renderer) {
+        setScale(0.05f);
+        Mesh bullet = renderer.linkMesh("/b4.obj");
+        bullet.setMaterial(new Material("/square.png"));
+        renderer.linkMesh(bullet, () -> {
             setModelView(renderer);
             renderer.ambientLight(color);
             renderer.noDirectionalLight();

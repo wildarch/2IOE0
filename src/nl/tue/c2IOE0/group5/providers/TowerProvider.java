@@ -33,7 +33,7 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
 
     private void putMainTower() {
         int x = GridProvider.SIZE / 2;
-        mainTower = new MainTower(enemyProvider, bulletProvider, loopTimer).init(renderer);
+        mainTower = new MainTower(enemyProvider, bulletProvider, loopTimer, renderer).init(renderer);
         gridProvider.placeTower(x, x, mainTower);
         objects.add(mainTower);
     }
