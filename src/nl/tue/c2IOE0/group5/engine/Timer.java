@@ -48,9 +48,19 @@ public class Timer {
         return time.previous();
     }
 
+    /**
+     * Set the loop time to the current time
+     */
     public void updateLoopTime(){
-        time.update(System.currentTimeMillis());
+        updateLoopTime(System.currentTimeMillis());
     }
 
-    public void updateTickTime() { tickTime.update(System.currentTimeMillis()); }
+    /**
+     * Set the loop time (useful for mocking a timer)
+     * @param millis
+     */
+    public void updateLoopTime(long millis){
+        time.update(millis);
+    }
+
 }

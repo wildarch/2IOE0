@@ -153,19 +153,8 @@ public abstract class AbstractTower extends GameObject {
 
         public HealthBolletje(AbstractTower t) {
             this.tower = t;
-            setMesh();
             color =  new Vector3f(0f, 1f, 0f);
         }
-
-        /*
-        @Override
-        public void draw(Window window, Renderer renderer) {
-            super.draw(window, renderer);
-            renderer.ambientLight(color, () ->
-                    renderer.noDirectionalLight(() -> mesh.draw(renderer))
-            );
-        }
-        */
 
         @Override
         public void update() {
@@ -175,24 +164,12 @@ public abstract class AbstractTower extends GameObject {
             this.setPosition(tower.getPosition().add(new Vector3f(0, 2.5f, 0)));
         }
 
-        private void setMesh() {
-            try {
-                Mesh m = OBJLoader.loadMesh("/health.obj");
-                this.mesh = m;
-                m.setMaterial(new Material("/square.png"));
-                setScale(10f);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to load Tower model");
-            }
-        }
-
         @Override
-        public GameObject init(Renderer renderer) {
+        public void renderInit(Renderer renderer) {
             setPosition(tower.getPosition().add(new Vector3f(0, 2.5f, 0)));
             renderer.linkMesh("/health.obj", () -> {
                         setModelView(renderer);
                     });
-            return this;
         }
     }
 }

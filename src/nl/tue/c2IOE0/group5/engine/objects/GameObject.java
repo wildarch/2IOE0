@@ -1,5 +1,6 @@
 package nl.tue.c2IOE0.group5.engine.objects;
 
+import nl.tue.c2IOE0.group5.engine.GameState;
 import nl.tue.c2IOE0.group5.engine.provider.Updatable;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import org.joml.Vector3f;
@@ -68,10 +69,20 @@ public abstract class GameObject extends Positionable implements Updatable {
     }
 
     /**
-     * Initialize the gameobject. Link meshes here and define their render methods.
+     * Initialize the GameObject. calls renderInit if a renderer was passed
      *
      * @param renderer An instance of the renderer that will draw this object.
      * @return this object.
      */
-    public abstract GameObject init(Renderer renderer);
+    public final <T extends GameObject> T init(Renderer renderer){
+        if (renderer != null) renderInit(renderer);
+        return (T) this;
+    }
+
+    /**
+     * Link meshes here and set parameters.
+     * @param renderer An instance of the renderer that will draw this object.
+     * @return this object.
+     */
+    protected abstract void renderInit(Renderer renderer);
 }

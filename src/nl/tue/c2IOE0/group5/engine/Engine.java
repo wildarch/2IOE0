@@ -17,92 +17,53 @@ import java.util.List;
 /**
  * @author Jorren Hendriks.
  */
-public class Engine {
-
-    private final static int TARGET_TPS = 20;
-    private final static int TARGET_FPS = 144;
-
-    private final static int TPS_INTERVAL = 1000 / TARGET_TPS;
-    private final static int FPS_INTERVAL = 1000 / TARGET_FPS;
-
-    private final boolean render;
-    private boolean running = false;
-    private boolean paused = false;
+public class Engine extends Simulator {
 
     private Window window;
     private Renderer renderer;
     private Hud hud;
     private InputHandler inputHandler;
-    private Timer timer;
     private Camera camera;
 
-    private List<Provider> providers;
-    private List<Controller> controllers;
+    protected List<Controller> controllers;
+    private long tickTimer;
 
-    public Engine(boolean render) {
-        this.render = render;
-        timer = new Timer();
+    public Engine() {
+        super(sim -> ((Engine) sim).getWindow().shouldClose());
         window = new Window("Tower Defence", 1600, 900, false, new Window.Options());
         renderer = new Renderer();
         hud = new Hud();
         inputHandler = new InputHandler();
         camera = new Camera(this);
-        providers = new ArrayList<>();
         controllers = new ArrayList<>();
     }
 
-    /**
-     * Run the Engine, should be invoked after initializing and attaching {@link Controller}s and {@link Provider}s.
-     */
-    public void run() throws ShaderException, IOException {
-        try {
-            running = true;
-            init();
-            if (render) {
-                loop();
-            } else {
-                renderlessLoop();
-            }
-        } finally {
-            cleanup();
-        }
-    }
 
     /**
      * Initialize necessary objects
      */
-    private void init() throws ShaderException, IOException {
-        timer.init();
+    @Override
+    protected void init() throws ShaderException, IOException {
         window.init();
         renderer.init(window);
         renderer.setActiveCamera(camera);
         hud.init(window);
         inputHandler.init(window);
-        providers.forEach(provider -> provider.init(this));
+        super.init();
         controllers.forEach(controller -> controller.init(this));
     }
 
     /**
      * Cleanup used objects
      */
-    private void cleanup() {
-        if (render) {
-            window.cleanup();
-            renderer.cleanup();
-            hud.cleanup();
-        }
+    @Override
+    protected void cleanup() {
+        super.cleanup();
+        window.cleanup();
+        renderer.cleanup();
+        hud.cleanup();
     }
 
-    /**
-     * The gameloop in case of no rendering. Only update gamestate and don't do anything with regard to rendering.
-     */
-    private void renderlessLoop() {
-        while(running && !window.shouldClose()) {
-            window.update();
-            controllers.forEach(Controller::update);
-            providers.forEach(Provider::update);
-        }
-    }
 
     /**
      * The main game loop. Graphic rendering is done at the speed of {@value TARGET_FPS} frames per second unless vSync
@@ -111,52 +72,48 @@ public class Engine {
      * {@value TARGET_TPS} ticks per second. Input handling is done at the same speed as the rendering since a slow
      * tick-speed might cause missed events.
      */
-    private void loop() {
-        long elapsedTime;
-        long tickTimer = 0;
+    @Override
+    protected void step() {
+        timer.updateLoopTime();
+        long elapsedTime = timer.getElapsedTime();
+        tickTimer += elapsedTime;
 
-        while (running && !window.shouldClose()) {
-            timer.updateLoopTime();
-            elapsedTime = timer.getElapsedTime();
-            tickTimer += elapsedTime;
+        while (tickTimer >= TPS_INTERVAL) {
+            // update all controllers and providers
+            controllers.forEach(Controller::update);
+            providers.forEach(Provider::update);
 
-            while (tickTimer >= TPS_INTERVAL) {
-                // update all controllers and providers
-                controllers.forEach(Controller::update);
-                providers.forEach(Provider::update);
+            // tick has been processed, remove 1 interval from tick timer
+            tickTimer -= TPS_INTERVAL;
+        }
 
-                // tick has been processed, remove 1 interval from tick timer
-                tickTimer -= TPS_INTERVAL;
-            }
+        // draw
+        if (window.update()) {
+            // fire non-native events
+            inputHandler.fire();
 
-            // draw
-            if (window.update()) {
-                // fire non-native events
-                inputHandler.fire();
+            // set main camera
+            renderer.setActiveCamera(camera);
+            // update projection matrix
+            window.updateProjectionMatrix();
 
-                // set main camera
-                renderer.setActiveCamera(camera);
-                // update projection matrix
-                window.updateProjectionMatrix();
+            // render everything
+            renderer.render();
 
-                // render everything
-                renderer.render();
+            // draw the hud
+            hud.draw(window, renderer);
+        }
 
-                // draw the hud
-                hud.draw(window, renderer);
-            }
-
-            // sync up frame rate as desired
-            if (!window.vSyncEnabled()) {
-                // manually sync up frame rate with the timer if vSync is disabled
-                long endTime = timer.getPreviousTime() + FPS_INTERVAL;
-                while (timer.getSystemTime() < endTime) {
-                    try { // use sleep(1) for more accurate intervals
-                        Thread.sleep(1);
-                    } catch (InterruptedException ignored) {}
+        // sync up frame rate as desired
+        if (!window.vSyncEnabled()) {
+            // manually sync up frame rate with the timer if vSync is disabled
+            long endTime = timer.getPreviousTime() + FPS_INTERVAL;
+            while (timer.getSystemTime() < endTime) {
+                try { // use sleep(1) for more accurate intervals
+                    Thread.sleep(1);
+                } catch (InterruptedException ignored) {
                 }
             }
-
         }
     }
 
@@ -196,63 +153,12 @@ public class Engine {
         }
     }
 
-    /**
-     * Add a {@link Provider} to the Engine to keep track of. Providers should provide their own rendering and
-     * update logic. Furthermore, a Provider can be retrieved from the Engine by invoking {@link #getProvider(Class)}
-     * using it's class as identifier (each provider class can only run once on the engine).
-     *
-     * @param provider The Provider to attach to the engine
-     */
-    public void addProvider(Provider provider) {
-        if (isRunning()) return;
-
-        providers.add(provider);
-    }
-
-    /**
-     * Add multiple Providers. See {@link #addProvider(Provider)}.
-     *
-     * @param providers The Providers to attach to the engine
-     */
-    public void addProviders(Provider[] providers) {
-        for (Provider provider : providers) {
-            addProvider(provider);
-        }
-    }
-
-    /**
-     * Get an active {@link Provider} by class type. If at a certain point you don't have a reference to a certain
-     * Provider you can get said Provider using this method.
-     *
-     * @param type The class type of the provider
-     * @return An instance of the attached provider
-     * @throws IllegalArgumentException if the provider is not currently an active provider
-     * @throws ClassCastException if the provider is of a different class type as requested.
-     */
-    public <T extends Provider> T getProvider(Class<T> type) {
-        for (Provider provider : providers) {
-            if (type.isInstance(provider)) {
-                return type.cast(provider);
-            }
-        }
-        throw new IllegalArgumentException("Requested Provider does not exist");
-    }
-
     public Camera getCamera() {
         return camera;
     }
 
     public Hud getHud() {
         return hud;
-    }
-
-    /**
-     * Reports whether the Engine is currently running
-     *
-     * @return Whether the engine is running
-     */
-    public boolean isRunning() {
-        return running;
     }
 
     public boolean isPaused() {
@@ -263,12 +169,7 @@ public class Engine {
         this.paused = value;
     }
 
-    public Timer getGameloopTimer(){
-        return timer;
-    }
-
     public Renderer getRenderer() {
         return this.renderer;
     }
-
 }

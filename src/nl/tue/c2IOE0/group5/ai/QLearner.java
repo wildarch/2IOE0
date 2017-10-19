@@ -1,4 +1,4 @@
-package nl.tue.c2IOE0.group5.controllers;
+package nl.tue.c2IOE0.group5.ai;
 
 import nl.tue.c2IOE0.group5.providers.GridProvider;
 import org.joml.Vector2i;

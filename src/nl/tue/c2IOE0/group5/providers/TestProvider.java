@@ -1,6 +1,7 @@
 package nl.tue.c2IOE0.group5.providers;
 
 import nl.tue.c2IOE0.group5.engine.Engine;
+import nl.tue.c2IOE0.group5.engine.Simulator;
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
@@ -17,7 +18,7 @@ public class TestProvider implements Provider {
     private TestObject object;
 
     @Override
-    public void init(Engine engine) {
+    public void init(Simulator engine) {
         // initialize resources here, e.g.
         updatecounter = 0;
         //this.object = new TestObject().init(engine.getRenderer());

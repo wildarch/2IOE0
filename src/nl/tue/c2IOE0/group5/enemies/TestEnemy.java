@@ -67,7 +67,7 @@ public class TestEnemy extends Enemy {
     }
 
     @Override
-    public TestEnemy init(Renderer renderer) {
+    public void renderInit(Renderer renderer) {
         setScale(0.25f);
 
         cube = renderer.linkMesh("/cube.obj", () -> {
@@ -75,7 +75,6 @@ public class TestEnemy extends Enemy {
             renderer.ambientLight(new Vector3f(0f, 0f,1f ));
         });
         this.renderer = renderer;
-        return this;
     }
 
     @Override

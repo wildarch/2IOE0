@@ -20,7 +20,7 @@ public class TestObject extends GameObject {
     }
 
     @Override
-    public TestObject init(Renderer renderer) {
+    public void renderInit(Renderer renderer) {
         try {
             InstancedMesh tower = renderer.linkMesh("/tower.obj", () -> {
                 setModelView(renderer);
@@ -29,8 +29,6 @@ public class TestObject extends GameObject {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return this;
     }
 
     public void boink() {

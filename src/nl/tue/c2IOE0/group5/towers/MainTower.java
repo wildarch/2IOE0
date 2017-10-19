@@ -26,27 +26,14 @@ public class MainTower extends AbstractTower {
     }
 
     @Override
-    public MainTower init(Renderer renderer) {
+    public void renderInit(Renderer renderer) {
         setScale(40f);
 
         iMesh = renderer.linkMesh("/tower.obj", () -> {
             setModelView(renderer);
         });
 
-        /*
-        render = mesh -> {
-            setModelView(renderer);
-            mesh.draw();
-        };
-        shadowRender = mesh -> {
-            setModelLightView(renderer);
-            mesh.draw();
-        };
-        mesh = renderer.linkMesh("/tower.obj", render, shadowRender);
-        */
-
         this.renderer = renderer;
-        return this;
     }
 
     @Override

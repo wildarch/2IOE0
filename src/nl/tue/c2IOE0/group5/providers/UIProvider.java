@@ -1,6 +1,7 @@
 package nl.tue.c2IOE0.group5.providers;
 
 import nl.tue.c2IOE0.group5.engine.Engine;
+import nl.tue.c2IOE0.group5.engine.Simulator;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.MouseEvent;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
 import nl.tue.c2IOE0.group5.engine.rendering.Hud;
@@ -21,7 +22,7 @@ import static org.lwjgl.nanovg.NanoVG.NVG_ALIGN_TOP;
 /**
  * @author Jorren
  */
-public class UIProvider implements Provider {
+public class UIProvider implements Provider<Engine> {
 
     private Engine engine;
     private Hud hud;

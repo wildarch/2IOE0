@@ -1,6 +1,7 @@
 package nl.tue.c2IOE0.group5.providers;
 
 import nl.tue.c2IOE0.group5.engine.Engine;
+import nl.tue.c2IOE0.group5.engine.Simulator;
 import nl.tue.c2IOE0.group5.engine.objects.Camera;
 import nl.tue.c2IOE0.group5.engine.objects.Skybox;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
@@ -10,7 +11,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.Window;
 /**
  * @author Jorren Hendriks.
  */
-public class BackgroundProvider implements Provider {
+public class BackgroundProvider implements Provider<Engine> {
 
     private Skybox skybox;
     private Camera camera;

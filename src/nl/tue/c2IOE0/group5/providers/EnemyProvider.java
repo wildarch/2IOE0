@@ -3,6 +3,7 @@ package nl.tue.c2IOE0.group5.providers;
 import nl.tue.c2IOE0.group5.enemies.Enemy;
 import nl.tue.c2IOE0.group5.enemies.TestEnemy;
 import nl.tue.c2IOE0.group5.engine.Engine;
+import nl.tue.c2IOE0.group5.engine.Simulator;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.provider.ObjectProvider;
 import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
@@ -19,15 +20,17 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
 
     private Timer loopTimer;
     private GridProvider gridProvider;
-    private Renderer renderer;
 
     @Override
-    public void init(Engine engine) {
+    public void init(Simulator engine) {
         loopTimer = engine.getGameloopTimer();
         gridProvider = engine.getProvider(GridProvider.class);
+    }
+
+    @Override
+    public void renderInit(Engine engine) {
         Mesh m = engine.getRenderer().linkMesh("/cube.obj");
         m.setMaterial(new Material("/square.png"));
-        renderer = engine.getRenderer();
     }
 
     @Override
@@ -51,7 +54,6 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
                 gridProvider,
                 initialPosition,
                 targets, 20
-        ).init(renderer));
+        ).init(getRenderer()));
     }
-
 }

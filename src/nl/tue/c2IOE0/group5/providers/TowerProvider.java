@@ -1,6 +1,7 @@
 package nl.tue.c2IOE0.group5.providers;
 
 import nl.tue.c2IOE0.group5.engine.Engine;
+import nl.tue.c2IOE0.group5.engine.Simulator;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.provider.ObjectProvider;
 import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
@@ -18,15 +19,17 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
     BulletProvider bulletProvider;
     private MainTower mainTower;
     private Timer loopTimer;
-    private Renderer renderer;
 
     @Override
-    public void init(Engine engine) {
+    public void init(Simulator engine) {
         gridProvider = engine.getProvider(GridProvider.class);
         enemyProvider = engine.getProvider(EnemyProvider.class);
         bulletProvider = engine.getProvider(BulletProvider.class);
         loopTimer = engine.getGameloopTimer();
-        renderer = engine.getRenderer();
+    }
+
+    @Override
+    public void renderInit(Engine engine) {
         putMainTower();
         Mesh m = engine.getRenderer().linkMesh("/tower.obj");
         m.setMaterial(new Material("/tower.png"));
@@ -35,7 +38,7 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
     private void putMainTower() {
         int x = GridProvider.SIZE / 2;
         Cell baseCell = gridProvider.getCell(x, x);
-        mainTower = new MainTower(enemyProvider, bulletProvider, loopTimer).init(renderer);
+        mainTower = new MainTower(enemyProvider, bulletProvider, loopTimer).init(getRenderer());
         baseCell.placeTower(mainTower);
         objects.add(mainTower);
     }

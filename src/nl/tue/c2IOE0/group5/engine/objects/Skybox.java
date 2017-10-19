@@ -28,7 +28,7 @@ public class Skybox extends GameObject {
     }
 
     @Override
-    public Skybox init(Renderer renderer) {
+    public void renderInit(Renderer renderer) {
         try {
             InstancedMesh mesh = renderer.linkMesh(model, () -> {
                 setModelView(renderer);
@@ -39,8 +39,6 @@ public class Skybox extends GameObject {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return this;
     }
 
     @Override

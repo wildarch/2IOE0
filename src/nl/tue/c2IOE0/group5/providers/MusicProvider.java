@@ -7,7 +7,7 @@ import javax.sound.sampled.*;
 import java.io.File;
 
 
-public class MusicProvider extends Thread implements Provider {
+public class MusicProvider extends Thread implements Provider<Engine> {
 
     private Engine engine;
     private Clip clip;

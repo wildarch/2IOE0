@@ -19,7 +19,7 @@ import static nl.tue.c2IOE0.group5.userinterface.MenuItem.BUTTON_WIDTH;
 /**
  * @author Geert van Ieperen
  */
-public class MenuProvider implements Provider, Clickable {
+public class MenuProvider implements Provider<Engine>, Clickable {
 
     private int middle;
 
