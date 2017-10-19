@@ -10,6 +10,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.providers.BulletProvider;
 import nl.tue.c2IOE0.group5.providers.Cell;
 import nl.tue.c2IOE0.group5.providers.EnemyProvider;
+import nl.tue.c2IOE0.group5.providers.GridProvider;
 import org.joml.Vector3f;
 
 import java.util.Comparator;
@@ -26,6 +27,7 @@ public abstract class AbstractTower extends GameObject {
     private int health;
     private EnemyProvider enemyProvider;
     private BulletProvider bulletProvider;
+    private GridProvider gridProvider;
     private long timeToDoDamage;
     private Timer loopTimer;
     private HealthBolletje healthBolletje;
@@ -40,13 +42,14 @@ public abstract class AbstractTower extends GameObject {
 
 
     public AbstractTower(int range, int maxLevel, int maxHealth, int attackTime, float bulletSpeed, int bulletDamage, float healthHeight,
-                         EnemyProvider enemyProvider, BulletProvider bulletProvider, Timer loopTimer) {
+                         EnemyProvider enemyProvider, BulletProvider bulletProvider, GridProvider gridProvider, Timer loopTimer) {
         this.range = range;
         this.maxLevel = maxLevel;
         this.maxHealth = maxHealth;
         this.health = maxHealth;
         this.enemyProvider = enemyProvider;
         this.bulletProvider = bulletProvider;
+        this.gridProvider = gridProvider;
         this.loopTimer = loopTimer;
         this.renderer = enemyProvider.getRenderer();
         this.healthBolletje = new HealthBolletje(this).init(renderer);
@@ -94,7 +97,7 @@ public abstract class AbstractTower extends GameObject {
 
     private void die() {
         health = 0;
-        cell.destroyTower();
+        gridProvider.destroyTower(cell.getGridPosition().x(), cell.getGridPosition().y());
         healthBolletje.stopDrawing();
         onDie();
     }
