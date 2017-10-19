@@ -1,8 +1,6 @@
 package nl.tue.c2IOE0.group5.engine;
 
-import nl.tue.c2IOE0.group5.engine.controller.Controller;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
-import nl.tue.c2IOE0.group5.engine.rendering.ShaderException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,7 +29,6 @@ public class Simulator {
     private long time;
 
     public Simulator(Predicate<Simulator> stopCondition) {
-        super();
         this.stopCondition = stopCondition;
         timer = new Timer();
         providers = new ArrayList<>();
