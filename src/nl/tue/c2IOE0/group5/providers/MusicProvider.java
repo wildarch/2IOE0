@@ -6,6 +6,9 @@ import nl.tue.c2IOE0.group5.engine.provider.Provider;
 import javax.sound.sampled.*;
 import java.io.File;
 
+/**
+ * @author Tom Peters
+ */
 
 public class MusicProvider extends Thread implements Provider {
 
@@ -30,7 +33,7 @@ public class MusicProvider extends Thread implements Provider {
             this.clip.open(audioInputStream);
             this.gainControl =
                     (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-            gainControl.setValue(0f);
+            gainControl.setValue(5f);
             this.clip.start();
         } catch (Exception e) {
             e.printStackTrace();
@@ -40,14 +43,18 @@ public class MusicProvider extends Thread implements Provider {
     @Override
     public void update() {
         if (engine.isPaused()) {
-            fadeVolumeTo(0f);
+            fadeVolumeTo(5f);
         } else {
-            fadeVolumeTo(-20);
+            fadeVolumeTo(0);
         }
         if (timeToPlay < loopTimer.getLoopTime()) { //start again after 2 times the duration
             clip.start();
             timeToPlay = loopTimer.getLoopTime() + duration * 2;
         }
+    }
+
+    public void stopMusic() {
+        clip.stop();
     }
 
     private float targetVolume;

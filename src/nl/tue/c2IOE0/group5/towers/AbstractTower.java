@@ -30,12 +30,16 @@ public abstract class AbstractTower extends GameObject {
     private long timeToDoDamage;
     private Timer loopTimer;
     private HealthBolletje healthBolletje;
+    private final int attackTime;
+    private final float bulletSpeed;
+    private final int bulletDamage;
 
     private Mesh mesh;
     private Cell cell;
 
 
-    public AbstractTower(int range, int maxLevel, int maxHealth, EnemyProvider enemyProvider, BulletProvider bulletProvider, Timer loopTimer) {
+    public AbstractTower(int range, int maxLevel, int maxHealth, int attackTime, float bulletSpeed, int bulletDamage,
+                         EnemyProvider enemyProvider, BulletProvider bulletProvider, Timer loopTimer) {
         this.range = range;
         this.maxLevel = maxLevel;
         this.maxHealth = maxHealth;
@@ -44,6 +48,9 @@ public abstract class AbstractTower extends GameObject {
         this.bulletProvider = bulletProvider;
         this.loopTimer = loopTimer;
         this.healthBolletje = new HealthBolletje(this);
+        this.attackTime = attackTime;
+        this.bulletSpeed = bulletSpeed;
+        this.bulletDamage = bulletDamage;
     }
 
     public void setCell(Cell cell) {
@@ -112,7 +119,7 @@ public abstract class AbstractTower extends GameObject {
     }
 
     private void attack(Enemy e) {
-        Bullet b = new Bullet(0.05f, 1000, e, this);
+        Bullet b = new Bullet(bulletSpeed, bulletDamage, e, this);
         bulletProvider.addBullet(b);
     }
 
@@ -125,7 +132,7 @@ public abstract class AbstractTower extends GameObject {
     public void update() {
         if (timeToDoDamage < loopTimer.getLoopTime()) {
             attack();
-            timeToDoDamage = loopTimer.getLoopTime() + 2;
+            timeToDoDamage = loopTimer.getLoopTime() + attackTime;
         }
         this.healthBolletje.update();
     }

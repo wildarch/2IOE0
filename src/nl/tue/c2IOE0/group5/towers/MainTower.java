@@ -22,16 +22,14 @@ public class MainTower extends AbstractTower {
     private Consumer<Mesh> shadowRender;
 
     public MainTower(EnemyProvider enemyProvider, BulletProvider bulletProvider, Timer timer) {
-        super(RANGE, MAX_LEVEL, MAX_HEALTH, enemyProvider, bulletProvider, timer);
+        super(RANGE, MAX_LEVEL, MAX_HEALTH, 5, 0.05f, 1000, enemyProvider, bulletProvider, timer);
     }
 
     @Override
     public MainTower init(Renderer renderer) {
         setScale(40f);
 
-        iMesh = renderer.linkMesh("/tower.obj", () -> {
-            setModelView(renderer);
-        });
+        iMesh = renderer.linkMesh("/tower.obj", () -> setModelView(renderer));
 
         /*
         render = mesh -> {
