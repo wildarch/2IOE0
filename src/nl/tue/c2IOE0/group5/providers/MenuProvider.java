@@ -29,7 +29,7 @@ public class MenuProvider implements Provider, Clickable {
                     "Tom Peters/" +
                     "Yoeri Poels/" +
                     "/" +
-            "Produced on the Technical University Eindhoven"
+            "Produced by TU/entertainment"
             ).split("/");
 
 
