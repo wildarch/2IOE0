@@ -23,8 +23,8 @@ public class AiController implements Controller, Listener {
     private static int NR_WAVES = 10;
     private static int NR_SUB_WAVES = 5;
     private static long WAVE_TIME = 5000; // 5 seconds
-    private static int BIG_WAVE_SIZE = 20;
-    private static int SMALL_WAVE_SIZE = 10;
+    private static int BIG_WAVE_SIZE = 5;
+    private static int SMALL_WAVE_SIZE = 2;
 
     private int wave = 0;
     private EnemyProvider enemyProvider;
