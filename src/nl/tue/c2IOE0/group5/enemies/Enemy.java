@@ -3,6 +3,8 @@ package nl.tue.c2IOE0.group5.enemies;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
 import nl.tue.c2IOE0.group5.engine.objects.PositionInterpolator;
+import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
+import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.providers.Cell;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
@@ -19,6 +21,8 @@ public abstract class Enemy extends GameObject {
     private int health;
     private List<Vector2i> targetPositions;
     protected PositionInterpolator interpolator;
+    private Renderer renderer;
+    private InstancedMesh cube;
     protected Timer loopTimer;
     protected Timer renderTimer;
     protected boolean attacking = false;
@@ -67,6 +71,18 @@ public abstract class Enemy extends GameObject {
         }
     }
 
+    @Override
+    public void renderInit(Renderer renderer) {
+        setScale(0.25f);
+
+        cube = renderer.linkMesh("/cube.obj", () -> {
+            setModelView(renderer);
+            renderer.ambientLight(new Vector3f(0f, 0f,1f ));
+            if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
+        });
+        this.renderer = renderer;
+    }
+
     private long timeToDoDamage;
     private void doDamage(AbstractTower tower) {
         if (timeToDoDamage < loopTimer.getLoopTime()) {
@@ -85,6 +101,7 @@ public abstract class Enemy extends GameObject {
 
     public void die() {
         if(dead) return;
+        if(renderer != null) renderer.unlinkMesh(cube);
         dead = true;
         onDie();
     }

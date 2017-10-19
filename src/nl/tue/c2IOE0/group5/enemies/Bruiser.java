@@ -94,7 +94,7 @@ public class Bruiser extends Enemy implements Animatable {
     }
 
     @Override
-    protected void renderInit(Renderer renderer) {
+    public void renderInit(Renderer renderer) {
         headOffset = new LinearlyUpdatable(headOffset(0), 0.1f);
         leftArmOffset = new LinearlyUpdatable(armOffset(0), 0.1f);
         rightArmOffset = new LinearlyUpdatable(-armOffset(0), 0.1f);

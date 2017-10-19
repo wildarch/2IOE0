@@ -16,8 +16,6 @@ import java.util.List;
 public class TestEnemy extends Enemy {
     private static final float SPEED = 0.5f;
     private static final long ATTACKSPEED = 500;
-    private Renderer renderer;
-    private InstancedMesh cube;
 
 
     public TestEnemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider,
@@ -25,20 +23,9 @@ public class TestEnemy extends Enemy {
         super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, maxHealth, SPEED, ATTACKSPEED);
     }
 
-    @Override
-    public void renderInit(Renderer renderer) {
-        setScale(0.25f);
-
-        cube = renderer.linkMesh("/cube.obj", () -> {
-            setModelView(renderer);
-            renderer.ambientLight(new Vector3f(0f, 0f,1f ));
-            if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
-        });
-        this.renderer = renderer;
-    }
 
     @Override
     protected void onDie() {
-        if(renderer != null) renderer.unlinkMesh(cube);
+
     }
 }
