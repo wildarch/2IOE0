@@ -3,6 +3,7 @@ package nl.tue.c2IOE0.group5.towers;
 import nl.tue.c2IOE0.group5.enemies.Enemy;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
+import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
 import nl.tue.c2IOE0.group5.engine.rendering.OBJLoader;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
@@ -94,6 +95,7 @@ public abstract class AbstractTower extends GameObject {
     private void die() {
         health = 0;
         cell.destroyTower();
+        healthBolletje.stopDrawing();
         onDie();
     }
 
@@ -158,6 +160,7 @@ public abstract class AbstractTower extends GameObject {
         final float MIN_SIZE = 0.075f;
         private AbstractTower tower;
         private Vector3f color;
+        private InstancedMesh iMesh;
 
         public HealthBolletje(AbstractTower t) {
             this.tower = t;
@@ -188,12 +191,16 @@ public abstract class AbstractTower extends GameObject {
             setScale(10f);
             Mesh mesh = renderer.linkMesh("/health.obj");
             mesh.setMaterial(new Material("/square.png"));
-            renderer.linkMesh(mesh, () -> {
+            iMesh = renderer.linkMesh(mesh, () -> {
                 setModelView(renderer);
                 renderer.ambientLight(color);
                 renderer.noDirectionalLight();
             });
             return this;
+        }
+
+        public void stopDrawing() {
+            renderer.unlinkMesh(iMesh);
         }
     }
 }

@@ -35,21 +35,6 @@ public class Bullet extends GameObject {
         setPosition(b.getPosition());
     }
 
-
-
-    /*
-    private void setMesh() {
-        try {
-            Mesh m = OBJLoader.loadMesh("/b4.obj");
-            this.mesh = m;
-            m.setMaterial(new Material("/square.png"));
-            setScale(0.05f);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to load cube model");
-        }
-    }
-    */
-
     private void move() {
         Vector3f position = this.getPosition();
         Vector3f targetPosition = target.getPosition();
@@ -76,6 +61,7 @@ public class Bullet extends GameObject {
 
     @Override
     public Bullet init(Renderer renderer) {
+        System.err.println("hoi");
         setScale(0.05f);
         Mesh bullet = renderer.linkMesh("/b4.obj");
         bullet.setMaterial(new Material("/square.png"));
