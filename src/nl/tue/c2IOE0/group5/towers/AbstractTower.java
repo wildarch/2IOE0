@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public abstract class AbstractTower extends GameObject {
 
     private int range;
-    private int level;
+    private int level = 1;
     private final int maxLevel;
     private final int maxHealth;
     private int health;
@@ -121,7 +121,7 @@ public abstract class AbstractTower extends GameObject {
     }
 
     private void attack(Enemy e) {
-        Bullet b = new Bullet(bulletSpeed, bulletDamage, e, this).init(renderer);
+        Bullet b = new Bullet(bulletSpeed, bulletDamage, e, this, renderer).init(renderer);
         bulletProvider.addBullet(b);
     }
 
