@@ -37,7 +37,7 @@ public abstract class Enemy extends GameObject {
         this.targetPositions = new ArrayList<>(targetPositions);
         this.loopTimer = loopTimer;
         this.renderTimer = renderTimer;
-        setPosition(gridProvider.getCell(initialPosition).getPosition().add(0, 2f, 0f));
+        setPosition(gridProvider.getCell(initialPosition).getPosition().add(0, 0f, 0f)); //they will emerge from the floor again
         this.speed = speed;
         this.interpolator = new PositionInterpolator(this, this.speed);
         this.attackSpeed = attackSpeed;
