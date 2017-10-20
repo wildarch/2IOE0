@@ -14,6 +14,8 @@ import org.joml.Vector2i;
 
 import java.util.List;
 import java.util.Random;
+import java.util.function.BooleanSupplier;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
@@ -34,6 +36,7 @@ public class AiController implements Controller, Listener {
     private QLearner qlearner;
     private List<Integer> optimalPath; //the current optimal path for the active cell
     private GridProvider gridProvider;
+    BooleanSupplier isPaused;
 
     @Override
     public void init(Engine engine) {
@@ -41,10 +44,12 @@ public class AiController implements Controller, Listener {
         loopTimer = engine.getRenderLoopTimer();
         gridProvider = engine.getProvider(GridProvider.class);
         trainQLearner();
+        isPaused = engine::isPaused;
     }
 
     @Override
     public void update() {
+        if(isPaused.getAsBoolean()) return;
         boolean bigWave = wave % NR_SUB_WAVES == 0 && enemyProvider.countEnemies() == 0;
         boolean smallWave = wave % NR_SUB_WAVES != 0 && loopTimer.getLoopTime() > nextWaveTime;
         if (bigWave || smallWave) {
