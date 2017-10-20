@@ -39,17 +39,18 @@ public class Bullet extends GameObject {
 
     @Override
     public void update() {
-        Vector3f targetPosition = target.getPosition();
+        Vector3f targetPosition = new Vector3f(target.getPosition());
         interpolator.setTarget(targetPosition, loopTimer.getLoopTime());
-        boolean targetReached = interpolator.update(loopTimer.getLoopTime());
-        if (this.getPosition().distance(target.getPosition()) < 0.01f || target.isDead()) { //targetReached doesn't seem to work as I expect it to work
+        //boolean targetReached = interpolator.update(loopTimer.getLoopTime());                 //doesn't seem to work as I expect it to work
+        boolean targetReached = this.getPosition().distance(target.getPosition()) < 0.1f;       //so using this method instead
+        if (targetReached || target.isDead()) {
             target.getDamage(damage);
             isDone = true; //target is hit and this bullet should be removed
             renderer.unlinkMesh(iMesh); //stop drawing this bullet
             return;
         }
-        Vector3f direction = targetPosition.sub(this.getPosition()).normalize();
-        setRotation(direction);
+        Vector3f direction = targetPosition.sub(this.getPosition().toImmutable()).normalize();
+        this.setRotation(direction);
     }
 
     @Override
