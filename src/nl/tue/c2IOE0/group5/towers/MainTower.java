@@ -19,8 +19,8 @@ public class MainTower extends AbstractTower {
     private Renderer renderer;
     private InstancedMesh iMesh;
 
-    public MainTower(EnemyProvider enemyProvider, BulletProvider bulletProvider, GridProvider gridProvider, Timer timer) {
-        super(RANGE, MAX_LEVEL, MAX_HEALTH, 500, 0.05f, 1000, 2.5f, enemyProvider, bulletProvider, gridProvider, timer);
+    public MainTower(EnemyProvider enemyProvider, BulletProvider bulletProvider, GridProvider gridProvider, Timer loopTimer, Timer renderTimer) {
+        super(RANGE, MAX_LEVEL, MAX_HEALTH, 500, 3f, 1000, 2.5f, enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer);
     }
 
     @Override

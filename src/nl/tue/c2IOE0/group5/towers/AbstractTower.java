@@ -30,6 +30,7 @@ public abstract class AbstractTower extends GameObject {
     private GridProvider gridProvider;
     private long timeToDoDamage;
     private Timer loopTimer;
+    private Timer renderTimer;
     private HealthBolletje healthBolletje;
     private final int attackTime;
     private final float bulletSpeed;
@@ -42,7 +43,7 @@ public abstract class AbstractTower extends GameObject {
 
 
     public AbstractTower(int range, int maxLevel, int maxHealth, int attackTime, float bulletSpeed, int bulletDamage, float healthHeight,
-                         EnemyProvider enemyProvider, BulletProvider bulletProvider, GridProvider gridProvider, Timer loopTimer) {
+                         EnemyProvider enemyProvider, BulletProvider bulletProvider, GridProvider gridProvider, Timer loopTimer, Timer renderTimer) {
         this.range = range;
         this.maxLevel = maxLevel;
         this.maxHealth = maxHealth;
@@ -51,6 +52,7 @@ public abstract class AbstractTower extends GameObject {
         this.bulletProvider = bulletProvider;
         this.gridProvider = gridProvider;
         this.loopTimer = loopTimer;
+        this.renderTimer = renderTimer;
         this.renderer = enemyProvider.getRenderer();
         this.healthBolletje = new HealthBolletje(this).init(renderer);
         this.attackTime = attackTime;
@@ -126,7 +128,7 @@ public abstract class AbstractTower extends GameObject {
     }
 
     protected void attack(Enemy e) {
-        Bullet b = new Bullet(bulletSpeed, bulletDamage, e, this, renderer).init(renderer);
+        Bullet b = new Bullet(bulletSpeed, bulletDamage, e, this, loopTimer, renderTimer).init(renderer);
         bulletProvider.addBullet(b);
     }
 
@@ -147,15 +149,6 @@ public abstract class AbstractTower extends GameObject {
     protected void setMesh(Mesh m) {
         mesh = m;
     }
-
-    /*
-    @Override
-    public void draw(Window window, Renderer renderer) {
-        super.draw(window, renderer);
-        mesh.draw(renderer);
-        this.healthBolletje.draw(window, renderer);
-    }
-    */
 
     protected class HealthBolletje extends GameObject {
 

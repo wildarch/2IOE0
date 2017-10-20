@@ -21,8 +21,8 @@ public class WallTower extends AbstractTower {
     private Renderer renderer;
     private InstancedMesh iMesh;
 
-    public WallTower(EnemyProvider enemyProvider, BulletProvider bulletProvider, GridProvider gridProvider, Timer timer) {
-        super(RANGE, MAX_LEVEL, MAX_HEALTH, -1, 0, 0, 2.5f, enemyProvider, bulletProvider, gridProvider, timer);
+    public WallTower(EnemyProvider enemyProvider, BulletProvider bulletProvider, GridProvider gridProvider, Timer loopTimer, Timer renderTimer) {
+        super(RANGE, MAX_LEVEL, MAX_HEALTH, -1, 0, 0, 2f, enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer);
     }
 
     @Override

@@ -21,6 +21,7 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
     BulletProvider bulletProvider;
     private MainTower mainTower;
     private Timer loopTimer;
+    private Timer renderTimer;
 
     @Override
     public void init(Simulator engine) {
@@ -39,32 +40,33 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
     public void renderInit(Engine engine) {
         Mesh m = engine.getRenderer().linkMesh("/tower.obj");
         m.setMaterial(new Material("/tower.png"));
+        renderTimer = engine.getRenderLoopTimer();
     }
 
     private void putCannonTower() {
-        CannonTower ct = new CannonTower(enemyProvider, bulletProvider, gridProvider, loopTimer).init(getRenderer());
+        CannonTower ct = new CannonTower(enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer).init(getRenderer());
         gridProvider.placeTower(2, 2, ct);
         objects.add(ct);
     }
 
     private void putWallTower() {
-        WallTower wt = new WallTower(enemyProvider, bulletProvider, gridProvider, loopTimer).init(getRenderer());
+        WallTower wt = new WallTower(enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer).init(getRenderer());
         gridProvider.placeTower(3, 3, wt);
-        WallTower wt2 = new WallTower(enemyProvider, bulletProvider, gridProvider, loopTimer).init(getRenderer());
+        WallTower wt2 = new WallTower(enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer).init(getRenderer());
         gridProvider.placeTower(4, 3, wt2);
         objects.add(wt);
         objects.add(wt2);
     }
 
     private void putRocketTower() {
-        RocketTower rt = new RocketTower(enemyProvider, bulletProvider, gridProvider, loopTimer).init(getRenderer());
+        RocketTower rt = new RocketTower(enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer).init(getRenderer());
         gridProvider.getCell(2, 4).placeTower(rt);
         objects.add(rt);
     }
 
     private void putMainTower() {
         int x = GridProvider.SIZE / 2;
-        mainTower = new MainTower(enemyProvider, bulletProvider, gridProvider, loopTimer).init(getRenderer());
+        mainTower = new MainTower(enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer).init(getRenderer());
         gridProvider.placeTower(x, x, mainTower);
         objects.add(mainTower);
     }

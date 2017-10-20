@@ -1,6 +1,7 @@
 package nl.tue.c2IOE0.group5.engine.objects;
 
 import nl.tue.c2IOE0.group5.engine.Timer;
+import nl.tue.c2IOE0.group5.towers.Bullet;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
@@ -84,7 +85,7 @@ public class PositionInterpolator {
         return false;
     }
 
-    private Vector3f getDirection() {
+    public Vector3f getDirection() {
         if(target == null) return new Vector3f(0);
         Vector3f offset = new Vector3f(target);
         offset.sub(p.getPosition().toImmutable());
