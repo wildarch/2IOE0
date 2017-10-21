@@ -56,9 +56,21 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
      * If there is already a tower at this spot, it just places it without warning
      */
     private void buildWallTower(int x, int y) {
+        //test code for wall connections!
         WallTower wt = new WallTower(enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer).init(getRenderer());
+        WallTower wt2 = new WallTower(enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer).init(getRenderer());
+        WallTower wt3 = new WallTower(enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer).init(getRenderer());
+        WallTower wt4 = new WallTower(enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer).init(getRenderer());
         gridProvider.placeTower(x, y, wt);
+        gridProvider.placeTower(x+1, y, wt2);
+        gridProvider.placeTower(x+1, y-1, wt3);
+        gridProvider.placeTower(x, y-1, wt4);
         objects.add(wt);
+        objects.add(wt2);
+        objects.add(wt3);
+        objects.add(wt4);
+
+        wt4.takeDamage(500);
     }
 
     /**

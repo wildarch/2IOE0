@@ -28,11 +28,6 @@ public class WallTower extends AbstractTower {
     @Override
     public void renderInit(Renderer renderer) {
         setScale(1f);
-        Mesh base = renderer.linkMesh("/models/towers/cannontower/BASE.obj");
-        Mesh cannon = renderer.linkMesh("/models/towers/cannontower/CANNON.obj");
-        base.setMaterial(new Material("/models/towers/cannontower/Base.png"));
-        cannon.setMaterial(new Material("/models/towers/cannontower/Cannon.png"));
-
         Mesh mesh = renderer.linkMesh("/models/towers/walltower/walltower.obj");
         mesh.setMaterial(new Material("/models/towers/walltower/walltower.png"));
 

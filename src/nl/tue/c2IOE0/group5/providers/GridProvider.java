@@ -1,5 +1,6 @@
 package nl.tue.c2IOE0.group5.providers;
 
+import jdk.nashorn.internal.runtime.arrays.ArrayIndex;
 import nl.tue.c2IOE0.group5.ai.QLearner;
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.Simulator;
@@ -11,6 +12,8 @@ import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
+import nl.tue.c2IOE0.group5.towers.TowerConnection;
+import nl.tue.c2IOE0.group5.towers.WallTower;
 import org.joml.Matrix4f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
@@ -32,12 +35,22 @@ public class GridProvider extends ObjectProvider<Cell> {
     //the actual grid
     private final Cell[][] grid = new Cell[SIZE][SIZE];
 
+    /* connecting tower grid: while it cannot use all spaces available using SIZE, it is more clear to work with.
+    logically placing them on "-0.5 and +0.5" of towers makes the most sense (as they are between towers) but since
+    this is not possible, we use an array of twice the size, thus "-1" being -0.5 and +1 to be +0.5 when reading values (vs a coord
+    from the cell array). */
+    private final TowerConnection[][] towerconnections = new TowerConnection[SIZE*2][SIZE*2];
+
+    private TowerConnectionProvider towerConnectionProvider;
+
     //the cell currently active (pointed to)
     private Cell activeCell;
 
     @Override
     public void init(Simulator engine) {
         super.init(engine);
+
+        towerConnectionProvider = engine.getProvider(TowerConnectionProvider.class);
 
         // Create the player base cells
         int bordersize = (SIZE - PLAYFIELDSIZE - 1)/2;
@@ -102,6 +115,46 @@ public class GridProvider extends ObjectProvider<Cell> {
             throw new ArrayIndexOutOfBoundsException("The coordinates of this cell are outside the grid.");
         }
         getCell(x, y).placeTower(tower);
+        //if this is a walltower, check if a TowerConnection can be placed
+        if (tower instanceof WallTower) {
+            //first make sure this is a legal place for the tower to avoid future complications
+            if (x == 0 || x == SIZE-1 || y == 0 || y == SIZE-1) {
+                //tower placed on border of cell, should not be possible:
+                throw new ArrayIndexOutOfBoundsException("Walltower was placed on the edge of the grid.");
+            }
+            //check for surrounding towers
+            if (getCell(x-1, y).getTower() instanceof WallTower) {
+                placeConnectingTower(2*x-1, 2*y, true);
+            }
+            if (getCell(x+1, y).getTower() instanceof WallTower) {
+                placeConnectingTower(2*x+1, 2*y, true);
+            }
+            if (getCell(x, y-1).getTower() instanceof WallTower) {
+                placeConnectingTower(2*x, 2*y-1, false);
+            }
+            if (getCell(x, y+1).getTower() instanceof WallTower) {
+                placeConnectingTower(2*x, 2*y+1, false);
+            }
+        }
+
+    }
+
+    public void placeConnectingTower(int x, int y, boolean rotate) {
+        Vector3f position = new Vector3f(((float) x ) / 2.0f, 0f, ((float) y ) / 2.0f);
+        float rotation = rotate ? 0f : 90f;
+        TowerConnection tower = new TowerConnection(position, rotation, getRenderer()).init(getRenderer());
+        towerconnections[x][y] = tower;
+        towerConnectionProvider.addTowerConnection(tower);
+    }
+
+    public void destroyConnectingTower(int x, int y) {
+        TowerConnection tower = towerconnections[x][y];
+        if (tower == null) {
+            throw new NullPointerException("Connecting tower being removed at " + x + ", " + y + " does not exist");
+        }
+        tower.destroy();
+        towerconnections[x][y] = null;
+        towerConnectionProvider.deleteTowerConnection(tower);
     }
 
     public void levelUpTower(int x, int y) {
@@ -128,7 +181,30 @@ public class GridProvider extends ObjectProvider<Cell> {
             throw new ArrayIndexOutOfBoundsException("The coordinates of this cell are outside the grid.");
         }
         Cell cell = getCell(x, y);
+        AbstractTower tower = cell.getTower();
         cell.destroyTower();
+        //check if tower destroyed was a walltower, and if so, remove connecting towers
+        //if this is a walltower, check if a TowerConnection can be placed
+        if (tower instanceof WallTower) {
+            //first make sure this is a legal place for the tower to avoid future complications
+            if (x == 0 || x == SIZE-1 || y == 0 || y == SIZE-1) {
+                //tower placed on border of cell, should not be possible:
+                throw new ArrayIndexOutOfBoundsException("Walltower was on the edge of the grid, should not be possible.");
+            }
+            //check for surrounding towers
+            if (getCell(x-1, y).getTower() instanceof WallTower) {
+                destroyConnectingTower(2*x-1, 2*y);
+            }
+            if (getCell(x+1, y).getTower() instanceof WallTower) {
+                destroyConnectingTower(2*x+1, 2*y);
+            }
+            if (getCell(x, y-1).getTower() instanceof WallTower) {
+                destroyConnectingTower(2*x, 2*y-1);
+            }
+            if (getCell(x, y+1).getTower() instanceof WallTower) {
+                destroyConnectingTower(2*x, 2*y+1);
+            }
+        }
     }
 
     /**

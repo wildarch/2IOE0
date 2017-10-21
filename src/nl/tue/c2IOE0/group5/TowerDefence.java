@@ -29,6 +29,7 @@ public class TowerDefence {
                 new UIProvider(),
                 new BulletProvider(),
                 new MusicProvider(),
+                new TowerConnectionProvider()
         });
         e.addControllers(new Controller[] {
                 new PlayerController(),
