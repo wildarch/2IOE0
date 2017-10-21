@@ -9,6 +9,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.providers.BulletProvider;
 import nl.tue.c2IOE0.group5.providers.EnemyProvider;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
+import nl.tue.c2IOE0.group5.providers.TowerProvider;
 import nl.tue.c2IOE0.group5.util.Angle;
 import org.joml.Vector3f;
 
@@ -27,8 +28,8 @@ public class CannonTower extends AbstractTower {
     private InstancedMesh iBaseMesh;
     private InstancedMesh iCannonMesh;
 
-    public CannonTower(EnemyProvider enemyProvider, BulletProvider bulletProvider, GridProvider gridProvider, Timer loopTimer, Timer renderTimer) {
-        super(RANGE, MAX_LEVEL, MAX_HEALTH, 500, 3f, 1000, 1.3f, 0.5f, enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer);
+    public CannonTower(TowerProvider towerProvider) {
+        super(RANGE, MAX_LEVEL, MAX_HEALTH, 500, 3f, 1000, 1.3f, 0.5f, towerProvider);
     }
 
     @Override

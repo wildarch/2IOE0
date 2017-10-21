@@ -7,6 +7,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.providers.BulletProvider;
 import nl.tue.c2IOE0.group5.providers.EnemyProvider;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
+import nl.tue.c2IOE0.group5.providers.TowerProvider;
 
 import java.util.function.Consumer;
 
@@ -19,8 +20,8 @@ public class MainTower extends AbstractTower {
     private Renderer renderer;
     private InstancedMesh iMesh;
 
-    public MainTower(EnemyProvider enemyProvider, BulletProvider bulletProvider, GridProvider gridProvider, Timer loopTimer, Timer renderTimer) {
-        super(RANGE, MAX_LEVEL, MAX_HEALTH, 500, 3f, 1000, 2.5f, 1f, enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer);
+    public MainTower(TowerProvider towerProvider) {
+        super(RANGE, MAX_LEVEL, MAX_HEALTH, 500, 3f, 1000, 2.5f, 1f, towerProvider);
     }
 
     @Override

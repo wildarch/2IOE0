@@ -4,6 +4,7 @@ import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.Simulator;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.provider.ObjectProvider;
+import nl.tue.c2IOE0.group5.engine.provider.Provider;
 import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
@@ -16,30 +17,25 @@ import nl.tue.c2IOE0.group5.towers.RocketTower;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 public class TowerProvider extends ObjectProvider<AbstractTower> {
 
-    GridProvider gridProvider;
-    EnemyProvider enemyProvider;
-    BulletProvider bulletProvider;
+
+
+    public GridProvider gridProvider;
+    public EnemyProvider enemyProvider;
+    public BulletProvider bulletProvider;
     private MainTower mainTower;
-    private Timer loopTimer;
-    private Timer renderTimer;
+    public Timer loopTimer;
+    public Timer renderTimer;
 
+    private List<Provider> providers;
 
-    //for passing classes
-    Class[] Args = new Class[5];
 
     @Override
     public void init(Simulator engine) {
         super.init(engine);
-        //initialize arg array for tower initialization
-        Args[0] = EnemyProvider.class;
-        Args[1] = BulletProvider.class;
-        Args[2] = GridProvider.class;
-        Args[3] = Timer.class;
-        Args[4] = Timer.class;
-
         gridProvider = engine.getProvider(GridProvider.class);
         enemyProvider = engine.getProvider(EnemyProvider.class);
         bulletProvider = engine.getProvider(BulletProvider.class);
@@ -48,6 +44,8 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
         try {
             buildTower(2, 2, WallTower.class);
             buildTower(2, 3, WallTower.class);
+            buildTower(8, 8, RocketTower.class);
+            buildTower(9, 8, CannonTower.class);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e.getMessage());
@@ -76,8 +74,8 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
             return false;
         }
         //create the tower
-        Constructor<?> constructor = towertype.getDeclaredConstructor(Args);
-        AbstractTower tower = (AbstractTower) constructor.newInstance(enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer);
+        Constructor<?> constructor = towertype.getDeclaredConstructor(TowerProvider.class);
+        AbstractTower tower = (AbstractTower) constructor.newInstance(this);
         tower.init(getRenderer());
         //place it
         gridProvider.placeTower(x, y, tower);
@@ -92,7 +90,7 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
      * If there is already a tower at this spot, it just places it without warning
      */
     private void buildCannonTower(int x, int y) {
-        CannonTower ct = new CannonTower(enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer).init(getRenderer());
+        CannonTower ct = new CannonTower(this).init(getRenderer());
         gridProvider.placeTower(x, y, ct);
         objects.add(ct);
     }
@@ -102,10 +100,10 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
      */
     private void buildWallTower(int x, int y) {
         //test code for wall connections!
-        WallTower wt = new WallTower(enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer).init(getRenderer());
-        WallTower wt2 = new WallTower(enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer).init(getRenderer());
-        WallTower wt3 = new WallTower(enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer).init(getRenderer());
-        WallTower wt4 = new WallTower(enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer).init(getRenderer());
+        WallTower wt = new WallTower(this).init(getRenderer());
+        WallTower wt2 = new WallTower(this).init(getRenderer());
+        WallTower wt3 = new WallTower(this).init(getRenderer());
+        WallTower wt4 = new WallTower(this).init(getRenderer());
         gridProvider.placeTower(x, y, wt);
         gridProvider.placeTower(x+1, y, wt2);
         gridProvider.placeTower(x+1, y-1, wt3);
@@ -122,14 +120,14 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
      * If there is already a tower at this spot, it just places it without warning
      */
     private void buildRocketTower(int x, int y) {
-        RocketTower rt = new RocketTower(enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer).init(getRenderer());
+        RocketTower rt = new RocketTower(this).init(getRenderer());
         gridProvider.placeTower(x, y, rt);
         objects.add(rt);
     }
 
     private void putMainTower() {
         int x = GridProvider.SIZE / 2;
-        mainTower = new MainTower(enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer).init(getRenderer());
+        mainTower = new MainTower(this).init(getRenderer());
         gridProvider.placeTower(x, x, mainTower);
         objects.add(mainTower);
     }

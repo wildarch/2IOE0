@@ -8,6 +8,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.providers.BulletProvider;
 import nl.tue.c2IOE0.group5.providers.EnemyProvider;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
+import nl.tue.c2IOE0.group5.providers.TowerProvider;
 
 /**
  * @Author Tom Peters
@@ -21,8 +22,8 @@ public class WallTower extends AbstractTower {
     private Renderer renderer;
     private InstancedMesh iMesh;
 
-    public WallTower(EnemyProvider enemyProvider, BulletProvider bulletProvider, GridProvider gridProvider, Timer loopTimer, Timer renderTimer) {
-        super(RANGE, MAX_LEVEL, MAX_HEALTH, -1, 0, 0, 2f, 1f, enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer);
+    public WallTower(TowerProvider towerProvider) {
+        super(RANGE, MAX_LEVEL, MAX_HEALTH, -1, 0, 0, 2f, 1f, towerProvider);
     }
 
     @Override

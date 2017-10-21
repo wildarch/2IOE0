@@ -7,10 +7,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
-import nl.tue.c2IOE0.group5.providers.BulletProvider;
-import nl.tue.c2IOE0.group5.providers.Cell;
-import nl.tue.c2IOE0.group5.providers.EnemyProvider;
-import nl.tue.c2IOE0.group5.providers.GridProvider;
+import nl.tue.c2IOE0.group5.providers.*;
 import org.joml.Vector3f;
 
 import java.util.Comparator;
@@ -44,16 +41,16 @@ public abstract class AbstractTower extends GameObject {
 
 
     public AbstractTower(int range, int maxLevel, int maxHealth, int attackTime, float bulletSpeed, int bulletDamage, float healthHeight, float bulletOffset,
-                         EnemyProvider enemyProvider, BulletProvider bulletProvider, GridProvider gridProvider, Timer loopTimer, Timer renderTimer) {
+                         TowerProvider towerProvider) {
         this.range = range;
         this.maxLevel = maxLevel;
         this.maxHealth = maxHealth;
         this.health = maxHealth;
-        this.enemyProvider = enemyProvider;
-        this.bulletProvider = bulletProvider;
-        this.gridProvider = gridProvider;
-        this.loopTimer = loopTimer;
-        this.renderTimer = renderTimer;
+        this.enemyProvider = towerProvider.enemyProvider;
+        this.bulletProvider = towerProvider.bulletProvider;
+        this.gridProvider = towerProvider.gridProvider;
+        this.loopTimer = towerProvider.loopTimer;
+        this.renderTimer = towerProvider.renderTimer;
         this.renderer = enemyProvider.getRenderer();
         this.healthBolletje = new HealthBolletje(this).init(renderer);
         this.attackTime = attackTime;
