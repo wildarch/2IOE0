@@ -4,19 +4,15 @@ import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.Simulator;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.provider.ObjectProvider;
-import nl.tue.c2IOE0.group5.engine.provider.Provider;
 import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
-import nl.tue.c2IOE0.group5.towers.AbstractTower;
-import nl.tue.c2IOE0.group5.towers.CannonTower;
-import nl.tue.c2IOE0.group5.towers.MainTower;
-import nl.tue.c2IOE0.group5.towers.WallTower;
-import nl.tue.c2IOE0.group5.towers.RocketTower;
+import nl.tue.c2IOE0.group5.towers.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.List;
 
 public class TowerProvider extends ObjectProvider<AbstractTower> {
@@ -26,12 +22,10 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
     public GridProvider gridProvider;
     public EnemyProvider enemyProvider;
     public BulletProvider bulletProvider;
-    private MainTower mainTower;
     public Timer loopTimer;
     public Timer renderTimer;
 
-    private List<Provider> providers;
-
+    private MainTower mainTower;
 
     @Override
     public void init(Simulator engine) {
@@ -68,7 +62,7 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
      * @Returns true if build succesful, false if there already is a tower
      * @Throws Many exceptions when passing class type as argument fails: So an incorrect type was passed (not a tower)
      */
-    public boolean buildTower(int x, int y, Class<?> towertype) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public boolean buildTower(int x, int y, Class<? extends AbstractTower> towertype) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         if (gridProvider.getCell(x, y).getTower() != null) {
             //not null: tower exists here already
             return false;
@@ -84,7 +78,14 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
         return true;
     }
 
-
+    /**
+     * Get a list of all tower classes
+     *
+     * @return A list of tower classes
+     */
+    public List<Class<? extends AbstractTower>> all() {
+        return Arrays.asList(CannonTower.class, RocketTower.class, WallTower.class);
+    }
 
     /**
      * If there is already a tower at this spot, it just places it without warning

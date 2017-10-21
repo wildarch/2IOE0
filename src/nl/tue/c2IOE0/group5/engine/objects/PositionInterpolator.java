@@ -1,7 +1,6 @@
 package nl.tue.c2IOE0.group5.engine.objects;
 
 import nl.tue.c2IOE0.group5.engine.Timer;
-import nl.tue.c2IOE0.group5.towers.Bullet;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
@@ -79,7 +78,6 @@ public class PositionInterpolator {
         float distance = p.getPosition().distance(target.toImmutable());
         if (distance < EPSILON) {
             target = null;
-            System.out.println("Time: " + time + " should be " + (distance / speed));
             return true;
         }
         return false;

@@ -188,4 +188,9 @@ public abstract class AbstractTower extends GameObject {
                 renderer.unlinkMesh(iMesh);
         }
     }
+
+    public static class MetaData {
+        public String name;
+        public String icon;
+    }
 }

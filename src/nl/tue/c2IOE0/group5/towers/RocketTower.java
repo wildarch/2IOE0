@@ -1,22 +1,23 @@
 package nl.tue.c2IOE0.group5.towers;
 
 import nl.tue.c2IOE0.group5.enemies.Enemy;
-import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
-import nl.tue.c2IOE0.group5.providers.BulletProvider;
-import nl.tue.c2IOE0.group5.providers.EnemyProvider;
-import nl.tue.c2IOE0.group5.providers.GridProvider;
 import nl.tue.c2IOE0.group5.providers.TowerProvider;
-import nl.tue.c2IOE0.group5.util.Angle;
 import org.joml.Vector3f;
 
 /**
  * @Author Yoeri Poels
  */
 public class RocketTower extends AbstractTower {
+
+    public static MetaData metadata = new MetaData();
+    static {
+        metadata.name = "Rocket";
+        metadata.icon = "/hud/rockettower.png";
+    }
 
     private static final int RANGE = 5;
     private static final int MAX_LEVEL = 1;
