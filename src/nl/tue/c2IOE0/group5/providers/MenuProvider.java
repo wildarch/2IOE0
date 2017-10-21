@@ -62,9 +62,9 @@ public class MenuProvider implements Provider, Clickable {
         UIButton options = new MenuButton("Options", position, (event) -> activeElements = optionMenu);
         {
             PositionState optPos = new PositionState(x, y, offset);
-            UIButton graphics = new MenuButton("Graphics", optPos, (event) -> {});
-            UIButton parameters = new MenuButton("Parameters", optPos, (event) -> {});
-            UIButton gameState = new MenuButton("Game state", optPos, (event) -> {});
+            UIButton graphics = new MenuButton("Graphics", optPos);
+            UIButton parameters = new MenuButton("Parameters", optPos);
+            UIButton gameState = new MenuButton("Game state", optPos);
             UIButton backOptions = new MenuButton("Back", optPos, (event) -> activeElements = mainMenu);
             optionMenu = new UIButton[]{graphics, parameters, gameState, backOptions};
         }
