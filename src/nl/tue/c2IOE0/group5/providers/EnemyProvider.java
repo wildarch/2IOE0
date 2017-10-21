@@ -1,5 +1,6 @@
 package nl.tue.c2IOE0.group5.providers;
 
+import nl.tue.c2IOE0.group5.enemies.BasicEnemy;
 import nl.tue.c2IOE0.group5.enemies.Enemy;
 import nl.tue.c2IOE0.group5.enemies.TestEnemy;
 import nl.tue.c2IOE0.group5.engine.Engine;
@@ -43,7 +44,7 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
     }
 
     public void putEnemy(Vector2i initialPosition, List<Vector2i> targets) {
-        objects.add(new TestEnemy(
+        objects.add(new BasicEnemy(
                 loopTimer,
                 renderTimer,
                 gridProvider,

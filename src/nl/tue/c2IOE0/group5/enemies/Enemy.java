@@ -21,8 +21,8 @@ public abstract class Enemy extends GameObject {
     private int health;
     private List<Vector2i> targetPositions;
     protected PositionInterpolator interpolator;
-    private Renderer renderer;
-    private InstancedMesh cube;
+    protected Renderer renderer;
+    protected InstancedMesh iMeshBody;
     protected Timer loopTimer;
     protected Timer renderTimer;
     protected boolean attacking = false;
@@ -69,13 +69,18 @@ public abstract class Enemy extends GameObject {
             attacking = true;
             doDamage(tower);
         }
+        setRotation(interpolator.getDirection());
     }
 
+    /**
+     * A standard cube. To be overridden by the subclasses
+     * @param renderer An instance of the renderer that will draw this object.
+     */
     @Override
     public void renderInit(Renderer renderer) {
         setScale(0.25f);
 
-        cube = renderer.linkMesh("/cube.obj", () -> {
+        iMeshBody = renderer.linkMesh("/cube.obj", () -> {
             setModelView(renderer);
             renderer.ambientLight(new Vector3f(0f, 0f,1f ));
             if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
@@ -101,7 +106,6 @@ public abstract class Enemy extends GameObject {
 
     public void die() {
         if(dead) return;
-        if(renderer != null) renderer.unlinkMesh(cube);
         dead = true;
         onDie();
     }

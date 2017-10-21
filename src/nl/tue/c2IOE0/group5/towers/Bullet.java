@@ -49,8 +49,7 @@ public class Bullet extends GameObject {
             renderer.unlinkMesh(iMesh); //stop drawing this bullet
             return;
         }
-        Vector3f direction = targetPosition.sub(this.getPosition().toImmutable()).normalize();
-        this.setRotation(direction);
+        this.setRotation(interpolator.getDirection());
     }
 
     @Override
