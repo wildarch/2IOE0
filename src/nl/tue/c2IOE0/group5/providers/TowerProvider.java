@@ -31,9 +31,9 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
         bulletProvider = engine.getProvider(BulletProvider.class);
         loopTimer = engine.getGameloopTimer();
         putMainTower();
-        putCannonTower();
-        putWallTower();
-        putRocketTower();
+        buildCannonTower(2, 2);
+        buildWallTower(3, 4);
+        buildRocketTower(4, 5);
     }
 
     @Override
@@ -43,24 +43,30 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
         renderTimer = engine.getRenderLoopTimer();
     }
 
-    private void putCannonTower() {
+    /**
+     * If there is already a tower at this spot, it just places it without warning
+     */
+    private void buildCannonTower(int x, int y) {
         CannonTower ct = new CannonTower(enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer).init(getRenderer());
-        gridProvider.placeTower(2, 2, ct);
+        gridProvider.placeTower(x, y, ct);
         objects.add(ct);
     }
 
-    private void putWallTower() {
+    /**
+     * If there is already a tower at this spot, it just places it without warning
+     */
+    private void buildWallTower(int x, int y) {
         WallTower wt = new WallTower(enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer).init(getRenderer());
-        gridProvider.placeTower(3, 3, wt);
-        WallTower wt2 = new WallTower(enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer).init(getRenderer());
-        gridProvider.placeTower(4, 3, wt2);
+        gridProvider.placeTower(x, y, wt);
         objects.add(wt);
-        objects.add(wt2);
     }
 
-    private void putRocketTower() {
+    /**
+     * If there is already a tower at this spot, it just places it without warning
+     */
+    private void buildRocketTower(int x, int y) {
         RocketTower rt = new RocketTower(enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer).init(getRenderer());
-        gridProvider.getCell(2, 4).placeTower(rt);
+        gridProvider.placeTower(x, y, rt);
         objects.add(rt);
     }
 
