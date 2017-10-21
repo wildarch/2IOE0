@@ -318,7 +318,7 @@ public class Window {
     }
 
     public Matrix4f getProjectionMatrix() {
-        return projectionMatrix;
+        return updateProjectionMatrix();
     }
 
     /**
