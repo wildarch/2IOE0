@@ -64,6 +64,7 @@ public abstract class AbstractTower extends GameObject {
     public void setCell(Cell cell) {
         this.cell = cell;
     }
+    public Cell getCell() {return this.cell;}
 
     /**
      * Level a tower up

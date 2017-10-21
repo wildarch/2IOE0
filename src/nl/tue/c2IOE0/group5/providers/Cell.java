@@ -17,7 +17,10 @@ public class Cell extends GameObject {
     //the position in the grid
     private Vector2i position;
     private Vector3f defaultColor = new Vector3f(0.3f);
+    private Vector3f activeColor = new Vector3f(1f, 1f, 0f);
+    private Vector3f rangeColor = new Vector3f(0f, 0f, 1f);
     private Vector3f color;
+    private boolean showRange = false;
 
     private final CellType cellType;
     //private Mesh mesh;
@@ -59,11 +62,25 @@ public class Cell extends GameObject {
 
     //set the texture of this cell to activated
     public void activate() {
-        color = new Vector3f(1f, 1f, 0f);
+        color = activeColor;
     }
 
     //set the texture of this cell to deactivated
     public void deactivate() {
+        if (showRange) {
+            color = rangeColor;
+        } else {
+            color = defaultColor;
+        }
+    }
+
+    public void range() {
+        showRange = true;
+        color = rangeColor;
+    }
+
+    public void deRange() {
+        showRange = false;
         color = defaultColor;
     }
 

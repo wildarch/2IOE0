@@ -181,6 +181,44 @@ public class GridProvider extends ObjectProvider<Cell> {
         return new Vector3f(direction.x, direction.y, direction.z);
     }
 
+    public void click() {
+        AbstractTower t = activeCell.getTower();
+        if (t == null) {
+            deRangeAll();
+            return;
+        }
+
+        for (int x = 0; x < SIZE; x++) {
+            for (int y = 0; y < SIZE; y++) {
+                Cell c = getCell(x, y);
+                if (inRange(t, c)) {
+                    c.range();
+                } else {
+                    c.deRange();
+                }
+            }
+        }
+    }
+
+    private boolean inRange(AbstractTower t, Cell c) {
+        Cell tc = t.getCell();
+        int range = t.getRange();
+        int dist = Math.abs(tc.getGridPosition().x() - c.getGridPosition().x()) + Math.abs(tc.getGridPosition().y() - c.getGridPosition().y());
+
+        if (dist <= range) {
+            return true;
+        }
+        return false;
+    }
+
+    private void deRangeAll() {
+        for (int x = 0; x < SIZE; x++) {
+            for (int y = 0; y < SIZE; y++) {
+                getCell(x, y).deRange();
+            }
+        }
+    }
+
     /**
      * A helper method to show the qlearner output, by first deactivating all the cells and then activating the cells on the path
      */
