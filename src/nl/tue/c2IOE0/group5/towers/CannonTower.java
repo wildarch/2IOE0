@@ -35,7 +35,7 @@ public class CannonTower extends AbstractTower {
     protected void attack(Enemy e) {
         super.attack(e);
         //calculate rotation of the cannon, based on the angle between the position of the tower / the enemy
-        cannonRotation.y = 180f + Angle.degf((float)Math.atan((e.getPosition().z - getPosition().z) / (e.getPosition().x - getPosition().x)));
+        cannonRotation.y = 180f + (float) Math.toDegrees(Math.atan2((e.getPosition().z - getPosition().z), (e.getPosition().x - getPosition().x)));
     }
 
     @Override

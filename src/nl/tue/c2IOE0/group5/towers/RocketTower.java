@@ -21,21 +21,21 @@ public class RocketTower extends AbstractTower {
     private static final int MAX_LEVEL = 1;
     private static final int MAX_HEALTH = 20;
 
-    private Vector3f cannonRotation = new Vector3f(0f, 0f, 0f);
+    private Vector3f rocketRotation = new Vector3f(0f, 0f, 0f);
 
     private Renderer renderer;
     private InstancedMesh iBaseMesh;
     private InstancedMesh iRocketMesh;
 
     public RocketTower(EnemyProvider enemyProvider, BulletProvider bulletProvider, GridProvider gridProvider, Timer loopTimer, Timer renderTimer) {
-        super(RANGE, MAX_LEVEL, MAX_HEALTH, 500, 3f, 1000, 0.8f, 0.2f, enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer);
+        super(RANGE, MAX_LEVEL, MAX_HEALTH, 500, 3f, 1000, 1f, 0.2f, enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer);
     }
 
     @Override
     protected void attack(Enemy e) {
         super.attack(e);
         //calculate rotation of the rocket, based on the angle between the position of the tower / the enemy
-        cannonRotation.y = 180f + Angle.degf((float)Math.atan((e.getPosition().z - getPosition().z) / (e.getPosition().x - getPosition().x)));
+        rocketRotation.y = (float) Math.toDegrees(Math.atan2((e.getPosition().z - getPosition().z), (e.getPosition().x - getPosition().x)));
     }
 
     @Override
@@ -47,7 +47,7 @@ public class RocketTower extends AbstractTower {
         rocket.setMaterial(new Material("/models/towers/rockettower/rocket.png"));
 
         iBaseMesh = renderer.linkMesh(base, () -> setModelView(renderer));
-        iRocketMesh = renderer.linkMesh(rocket, () -> setModelView(renderer, new Vector3f(0f, 0.148f, 0f), cannonRotation));
+        iRocketMesh = renderer.linkMesh(rocket, () -> setModelView(renderer, new Vector3f(0f, 0.148f, 0f), rocketRotation));
 
 
         this.renderer = renderer;
