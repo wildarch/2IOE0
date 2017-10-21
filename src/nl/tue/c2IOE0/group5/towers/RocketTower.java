@@ -28,7 +28,7 @@ public class RocketTower extends AbstractTower {
     private InstancedMesh iRocketMesh;
 
     public RocketTower(EnemyProvider enemyProvider, BulletProvider bulletProvider, GridProvider gridProvider, Timer loopTimer, Timer renderTimer) {
-        super(RANGE, MAX_LEVEL, MAX_HEALTH, 500, 3f, 1000, 0.8f, enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer);
+        super(RANGE, MAX_LEVEL, MAX_HEALTH, 500, 3f, 1000, 0.8f, 0.2f, enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer);
     }
 
     @Override

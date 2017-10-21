@@ -36,13 +36,14 @@ public abstract class AbstractTower extends GameObject {
     private final float bulletSpeed;
     private final int bulletDamage;
     private float healthHeight;
+    private float bulletOffset;
 
     private Mesh mesh;
     private Cell cell;
     private Renderer renderer;
 
 
-    public AbstractTower(int range, int maxLevel, int maxHealth, int attackTime, float bulletSpeed, int bulletDamage, float healthHeight,
+    public AbstractTower(int range, int maxLevel, int maxHealth, int attackTime, float bulletSpeed, int bulletDamage, float healthHeight, float bulletOffset,
                          EnemyProvider enemyProvider, BulletProvider bulletProvider, GridProvider gridProvider, Timer loopTimer, Timer renderTimer) {
         this.range = range;
         this.maxLevel = maxLevel;
@@ -59,6 +60,7 @@ public abstract class AbstractTower extends GameObject {
         this.bulletSpeed = bulletSpeed;
         this.bulletDamage = bulletDamage;
         this.healthHeight = healthHeight;
+        this.bulletOffset = bulletOffset;
     }
 
     public void setCell(Cell cell) {
@@ -129,7 +131,7 @@ public abstract class AbstractTower extends GameObject {
     }
 
     protected void attack(Enemy e) {
-        Bullet b = new Bullet(bulletSpeed, bulletDamage, e, this, loopTimer, renderTimer).init(renderer);
+        Bullet b = new Bullet(bulletSpeed, bulletDamage, bulletOffset, e, this, loopTimer, renderTimer).init(renderer);
         bulletProvider.addBullet(b);
     }
 

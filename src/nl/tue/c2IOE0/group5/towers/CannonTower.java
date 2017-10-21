@@ -28,7 +28,7 @@ public class CannonTower extends AbstractTower {
     private InstancedMesh iCannonMesh;
 
     public CannonTower(EnemyProvider enemyProvider, BulletProvider bulletProvider, GridProvider gridProvider, Timer loopTimer, Timer renderTimer) {
-        super(RANGE, MAX_LEVEL, MAX_HEALTH, 500, 3f, 1000, 1.3f, enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer);
+        super(RANGE, MAX_LEVEL, MAX_HEALTH, 500, 3f, 1000, 1.3f, 0.5f, enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer);
     }
 
     @Override

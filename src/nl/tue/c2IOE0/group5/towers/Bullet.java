@@ -22,12 +22,12 @@ public class Bullet extends GameObject {
     private PositionInterpolator interpolator;
     private boolean isDone = false; //When target is hit
 
-    public Bullet(float speed, int damage, Enemy target, AbstractTower source, Timer loopTimer, Timer renderTimer) {
+    public Bullet(float speed, int damage, float verticalOffset, Enemy target, AbstractTower source, Timer loopTimer, Timer renderTimer) {
         this.speed = speed;
         this.damage = damage;
         this.target = target;
         this.color = new Vector3f(0.5f, 0, 0.5f);
-        setPosition(source.getPosition().add(0f, 1f, 0f));
+        setPosition(source.getPosition().add(0f, verticalOffset, 0f));
         this.interpolator = new PositionInterpolator(this, this.speed);
         this.loopTimer = loopTimer;
         this.renderTimer = renderTimer;
