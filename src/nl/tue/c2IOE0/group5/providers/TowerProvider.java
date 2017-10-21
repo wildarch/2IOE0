@@ -14,6 +14,9 @@ import nl.tue.c2IOE0.group5.towers.MainTower;
 import nl.tue.c2IOE0.group5.towers.WallTower;
 import nl.tue.c2IOE0.group5.towers.RocketTower;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 public class TowerProvider extends ObjectProvider<AbstractTower> {
 
     GridProvider gridProvider;
@@ -23,17 +26,36 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
     private Timer loopTimer;
     private Timer renderTimer;
 
+
+    //for passing classes
+    Class[] Args = new Class[5];
+
     @Override
     public void init(Simulator engine) {
         super.init(engine);
+        //initialize arg array for tower initialization
+        Args[0] = EnemyProvider.class;
+        Args[1] = BulletProvider.class;
+        Args[2] = GridProvider.class;
+        Args[3] = Timer.class;
+        Args[4] = Timer.class;
+
         gridProvider = engine.getProvider(GridProvider.class);
         enemyProvider = engine.getProvider(EnemyProvider.class);
         bulletProvider = engine.getProvider(BulletProvider.class);
         loopTimer = engine.getGameloopTimer();
         putMainTower();
-        buildCannonTower(2, 2);
-        buildWallTower(3, 4);
-        buildRocketTower(4, 5);
+        try {
+            buildTower(2, 2, WallTower.class);
+            buildTower(2, 3, WallTower.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
+        }
+       // buildCannonTower(2, 2);
+       // buildWallTower(3, 4);
+       // buildRocketTower(4, 5);
+
     }
 
     @Override
@@ -42,6 +64,29 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
         m.setMaterial(new Material("/tower.png"));
         renderTimer = engine.getRenderLoopTimer();
     }
+
+    /**
+     * Create a tower according to a tower type at a certain location
+     * @Returns true if build succesful, false if there already is a tower
+     * @Throws Many exceptions when passing class type as argument fails: So an incorrect type was passed (not a tower)
+     */
+    public boolean buildTower(int x, int y, Class<?> towertype) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        if (gridProvider.getCell(x, y).getTower() != null) {
+            //not null: tower exists here already
+            return false;
+        }
+        //create the tower
+        Constructor<?> constructor = towertype.getDeclaredConstructor(Args);
+        AbstractTower tower = (AbstractTower) constructor.newInstance(enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer);
+        tower.init(getRenderer());
+        //place it
+        gridProvider.placeTower(x, y, tower);
+        objects.add(tower);
+        //placing tower succesfull!
+        return true;
+    }
+
+
 
     /**
      * If there is already a tower at this spot, it just places it without warning
