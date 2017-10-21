@@ -1,6 +1,7 @@
 package nl.tue.c2IOE0.group5.controllers;
 
 import nl.tue.c2IOE0.group5.engine.Engine;
+import nl.tue.c2IOE0.group5.engine.Simulator;
 import nl.tue.c2IOE0.group5.engine.controller.Controller;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.Event;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.Listener;
@@ -25,7 +26,6 @@ public class PlayerController implements Controller,Listener {
     // define required resources here, e.g.
     private Engine engine;
     private MenuProvider menuProvider;
-    private TestProvider testProvider;
     private UIProvider uiProvider;
     private GridProvider gridProvider;
     private Camera camera;
@@ -53,7 +53,6 @@ public class PlayerController implements Controller,Listener {
         // you can initialize resources here, e.g.
         this.engine = engine;
         this.menuProvider = engine.getProvider(MenuProvider.class);
-        this.testProvider = engine.getProvider(TestProvider.class);
         this.uiProvider = engine.getProvider(UIProvider.class);
         this.gridProvider = engine.getProvider(GridProvider.class);
         this.camera = engine.getCamera();
@@ -202,8 +201,8 @@ public class PlayerController implements Controller,Listener {
             } else {
                 if (uiProvider.onClick(event)) {
                     System.out.println("Click at (" + event.getX() + ", " + event.getY() + ")");
-                    //this.gridProvider.click();
                 }
+                gridProvider.click();
             }
         }
 

@@ -15,7 +15,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 /**
  * @author Jorren Hendriks
- *
+ * <p>
  * A window which initializes GLFW and manages it.
  */
 public class Window {
@@ -145,9 +145,9 @@ public class Window {
         // Measure speed
         double currentTime = glfwGetTime();
         nbFrames++;
-        if ( currentTime - lastTime >= 0.25 ){ // If last prinf() was more than 1 sec ago
+        if (currentTime - lastTime >= 0.25) { // If last prinf() was more than 1 sec ago
             // printf and reset timer
-            frametime = (250.0/((double)(nbFrames)));
+            frametime = (250.0 / ((double) (nbFrames)));
             nbFrames = 0;
             lastTime += 0.25;
         }
@@ -197,9 +197,9 @@ public class Window {
     /**
      * Set the color which is used for clearing the window.
      *
-     * @param red The red value (0.0 - 1.0)
+     * @param red   The red value (0.0 - 1.0)
      * @param green The green value (0.0 - 1.0)
-     * @param blue The blue value (0.0 - 1.0)
+     * @param blue  The blue value (0.0 - 1.0)
      * @param alpha The alpha value (0.0 - 1.0)
      */
     public void setClearColor(float red, float green, float blue, float alpha) {
@@ -284,7 +284,7 @@ public class Window {
     /**
      * Resize the window.
      *
-     * @param width The new width of the window.
+     * @param width  The new width of the window.
      * @param height The new Height of the window.
      */
     public void resize(int width, int height) {
@@ -318,7 +318,7 @@ public class Window {
     }
 
     public Matrix4f getProjectionMatrix() {
-        return projectionMatrix;
+        return updateProjectionMatrix();
     }
 
     /**
@@ -372,3 +372,4 @@ public class Window {
 
     }
 }
+

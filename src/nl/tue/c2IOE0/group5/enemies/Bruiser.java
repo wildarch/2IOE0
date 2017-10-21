@@ -1,5 +1,6 @@
 package nl.tue.c2IOE0.group5.enemies;
 
+import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.objects.Animatable;
 import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
@@ -7,7 +8,10 @@ import nl.tue.c2IOE0.group5.providers.AnimationProvider;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
 import nl.tue.c2IOE0.group5.util.LinearlyUpdatable;
 import nl.tue.c2IOE0.group5.util.SmoothUpdatable;
+import org.joml.Vector2i;
 import org.joml.Vector3f;
+
+import java.util.List;
 
 import static java.lang.Math.sin;
 import static nl.tue.c2IOE0.group5.engine.objects.Animatable.AnimationLoop.DEFAULT;
@@ -19,6 +23,9 @@ import static nl.tue.c2IOE0.group5.engine.objects.Animatable.AnimationLoop.WALK;
  */
 public class Bruiser extends Enemy implements Animatable {
 
+    private static final float SPEED = 1.5f;
+    private static final long ATTACKSPEED = 5;
+
     private InstancedMesh head;
     private InstancedMesh leftArm;
     private InstancedMesh rightArm;
@@ -29,31 +36,9 @@ public class Bruiser extends Enemy implements Animatable {
     private SmoothUpdatable leftArmOffset;
     private SmoothUpdatable rightArmOffset;
 
-    public Bruiser(GridProvider gridProvider, int maxHealth, AnimationProvider manager) {
-        super(gridProvider, maxHealth);
-        manager.add(this);
-    }
-
-    @Override
-    public Bruiser init(Renderer renderer) {
-        headOffset = new LinearlyUpdatable(headOffset(0), 0.1f);
-        leftArmOffset = new LinearlyUpdatable(armOffset(0), 0.1f);
-        rightArmOffset = new LinearlyUpdatable(-armOffset(0), 0.1f);
-
-        renderer.linkMesh("/bruiser_head.obj", () ->
-                setModelView(renderer, new Vector3f(0f, 1f + headOffset.current(), 1f)));
-
-        renderer.linkMesh("/bruiser_body.obj", () ->
-                setModelView(renderer));
-
-        renderer.linkMesh("/bruiser_lArm.obj", () ->
-                setModelView(renderer, new Vector3f(1f, 0f, leftArmOffset.current())));
-
-        renderer.linkMesh("/bruiser_rArm.obj", () ->
-                setModelView(renderer, new Vector3f(1f, 0f, rightArmOffset.current())));
-
-
-        return this;
+    public Bruiser(Timer loopTimer, Timer renderTimer, GridProvider gridProvider,
+                     Vector2i initialPosition, List<Vector2i> targetPositions, int maxHealth) {
+        super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, maxHealth, SPEED, ATTACKSPEED);
     }
 
     /**
@@ -106,5 +91,25 @@ public class Bruiser extends Enemy implements Animatable {
     protected void onDie() {
         // unnecessary
         currentAnim = DEFAULT;
+    }
+
+    @Override
+    public void renderInit(Renderer renderer) {
+        headOffset = new LinearlyUpdatable(headOffset(0), 0.1f);
+        leftArmOffset = new LinearlyUpdatable(armOffset(0), 0.1f);
+        rightArmOffset = new LinearlyUpdatable(-armOffset(0), 0.1f);
+
+        renderer.linkMesh("/bruiser_head.obj", () ->
+                setModelView(renderer, new Vector3f(0f, 1f + headOffset.current(), 1f)));
+
+        renderer.linkMesh("/bruiser_body.obj", () ->
+                setModelView(renderer));
+
+        renderer.linkMesh("/bruiser_lArm.obj", () ->
+                setModelView(renderer, new Vector3f(1f, 0f, leftArmOffset.current())));
+
+        renderer.linkMesh("/bruiser_rArm.obj", () ->
+                setModelView(renderer, new Vector3f(1f, 0f, rightArmOffset.current())));
+
     }
 }

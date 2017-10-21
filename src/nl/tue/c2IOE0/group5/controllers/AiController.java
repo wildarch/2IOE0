@@ -1,5 +1,6 @@
 package nl.tue.c2IOE0.group5.controllers;
 
+import nl.tue.c2IOE0.group5.ai.QLearner;
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.controller.Controller;
@@ -13,6 +14,8 @@ import org.joml.Vector2i;
 
 import java.util.List;
 import java.util.Random;
+import java.util.function.BooleanSupplier;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
@@ -22,8 +25,8 @@ public class AiController implements Controller, Listener {
     private static int NR_WAVES = 10;
     private static int NR_SUB_WAVES = 5;
     private static long WAVE_TIME = 5000; // 5 seconds
-    private static int BIG_WAVE_SIZE = 20;
-    private static int SMALL_WAVE_SIZE = 10;
+    private static int BIG_WAVE_SIZE = 5;
+    private static int SMALL_WAVE_SIZE = 2;
 
     private int wave = 0;
     private EnemyProvider enemyProvider;
@@ -33,6 +36,7 @@ public class AiController implements Controller, Listener {
     private QLearner qlearner;
     private List<Integer> optimalPath; //the current optimal path for the active cell
     private GridProvider gridProvider;
+    BooleanSupplier isPaused;
 
     @Override
     public void init(Engine engine) {
@@ -40,10 +44,12 @@ public class AiController implements Controller, Listener {
         loopTimer = engine.getRenderLoopTimer();
         gridProvider = engine.getProvider(GridProvider.class);
         trainQLearner();
+        isPaused = engine::isPaused;
     }
 
     @Override
     public void update() {
+        if(isPaused.getAsBoolean()) return;
         boolean bigWave = wave % NR_SUB_WAVES == 0 && enemyProvider.countEnemies() == 0;
         boolean smallWave = wave % NR_SUB_WAVES != 0 && loopTimer.getLoopTime() > nextWaveTime;
         if (bigWave || smallWave) {
@@ -54,10 +60,8 @@ public class AiController implements Controller, Listener {
     }
 
     private void wave(boolean big) {
-
         // Do a wave!
         String size = big ? "Big  " : "Small";
-        System.out.println(size + " wave at " + loopTimer.getLoopTime());
         Random r = new Random();
         for (int i = 0; i < SMALL_WAVE_SIZE; i++) {
             int random = r.nextInt(5);
@@ -83,13 +87,13 @@ public class AiController implements Controller, Listener {
         }
     }
 
-    public void trainQLearner() {
+    private void trainQLearner() {
         int noIterations = 1000;
         qlearner = new QLearner(GridProvider.SIZE, noIterations);
-        qlearner.updateRewardsMatrix(qlearner.getState(GridProvider.SIZE/2, GridProvider.SIZE/2), 1000);
+        qlearner.updateRewardsMatrix(QLearner.getState(GridProvider.SIZE/2, GridProvider.SIZE/2), 1000);
         for (int i = 3; i <= 9; i++) {
-            qlearner.updateRewardsMatrix(qlearner.getState(3, i), -5);
-            qlearner.updateRewardsMatrix(qlearner.getState(9, i), -5);
+            qlearner.updateRewardsMatrix(QLearner.getState(3, i), -5);
+            qlearner.updateRewardsMatrix(QLearner.getState(9, i), -5);
         }
         for (int i = 0; i < 20; i++) {
             qlearner.generateRandomPath(100);
@@ -118,7 +122,7 @@ public class AiController implements Controller, Listener {
     @Override
     public void onMouseButtonPressed(MouseEvent event) {
         if (event.getSubject() == GLFW_MOUSE_BUTTON_1) {
-            optimalPath = qlearner.getOptimalPath(qlearner.getState(gridProvider.getActiveCell()));
+            optimalPath = qlearner.getOptimalPath(QLearner.getState(gridProvider.getActiveCell()));
             gridProvider.drawPath(optimalPath);
         }
     }

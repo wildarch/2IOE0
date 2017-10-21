@@ -8,14 +8,12 @@ import nl.tue.c2IOE0.group5.util.Updatable;
 public class Timer {
 
     private Updatable<Long> time;
-    private Updatable<Long> tickTime;
 
     /**
      * Initialize the timer, set previous time to current.
      */
     public void init() {
         time = new Updatable<>(System.currentTimeMillis());
-        tickTime = new Updatable<>(System.currentTimeMillis());
     }
 
     /**
@@ -39,8 +37,6 @@ public class Timer {
         return time.current() - time.previous();
     }
 
-    public long getElapsedTickTime() { return tickTime.current() - tickTime.previous(); }
-
     /**
      * @return The previous time at which the timer was requested.
      */
@@ -50,11 +46,18 @@ public class Timer {
 
     /**
      * set timer to current system time
-     * should only be called by Engine, exactly once per rendering loop
+     * should only be called by Engine, exactly once per loop step
      */
     public void updateLoopTime(){
-        time.update(System.currentTimeMillis());
+        updateLoopTime(System.currentTimeMillis());
     }
 
-    public void updateTickTime() { tickTime.update(System.currentTimeMillis()); }
+    /**
+     * Set the loop time (useful for mocking a timer)
+     * @param millis
+     */
+    public void updateLoopTime(long millis){
+        time.update(millis);
+    }
+
 }

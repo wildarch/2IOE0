@@ -6,6 +6,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.providers.BulletProvider;
 import nl.tue.c2IOE0.group5.providers.EnemyProvider;
+import nl.tue.c2IOE0.group5.providers.GridProvider;
 
 import java.util.function.Consumer;
 
@@ -17,36 +18,18 @@ public class MainTower extends AbstractTower {
 
     private Renderer renderer;
     private InstancedMesh iMesh;
-    private Mesh mesh;
-    private Consumer<Mesh> render;
-    private Consumer<Mesh> shadowRender;
 
-    public MainTower(EnemyProvider enemyProvider, BulletProvider bulletProvider, Timer timer) {
-        super(RANGE, MAX_LEVEL, MAX_HEALTH, enemyProvider, bulletProvider, timer);
+    public MainTower(EnemyProvider enemyProvider, BulletProvider bulletProvider, GridProvider gridProvider, Timer loopTimer, Timer renderTimer) {
+        super(RANGE, MAX_LEVEL, MAX_HEALTH, 500, 3f, 1000, 2.5f, 1f, enemyProvider, bulletProvider, gridProvider, loopTimer, renderTimer);
     }
 
     @Override
-    public MainTower init(Renderer renderer) {
+    public void renderInit(Renderer renderer) {
         setScale(40f);
 
-        iMesh = renderer.linkMesh("/tower.obj", () -> {
-            setModelView(renderer);
-        });
-
-        /*
-        render = mesh -> {
-            setModelView(renderer);
-            mesh.draw();
-        };
-        shadowRender = mesh -> {
-            setModelLightView(renderer);
-            mesh.draw();
-        };
-        mesh = renderer.linkMesh("/tower.obj", render, shadowRender);
-        */
+        iMesh = renderer.linkMesh("/tower.obj", () -> setModelView(renderer));
 
         this.renderer = renderer;
-        return this;
     }
 
     @Override

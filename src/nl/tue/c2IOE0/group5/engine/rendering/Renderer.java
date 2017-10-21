@@ -55,6 +55,8 @@ public class Renderer {
         DEPTH_MAP
     }
 
+    private boolean shadowMapping = true;
+
     /**
      * Constructor for initializing datastructures.
      */
@@ -163,6 +165,8 @@ public class Renderer {
         );
         directionalLight.setOrthoCords(-10.0f, 10.0f, -10.0f, 10.0f, -7.0f, 20.0f);
         sceneShader.setDirectionalLight(directionalLight);
+
+        sceneShader.setUniform("texture_sampler", 0);
     }
 
     private void initDepthShader() throws ShaderException, IOException {
@@ -202,6 +206,10 @@ public class Renderer {
      */
     public Camera getActiveCamera() {
         return this.activeCamera;
+    }
+
+    public void setShadowMapping(boolean value) {
+        this.shadowMapping = value;
     }
 
     /**
@@ -404,11 +412,16 @@ public class Renderer {
 
         renderLights(viewMatrix);
 
-        sceneShader.setUniform("texture_sampler", 0);
-        sceneShader.setUniform("depthMap", 1);
 
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, depthMap.getDepthMapTexture().getId());
+
+        if (shadowMapping) {
+            sceneShader.setUniform("depthMap", 1);
+
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, depthMap.getDepthMapTexture().getId());
+        } else {
+            sceneShader.setUniform("depthMap", 0);
+        }
 
         instancedMeshes.forEach((mesh, consumers) -> {
             setMaterial(mesh.getMaterial());
@@ -452,8 +465,10 @@ public class Renderer {
     }
 
     public void render() {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        renderDepthMap();
+        if (shadowMapping) {
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            renderDepthMap();
+        }
 
         glViewport(0, 0, window.getWidth(), window.getHeight());
         renderScene();

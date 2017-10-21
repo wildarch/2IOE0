@@ -16,7 +16,7 @@ import java.util.Set;
  * a provider that lets all Animatables make their animations and movements based on frames
  * created on 13-10-2017.
  */
-public class AnimationProvider implements Provider {
+public class AnimationProvider implements Provider<Engine> {
     private Set<AnimatedObjectRecord> targets;
     private Timer timer;
 

@@ -1,6 +1,7 @@
 package nl.tue.c2IOE0.group5.engine.objects;
 
 import nl.tue.c2IOE0.group5.engine.Timer;
+import nl.tue.c2IOE0.group5.towers.Bullet;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
@@ -12,13 +13,16 @@ public class PositionInterpolator {
     /**
      * Difference in position so small that nobody cares anymore
      */
-    private static final double EPSILON = 0.001;
+    private static final double EPSILON = 0.01;
 
     private Positionable p;
     private Vector3f position;
     private Vector3f target = null;
     private long targetReachTime = 0;
     private float speed;    // In milliseconds
+
+
+    private float time = 0;
 
     /**
      * Creates a new PositionInterpolator
@@ -41,6 +45,7 @@ public class PositionInterpolator {
         this.target = new Vector3f(target);
         float distance = target.distance(position.toImmutable());
         targetReachTime = currentTime + (long)(distance / speed);
+        time = 0;
     }
 
     /**
@@ -53,6 +58,7 @@ public class PositionInterpolator {
         if (currentTime > targetReachTime) {
             if (target != null) p.setPosition(target);
             target = null;
+            time = 0;
             targetReachTime = Long.MAX_VALUE;
             return true;
         }
@@ -67,17 +73,19 @@ public class PositionInterpolator {
      */
     public boolean draw(float deltaTime) {
         if(target == null) return true;
+        time += deltaTime;
         float step = deltaTime * speed;
         p.move(getDirection().mul(step));
         float distance = p.getPosition().distance(target.toImmutable());
         if (distance < EPSILON) {
             target = null;
+            System.out.println("Time: " + time + " should be " + (distance / speed));
             return true;
         }
         return false;
     }
 
-    private Vector3f getDirection() {
+    public Vector3f getDirection() {
         if(target == null) return new Vector3f(0);
         Vector3f offset = new Vector3f(target);
         offset.sub(p.getPosition().toImmutable());

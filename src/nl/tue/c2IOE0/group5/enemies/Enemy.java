@@ -1,21 +1,99 @@
 package nl.tue.c2IOE0.group5.enemies;
 
+import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
-import nl.tue.c2IOE0.group5.engine.rendering.*;
+import nl.tue.c2IOE0.group5.engine.objects.PositionInterpolator;
+import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
+import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.providers.Cell;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
+import nl.tue.c2IOE0.group5.towers.AbstractTower;
+import org.joml.Vector2i;
 import org.joml.Vector3f;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Enemy extends GameObject {
     private boolean dead = false;
     protected GridProvider gridProvider;
     private final int maxHealth;
     private int health;
+    private List<Vector2i> targetPositions;
+    protected PositionInterpolator interpolator;
+    protected Renderer renderer;
+    protected InstancedMesh iMeshBody;
+    protected Timer loopTimer;
+    protected Timer renderTimer;
+    protected boolean attacking = false;
+    private final float speed;
+    private final long attackSpeed;
 
-    public Enemy(GridProvider gridProvider, int maxHealth) {
+    public Enemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider,
+                 Vector2i initialPosition, List<Vector2i> targetPositions, int maxHealth, float speed, long attackSpeed) {
         this.gridProvider = gridProvider;
         this.maxHealth = maxHealth;
         this.health = maxHealth;
+        this.targetPositions = new ArrayList<>(targetPositions);
+        this.loopTimer = loopTimer;
+        this.renderTimer = renderTimer;
+        setPosition(gridProvider.getCell(initialPosition).getPosition().add(0, 0f, 0f)); //they will emerge from the floor again
+        this.speed = speed;
+        this.interpolator = new PositionInterpolator(this, this.speed);
+        this.attackSpeed = attackSpeed;
+    }
+
+    @Override
+    public void update() {
+        if(targetPositions.isEmpty()) {
+            return;
+        }
+        boolean targetReached = interpolator.update(loopTimer.getLoopTime());
+        if(targetReached) {
+            targetPositions.remove(0);
+            if(targetPositions.isEmpty()) {
+                System.out.println("Target reached!");
+                return;
+            }
+        }
+        Cell targetCell = gridProvider.getCell(targetPositions.get(0));
+        AbstractTower tower = targetCell.getTower();
+        Vector3f targetPosition = targetCell.getPosition().add(0, 0.5f, 0);
+        if (tower == null || (targetReached && attacking)) {
+            // Road is clear, move ahead
+            attacking = false;
+            interpolator.setTarget(targetPosition, loopTimer.getLoopTime());
+        }
+        else if(tower != null) {
+            // Destroy the tower first
+            attacking = true;
+            doDamage(tower);
+        }
+        setRotation(interpolator.getDirection());
+    }
+
+    /**
+     * A standard cube. To be overridden by the subclasses
+     * @param renderer An instance of the renderer that will draw this object.
+     */
+    @Override
+    public void renderInit(Renderer renderer) {
+        setScale(0.25f);
+
+        iMeshBody = renderer.linkMesh("/cube.obj", () -> {
+            setModelView(renderer);
+            renderer.ambientLight(new Vector3f(0f, 0f,1f ));
+            if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
+        });
+        this.renderer = renderer;
+    }
+
+    private long timeToDoDamage;
+    private void doDamage(AbstractTower tower) {
+        if (timeToDoDamage < loopTimer.getLoopTime()) {
+            tower.takeDamage(1);
+            timeToDoDamage = loopTimer.getLoopTime() + attackSpeed;
+        }
     }
 
     public void getDamage(int damage) {
