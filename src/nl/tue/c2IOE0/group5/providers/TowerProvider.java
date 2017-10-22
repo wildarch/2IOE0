@@ -44,9 +44,6 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
             e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
-       // buildCannonTower(2, 2);
-       // buildWallTower(3, 4);
-       // buildRocketTower(4, 5);
 
     }
 
@@ -85,45 +82,6 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
      */
     public List<Class<? extends AbstractTower>> all() {
         return Arrays.asList(CannonTower.class, RocketTower.class, WallTower.class);
-    }
-
-    /**
-     * If there is already a tower at this spot, it just places it without warning
-     */
-    private void buildCannonTower(int x, int y) {
-        CannonTower ct = new CannonTower(this).init(getRenderer());
-        gridProvider.placeTower(x, y, ct);
-        objects.add(ct);
-    }
-
-    /**
-     * If there is already a tower at this spot, it just places it without warning
-     */
-    private void buildWallTower(int x, int y) {
-        //test code for wall connections!
-        WallTower wt = new WallTower(this).init(getRenderer());
-        WallTower wt2 = new WallTower(this).init(getRenderer());
-        WallTower wt3 = new WallTower(this).init(getRenderer());
-        WallTower wt4 = new WallTower(this).init(getRenderer());
-        gridProvider.placeTower(x, y, wt);
-        gridProvider.placeTower(x+1, y, wt2);
-        gridProvider.placeTower(x+1, y-1, wt3);
-        gridProvider.placeTower(x, y-1, wt4);
-        objects.add(wt);
-        objects.add(wt2);
-        objects.add(wt3);
-        objects.add(wt4);
-
-        wt4.takeDamage(500);
-    }
-
-    /**
-     * If there is already a tower at this spot, it just places it without warning
-     */
-    private void buildRocketTower(int x, int y) {
-        RocketTower rt = new RocketTower(this).init(getRenderer());
-        gridProvider.placeTower(x, y, rt);
-        objects.add(rt);
     }
 
     private void putMainTower() {
