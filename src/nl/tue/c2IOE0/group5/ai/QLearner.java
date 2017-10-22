@@ -25,6 +25,7 @@ public class QLearner {
     private List<Integer[]> paths;
     private int noIterations;
     private List<Integer> outerStates;
+    private boolean converged = false;
 
     private Double[][] Q;
 
@@ -67,6 +68,8 @@ public class QLearner {
         }
     }
 
+    public boolean isConverged() {return this.converged;}
+
     public void initializeQ() {
         // Initialize Q as only 0
         Q = new Double[rewards.length][rewards[0].length];
@@ -79,6 +82,7 @@ public class QLearner {
                 }
             }
         }
+        converged = false;
     }
 
     /**
@@ -86,17 +90,18 @@ public class QLearner {
      * @return Whether or not the Q Learner has converged and is done learning for this specific rewards matrix
      */
     public boolean execute(Double gamma) {
-        boolean converged = false;
+        boolean convergedLocal = false;
         // Do Q-learning
         for (int iteration = 0; iteration < noIterations; iteration++) {
             for (Integer[] path : paths) {
                 boolean pathConverged = execute(rewards, path, gamma);
                 if (pathConverged) {
-                    converged = true;
+                    convergedLocal = true;
                 }
             }
         }
         policy();
+        converged = convergedLocal;
         return converged;
     }
 
@@ -121,6 +126,7 @@ public class QLearner {
                 }
             }
         }
+        converged = false;
     }
 
 
@@ -129,6 +135,7 @@ public class QLearner {
         for (int neighbour : neighbours) {
             this.rewards[neighbour][state] = reward;
         }
+        converged = false;
     }
 
     public static int getState(int x, int y) {
@@ -166,7 +173,7 @@ public class QLearner {
      * @return Whether or not the Q Learner has converged for this path
      */
     private boolean execute(Integer[][] rewards, Integer[] path, Double gamma) {
-        boolean converged = true;
+        boolean convergedLocal = true;
         if (path.length == 0) {
             System.err.println("Empty path in qlearner");
             return false;
@@ -184,11 +191,11 @@ public class QLearner {
                 double newQ = Q[s][a];
                 s = a;
                 if (previousQ != newQ) {
-                    converged = false;
+                    convergedLocal = false;
                 }
             }
         }
-        return converged;
+        return convergedLocal;
     }
 
     /**
@@ -279,15 +286,7 @@ public class QLearner {
      * Return the spawn location with the best Q learner options
      */
     public Vector2i getOptimalSpawnState() {
-        int maxQ = 0;
-        int maxState = 0;
-        for (int i : outerStates) {
-            if (getMaximumAction(i) >= maxQ) {
-                maxQ = getMaximumAction(i);
-                maxState = i;
-            }
-        }
-        return new Vector2i(getPoint(maxState));
+        return getOptimalNSpawnStates(1)[0];
     }
 
     /**
