@@ -49,8 +49,8 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
 
     @Override
     public void renderInit(Engine engine) {
-        Mesh m = engine.getRenderer().linkMesh("/tower.obj");
-        m.setMaterial(new Material("/tower.png"));
+        Mesh m = engine.getRenderer().linkMesh("/models/towers/mainbase/mainbase.obj");
+        m.setMaterial(new Material("/models/towers/mainbase/mainbase.png"));
         renderTimer = engine.getRenderLoopTimer();
     }
 

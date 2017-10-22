@@ -1,6 +1,5 @@
 package nl.tue.c2IOE0.group5.ai;
 
-import com.sun.prism.es2.ES2Graphics;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
 import org.joml.Vector2i;
 
