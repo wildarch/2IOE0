@@ -28,11 +28,9 @@ public class Engine extends Simulator {
 
     protected List<Controller> controllers;
     private long tickTimer;
-    private Timer loopTimer;
 
     public Engine() {
         super(sim -> ((Engine) sim).getWindow().shouldClose());
-        loopTimer = new Timer();
         window = new Window("Tower Defence", 1600, 900, false, new Window.Options());
         renderer = new Renderer();
         hud = new Hud();
@@ -47,7 +45,6 @@ public class Engine extends Simulator {
      */
     @Override
     protected void init() throws ShaderException, IOException {
-        loopTimer.init();
         window.init();
         renderer.init(window);
         renderer.setActiveCamera(camera);
@@ -87,19 +84,16 @@ public class Engine extends Simulator {
         long elapsedTime = timer.getElapsedTime();
         tickTimer += elapsedTime;
 
+        // only executes TARGET_TPS times per second, it is often skipped
         while (tickTimer >= TPS_INTERVAL) {
+            timer.updateTickTime();
+
             // update all controllers and providers
             controllers.forEach(Controller::update);
             providers.forEach(Provider::update);
-            // only executes TARGET_TPS times per second, it is often skipped
-            while (tickTimer >= TPS_INTERVAL) {
-                // updateFluent all controllers and providers
-                controllers.forEach(Controller::update);
-                providers.forEach(Provider::update);
 
-                // tick has been processed, remove 1 interval from tick timer
-                tickTimer -= TPS_INTERVAL;
-            }
+            // tick has been processed, remove 1 interval from tick timer
+            tickTimer -= TPS_INTERVAL;
         }
 
         // draw
@@ -113,10 +107,8 @@ public class Engine extends Simulator {
             window.updateProjectionMatrix();
 
             // render everything
+            providers.forEach(provider -> provider.draw(window, renderer));
             renderer.render();
-                // render everything
-                providers.forEach(provider -> provider.draw(window, renderer));
-                renderer.render();
 
             // draw the hud
             hud.draw(window, renderer);
@@ -186,10 +178,6 @@ public class Engine extends Simulator {
 
     public void pause(boolean value) {
         this.paused = value;
-    }
-
-    public Timer getRenderLoopTimer(){
-        return loopTimer;
     }
 
     public Renderer getRenderer() {

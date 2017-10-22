@@ -4,7 +4,6 @@ import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.objects.Animatable;
 import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
-import nl.tue.c2IOE0.group5.providers.AnimationProvider;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
 import nl.tue.c2IOE0.group5.util.LinearlyUpdatable;
 import nl.tue.c2IOE0.group5.util.SmoothUpdatable;
@@ -36,9 +35,9 @@ public class Bruiser extends Enemy implements Animatable {
     private SmoothUpdatable leftArmOffset;
     private SmoothUpdatable rightArmOffset;
 
-    public Bruiser(Timer loopTimer, GridProvider gridProvider,
+    public Bruiser(Timer timer, GridProvider gridProvider,
                      Vector2i initialPosition, List<Vector2i> targetPositions, int maxHealth) {
-        super(loopTimer, gridProvider, initialPosition, targetPositions, maxHealth, SPEED, ATTACKSPEED);
+        super(timer, gridProvider, initialPosition, targetPositions, maxHealth, SPEED, ATTACKSPEED);
     }
 
     /**

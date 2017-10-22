@@ -52,15 +52,15 @@ public class Simulator {
      * The game loop
      */
     private void loop() {
-        timer.updateLoopTime(time);
         while(running && !stopCondition.test(this)) {
             step();
         }
     }
 
     protected void step() {
-        time += TPS_INTERVAL;
-        timer.updateLoopTime(time);
+        time += TPS_INTERVAL; // simulate time interval
+        timer.updateTickTime(time);
+
         providers.forEach(Provider::update);
     }
 
@@ -130,7 +130,7 @@ public class Simulator {
         return running;
     }
 
-    public Timer getGameloopTimer() {
+    public Timer getTimer() {
         return timer;
     }
 

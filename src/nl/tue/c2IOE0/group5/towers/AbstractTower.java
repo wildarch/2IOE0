@@ -27,7 +27,7 @@ public abstract class AbstractTower extends GameObject {
     private EnemyProvider enemyProvider;
     private BulletProvider bulletProvider;
     private long timeToDoDamage;
-    private Timer loopTimer;
+    private Timer timer;
     private HealthBolletje healthBolletje;
     private final int attackTime;
     private final float bulletSpeed;
@@ -39,14 +39,14 @@ public abstract class AbstractTower extends GameObject {
 
 
     public AbstractTower(int range, int maxLevel, int maxHealth, int attackTime, float bulletSpeed, int bulletDamage,
-                         EnemyProvider enemyProvider, BulletProvider bulletProvider, Timer loopTimer) {
+                         EnemyProvider enemyProvider, BulletProvider bulletProvider, Timer timer) {
         this.range = range;
         this.maxLevel = maxLevel;
         this.maxHealth = maxHealth;
         this.health = maxHealth;
         this.enemyProvider = enemyProvider;
         this.bulletProvider = bulletProvider;
-        this.loopTimer = loopTimer;
+        this.timer = timer;
         this.renderer = enemyProvider.getRenderer();
         this.healthBolletje = new HealthBolletje(this).init(renderer);
         this.attackTime = attackTime;
@@ -132,9 +132,9 @@ public abstract class AbstractTower extends GameObject {
 
     @Override
     public void update() {
-        if (timeToDoDamage < loopTimer.getLoopTime()) {
+        if (timeToDoDamage < timer.getLoopTime()) {
             attack();
-            timeToDoDamage = loopTimer.getLoopTime() + attackTime;
+            timeToDoDamage = timer.getLoopTime() + attackTime;
         }
         this.healthBolletje.update();
     }

@@ -19,7 +19,7 @@ public class MusicProvider extends Thread implements Provider<Engine> {
     private Clip clip;
     private FloatControl gainControl;
     private long duration;
-    private Timer loopTimer;
+    private Timer timer;
     private long timeToPlay;
     private final float maxVolume = 6f;
     private float baseVolume = 5f;
@@ -27,7 +27,7 @@ public class MusicProvider extends Thread implements Provider<Engine> {
 
     @Override
     public void init(Engine engine) {
-        this.loopTimer = engine.getRenderLoopTimer();
+        this.timer = engine.getTimer();
         this.engine = engine;
         try {
             String file = "res/soundfile.wav";
@@ -48,9 +48,9 @@ public class MusicProvider extends Thread implements Provider<Engine> {
 
     @Override
     public void update() {
-        if (timeToPlay < loopTimer.getLoopTime()) { //start again after 2 times the duration
+        if (timeToPlay < timer.getLoopTime()) { //start again after 2 times the duration
             clip.start();
-            timeToPlay = loopTimer.getLoopTime() + duration * 1000 * 2; //1000 to convert to miliseconds
+            timeToPlay = timer.getLoopTime() + duration * 1000 * 2; //1000 to convert to miliseconds
         }
     }
 

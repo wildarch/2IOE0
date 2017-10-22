@@ -1,6 +1,5 @@
 package nl.tue.c2IOE0.group5.engine.objects;
 
-import nl.tue.c2IOE0.group5.engine.GameState;
 import nl.tue.c2IOE0.group5.engine.provider.Updatable;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import org.joml.Vector3f;
@@ -46,14 +45,14 @@ public abstract class GameObject extends Positionable implements Updatable {
      * {@link #setModelView(Renderer, Vector3f, Vector3f 0, Vector3f 0)}
      */
     protected void setModelView(Renderer renderer, Vector3f posOffset) {
-        renderer.setMatrix(posOffset.add(getPosition()), getRotation(), new Vector3f(scale));
+        renderer.setMatrix(getPosition().add(posOffset), getRotation(), new Vector3f(scale));
     }
 
     /**
      * {@link #setModelView(Renderer, Vector3f, Vector3f, Vector3f 0)}
      */
     protected void setModelView(Renderer renderer, Vector3f posOffset, Vector3f rotOffset) {
-        renderer.setMatrix(posOffset.add(getPosition()), rotOffset.add(getRotation()), new Vector3f(scale));
+        renderer.setMatrix(getPosition().add(posOffset), getRotation().add(rotOffset), new Vector3f(scale));
     }
 
     /**
@@ -65,7 +64,7 @@ public abstract class GameObject extends Positionable implements Updatable {
      * @param scaleOffset The offset for the scale.
      */
     protected void setModelView(Renderer renderer, Vector3f posOffset, Vector3f rotOffset, Vector3f scaleOffset) {
-        renderer.setMatrix(posOffset.add(getPosition()), rotOffset.add(getRotation()), scaleOffset.add(new Vector3f(scale)));
+        renderer.setMatrix(getPosition().add(posOffset), getRotation().add(rotOffset), new Vector3f(scale).add(scaleOffset));
     }
 
     /**

@@ -23,7 +23,7 @@ public class AnimationProvider implements Provider<Engine> {
     @Override
     public void init(Engine engine) {
         targets = new HashSet<>();
-        timer = engine.getRenderLoopTimer();
+        timer = engine.getTimer();
     }
 
     public void add(Animatable newTarget){

@@ -3,6 +3,9 @@ package nl.tue.c2IOE0.group5.enemies;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
 import nl.tue.c2IOE0.group5.engine.objects.PositionInterpolator;
+import nl.tue.c2IOE0.group5.engine.rendering.Drawable;
+import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
+import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.providers.Cell;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
@@ -12,25 +15,26 @@ import org.joml.Vector3f;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Enemy extends GameObject {
+public abstract class Enemy extends GameObject implements Drawable {
     private boolean dead = false;
     protected GridProvider gridProvider;
     private final int maxHealth;
     private int health;
     private List<Vector2i> targetPositions;
     protected PositionInterpolator interpolator;
-    protected Timer loopTimer;
+    protected Vector3f drawOffset = new Vector3f();
+    protected Timer timer;
     protected boolean attacking = false;
     private final float SPEED;
     private final long ATTACKSPEED;
 
-    public Enemy(Timer loopTimer, GridProvider gridProvider,
+    public Enemy(Timer timer, GridProvider gridProvider,
                  Vector2i initialPosition, List<Vector2i> targetPositions, int maxHealth, float speed, long attackSpeed) {
         this.gridProvider = gridProvider;
         this.maxHealth = maxHealth;
         this.health = maxHealth;
         this.targetPositions = new ArrayList<>(targetPositions);
-        this.loopTimer = loopTimer;
+        this.timer = timer;
         setPosition(gridProvider.getCell(initialPosition).getPosition().add(0, 2f, 0f));
         this.SPEED = speed;
         this.interpolator = new PositionInterpolator(this, SPEED);
@@ -42,7 +46,8 @@ public abstract class Enemy extends GameObject {
         if(targetPositions.isEmpty()) {
             return;
         }
-        boolean targetReached = interpolator.update(loopTimer.getLoopTime());
+        long targetTime = interpolator.update(timer.getElapsedTickTime());
+        boolean targetReached = interpolator.targetReached();
         if(targetReached) {
             targetPositions.remove(0);
             if(targetPositions.isEmpty()) {
@@ -56,7 +61,8 @@ public abstract class Enemy extends GameObject {
         if (tower == null || (targetReached && attacking)) {
             // Road is clear, move ahead
             attacking = false;
-            interpolator.setTarget(targetPosition, loopTimer.getLoopTime());
+            interpolator.setTarget(targetPosition);
+            interpolator.update(targetTime);
         }
         else if(tower != null) {
             // Destroy the tower first
@@ -65,11 +71,16 @@ public abstract class Enemy extends GameObject {
         }
     }
 
+    @Override
+    public void draw(Window window, Renderer renderer) {
+        if(!attacking) drawOffset = interpolator.getOffset(timer.getDeltaTime());
+    }
+
     private long timeToDoDamage;
     private void doDamage(AbstractTower tower) {
-        if (timeToDoDamage < loopTimer.getLoopTime()) {
+        if (timeToDoDamage < timer.getLoopTime()) {
             tower.takeDamage(1);
-            timeToDoDamage = loopTimer.getLoopTime() + ATTACKSPEED;
+            timeToDoDamage = timer.getLoopTime() + ATTACKSPEED;
         }
     }
 

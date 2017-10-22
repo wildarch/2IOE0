@@ -17,7 +17,7 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
     EnemyProvider enemyProvider;
     BulletProvider bulletProvider;
     private MainTower mainTower;
-    private Timer loopTimer;
+    private Timer timer;
 
     @Override
     public void init(Simulator engine) {
@@ -25,7 +25,7 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
         gridProvider = engine.getProvider(GridProvider.class);
         enemyProvider = engine.getProvider(EnemyProvider.class);
         bulletProvider = engine.getProvider(BulletProvider.class);
-        loopTimer = engine.getGameloopTimer();
+        timer = engine.getTimer();
         putMainTower();
     }
 
@@ -38,7 +38,7 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
     private void putMainTower() {
         int x = GridProvider.SIZE / 2;
         Cell baseCell = gridProvider.getCell(x, x);
-        mainTower = new MainTower(enemyProvider, bulletProvider, loopTimer).init(getRenderer());
+        mainTower = new MainTower(enemyProvider, bulletProvider, timer).init(getRenderer());
         baseCell.placeTower(mainTower);
         objects.add(mainTower);
     }

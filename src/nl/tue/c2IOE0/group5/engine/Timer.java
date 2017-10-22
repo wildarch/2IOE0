@@ -32,6 +32,8 @@ public class Timer {
         return time.current();
     }
 
+    public long getTickTime() { return tickTime.current(); }
+
     /**
      * @return The elapsed time since previous gametick.
      */
@@ -41,11 +43,19 @@ public class Timer {
 
     public long getElapsedTickTime() { return tickTime.current() - tickTime.previous(); }
 
+    public long getDeltaTime() {
+        return time.current() - tickTime.current();
+    }
+
     /**
      * @return The previous time at which the timer was requested.
      */
     public long getPreviousTime() {
         return time.previous();
+    }
+
+    public long getPreviousTickTime() {
+        return tickTime.previous();
     }
 
     /**
@@ -56,12 +66,20 @@ public class Timer {
         updateLoopTime(System.currentTimeMillis());
     }
 
+    public void updateTickTime() {
+        updateTickTime(System.currentTimeMillis());
+    }
+
     /**
      * Set the loop time (useful for mocking a timer)
      * @param millis
      */
     public void updateLoopTime(long millis){
         time.update(millis);
+    }
+
+    public void updateTickTime(long millis) {
+        tickTime.update(millis);
     }
 
 }

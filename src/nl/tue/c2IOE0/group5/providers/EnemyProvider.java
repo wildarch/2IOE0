@@ -16,13 +16,13 @@ import java.util.List;
 
 public class EnemyProvider extends ObjectProvider<Enemy> {
 
-    private Timer loopTimer;
+    private Timer timer;
     private GridProvider gridProvider;
 
     @Override
     public void init(Simulator engine) {
         super.init(engine);
-        loopTimer = engine.getGameloopTimer();
+        timer = engine.getTimer();
         gridProvider = engine.getProvider(GridProvider.class);
     }
 
@@ -42,7 +42,7 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
 
     public void putEnemy(Vector2i initialPosition, List<Vector2i> targets) {
         objects.add(new TestEnemy(
-                loopTimer,
+                timer,
                 gridProvider,
                 initialPosition,
                 targets, 20
@@ -58,6 +58,6 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
 
     @Override
     public void draw(Window window, Renderer renderer) {
-
+        objects.forEach(enemy -> enemy.draw(window, renderer));
     }
 }

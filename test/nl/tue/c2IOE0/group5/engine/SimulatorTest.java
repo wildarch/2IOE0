@@ -9,8 +9,6 @@ import org.junit.Test;
 
 import java.util.function.Predicate;
 
-import static org.junit.Assert.*;
-
 public class SimulatorTest {
     @Test
     public void towerKillsEnemy() {
@@ -30,7 +28,7 @@ public class SimulatorTest {
         } catch (Exception e1) {
             e1.printStackTrace();
         }
-        long time = sim.getGameloopTimer().getLoopTime();
+        long time = sim.getTimer().getLoopTime();
         System.out.println("Terminated after " + time + "ms");
     }
 

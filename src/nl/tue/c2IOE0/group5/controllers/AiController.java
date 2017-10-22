@@ -28,7 +28,7 @@ public class AiController implements Controller, Listener {
 
     private int wave = 0;
     private EnemyProvider enemyProvider;
-    private Timer loopTimer;
+    private Timer timer;
     private long nextWaveTime = 0;
 
     private QLearner qlearner;
@@ -38,7 +38,7 @@ public class AiController implements Controller, Listener {
     @Override
     public void init(Engine engine) {
         enemyProvider = engine.getProvider(EnemyProvider.class);
-        loopTimer = engine.getRenderLoopTimer();
+        timer = engine.getTimer();
         gridProvider = engine.getProvider(GridProvider.class);
         trainQLearner();
     }
@@ -46,11 +46,11 @@ public class AiController implements Controller, Listener {
     @Override
     public void update() {
         boolean bigWave = wave % NR_SUB_WAVES == 0 && enemyProvider.countEnemies() == 0;
-        boolean smallWave = wave % NR_SUB_WAVES != 0 && loopTimer.getLoopTime() > nextWaveTime;
+        boolean smallWave = wave % NR_SUB_WAVES != 0 && timer.getTickTime() > nextWaveTime;
         if (bigWave || smallWave) {
             wave(bigWave);
             wave++;
-            nextWaveTime = loopTimer.getLoopTime() + WAVE_TIME;
+            nextWaveTime = timer.getTickTime() + WAVE_TIME;
         }
     }
 
@@ -58,7 +58,7 @@ public class AiController implements Controller, Listener {
 
         // Do a wave!
         String size = big ? "Big  " : "Small";
-        System.out.println(size + " wave at " + loopTimer.getLoopTime());
+        System.out.println(size + " wave at " + timer.getLoopTime());
         Random r = new Random();
         for (int i = 0; i < SMALL_WAVE_SIZE; i++) {
             int random = r.nextInt(5);
