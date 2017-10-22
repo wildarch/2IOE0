@@ -32,6 +32,7 @@ public class TowerConnection extends GameObject {
 
     @Override
     public void renderInit(Renderer renderer) {
+        setScale(0.95f);
         this.renderer = renderer;
         Mesh mesh = renderer.linkMesh("/models/towers/walltower/wall.obj");
         mesh.setMaterial(new Material("/models/towers/walltower/wall.png"));
