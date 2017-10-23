@@ -11,7 +11,6 @@ import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.providers.*;
 import org.joml.Vector3f;
 
-import java.lang.reflect.Field;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -106,6 +105,10 @@ public abstract class AbstractTower extends GameObject {
      * @param damage Damage to incur
      */
     public void takeDamage(int damage) {
+        takeDamage((double)damage);
+    }
+
+    public void takeDamage(double damage) {
         health -= damage;
         if (health <= 0) {
             die();
