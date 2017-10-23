@@ -88,10 +88,10 @@ public class MenuProvider implements Provider<Engine>, Clickable {
                 audioMenu = new UIButton[]{master, toggleAudio, backAudio};
             }
 
-            UIButton parameters = new MenuButton("Parameters", (event) -> {});
-            UIButton gameState = new MenuButton("Game state", (event) -> {});
+            //UIButton parameters = new MenuButton("Parameters", (event) -> {});
+            //UIButton gameState = new MenuButton("Game state", (event) -> {});
             UIButton backOptions = new MenuButton("Back", (event) -> activeElements = mainMenu);
-            optionMenu = new UIButton[]{graphics, audio, parameters, gameState, backOptions};
+            optionMenu = new UIButton[]{graphics, audio, /*parameters, gameState, */backOptions};
         }
         UIButton credits = new MenuButton("Credits", (event) -> activeElements = creditScreen);
         {

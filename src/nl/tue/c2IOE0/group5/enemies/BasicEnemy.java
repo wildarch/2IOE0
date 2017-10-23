@@ -13,7 +13,7 @@ import java.util.List;
 
 public class BasicEnemy extends Enemy {
 
-    private static final float SPEED = 0.5f;
+    private static final float SPEED = 0.4f;
     private static final long ATTACKSPEED = 500;
 
 
@@ -36,7 +36,7 @@ public class BasicEnemy extends Enemy {
     public void renderInit(Renderer renderer) {
         setScale(0.05f);
         Mesh body = renderer.linkMesh("/models/enemies/basicEnemy/body.obj");
-        body.setMaterial(new Material(new Vector4f(0f, 0f, 1f, 1f), 1f));
+        body.setMaterial(new Material("/orange.png"));
         iMeshBody = renderer.linkMesh(body, () -> {
             setModelView(renderer);
             if(!attacking) interpolator.draw(renderTimer.getElapsedTime());

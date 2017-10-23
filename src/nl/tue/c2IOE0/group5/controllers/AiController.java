@@ -131,9 +131,11 @@ public class AiController implements Controller {
     private void trainQLearner() {
         int noIterations = 1000;
         double gamma = 0.1d;
+
         qLearner = new QLearner(gridProvider.SIZE, noIterations, gamma);
         qLearner.initializeQ();
         qLearner.setRewardsMatrix(QLearner.getState(gridProvider.SIZE / 2, gridProvider.SIZE / 2, gridProvider.SIZE), 1000);
+
         for (int i = 0; i < 200; i++) {
             qLearner.generateRandomPath(10);
         }

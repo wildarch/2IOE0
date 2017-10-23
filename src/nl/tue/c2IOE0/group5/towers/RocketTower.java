@@ -13,16 +13,18 @@ import org.joml.Vector3f;
  */
 public class RocketTower extends AbstractTower {
 
-    public static MetaData metadata = new MetaData();
-    static {
-        metadata.name = "Rocket";
-        metadata.icon = "/hud/rockettower.png";
-    }
-
     private static final int RANGE = 5;
     private static final int MAX_LEVEL = 1;
     private static final int MAX_HEALTH = 20;
     public static final int BULLET_DAMAGE = 1;
+    private static final int PRICE = 10;
+
+    public static MetaData metadata = new MetaData();
+    static {
+        metadata.name = "Rocket";
+        metadata.icon = "/hud/rockettower.png";
+        metadata.price = PRICE;
+    }
 
     private Vector3f rocketRotation = new Vector3f(0f, 0f, 0f);
 

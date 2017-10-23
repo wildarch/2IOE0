@@ -1,6 +1,6 @@
 package nl.tue.c2IOE0.group5.providers;
 
-import nl.tue.c2IOE0.group5.enemies.AnimatedObjectRecord;
+import nl.tue.c2IOE0.group5.util.AnimatedObjectRecord;
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.objects.Animatable;

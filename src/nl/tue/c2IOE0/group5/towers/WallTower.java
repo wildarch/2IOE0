@@ -12,15 +12,17 @@ import nl.tue.c2IOE0.group5.providers.TowerProvider;
 public class WallTower extends AbstractTower {
 
 
+    private static final int RANGE = 0;
+    private static final int MAX_LEVEL = 1;
+    private static final int MAX_HEALTH = 50;
+    private static final int PRICE = 10;
+
     public static MetaData metadata = new MetaData();
     static {
         metadata.name = "Wall";
         metadata.icon = "/hud/walltower.png";
+        metadata.price = PRICE;
     }
-
-    private static final int RANGE = 0;
-    private static final int MAX_LEVEL = 1;
-    private static final int MAX_HEALTH = 50;
 
     private Renderer renderer;
     private InstancedMesh iMesh;
