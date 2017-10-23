@@ -13,8 +13,6 @@ import org.joml.Vector3f;
 import java.util.List;
 
 import static java.lang.Math.sin;
-import static nl.tue.c2IOE0.group5.engine.objects.Animatable.AnimationLoop.DEFAULT;
-import static nl.tue.c2IOE0.group5.engine.objects.Animatable.AnimationLoop.WALK;
 import static nl.tue.c2IOE0.group5.engine.rendering.shader.Material.SILVER;
 
 /**
@@ -34,8 +32,6 @@ public class WalkerEnemy extends Enemy implements Animatable {
     private InstancedMesh leftLeg;
     private InstancedMesh rightLeg;
 
-    private AnimationLoop currentAnim = DEFAULT;
-
     private SmoothUpdatable headOffset;
     private SmoothUpdatable leftArmOffset;
     private SmoothUpdatable rightArmOffset;
@@ -44,7 +40,6 @@ public class WalkerEnemy extends Enemy implements Animatable {
                        Vector2i initialPosition, List<Vector2i> targetPositions) {
         super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, MAX_HEALTH, SPEED, ATTACKSPEED);
         setScale(0.5f);
-        System.out.println("WalkerEnemy.init: made Bruiser at (" + getPosition().x + ", " + getPosition().y + ", " + getPosition().z + ")");
     }
 
     /**
@@ -53,7 +48,7 @@ public class WalkerEnemy extends Enemy implements Animatable {
      * @return offset based on current animation
      */
     private float armOffset(float loopTime){
-        if (currentAnim == WALK) {
+        if (!attacking) {
             return (float) sin(loopTime);
         }
         return 0;
@@ -65,7 +60,7 @@ public class WalkerEnemy extends Enemy implements Animatable {
      * @return offset based on current animation
      */
     private float headOffset(float loopTime){
-        return currentAnim == WALK ? (float) (0.1 * sin(2 * loopTime)) : 0;
+        return attacking ? 0 : (float) (0.1 * sin(2 * loopTime));
     }
 
     @Override
@@ -81,11 +76,6 @@ public class WalkerEnemy extends Enemy implements Animatable {
     }
 
     @Override
-    public void setCurrentAnim(AnimationLoop newAnim) {
-        currentAnim = newAnim;
-    }
-
-    @Override
     public boolean mustBeRemoved() {
         return isDead();
     }
@@ -93,7 +83,6 @@ public class WalkerEnemy extends Enemy implements Animatable {
     @Override
     protected void onDie() {
         // unnecessary
-        currentAnim = DEFAULT;
         renderer.unlinkMesh(body);
         renderer.unlinkMesh(head);
         renderer.unlinkMesh(leftArm);

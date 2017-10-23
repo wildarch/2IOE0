@@ -84,6 +84,9 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
                         targets, 10
                 );
         }
+        System.out.println("EnemyProvider.putEnemy(): spawn " + newEnemy.getClass().getSimpleName() +
+                " at (" + initialPosition.x + ", " + initialPosition.y + ")");
+
         objects.add(newEnemy.init(getRenderer()));
     }
 

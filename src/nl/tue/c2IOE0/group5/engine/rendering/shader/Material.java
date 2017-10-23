@@ -17,6 +17,14 @@ public class Material {
             30
     );
 
+    public static final Material ORANGE = new Material(
+            new Vector4f(1, 0.71f, 0.14f, 1f),
+            new Vector4f(1, 0.71f, 0.14f, 1f),
+            new Vector4f(1, 0.71f, 0.51f, 1f),
+            null,
+            2
+    );
+
     private static final Vector4f DEFAULT_COLOUR = new Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 
     private Vector4f ambientColour;

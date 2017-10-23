@@ -12,7 +12,7 @@ import java.util.List;
 
 public class BasicEnemy extends Enemy {
 
-    private static final float SPEED = 0.5f;
+    private static final float SPEED = 0.4f;
     private static final long ATTACKSPEED = 500;
 
 

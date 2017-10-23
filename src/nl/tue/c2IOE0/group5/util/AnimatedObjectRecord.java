@@ -1,8 +1,6 @@
-package nl.tue.c2IOE0.group5.enemies;
+package nl.tue.c2IOE0.group5.util;
 
 import nl.tue.c2IOE0.group5.engine.objects.Animatable;
-
-import static nl.tue.c2IOE0.group5.engine.objects.Animatable.AnimationLoop;
 
 /**
  * @author Geert van Ieperen
@@ -32,28 +30,5 @@ public class AnimatedObjectRecord {
      */
     public boolean mustBeRemoved(){
         return target.mustBeRemoved();
-    }
-
-    /**
-     * initiates this unit to start with a walking animation
-     */
-    public void walk(){
-        animationTimer = 0;
-        target.setCurrentAnim(AnimationLoop.WALK);
-    }
-
-    /**
-     * initiates this unit to start with a shooting animation
-     */
-    public void shoot(){
-        animationTimer = 0;
-        target.setCurrentAnim(AnimationLoop.SHOOT);
-    }
-
-    /**
-     * sets this units to a idle stance (often without animation)
-     */
-    public void stand(){
-        target.setCurrentAnim(AnimationLoop.DEFAULT);
     }
 }
