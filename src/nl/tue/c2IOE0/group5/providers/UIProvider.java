@@ -41,7 +41,7 @@ public class UIProvider implements Provider<Engine> {
         this.window = engine.getWindow();
         this.towerProvider = engine.getProvider(TowerProvider.class);
 
-        buildBar = new Buildbar(80, 80, this);
+        buildBar = new Buildbar(80, 120, this);
         PlayerController playerController = engine.getController(PlayerController.class);
         playerBudget = new UIText(10, 40, 100, 20,
                 () -> "Budget: " +playerController.getBudget()
