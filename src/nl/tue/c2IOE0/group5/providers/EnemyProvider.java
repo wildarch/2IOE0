@@ -20,6 +20,7 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
     private Timer loopTimer;
     private GridProvider gridProvider;
     private Timer renderTimer;
+    private AnimationProvider animationProvider;
 
     private Engine engine;
 
@@ -28,6 +29,7 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
         super.init(engine);
         loopTimer = engine.getGameloopTimer();
         gridProvider = engine.getProvider(GridProvider.class);
+        animationProvider = engine.getProvider(AnimationProvider.class);
     }
 
     @Override
@@ -56,7 +58,7 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
                         renderTimer,
                         gridProvider,
                         initialPosition,
-                        targets, 20, qlearner
+                        targets, qlearner
                 );
                 break;
             case 1:
@@ -65,8 +67,8 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
                         renderTimer,
                         gridProvider,
                         initialPosition,
-                        targets, qlearner
-                );
+                        targets, qlearner,
+                        animationProvider);
                 break;
             case 2:
                 newEnemy = new DrillEnemy(
@@ -74,8 +76,8 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
                         renderTimer,
                         gridProvider,
                         initialPosition,
-                        targets, qlearner
-                );
+                        targets, qlearner,
+                        animationProvider);
                 break;
             default: newEnemy = new TestEnemy(
                         loopTimer,
@@ -85,8 +87,8 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
                         targets, 10, qlearner
                 );
         }
-        System.out.println("EnemyProvider.putEnemy(): spawn " + newEnemy.getClass().getSimpleName() +
-                " at (" + initialPosition.x + ", " + initialPosition.y + ")");
+//        System.out.println("EnemyProvider.putEnemy(): spawn " + newEnemy.getClass().getSimpleName() +
+//                " at (" + initialPosition.x + ", " + initialPosition.y + ")");
 
         objects.add(newEnemy.init(getRenderer()));
     }

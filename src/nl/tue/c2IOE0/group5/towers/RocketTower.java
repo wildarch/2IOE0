@@ -23,6 +23,7 @@ public class RocketTower extends AbstractTower {
     private static final int MAX_LEVEL = 1;
     private static final int MAX_HEALTH = 20;
     public static final int BULLET_DAMAGE = 1;
+    public static final int ATTACK_TIME = 300;
 
     private Vector3f rocketRotation = new Vector3f(0f, 0f, 0f);
 
@@ -31,7 +32,7 @@ public class RocketTower extends AbstractTower {
     private InstancedMesh iRocketMesh;
 
     public RocketTower(TowerProvider towerProvider) {
-        super(RANGE, MAX_LEVEL, MAX_HEALTH, 500, 3f, BULLET_DAMAGE, 1f, 0.2f, towerProvider);
+        super(RANGE, MAX_LEVEL, MAX_HEALTH, ATTACK_TIME, 3f, BULLET_DAMAGE, 1f, 0.2f, towerProvider);
     }
 
     @Override
