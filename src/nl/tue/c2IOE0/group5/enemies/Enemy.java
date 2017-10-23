@@ -41,7 +41,7 @@ public abstract class Enemy extends GameObject {
         this.targetPositions = new ArrayList<>(targetPositions);
         this.loopTimer = loopTimer;
         this.renderTimer = renderTimer;
-        setPosition(gridProvider.getCell(initialPosition).getPosition().add(0, 0f, 0f)); //they will emerge from the floor again
+        setPosition(gridProvider.getCell(initialPosition).getPosition()); //they will emerge from the floor again
         this.speed = speed;
         this.interpolator = new PositionInterpolator(this, this.speed);
         this.attackSpeed = attackSpeed;
@@ -67,6 +67,7 @@ public abstract class Enemy extends GameObject {
         if (tower == null || (targetReached && attacking)) {
             // Road is clear, move ahead
             attacking = false;
+            //System.out.println("Set target position!");
             interpolator.setTarget(targetPosition, loopTimer.getLoopTime());
         }
         else {

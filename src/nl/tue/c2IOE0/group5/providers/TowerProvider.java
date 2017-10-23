@@ -1,5 +1,6 @@
 package nl.tue.c2IOE0.group5.providers;
 
+import nl.tue.c2IOE0.group5.controllers.PlayerController;
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.Simulator;
 import nl.tue.c2IOE0.group5.engine.Timer;
@@ -11,6 +12,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.towers.*;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
@@ -57,6 +59,21 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
      * @Throws Many exceptions when passing class type as argument fails: So an incorrect type was passed (not a tower)
      */
     public boolean buildTower(int x, int y, Class<? extends AbstractTower> towertype) {
+        if (all().contains(towertype)) {
+            AbstractTower.MetaData metaData;
+            try {
+                Field meta = towertype.getField("metadata");
+                metaData = (AbstractTower.MetaData) meta.get(null);
+            } catch (IllegalAccessException | NoSuchFieldException e) {
+                throw new IllegalStateException("Tower " + towertype.getName() +
+                        " does not have a field metadata, or it is not marked static public");
+            }
+            int price = metaData.price;
+            PlayerController playerController = engine.getController(PlayerController.class);
+            playerController.addBudget(-price);
+        }
+
+
         if (gridProvider.getCell(x, y).getTower() != null) {
             //not null: tower exists here already
             return false;

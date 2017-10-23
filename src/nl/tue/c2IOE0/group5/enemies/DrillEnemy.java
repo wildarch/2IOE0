@@ -78,7 +78,9 @@ public class DrillEnemy extends Enemy implements Animatable {
         drillOffset = new LinearlyUpdatable(0f, 100);
 
         this.renderer = renderer;
-        Material darkMatter = new Material();
+        Material darkMatter = new Material("/silver.png");
+        Material SILVER = new Material("/silver.png");
+        Material ORANGE = new Material("/orange.png");
         Vector3f yVec = new Vector3f(0, -1, 0);
 
         body = renderer.linkMesh("/models/enemies/drillEnemy/BODY.obj", darkMatter, () -> {
@@ -87,7 +89,7 @@ public class DrillEnemy extends Enemy implements Animatable {
             if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
         });
 
-        drill = renderer.linkMesh("/models/enemies/drillEnemy/DRILL.obj", Material.SILVER, () -> {
+        drill = renderer.linkMesh("/models/enemies/drillEnemy/DRILL.obj", SILVER, () -> {
             final Vector3f displacement = new Vector3f(2.713f+ drillOffset.current(), 1.674f, 0f).mul(getScale());
             final Vector3f drillOffset = rotateVector(displacement, yVec, getRotation().y);
             setModelView(renderer, drillOffset, new Vector3f(0, -90, 0));
@@ -95,7 +97,7 @@ public class DrillEnemy extends Enemy implements Animatable {
             if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
         });
 
-        wheel = renderer.linkMesh("/models/enemies/drillEnemy/WHEEL.obj", Material.ORANGE, () -> {
+        wheel = renderer.linkMesh("/models/enemies/drillEnemy/WHEEL.obj", ORANGE, () -> {
             final Vector3f displacement = new Vector3f(2.08f, 0.628f, 0f).mul(getScale());
             final Vector3f wheelOffset = rotateVector(displacement, yVec, getRotation().y);
             setModelView(renderer, wheelOffset, new Vector3f(0, -90, 0));
