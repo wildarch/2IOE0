@@ -85,6 +85,7 @@ public class CannonTower extends AbstractTower {
         if(r > 1) {
             return new Vector3f(0);
         }
+        r *= r;
         Vector3f off = new Vector3f(FALL_OFFSET).mul(1-r);
         return off;
     }
