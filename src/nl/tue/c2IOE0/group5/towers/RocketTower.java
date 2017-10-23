@@ -33,7 +33,7 @@ public class RocketTower extends AbstractTower {
     private InstancedMesh iRocketMesh;
 
     public RocketTower(TowerProvider towerProvider) {
-        super(RANGE, MAX_LEVEL, MAX_HEALTH, 500, 3f, BULLET_DAMAGE, 1f, 0.2f, towerProvider);
+        super(RANGE, MAX_LEVEL, MAX_HEALTH, 500, 3f, BULLET_DAMAGE, 1f, 0.32f, towerProvider);
     }
 
     @Override
