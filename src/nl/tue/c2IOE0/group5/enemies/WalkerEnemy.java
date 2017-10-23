@@ -26,8 +26,8 @@ public class WalkerEnemy extends Enemy implements Animatable {
 
     private final static int MAXHEALTH = 100;
     private final static float SPEED = 0.05f;
-    private final static int ATTACKSPEED = 400;
-    private final static int DAMAGE = 10;
+    private final static int ATTACKSPEED = 1000;
+    private final static int DAMAGE = 20;
 
     private InstancedMesh body;
     private InstancedMesh head;
