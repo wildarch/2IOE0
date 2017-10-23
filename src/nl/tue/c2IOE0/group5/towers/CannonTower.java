@@ -1,6 +1,7 @@
 package nl.tue.c2IOE0.group5.towers;
 
 import nl.tue.c2IOE0.group5.enemies.Enemy;
+import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
@@ -29,7 +30,6 @@ public class CannonTower extends AbstractTower {
          metadata.price = PRICE;
     }
 
-
     private Vector3f cannonRotation = new Vector3f(0f, 0f, 0f);
 
     private Renderer renderer;
@@ -55,8 +55,16 @@ public class CannonTower extends AbstractTower {
     @Override
     public void renderInit(Renderer renderer) {
         setScale(1f);
-        iBaseMesh = renderer.linkMesh("/models/towers/cannontower/BASE.obj", () -> setModelView(renderer));
-        iCannonMesh = renderer.linkMesh("/models/towers/cannontower/CANNON.obj", () -> setModelView(renderer, new Vector3f(0f, 0.269f, 0f), cannonRotation));
+        Mesh baseMesh = renderer.linkMesh("/models/towers/cannontower/BASE.obj");
+        Mesh cannonMesh = renderer.linkMesh("/models/towers/cannontower/CANNON.obj");
+        iBaseMesh = renderer.linkMesh(baseMesh, () -> {
+            setModelView(renderer, getPositionOffset());
+            renderer.boink(getBounceDegree(), baseMesh, cannonMesh);
+        });
+        iCannonMesh = renderer.linkMesh("/models/towers/cannontower/CANNON.obj", () -> {
+            setModelView(renderer, new Vector3f(0f, 0.269f, 0f).add(getPositionOffset().toImmutable()), cannonRotation);
+            renderer.boink(getBounceDegree(), baseMesh, cannonMesh);
+        });
 
 
         this.renderer = renderer;
@@ -64,8 +72,8 @@ public class CannonTower extends AbstractTower {
 
     @Override
     protected void onDie() {
-        //renderer.unlinkMesh(mesh, render, shadowRender);
         renderer.unlinkMesh(iBaseMesh);
         renderer.unlinkMesh(iCannonMesh);
     }
+
 }
