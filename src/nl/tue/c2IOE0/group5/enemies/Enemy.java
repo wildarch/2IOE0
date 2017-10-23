@@ -113,8 +113,8 @@ public abstract class Enemy extends GameObject {
 
     private long timeToDoDamage;
     private void doDamage(AbstractTower tower) {
-        int factor = 1;
-        if (this instanceof WalkerEnemy && tower instanceof WallTower) factor = 2;
+        double factor = 1;
+        if (this instanceof WalkerEnemy && tower instanceof WallTower) factor = 2; //walkers do double the damage to walls
         if (timeToDoDamage < loopTimer.getLoopTime()) {
             tower.takeDamage(damage*factor);
             timeToDoDamage = loopTimer.getLoopTime() + attackSpeed;

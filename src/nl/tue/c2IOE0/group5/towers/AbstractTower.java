@@ -106,6 +106,10 @@ public abstract class AbstractTower extends GameObject {
      * @param damage Damage to incur
      */
     public void takeDamage(int damage) {
+        takeDamage((double)damage);
+    }
+
+    public void takeDamage(double damage) {
         health -= damage;
         if (health <= 0) {
             die();
