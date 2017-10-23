@@ -18,6 +18,10 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractTower extends GameObject {
 
+    private static final int FALL_TIME = 500; // milliseconds
+    private static final Vector3f FALL_OFFSET = new Vector3f(0, 2f, 0);
+    private static final int BOUNCE_TIME = 500; // milliseconds
+
     private int range;
     private int level = 1;
     private final int maxLevel;
@@ -28,7 +32,6 @@ public abstract class AbstractTower extends GameObject {
     private GridProvider gridProvider;
     private long timeToDoDamage;
     private Timer loopTimer;
-    private Timer renderTimer;
     private HealthBolletje healthBolletje;
     private final int attackTime;
     private final float bulletSpeed;
@@ -40,6 +43,8 @@ public abstract class AbstractTower extends GameObject {
     private Cell cell;
     private Renderer renderer;
 
+    private Timer renderTimer;
+    private long startTime;
 
     public AbstractTower(int range, int maxLevel, int maxHealth, int attackTime, float bulletSpeed, int bulletDamage, float healthHeight, float bulletOffset, TowerProvider towerProvider) {
         this.range = range;
@@ -58,6 +63,7 @@ public abstract class AbstractTower extends GameObject {
         this.bulletDamage = bulletDamage;
         this.healthHeight = healthHeight;
         this.bulletOffset = bulletOffset;
+        startTime = renderTimer.getLoopTime();
     }
 
     @Override
@@ -217,4 +223,26 @@ public abstract class AbstractTower extends GameObject {
 
     public abstract TowerType getType();
 
+    Vector3f getPositionOffset() {
+        float deltaTime = renderTimer.getLoopTime() - startTime;
+        float r = deltaTime / FALL_TIME;
+        if(r > 1) {
+            return new Vector3f(0);
+        }
+        r *= r;
+        Vector3f off = new Vector3f(FALL_OFFSET).mul(1-r);
+        return off;
+    }
+
+    float getBounceDegree() {
+        float deltaTime = renderTimer.getLoopTime() - startTime - FALL_TIME;
+        if (deltaTime < 0) return 0;
+        float r = deltaTime / BOUNCE_TIME;
+        if (r > 1) {
+            return 0;
+        }
+        r *= Math.PI;
+        r = (float) Math.sin(r);
+        return r;
+    }
 }
