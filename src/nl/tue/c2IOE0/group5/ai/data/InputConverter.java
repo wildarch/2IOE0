@@ -1,6 +1,5 @@
 package nl.tue.c2IOE0.group5.ai.data;
 
-import nl.tue.c2IOE0.group5.enemies.Enemy;
 import nl.tue.c2IOE0.group5.enemies.EnemyType;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
@@ -9,7 +8,6 @@ import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -44,9 +42,9 @@ public class InputConverter {
         return converter;
     }
 
-    public static InputConverter fromGameState(GridProvider grid, double qTrust, Enemy... buffer){
+    public static InputConverter fromGameState(GridProvider grid, double qTrust, EnemyType... buffer){
         InputConverter converter = new InputConverter(ConverterDirection.GameToAI);
-        converter.buffer = Arrays.stream(buffer).map(Enemy::getType).toArray(value -> new EnemyType[0]);
+        converter.buffer = buffer;
         converter.grid = grid;
         converter.qTrust = qTrust;
         converter.gridSize = grid.SIZE;
@@ -57,7 +55,7 @@ public class InputConverter {
         return converter;
     }
 
-    private void convert(){
+    public void convert(){
         switch (direction){
             case GameToAI:
                 convertGameToAI();

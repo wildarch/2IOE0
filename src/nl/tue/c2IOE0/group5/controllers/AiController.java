@@ -1,6 +1,8 @@
 package nl.tue.c2IOE0.group5.controllers;
 
 import nl.tue.c2IOE0.group5.ai.QLearner;
+import nl.tue.c2IOE0.group5.ai.data.InputConverter;
+import nl.tue.c2IOE0.group5.enemies.EnemyType;
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.controller.Controller;
@@ -10,8 +12,14 @@ import nl.tue.c2IOE0.group5.engine.controller.input.events.MouseEvent;
 import nl.tue.c2IOE0.group5.providers.Cell;
 import nl.tue.c2IOE0.group5.providers.EnemyProvider;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
+import org.deeplearning4j.nn.graph.ComputationGraph;
+import org.deeplearning4j.util.ModelSerializer;
 import org.joml.Vector2i;
+import org.nd4j.linalg.api.ndarray.INDArray;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -25,6 +33,7 @@ public class AiController implements Controller, Listener {
     private static long WAVE_TIME = 5000; // 5 seconds
     private static int BIG_WAVE_SIZE = 5;
     private static int SMALL_WAVE_SIZE = 2;
+    private static int BUFFER_SAMPLE_SIZE = 100;
 
     private int wave = 0;
     private EnemyProvider enemyProvider;
@@ -35,11 +44,25 @@ public class AiController implements Controller, Listener {
     private List<Integer> optimalPath; //the current optimal path for the active cell
     private GridProvider gridProvider;
 
+    private ComputationGraph network;
+    private final File networkFile;
+
+    public AiController(File networkFile) {
+        this.networkFile = networkFile;
+    }
+
     @Override
     public void init(Engine engine) {
         enemyProvider = engine.getProvider(EnemyProvider.class);
         loopTimer = engine.getRenderLoopTimer();
         gridProvider = engine.getProvider(GridProvider.class);
+
+        try {
+            network = ModelSerializer.restoreComputationGraph(networkFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         trainQLearner();
     }
 
@@ -55,32 +78,46 @@ public class AiController implements Controller, Listener {
     }
 
     private void wave(boolean big) {
+        final Random r = new Random();
+        InputConverter converter;
+
+        EnemyType[] sampleBuffer = new EnemyType[big ? BIG_WAVE_SIZE : SMALL_WAVE_SIZE];
+
+        EnemyType[] selectedBuffer = null;
+        double bufferScore = Double.MIN_VALUE;
+
+        for (int i = 0; i < BUFFER_SAMPLE_SIZE; i++){
+            for (int j = 0; j < sampleBuffer.length; j++){
+                EnemyType t = EnemyType.values()[r.nextInt(EnemyType.getSize())];
+                sampleBuffer[j] = t;
+            }
+            converter = InputConverter.fromGameState(gridProvider, 1, sampleBuffer);
+            converter.convert();
+            INDArray aiInput = converter.getInput();
+            INDArray aiOutput = network.outputSingle(false, aiInput);
+            double score = aiOutput.getDouble(0, 0);
+
+            if(score > bufferScore){
+                selectedBuffer = Arrays.copyOf(sampleBuffer, sampleBuffer.length);
+            }
+        }
+
+        assert selectedBuffer != null;
 
         // Do a wave!
         String size = big ? "Big  " : "Small";
         System.out.println(size + " wave at " + loopTimer.getLoopTime());
-        Random r = new Random();
-        for (int i = 0; i < SMALL_WAVE_SIZE; i++) {
+
+        for (EnemyType enemy : selectedBuffer) {
             int random = r.nextInt(5);
             Cell startCell = gridProvider.getCell(qlearner.getOptimalNSpawnStates(5)[random]);
             Vector2i start = startCell.getGridPosition();
             List<Integer> path = qlearner.getOptimalPath(startCell.getGridPosition());
             enemyProvider.putEnemy(
+                    enemy,
                     start,
                     path.stream().map(p -> QLearner.getPoint(p, gridProvider.SIZE)).collect(Collectors.toList())
             );
-        }
-        if (big) {
-            for (int i = 0; i < BIG_WAVE_SIZE; i++) {
-                int random = r.nextInt(7);
-                Cell startCell = gridProvider.getCell(qlearner.getOptimalNSpawnStates(7)[random]);
-                Vector2i start = startCell.getGridPosition();
-                List<Integer> path = qlearner.getOptimalPath(startCell.getGridPosition());
-                enemyProvider.putEnemy(
-                        start,
-                        path.stream().map(p -> QLearner.getPoint(p, gridProvider.SIZE)).collect(Collectors.toList())
-                );
-            }
         }
     }
 
