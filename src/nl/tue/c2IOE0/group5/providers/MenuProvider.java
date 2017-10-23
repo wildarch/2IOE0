@@ -59,6 +59,7 @@ public class MenuProvider implements Provider<Engine>, Clickable {
     private Renderer renderer;
     private Window window;
     private MusicProvider musicProvider;
+    private TowerProvider towerProvider;
 
     @Override
     public void init(Engine engine) {
@@ -67,8 +68,12 @@ public class MenuProvider implements Provider<Engine>, Clickable {
         renderer = engine.getRenderer();
         window = engine.getWindow();
         musicProvider = engine.getProvider(MusicProvider.class);
+        towerProvider = engine.getProvider(TowerProvider.class);
 
-        UIButton startGame = new MenuButton("Start Game", (event) -> engine.pause(false));
+        UIButton startGame = new MenuButton("Start Game", (event) -> {
+            engine.pause(false);
+            towerProvider.startGame();
+        });
         UIButton options = new MenuButton("Options", (event) -> activeElements = optionMenu);
         {
             UIButton graphics = new MenuButton("Graphics", (event) -> activeElements = graphicsMenu);

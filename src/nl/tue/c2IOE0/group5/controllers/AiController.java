@@ -108,8 +108,6 @@ public class AiController implements Controller {
             }
         }
 
-        if(selectedBuffer == null) throw new RuntimeException("probleem");
-
         // Do a wave!
         String size = big ? "Big  " : "Small";
         System.out.println(size + " wave at " + loopTimer.getLoopTime());

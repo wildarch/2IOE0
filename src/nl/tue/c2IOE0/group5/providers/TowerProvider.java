@@ -18,9 +18,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class TowerProvider extends ObjectProvider<AbstractTower> {
-
-
-
     public GridProvider gridProvider;
     public EnemyProvider enemyProvider;
     public BulletProvider bulletProvider;
@@ -29,6 +26,8 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
 
     private MainTower mainTower;
     private Engine engine;
+
+    boolean gameStarted = false;
 
     @Override
     public void init(Simulator engine) {
@@ -41,11 +40,15 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
     }
 
     public void startGame() {
+        //only place towers when game is started for the first time
+        if(gameStarted) return;
+        
         putMainTower();
         buildTower(7, 8, WallTower.class);
         buildTower(6, 8, WallTower.class);
         buildTower(8, 8, RocketTower.class);
         buildTower(7, 7, CannonTower.class);
+        gameStarted = true;
     }
 
     @Override
