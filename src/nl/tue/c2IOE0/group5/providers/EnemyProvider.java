@@ -47,10 +47,13 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
     }
 
     public void putEnemy(Vector2i initialPosition, List<Vector2i> targets, QLearner qlearner) {
+        putEnemy(EnemyType.values()[new Random().nextInt(EnemyType.getSize())], initialPosition, targets, qlearner);
+    }
 
+    public void putEnemy(EnemyType type, Vector2i initialPosition, List<Vector2i> targets, QLearner qlearner) {
         final Enemy newEnemy;
-        switch (new Random().nextInt(3)) {
-            case 0:
+        switch (type) {
+            case DROID:
                 newEnemy = new BasicEnemy(
                         loopTimer,
                         renderTimer,
@@ -59,7 +62,7 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
                         targets, 20, qlearner
                 );
                 break;
-            case 1:
+            case WALKER:
                 newEnemy = new WalkerEnemy(
                         loopTimer,
                         renderTimer,
@@ -68,7 +71,7 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
                         targets, qlearner
                 );
                 break;
-            case 2:
+            case DRILL:
                 newEnemy = new DrillEnemy(
                         loopTimer,
                         renderTimer,
@@ -77,7 +80,8 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
                         targets, qlearner
                 );
                 break;
-            default: newEnemy = new TestEnemy(
+            default:
+                newEnemy = new TestEnemy(
                         loopTimer,
                         renderTimer,
                         gridProvider,

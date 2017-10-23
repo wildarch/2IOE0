@@ -24,6 +24,8 @@ public class Simulator {
     protected boolean paused = false;
     protected List<Provider> providers;
 
+    private boolean initialized = false;
+
     protected Timer timer;
     private long time;
     private Predicate<Simulator> stopCondition;
@@ -34,6 +36,10 @@ public class Simulator {
         providers = new ArrayList<>();
     }
 
+    public boolean isInitialized(){
+        return initialized;
+    }
+
     /**
      * Run the Simulator, should be invoked after initializing and attaching {@link Provider}s.
      */
@@ -42,7 +48,9 @@ public class Simulator {
             running = true;
             init();
             loop();
-        } finally {
+        } catch (Exception e){
+            e.printStackTrace();
+        }finally {
             cleanup();
         }
     }
@@ -65,10 +73,14 @@ public class Simulator {
     /**
      * Initialize necessary objects
      */
-    protected void init() throws IOException {
+    public void init() throws IOException {
+        if (initialized) {
+            return;
+        }
         timer.init();
         time = timer.getLoopTime();
         providers.forEach(provider -> provider.init(this));
+        initialized = true;
     }
 
     /**

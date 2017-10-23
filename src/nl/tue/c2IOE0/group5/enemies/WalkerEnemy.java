@@ -72,6 +72,11 @@ public class WalkerEnemy extends Enemy implements Animatable {
     }
 
     @Override
+    public EnemyType getType() {
+        return EnemyType.WALKER;
+    }
+
+    @Override
     public void update() {
 
     }

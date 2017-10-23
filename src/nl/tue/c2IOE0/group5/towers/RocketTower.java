@@ -44,6 +44,11 @@ public class RocketTower extends AbstractTower {
     }
 
     @Override
+    public TowerType getType() {
+        return TowerType.ROCKET;
+    }
+
+    @Override
     public void renderInit(Renderer renderer) {
         setScale(1f);
         Mesh base = renderer.linkMesh("/models/towers/rockettower/base.obj");

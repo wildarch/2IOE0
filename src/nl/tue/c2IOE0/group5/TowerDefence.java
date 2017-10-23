@@ -43,7 +43,7 @@ public class TowerDefence {
         }
         engine.addControllers(new Controller[] {
                 new PlayerController(),
-                new AiController()
+                new AiController(null)
         });
         try {
             engine.run();

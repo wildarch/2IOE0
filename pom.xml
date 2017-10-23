@@ -11,6 +11,7 @@
     <properties>
         <td.mainclass>nl.tue.c2IOE0.group5.TowerDefence</td.mainclass>
         <lwjgl.version>3.1.2</lwjgl.version>
+        <dl4j.version>0.9.1</dl4j.version>
     </properties>
 
     <dependencies>
@@ -114,11 +115,40 @@
             <artifactId>joml</artifactId>
             <version>1.9.4</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.tensorflow/tensorflow -->
         <dependency>
-            <groupId>org.tensorflow</groupId>
-            <artifactId>tensorflow</artifactId>
-            <version>1.3.0</version>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>23.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.deeplearning4j</groupId>
+            <artifactId>deeplearning4j-core</artifactId>
+            <version>${dl4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.nd4j</groupId>
+            <artifactId>nd4j-native-platform</artifactId>
+            <version>${dl4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.12</version>
+        </dependency>
+        <dependency>
+            <groupId>org.datavec</groupId>
+            <artifactId>datavec-api</artifactId>
+            <version>${dl4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreechart</artifactId>
+            <version>1.0.19</version>
+        </dependency>
+        <dependency>
+            <groupId>org.deeplearning4j</groupId>
+            <artifactId>deeplearning4j-ui_2.11</artifactId>
+            <version>${dl4j.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

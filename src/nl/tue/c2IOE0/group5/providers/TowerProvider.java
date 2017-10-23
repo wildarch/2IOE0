@@ -37,12 +37,15 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
         enemyProvider = engine.getProvider(EnemyProvider.class);
         bulletProvider = engine.getProvider(BulletProvider.class);
         loopTimer = engine.getGameloopTimer();
+
+    }
+
+    public void startGame() {
         putMainTower();
         buildTower(7, 8, WallTower.class);
         buildTower(6, 8, WallTower.class);
         buildTower(8, 8, RocketTower.class);
         buildTower(7, 7, CannonTower.class);
-
     }
 
     @Override
@@ -105,8 +108,8 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
         return Arrays.asList(CannonTower.class, RocketTower.class, WallTower.class);
     }
 
-    private void putMainTower() {
-        int x = GridProvider.SIZE / 2;
+    public void putMainTower() {
+        int x = gridProvider.SIZE / 2;
         mainTower = new MainTower(this).init(getRenderer());
         gridProvider.placeTower(x, x, mainTower);
         objects.add(mainTower);

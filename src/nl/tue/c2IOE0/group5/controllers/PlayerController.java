@@ -43,7 +43,7 @@ public class PlayerController implements Controller,Listener {
     private float gCentreX = 0;
     private float gCentreY = 0;
     private double cameraDiameter = 0;
-    private double cameraDistance = gridProvider.SIZE/2;
+    private double cameraDistance;
 
     //Keeps track of time spend on edge of screen, used to accelerate the camera in the edge direction. The longer the edge is hovered over the faster it moves.
     private float ticksSinceTrigger = 0.000f;
@@ -85,11 +85,15 @@ public class PlayerController implements Controller,Listener {
         this.menuProvider = engine.getProvider(MenuProvider.class);
         this.uiProvider = engine.getProvider(UIProvider.class);
         this.gridProvider = engine.getProvider(GridProvider.class);
+
+        cameraDistance = gridProvider.SIZE/2;
+
         this.camera = engine.getCamera();
         this.renderer = engine.getRenderer();
 
         camera.setPosition(gridProvider.SIZE/2, 2f, gridProvider.SIZE);
         camera.setRotation(accumulatedy, 0, 0);
+
         calculateXYZ();
 
         float xDiff = gCentreX - camera.getPosition().x();
@@ -101,12 +105,14 @@ public class PlayerController implements Controller,Listener {
     }
 
     private void calculateXYZ(){
+
         maxX = gridProvider.SIZE/2 + gridProvider.SIZE*2;
         maxY = gridProvider.SIZE*2;
         maxZ = gridProvider.SIZE/2 + gridProvider.SIZE*2;
 
         minX = gridProvider.SIZE/2 - gridProvider.SIZE*2;
         minZ = gridProvider.SIZE/2 - gridProvider.SIZE*2;
+
     }
 
     @Override

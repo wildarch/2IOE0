@@ -28,6 +28,11 @@ public class BasicEnemy extends Enemy {
     }
 
     @Override
+    public EnemyType getType() {
+        return EnemyType.DROID;
+    }
+
+    @Override
     public void renderInit(Renderer renderer) {
         setScale(0.05f);
         Mesh body = renderer.linkMesh("/models/enemies/basicEnemy/body.obj");
