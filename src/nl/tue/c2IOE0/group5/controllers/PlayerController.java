@@ -15,6 +15,7 @@ import nl.tue.c2IOE0.group5.util.Angle;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 
+import java.lang.reflect.Field;
 import java.util.Vector;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -193,6 +194,27 @@ public class PlayerController implements Controller,Listener {
                         Vector2i pos = gridProvider.getActiveCell();
                         if (gridProvider.getCell(pos.x(),pos.y()).getTower() == null) {
                             buildTower(true);
+                        }
+                    }
+                    break;
+                case GLFW_KEY_X:
+                    Vector2i pos = gridProvider.getActiveCell();
+                    if (gridProvider.getCell(pos.x(),pos.y()).getTower() != null) {
+                        Cell cellTower = gridProvider.getCell(pos.x,pos.y());
+
+                        if (cellTower.getTower().getType().getValue() != 0) { //Don't sell your own castle you gobsmack ;)
+                            //Refund some percentage of money
+                            double refundPercentage = 1d;
+                            int price = cellTower.getTower().getPrice();
+                            double towerHealth = cellTower.getTower().getHealth();
+                            double maxTowerHealth = cellTower.getTower().getMaxHealth();
+                            double valueHealth = towerHealth/maxTowerHealth;
+                            addBudget((int) (price * refundPercentage * valueHealth));
+                            System.out.println("Selling tower: " + cellTower.getTower().getType().toString() + " for: " + (price * valueHealth) + " With health: " + towerHealth + "/" + maxTowerHealth + " healthPortion: " + valueHealth);
+
+                            //Kill Tower
+                            cellTower.getTower().die();
+                            cellTower.update();
                         }
                     }
                     break;

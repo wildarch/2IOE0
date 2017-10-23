@@ -52,6 +52,11 @@ public class RocketTower extends AbstractTower {
     }
 
     @Override
+    public int getPrice() {
+        return PRICE;
+    }
+
+    @Override
     public void renderInit(Renderer renderer) {
         setScale(1f);
 
@@ -74,5 +79,10 @@ public class RocketTower extends AbstractTower {
         //renderer.unlinkMesh(mesh, render, shadowRender);
         renderer.unlinkMesh(iBaseMesh);
         renderer.unlinkMesh(iRocketMesh);
+    }
+
+    @Override
+    public int getMaxHealth() {
+        return MAX_HEALTH;
     }
 }

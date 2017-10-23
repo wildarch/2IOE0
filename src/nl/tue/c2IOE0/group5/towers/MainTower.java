@@ -35,8 +35,18 @@ public class MainTower extends AbstractTower {
     }
 
     @Override
+    public int getMaxHealth() {
+        return MAX_HEALTH;
+    }
+
+    @Override
     public TowerType getType() {
         return TowerType.CASTLE;
+    }
+
+    @Override
+    public int getPrice() {
+        return PRICE;
     }
 
 }

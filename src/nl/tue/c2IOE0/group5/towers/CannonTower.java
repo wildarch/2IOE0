@@ -53,6 +53,11 @@ public class CannonTower extends AbstractTower {
     }
 
     @Override
+    public int getPrice() {
+        return PRICE;
+    }
+
+    @Override
     public void renderInit(Renderer renderer) {
         setScale(1f);
         Mesh baseMesh = renderer.linkMesh("/models/towers/cannontower/BASE.obj");
@@ -74,6 +79,11 @@ public class CannonTower extends AbstractTower {
     protected void onDie() {
         renderer.unlinkMesh(iBaseMesh);
         renderer.unlinkMesh(iCannonMesh);
+    }
+
+    @Override
+    public int getMaxHealth() {
+        return MAX_HEALTH;
     }
 
 }

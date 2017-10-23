@@ -121,7 +121,7 @@ public abstract class AbstractTower extends GameObject {
         }
     }
 
-    private void die() {
+    public void die() {
         health = 0;
         gridProvider.destroyTower(cell.getGridPosition().x(), cell.getGridPosition().y());
         healthBolletje.stopDrawing();
@@ -150,6 +150,8 @@ public abstract class AbstractTower extends GameObject {
             attack(closest);
         }
     }
+
+    public abstract int getMaxHealth();
 
     protected void attack(Enemy e) {
         Bullet b = new Bullet(bulletSpeed, bulletDamage, bulletOffset, e, this, loopTimer, renderTimer).init(renderer);
@@ -222,6 +224,8 @@ public abstract class AbstractTower extends GameObject {
     }
 
     public abstract TowerType getType();
+
+    public abstract int getPrice();
 
     Vector3f getPositionOffset() {
         float deltaTime = renderTimer.getLoopTime() - startTime;
