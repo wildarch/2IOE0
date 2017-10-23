@@ -117,7 +117,11 @@ public class MusicProvider extends Thread implements Provider<Engine> {
                     fading = false;
                     return;
                 }
-                currentVolume -= fadeStep;
+                if (currentVolume - fadeStep > -60) {
+                    currentVolume -= fadeStep;
+                } else {
+                    currentVolume = -60;//minimum no clue why
+                }
                 gainControl.setValue(currentVolume);
                 try {
                     fadeThread.sleep(1);
@@ -132,7 +136,11 @@ public class MusicProvider extends Thread implements Provider<Engine> {
                     fading = false;
                     return;
                 }
-                currentVolume += fadeStep;
+                if (currentVolume + fadeStep > 6) {
+                    currentVolume += fadeStep;
+                } else {
+                    currentVolume = 6;//maximum no clue why
+                }
                 gainControl.setValue(currentVolume);
                 try {
                     fadeThread.sleep(1);
