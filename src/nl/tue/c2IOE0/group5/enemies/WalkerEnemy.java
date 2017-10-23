@@ -23,7 +23,7 @@ import static nl.tue.c2IOE0.group5.engine.rendering.shader.Material.SILVER;
  */
 public class WalkerEnemy extends Enemy implements Animatable {
 
-    private static final float SPEED = 1.5f;
+    private static final float SPEED = 0.2f;
     private static final long ATTACKSPEED = 5;
     private static final int MAX_HEALTH = 20;
 
@@ -43,6 +43,7 @@ public class WalkerEnemy extends Enemy implements Animatable {
     public WalkerEnemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider,
                        Vector2i initialPosition, List<Vector2i> targetPositions) {
         super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, MAX_HEALTH, SPEED, ATTACKSPEED);
+        setScale(0.5f);
     }
 
     /**
@@ -63,10 +64,7 @@ public class WalkerEnemy extends Enemy implements Animatable {
      * @return offset based on current animation
      */
     private float headOffset(float loopTime){
-        if (currentAnim == WALK) {
-            return (float) (0.1 * sin(2 * loopTime));
-        }
-        return 0;
+        return currentAnim == WALK ? (float) (0.1 * sin(2 * loopTime)) : 0;
     }
 
     @Override
@@ -95,12 +93,12 @@ public class WalkerEnemy extends Enemy implements Animatable {
     protected void onDie() {
         // unnecessary
         currentAnim = DEFAULT;
-        renderer.unlinkMesh(body);
-        renderer.unlinkMesh(head);
-        renderer.unlinkMesh(leftArm);
-        renderer.unlinkMesh(rightArm);
-        renderer.unlinkMesh(leftLeg);
-        renderer.unlinkMesh(rightLeg);
+//        renderer.unlinkMesh(body);
+//        renderer.unlinkMesh(head);
+//        renderer.unlinkMesh(leftArm);
+//        renderer.unlinkMesh(rightArm);
+//        renderer.unlinkMesh(leftLeg);
+//        renderer.unlinkMesh(rightLeg);
     }
 
     @Override
@@ -109,23 +107,43 @@ public class WalkerEnemy extends Enemy implements Animatable {
         leftArmOffset = new LinearlyUpdatable(armOffset(0), 0.1f);
         rightArmOffset = new LinearlyUpdatable(-armOffset(0), 0.1f);
 
-        head = renderer.linkMesh("/models/enemies/walkerEnemy/HEAD.obj", SILVER, () ->
-                setModelView(renderer, new Vector3f(0f, 0.438f + headOffset.current(), 0f)));
+        final Vector3f finalHeadOffset = new Vector3f(0f, 0.438f + this.headOffset.current(), 0f);
+        final Vector3f finalBodyOffset = new Vector3f(0f, 0.272f, 0f);
+        final Vector3f finalLeftArmOffset = new Vector3f(-0.167f + this.leftArmOffset.current(), 0.245f, 0.131f);
+        final Vector3f finalRightArmOffset = new Vector3f(-0.167f + rightArmOffset.current(), 0.245f, 0.131f);
+        final Vector3f finalLeftLegOffset = new Vector3f(0.118f + rightArmOffset.current(), 0.245f, 0.131f);
+        final Vector3f finalRightLegOffset = new Vector3f(0.118f + leftArmOffset.current(), 0.245f, 0.131f);
 
-        body = renderer.linkMesh("/models/enemies/walkerEnemy/BODY.obj", SILVER, () ->
-                setModelView(renderer, new Vector3f(0f, 0.272f, 0f)));
+        head = renderer.linkMesh("/models/enemies/walkerEnemy/HEAD.obj", SILVER, () -> {
+            if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
+            setModelView(renderer, finalHeadOffset.mul(getScale()));
+        });
 
-        leftArm = renderer.linkMesh("/models/enemies/walkerEnemy/FRONT_LEFT.obj", SILVER, () ->
-                setModelView(renderer, new Vector3f(-0.167f + leftArmOffset.current(), 0.245f, 0.131f)));
+        body = renderer.linkMesh("/models/enemies/walkerEnemy/BODY.obj", SILVER, () -> {
+            if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
+            setModelView(renderer, finalBodyOffset.mul(getScale()));
+        });
 
-        rightArm = renderer.linkMesh("/models/enemies/walkerEnemy/FRONT_RIGHT.obj", SILVER, () ->
-                setModelView(renderer, new Vector3f(-0.167f + rightArmOffset.current(), 0.245f, 0.131f)));
+        leftArm = renderer.linkMesh("/models/enemies/walkerEnemy/FRONT_LEFT.obj", SILVER, () -> {
+            if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
+            setModelView(renderer, finalLeftArmOffset.mul(getScale()));
+        });
 
-        leftLeg = renderer.linkMesh("/models/enemies/walkerEnemy/BACK_LEFT.obj", SILVER, () ->
-                setModelView(renderer, new Vector3f(0.118f + rightArmOffset.current(), 0.245f, 0.131f)));
+        rightArm = renderer.linkMesh("/models/enemies/walkerEnemy/FRONT_RIGHT.obj", SILVER, () -> {
+            if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
+            setModelView(renderer, finalRightArmOffset.mul(getScale()));
+        });
 
-        rightLeg = renderer.linkMesh("/models/enemies/walkerEnemy/BACK_RIGHT.obj", SILVER, () ->
-                setModelView(renderer, new Vector3f(0.118f + leftArmOffset.current(), 0.245f, 0.131f)));
+        leftLeg = renderer.linkMesh("/models/enemies/walkerEnemy/BACK_LEFT.obj", SILVER, () -> {
+            if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
+            setModelView(renderer, finalLeftLegOffset.mul(getScale()));
+        });
+
+        rightLeg = renderer.linkMesh("/models/enemies/walkerEnemy/BACK_RIGHT.obj", SILVER, () -> {
+            if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
+            setModelView(renderer, finalRightLegOffset.mul(getScale()));
+        });
 
     }
+
 }

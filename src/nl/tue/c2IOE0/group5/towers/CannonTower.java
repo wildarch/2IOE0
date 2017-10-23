@@ -19,12 +19,12 @@ public class CannonTower extends AbstractTower {
          metadata.icon = "/hud/cannontower.png";
     }
 
-    private static final int RANGE = 5;
+    private static final int RANGE = 3;
     private static final int MAX_LEVEL = 1;
     private static final int MAX_HEALTH = 20;
-    private static final int ATTACK_TIME = 500;
+    private static final int ATTACK_TIME = 2000;
     private static final float BULLET_SPEED = 3f;
-    private static final int BULLET_DAMAGE = 1000;
+    private static final int BULLET_DAMAGE = 5;
 
     private Vector3f cannonRotation = new Vector3f(0f, 0f, 0f);
 

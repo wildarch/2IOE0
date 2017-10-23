@@ -36,10 +36,10 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
         loopTimer = engine.getGameloopTimer();
         putMainTower();
         try {
-            buildTower(2, 2, WallTower.class);
-            buildTower(2, 3, WallTower.class);
+            buildTower(7, 8, WallTower.class);
+            buildTower(6, 8, WallTower.class);
             buildTower(8, 8, RocketTower.class);
-            buildTower(9, 8, CannonTower.class);
+            buildTower(7, 7, CannonTower.class);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e.getMessage());

@@ -82,7 +82,8 @@ public class MenuProvider implements Provider<Engine>, Clickable {
             UIButton audio = new MenuButton("Audio", (event) -> activeElements = audioMenu);
             {
                 UIButton master = new MenuSlider("Volume", (i) -> musicProvider.setBaseVolume((i < 0.05f ? 0.05f : i)));
-                UIButton toggleAudio = new MenuToggle("Music", (i) -> musicProvider.toggle());
+                MenuToggle toggleAudio = new MenuToggle("Music", (i) -> musicProvider.toggle());
+                toggleAudio.setValue(musicProvider.isOn());
                 UIButton backAudio = new MenuButton("Back", (event) -> activeElements = optionMenu);
                 audioMenu = new UIButton[]{master, toggleAudio, backAudio};
             }
