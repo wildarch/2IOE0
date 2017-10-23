@@ -59,21 +59,6 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
      * @Throws Many exceptions when passing class type as argument fails: So an incorrect type was passed (not a tower)
      */
     public boolean buildTower(int x, int y, Class<? extends AbstractTower> towertype) {
-        if (all().contains(towertype)) {
-            AbstractTower.MetaData metaData;
-            try {
-                Field meta = towertype.getField("metadata");
-                metaData = (AbstractTower.MetaData) meta.get(null);
-            } catch (IllegalAccessException | NoSuchFieldException e) {
-                throw new IllegalStateException("Tower " + towertype.getName() +
-                        " does not have a field metadata, or it is not marked static public");
-            }
-            int price = metaData.price;
-            PlayerController playerController = engine.getController(PlayerController.class);
-            playerController.addBudget(-price);
-        }
-
-
         if (gridProvider.getCell(x, y).getTower() != null) {
             //not null: tower exists here already
             return false;
@@ -92,6 +77,22 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
         gridProvider.placeTower(x, y, tower);
         objects.add(tower);
         //placing tower succesfull!
+
+        //subtract the price
+        if (all().contains(towertype)) {
+            AbstractTower.MetaData metaData;
+            try {
+                Field meta = towertype.getField("metadata");
+                metaData = (AbstractTower.MetaData) meta.get(null);
+            } catch (IllegalAccessException | NoSuchFieldException e) {
+                throw new IllegalStateException("Tower " + towertype.getName() +
+                        " does not have a field metadata, or it is not marked static public");
+            }
+            int price = metaData.price;
+            PlayerController playerController = engine.getController(PlayerController.class);
+            playerController.addBudget(-price);
+        }
+
         return true;
     }
 
