@@ -54,7 +54,6 @@ public abstract class Enemy extends GameObject {
         if(targetReached) {
             targetPositions.remove(0);
             if(targetPositions.isEmpty()) {
-                System.out.println("Target reached!");
                 return;
             }
             setOffset();
