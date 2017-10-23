@@ -58,16 +58,6 @@ public class Resource {
         return floatArr;
     }
 
-    public static boolean existsFile(String fileName) {
-        boolean result;
-        try (InputStream is = Resource.class.getResourceAsStream(fileName)) {
-            result = is != null;
-        } catch (Exception excp) {
-            result = false;
-        }
-        return result;
-    }
-
     public static ByteBuffer toByteBuffer(String resource, int bufferSize) throws IOException {
         ByteBuffer buffer;
 

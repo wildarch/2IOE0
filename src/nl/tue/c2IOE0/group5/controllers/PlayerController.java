@@ -200,13 +200,9 @@ public class PlayerController implements Controller,Listener {
             } else {
                 if (uiProvider.onClick(event)) {
                     gridProvider.click();
-                    try {
-                        if (uiProvider.getSelected() != null) {
-                            Vector2i pos = gridProvider.getActiveCell();
-                            towerProvider.buildTower(pos.x, pos.y, uiProvider.getSelected());
-                        }
-                    } catch (Exception e) {
-                        throw new RuntimeException(e.getMessage());
+                    if (uiProvider.getSelected() != null) {
+                        Vector2i pos = gridProvider.getActiveCell();
+                        towerProvider.buildTower(pos.x, pos.y, uiProvider.getSelected());
                     }
                 }
             }

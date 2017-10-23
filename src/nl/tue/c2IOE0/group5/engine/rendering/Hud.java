@@ -1,6 +1,8 @@
 package nl.tue.c2IOE0.group5.engine.rendering;
 
 import nl.tue.c2IOE0.group5.util.Resource;
+import org.joml.Vector2f;
+import org.joml.Vector2i;
 import org.joml.Vector4f;
 import org.lwjgl.nanovg.NVGColor;
 import org.lwjgl.nanovg.NVGPaint;
@@ -128,17 +130,17 @@ public class Hud implements Drawable {
         int xMax = x + width;
         int yMax = y + height;
 
-        try {
-            polygon(x + indent, y,
-                    xMax - indent, y,
-                    xMax, y + indent,
-                    xMax, yMax - indent,
-                    xMax - indent, yMax,
-                    x + indent, yMax,
-                    x, yMax - indent,
-                    x, y + indent
+
+            polygon(
+                new Vector2i(x + indent, y),
+                new Vector2i(xMax - indent, y),
+                new Vector2i(xMax, y + indent),
+                new Vector2i(xMax, yMax - indent),
+                new Vector2i(xMax - indent, yMax),
+                new Vector2i(x + indent, yMax),
+                new Vector2i(x, yMax - indent),
+                new Vector2i(x, y + indent)
             );
-        } catch (Exception ignored) { }
 
     }
 
@@ -147,14 +149,15 @@ public class Hud implements Drawable {
         nvgCircle(vg, x, y, radius);
     }
 
-    public void polygon(int... points) throws Exception {
-        if (points.length < 2 || points.length % 2 != 0) {
-            throw new Exception("Not a valid polygon");
+    public void polygon(Vector2i... points) {
+        if (points.length == 0) {
+            throw new IllegalArgumentException("Must pass at least 2 points");
         }
         nvgBeginPath(vg);
-        nvgMoveTo(vg, points[points.length-2], points[points.length-1]);
-        for (int i = 0; i < points.length; i += 2) {
-            nvgLineTo(vg, points[i], points[i+1]);
+
+        nvgMoveTo(vg, points[0].x, points[1].y);
+        for(Vector2i point : points) {
+            nvgLineTo(vg, point.x, point.y);
         }
     }
 

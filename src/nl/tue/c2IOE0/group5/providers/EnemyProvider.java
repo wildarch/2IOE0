@@ -1,5 +1,6 @@
 package nl.tue.c2IOE0.group5.providers;
 
+import nl.tue.c2IOE0.group5.ai.QLearner;
 import nl.tue.c2IOE0.group5.enemies.*;
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.Simulator;
@@ -45,7 +46,7 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
         return objects.size();
     }
 
-    public void putEnemy(Vector2i initialPosition, List<Vector2i> targets) {
+    public void putEnemy(Vector2i initialPosition, List<Vector2i> targets, QLearner qlearner) {
 
         final Enemy newEnemy;
         switch (new Random().nextInt(3)) {
@@ -55,7 +56,7 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
                         renderTimer,
                         gridProvider,
                         initialPosition,
-                        targets, 20
+                        targets, 20, qlearner
                 );
                 break;
             case 1:
@@ -64,7 +65,7 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
                         renderTimer,
                         gridProvider,
                         initialPosition,
-                        targets
+                        targets, qlearner
                 );
                 break;
             case 2:
@@ -73,7 +74,7 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
                         renderTimer,
                         gridProvider,
                         initialPosition,
-                        targets
+                        targets, qlearner
                 );
                 break;
             default: newEnemy = new TestEnemy(
@@ -81,7 +82,7 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
                         renderTimer,
                         gridProvider,
                         initialPosition,
-                        targets, 10
+                        targets, 10, qlearner
                 );
         }
         System.out.println("EnemyProvider.putEnemy(): spawn " + newEnemy.getClass().getSimpleName() +
