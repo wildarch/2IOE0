@@ -1,48 +1,65 @@
 package nl.tue.c2IOE0.group5.controllers;
 
 import nl.tue.c2IOE0.group5.ai.QLearner;
+import nl.tue.c2IOE0.group5.ai.data.InputConverter;
+import nl.tue.c2IOE0.group5.enemies.EnemyType;
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.controller.Controller;
-import nl.tue.c2IOE0.group5.engine.controller.input.events.Event;
-import nl.tue.c2IOE0.group5.engine.controller.input.events.Listener;
-import nl.tue.c2IOE0.group5.engine.controller.input.events.MouseEvent;
 import nl.tue.c2IOE0.group5.providers.Cell;
 import nl.tue.c2IOE0.group5.providers.EnemyProvider;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
+import org.deeplearning4j.nn.graph.ComputationGraph;
+import org.deeplearning4j.util.ModelSerializer;
 import org.joml.Vector2i;
+import org.nd4j.linalg.api.ndarray.INDArray;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.function.BooleanSupplier;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
-
-public class AiController implements Controller, Listener {
+public class AiController implements Controller {
 
     private static int NR_WAVES = 10;
     private static int NR_SUB_WAVES = 5;
     private static long WAVE_TIME = 5000; // 5 seconds
     private static int BIG_WAVE_SIZE = 5;
     private static int SMALL_WAVE_SIZE = 2;
+    private static int BUFFER_SAMPLE_SIZE = 100;
 
     private int wave = 0;
     private EnemyProvider enemyProvider;
     private Timer loopTimer;
     private long nextWaveTime = 0;
 
-    private QLearner qlearner;
+    private QLearner qLearner;
     private List<Integer> optimalPath; //the current optimal path for the active cell
     private GridProvider gridProvider;
     BooleanSupplier isPaused;
+
+    private ComputationGraph network;
+    private final File networkFile;
+
+    public AiController(File networkFile) {
+        this.networkFile = networkFile;
+    }
 
     @Override
     public void init(Engine engine) {
         enemyProvider = engine.getProvider(EnemyProvider.class);
         loopTimer = engine.getRenderLoopTimer();
         gridProvider = engine.getProvider(GridProvider.class);
+
+        try {
+            if (networkFile != null) network = ModelSerializer.restoreComputationGraph(networkFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         trainQLearner();
         isPaused = engine::isPaused;
     }
@@ -60,90 +77,68 @@ public class AiController implements Controller, Listener {
     }
 
     private void wave(boolean big) {
+        final Random r = new Random();
+        InputConverter converter;
+
+        EnemyType[] sampleBuffer = new EnemyType[big ? BIG_WAVE_SIZE : SMALL_WAVE_SIZE];
+
+        EnemyType[] selectedBuffer = null;
+        double bufferScore = Double.MIN_VALUE;
+
+        for (int i = 0; i < BUFFER_SAMPLE_SIZE; i++){
+            for (int j = 0; j < sampleBuffer.length; j++){
+                EnemyType t = EnemyType.values()[r.nextInt(EnemyType.getSize())];
+                sampleBuffer[j] = t;
+            }
+            converter = InputConverter.fromGameState(gridProvider, 1, sampleBuffer);
+            converter.convert();
+            INDArray aiInput = converter.getInput();
+            INDArray aiOutput = network.outputSingle(false, aiInput);
+            double score = aiOutput.getDouble(0, 0);
+
+            if(score > bufferScore){
+                selectedBuffer = Arrays.copyOf(sampleBuffer, sampleBuffer.length);
+            }
+        }
+
+        assert selectedBuffer != null;
+
         // Do a wave!
         String size = big ? "Big  " : "Small";
-        Random r = new Random();
-        for (int i = 0; i < SMALL_WAVE_SIZE; i++) {
+        System.out.println(size + " wave at " + loopTimer.getLoopTime());
+
+        for (EnemyType enemy : selectedBuffer) {
             int random = r.nextInt(5);
-            Cell startCell = gridProvider.getCell(qlearner.getOptimalNSpawnStates(5)[random]);
+            Cell startCell = gridProvider.getCell(qLearner.getOptimalNSpawnStates(5)[random]);
             Vector2i start = startCell.getGridPosition();
-            List<Integer> path = qlearner.getOptimalPath(startCell.getGridPosition());
+            List<Integer> path = qLearner.getOptimalPath(startCell.getGridPosition());
             enemyProvider.putEnemy(
+                    enemy,
                     start,
-                    path.stream().map(QLearner::getPoint).collect(Collectors.toList()),
-                    qlearner
+                    path.stream().map(p -> qLearner.getPoint(p, gridProvider.SIZE)).collect(Collectors.toList()),
+                    qLearner
             );
-        }
-        if (big) {
-            for (int i = 0; i < BIG_WAVE_SIZE; i++) {
-                int random = r.nextInt(7);
-                Cell startCell = gridProvider.getCell(qlearner.getOptimalNSpawnStates(7)[random]);
-                Vector2i start = startCell.getGridPosition();
-                List<Integer> path = qlearner.getOptimalPath(startCell.getGridPosition());
-                enemyProvider.putEnemy(
-                        start,
-                        path.stream().map(QLearner::getPoint).collect(Collectors.toList()),
-                        qlearner
-                );
-            }
         }
     }
 
     private void trainQLearner() {
         int noIterations = 1000;
         double gamma = 0.1d;
-        qlearner = new QLearner(GridProvider.SIZE, noIterations, gamma);
-        qlearner.initializeQ();
-        qlearner.setRewardsMatrix(QLearner.getState(GridProvider.SIZE/2, GridProvider.SIZE/2), 1000);
+        qLearner = new QLearner(gridProvider.SIZE, noIterations, gamma);
+        qLearner.initializeQ();
+        qLearner.setRewardsMatrix(QLearner.getState(gridProvider.SIZE / 2, gridProvider.SIZE / 2, gridProvider.SIZE), 1000);
         for (int i = 0; i < 200; i++) {
-            qlearner.generateRandomPath(10);
+            qLearner.generateRandomPath(10);
+            qLearner = new QLearner(gridProvider.SIZE, noIterations, gamma);
+            qLearner.updateRewardsMatrix(QLearner.getState(gridProvider.SIZE / 2, gridProvider.SIZE / 2, gridProvider.SIZE), 1000);
+            for (int j = 3; j <= 9; j++) {
+                qLearner.updateRewardsMatrix(QLearner.getState(3, j, gridProvider.SIZE), -5);
+                qLearner.updateRewardsMatrix(QLearner.getState(9, j, gridProvider.SIZE), -5);
+            }
+            qLearner.addBasicPath();
+            //to prevent going to 0,0
+            qLearner.generateRandomPath(100, 0);
+            qLearner.execute();
         }
-        qlearner.addBasicPath();
-        //to prevent going to 0,0
-        qlearner.generateRandomPath(100, 0);
-        qlearner.execute();
-    }
-
-    @Override
-    public void onKeyPressed(Event event) {
-
-    }
-
-    @Override
-    public void onKeyReleased(Event event) {
-
-    }
-
-    @Override
-    public void onKeyHold(Event event) {
-
-    }
-
-    @Override
-    public void onMouseButtonPressed(MouseEvent event) {
-        if (event.getSubject() == GLFW_MOUSE_BUTTON_1) {
-            optimalPath = qlearner.getOptimalPath(QLearner.getState(gridProvider.getActiveCell()));
-            gridProvider.drawPath(optimalPath);
-        }
-    }
-
-    @Override
-    public void onMouseButtonReleased(MouseEvent event) {
-
-    }
-
-    @Override
-    public void onMouseMove(MouseEvent event) {
-
-    }
-
-    @Override
-    public void onMouseHover(MouseEvent event) {
-
-    }
-
-    @Override
-    public void onMouseScroll(MouseEvent event) {
-
     }
 }

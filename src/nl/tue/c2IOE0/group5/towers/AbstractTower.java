@@ -51,7 +51,7 @@ public abstract class AbstractTower extends GameObject {
         this.gridProvider = towerProvider.gridProvider;
         this.loopTimer = towerProvider.loopTimer;
         this.renderTimer = towerProvider.renderTimer;
-        this.renderer = enemyProvider.getRenderer();
+        this.renderer = towerProvider.getRenderer();
         this.healthBolletje = new HealthBolletje(this).init(renderer);
         this.attackTime = attackTime;
         this.bulletSpeed = bulletSpeed;
@@ -209,4 +209,7 @@ public abstract class AbstractTower extends GameObject {
         public String name;
         public String icon;
     }
+
+    public abstract TowerType getType();
+
 }

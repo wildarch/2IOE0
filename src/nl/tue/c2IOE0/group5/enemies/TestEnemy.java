@@ -19,6 +19,11 @@ public class TestEnemy extends Enemy {
 
 
     @Override
+    public EnemyType getType() {
+        return EnemyType.DROID;
+    }
+
+    @Override
     protected void onDie() {
         if(renderer != null) renderer.unlinkMesh(iMeshBody);
     }

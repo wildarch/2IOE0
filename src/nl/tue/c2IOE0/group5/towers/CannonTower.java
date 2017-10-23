@@ -44,6 +44,11 @@ public class CannonTower extends AbstractTower {
     }
 
     @Override
+    public TowerType getType() {
+        return TowerType.CANNON;
+    }
+
+    @Override
     public void renderInit(Renderer renderer) {
         setScale(1f);
         Mesh base = renderer.linkMesh("/models/towers/cannontower/BASE.obj");

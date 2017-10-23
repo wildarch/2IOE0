@@ -1,6 +1,5 @@
 package nl.tue.c2IOE0.group5.ai;
 
-import nl.tue.c2IOE0.group5.providers.GridProvider;
 import org.joml.Vector2i;
 
 import java.util.ArrayList;
@@ -26,6 +25,8 @@ public class QLearner extends Thread {
     private List<Integer> outerStates;
     private volatile boolean converged = false;
     private double gamma;
+
+    private final int gridSize;
 
     private Double[][] Q;
 
@@ -53,6 +54,7 @@ public class QLearner extends Thread {
         makeRewardMatrix();
         paths = new ArrayList<>();
         this.noIterations = noIterations;
+        this.gridSize = gridSize;
 
         outerStates = new ArrayList<>();
         for (int i = 0; i < gridSize; i++) { //add bottom states
@@ -138,11 +140,11 @@ public class QLearner extends Thread {
      * Initialize the rewards matrix
      */
     private void makeRewardMatrix() {
-        this.rewards = new Integer[GridProvider.SIZE*GridProvider.SIZE][GridProvider.SIZE*GridProvider.SIZE];
-        for (int y = 0; y < GridProvider.SIZE; y++) {
-            for (int x = 0; x < GridProvider.SIZE; x++) { //first y and the x to make sure the state increases
+        this.rewards = new Integer[gridSize*gridSize][gridSize*gridSize];
+        for (int y = 0; y < gridSize; y++) {
+            for (int x = 0; x < gridSize; x++) { //first y and the x to make sure the state increases
                 int state = getState(x, y);
-                if (x == GridProvider.SIZE / 2 && y == GridProvider.SIZE / 2) { //the middle cell
+                if (x == gridSize / 2 && y == gridSize / 2) { //the middle cell
                     this.rewards[state][state] = 0; //can only go to itself
                     continue; //continue with the next cell
                 }
@@ -173,30 +175,42 @@ public class QLearner extends Thread {
         converged = false;
     }
 
-    public static int getState(int x, int y) {
-        return x + GridProvider.SIZE * y;
+    public static int getState(int x, int y, int gridSize) {
+        return x + gridSize * y;
     }
 
-    public static int getState(Vector2i p) {
-        return getState(p.x(), p.y());
+    public int getState(int x, int y){
+        return getState(x, y, gridSize);
     }
 
-    public static Vector2i getPoint(int state) {
-        return new Vector2i(state % GridProvider.SIZE, state / GridProvider.SIZE);
+    public static int getState(Vector2i p, int gridSize) {
+        return getState(p.x(), p.y(), gridSize);
+    }
+
+    public int getState(Vector2i p){
+        return getState(p, gridSize);
+    }
+
+    public static Vector2i getPoint(int state, int gridSize) {
+        return new Vector2i(state % gridSize, state / gridSize);
+    }
+
+    public Vector2i getPoint(int state){
+        return getPoint(state, gridSize);
     }
 
     public List<Integer> getStatesAdjacent(int state) {
         List<Integer> neighbours = new ArrayList<>();
-        if (state >= GridProvider.SIZE) { //there is a bottom
-            neighbours.add(state - GridProvider.SIZE);
+        if (state >= gridSize) { //there is a bottom
+            neighbours.add(state - gridSize);
         }
-        if (state < GridProvider.SIZE * GridProvider.SIZE - GridProvider.SIZE) { //there is a top
-            neighbours.add(state + GridProvider.SIZE);
+        if (state < gridSize * gridSize - gridSize) { //there is a top
+            neighbours.add(state + gridSize);
         }
-        if (state % GridProvider.SIZE != 0) { //there is a left
+        if (state % gridSize != 0) { //there is a left
             neighbours.add(state - 1);
         }
-        if (state % GridProvider.SIZE != GridProvider.SIZE - 1) { //there is a right
+        if (state % gridSize != gridSize - 1) { //there is a right
             neighbours.add(state + 1);
         }
         return neighbours;
@@ -253,7 +267,7 @@ public class QLearner extends Thread {
 
     public void generateRandomPath(int length) {
         Random r = new Random();
-        generateRandomPath(length, r.nextInt(GridProvider.SIZE * GridProvider.SIZE - 1));
+        generateRandomPath(length, r.nextInt(gridSize * gridSize - 1));
     }
 
     public void generateRandomPath(int length, int startState) {
@@ -317,7 +331,7 @@ public class QLearner extends Thread {
     }
 
     public List<Integer> getOptimalPath(Vector2i state) {
-        return getOptimalPath(getState(state));
+        return getOptimalPath(getState(state, gridSize));
     }
 
     /**
@@ -351,7 +365,7 @@ public class QLearner extends Thread {
         }
         Vector2i[] results = new Vector2i[n];
         for (int i = 0; i < n; i++) {
-            results[i] = new Vector2i(getPoint(maxStates[i]));
+            results[i] = new Vector2i(getPoint(maxStates[i], gridSize));
         }
         return results;
     }

@@ -68,6 +68,11 @@ public class DrillEnemy extends Enemy implements Animatable {
     }
 
     @Override
+    public EnemyType getType() {
+        return EnemyType.DRILL;
+    }
+
+    @Override
     public void renderInit(Renderer renderer) {
         this.renderer = renderer;
         Material darkMatter = new Material();

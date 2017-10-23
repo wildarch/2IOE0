@@ -1,12 +1,10 @@
 package nl.tue.c2IOE0.group5.providers;
 
-import jdk.nashorn.internal.runtime.arrays.ArrayIndex;
 import nl.tue.c2IOE0.group5.ai.QLearner;
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.Simulator;
 import nl.tue.c2IOE0.group5.engine.objects.Camera;
 import nl.tue.c2IOE0.group5.engine.provider.ObjectProvider;
-import nl.tue.c2IOE0.group5.engine.provider.Provider;
 import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
@@ -29,23 +27,35 @@ import java.util.List;
 public class GridProvider extends ObjectProvider<Cell> {
 
     //total size of the grid (including spawn cells). Change this to change the total grid
-    public static final int SIZE = 13;
+    public final int SIZE;
     //size of the grid in which towers can be placed
-    public static final int PLAYFIELDSIZE = 9;
+    public final int PLAYFIELDSIZE;
     //the actual grid
-    private final Cell[][] grid = new Cell[SIZE][SIZE];
+    private final Cell[][] grid;
 
     /* connecting tower grid: while it cannot use all spaces available using SIZE, it is more clear to work with.
     logically placing them on "-0.5 and +0.5" of towers makes the most sense (as they are between towers) but since
     this is not possible, we use an array of twice the size, thus "-1" being -0.5 and +1 to be +0.5 when reading values (vs a coord
     from the cell array). */
-    private final TowerConnection[][] towerconnections = new TowerConnection[SIZE*2][SIZE*2];
+    private final TowerConnection[][] towerconnections;
 
     private TowerConnectionProvider towerConnectionProvider;
 
     //the cell currently active (pointed to)
     private Cell activeCell;
     private Cell rangedCell;
+
+    public GridProvider(){
+        this(13, 9);
+    }
+
+    public GridProvider(int gridSize, int playFieldSize){
+        super();
+        SIZE = gridSize;
+        PLAYFIELDSIZE = playFieldSize;
+        grid = new Cell[SIZE][SIZE];
+        towerconnections = new TowerConnection[SIZE*2][SIZE*2];
+    }
 
     @Override
     public void init(Simulator engine) {
@@ -163,6 +173,15 @@ public class GridProvider extends ObjectProvider<Cell> {
         tower.destroy();
         towerconnections[x][y] = null;
         towerConnectionProvider.deleteTowerConnection(tower);
+    }
+
+    public void placePlayFieldTower(int x, int y, AbstractTower tower){
+        if (x < 0 || x >= PLAYFIELDSIZE || y < 0 || y >= PLAYFIELDSIZE) {
+            throw new ArrayIndexOutOfBoundsException("The coordinates of this cell are outside the grid.");
+        }
+
+        final int diff = ((SIZE - PLAYFIELDSIZE) / 2);
+        placeTower(x + diff, y + diff, tower);
     }
 
     public void levelUpTower(int x, int y) {
@@ -324,7 +343,7 @@ public class GridProvider extends ObjectProvider<Cell> {
     public void drawPath(List<Integer> path) {
         deactivateAll();
         for (int state : path) {
-            Vector2i position = QLearner.getPoint(state);
+            Vector2i position = QLearner.getPoint(state, SIZE);
             getCell(position).activate();
         }
     }

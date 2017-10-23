@@ -44,4 +44,9 @@ public class WallTower extends AbstractTower {
         //renderer.unlinkMesh(mesh, render, shadowRender);
         renderer.unlinkMesh(iMesh);
     }
+
+    @Override
+    public TowerType getType() {
+        return TowerType.WALL;
+    }
 }

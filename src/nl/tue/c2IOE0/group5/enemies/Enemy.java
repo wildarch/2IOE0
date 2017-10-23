@@ -48,6 +48,8 @@ public abstract class Enemy extends GameObject {
         this.offset = new Vector3f(0);
     }
 
+    public abstract EnemyType getType();
+
     @Override
     public void update() {
         if(targetPositions.isEmpty()) {
@@ -119,7 +121,7 @@ public abstract class Enemy extends GameObject {
             health = 0;
             this.die();
         }
-        qLearner.updateRewardsMatrix(QLearner.getState(this.getCurrentCell().getGridPosition()), damage);
+        qLearner.updateRewardsMatrix(qLearner.getState(this.getCurrentCell().getGridPosition()), damage);
         qLearner.execute();
     }
 
