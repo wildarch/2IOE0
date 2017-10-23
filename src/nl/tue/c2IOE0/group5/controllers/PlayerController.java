@@ -65,10 +65,9 @@ public class PlayerController implements Controller,Listener {
     public void toggleCameraMode(){
         lockedCameraMode = !lockedCameraMode;
         freeCameraMode = !freeCameraMode;
+
         System.out.println("lockedCameraMode: " + lockedCameraMode);
         System.out.println("freeCameraMode: " + freeCameraMode);
-        camera.setRotation(15,0,0);
-        camera.setPosition(gridProvider.SIZE/2, (accumulatedy * sensitivity/10), gridProvider.SIZE);
 
         accumulatedx = 180;
         oldaccumulatedx = 180;
@@ -76,6 +75,9 @@ public class PlayerController implements Controller,Listener {
         oldaccumulatedy = 15;
         gCentreY = 6;
         gCentreX = 6;
+
+        camera.setRotation(15,0,0);
+        camera.setPosition(gridProvider.SIZE/2, (accumulatedy * sensitivity/10), gridProvider.SIZE);
     }
 
     @Override
@@ -408,7 +410,7 @@ public class PlayerController implements Controller,Listener {
         } else {
             angley = 0;
         }
-
+/*
         System.out.println("x: " + camera.getPosition().x());
         System.out.println("y: " + camera.getPosition().y());
         System.out.println("z: " + camera.getPosition().z());
@@ -417,6 +419,7 @@ public class PlayerController implements Controller,Listener {
         System.out.println("cameraDiameter: " + cameraDiameter);
         System.out.println("cameraDistance: " + cameraDistance);
         System.out.println("angley: " + angley);
+        */
         double diffangley = angley - oldangley;
 
         camera.rotate((float) diffangley, (float) anglex, 0);
