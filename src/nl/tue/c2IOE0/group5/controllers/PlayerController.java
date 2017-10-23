@@ -37,9 +37,10 @@ public class PlayerController implements Controller,Listener {
     private float sensitivity = 5;//Camera Sensitivity on a scale from 1 to 10
     private boolean rightMouseButton = false;
     private boolean middleMouseButton = false;
-    private boolean freeCameraMode = false;
-    private boolean lockedCameraMode = true;
+    private boolean freeCameraMode = true;
+    private boolean lockedCameraMode = false;
     private int invertedXaxis;
+    private boolean shiftPressed = false;
 
     private float gCentreX = 0;
     private float gCentreY = 0;
@@ -140,6 +141,8 @@ public class PlayerController implements Controller,Listener {
                 engine.pause(true);
                 break;
             case GLFW_KEY_LEFT_SHIFT:
+                shiftPressed = true;
+                break;
         }
     }
 
@@ -148,6 +151,9 @@ public class PlayerController implements Controller,Listener {
         switch (event.getSubject()) {
             case GLFW_KEY_C:
                 toggleCameraMode();
+                break;
+            case GLFW_KEY_LEFT_SHIFT:
+                shiftPressed = false;
                 break;
         }
     }
