@@ -16,10 +16,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Enemy extends GameObject {
+
+    private final int maxHealth;
+    private final float speed;
+    private final long attackSpeed;
+    private int health;
+
     private boolean dead = false;
     protected GridProvider gridProvider;
-    private final int maxHealth;
-    private int health;
     private List<Vector2i> targetPositions;
     protected PositionInterpolator interpolator;
     protected Renderer renderer;
@@ -27,10 +31,10 @@ public abstract class Enemy extends GameObject {
     protected Timer loopTimer;
     protected Timer renderTimer;
     protected boolean attacking = false;
-    private final float speed;
-    private final long attackSpeed;
+
     private Vector3f offset;
     private QLearner qLearner;
+    private Vector3f ambientLight = new Vector3f(0, 0, 1f);
 
     public Enemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider,
                  Vector2i initialPosition, List<Vector2i> targetPositions, int maxHealth, float speed, long attackSpeed, QLearner qlearner) {
@@ -102,7 +106,7 @@ public abstract class Enemy extends GameObject {
 
         iMeshBody = renderer.linkMesh("/cube.obj", () -> {
             setModelView(renderer);
-            renderer.ambientLight(new Vector3f(0f, 0f,1f ));
+            renderer.ambientLight(ambientLight);
             if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
         });
         this.renderer = renderer;
@@ -124,6 +128,11 @@ public abstract class Enemy extends GameObject {
         }
         qLearner.updateRewardsMatrix(qLearner.getState(this.getCurrentCell().getGridPosition()), damage);
         qLearner.execute();
+
+        if (health < 0.2 * maxHealth) {
+            float redness = ((0.2f * maxHealth) - health) * 5;
+            this.ambientLight = new Vector3f(1f, 0f, 0f).mul(redness);
+        }
     }
 
     public void die() {

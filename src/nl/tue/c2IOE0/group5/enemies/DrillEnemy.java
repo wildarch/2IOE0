@@ -26,7 +26,7 @@ import static nl.tue.c2IOE0.group5.util.Angle.rotateVector;
 public class DrillEnemy extends Enemy implements Animatable {
 
     private final static int MAXHEALTH = 100;
-    private final static float SPEED = 0.1f;
+    private final static float SPEED = 0.15f;
     private final static int ATTACKSPEED = 400;
 
     private InstancedMesh body;
@@ -41,7 +41,7 @@ public class DrillEnemy extends Enemy implements Animatable {
     public DrillEnemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider, Vector2i initialPosition,
                       List<Vector2i> targetPositions, QLearner qlearner, AnimationProvider animationProvider) {
         super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, MAXHEALTH, SPEED, ATTACKSPEED, qlearner);
-        setScale(0.03f);
+        setScale(0.04f);
         animationProvider.add(this);
     }
 
@@ -70,7 +70,7 @@ public class DrillEnemy extends Enemy implements Animatable {
      * @return offset based on current animation
      */
     private float drillOffset(float loopTime){
-        return attacking ? (float) (0.1 * sin(0.005 * loopTime)) : 0;
+        return attacking ? (float) (0.2 * sin(1000/ATTACKSPEED * loopTime)) : 0;
     }
 
     @Override
