@@ -125,8 +125,7 @@ public class AiController implements Controller {
         System.out.println(size + " wave at " + loopTimer.getLoopTime());
 
         for (EnemyType enemy : selectedBuffer) {
-            int random = r.nextInt(5);
-            Cell startCell = gridProvider.getCell(qLearner.getOptimalNSpawnStates(5)[random]);
+            Cell startCell = gridProvider.getCell(qLearner.getOptimalSpawnState());
             Vector2i start = startCell.getGridPosition();
             List<Integer> path = qLearner.getOptimalPath(startCell.getGridPosition());
             enemyProvider.putEnemy(
@@ -144,10 +143,10 @@ public class AiController implements Controller {
 
         qLearner = new QLearner(gridProvider.SIZE, noIterations, gamma);
         qLearner.initializeQ();
-        qLearner.setRewardsMatrix(QLearner.getState(gridProvider.SIZE / 2, gridProvider.SIZE / 2, gridProvider.SIZE), 1000);
+        qLearner.setRewardsMatrix(QLearner.getState(gridProvider.SIZE / 2, gridProvider.SIZE / 2, gridProvider.SIZE), Integer.MAX_VALUE);
 
         for (int i = 0; i < 200; i++) {
-            qLearner.generateRandomPath(10);
+            qLearner.generateRandomPath(100);
         }
         qLearner.addBasicPath();
         //to prevent going to 0,0

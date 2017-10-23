@@ -131,7 +131,7 @@ public abstract class Enemy extends GameObject {
             health = 0;
             this.die();
         }
-        qLearner.updateRewardsMatrix(qLearner.getState(this.getCurrentCell().getGridPosition()), damage);
+        qLearner.updateRewardsMatrix(qLearner.getState(this.getCurrentCell().getGridPosition()), -damage); //reward on this tile becomes minus the damage
         qLearner.execute();
 
         if (health < 0.2 * maxHealth) {
