@@ -51,8 +51,20 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
     @Override
     public void renderInit(Engine engine) {
         this.engine = engine;
-        Mesh m = engine.getRenderer().linkMesh("/models/towers/mainbase/mainbase.obj");
-        m.setMaterial(new Material("/models/towers/mainbase/mainbase.png"));
+        Renderer renderer = engine.getRenderer();
+        //preload all meshes to avoid mid game slowdowns
+        renderer.linkMesh("/models/towers/mainbase/mainbase.obj")
+                .setMaterial(new Material("/models/towers/mainbase/mainbase.png"));
+        renderer.linkMesh("/models/towers/walltower/walltower.obj")
+                .setMaterial(new Material("/models/towers/walltower/walltower.png"));
+        renderer.linkMesh("/models/towers/cannontower/BASE.obj")
+                .setMaterial(new Material("/models/towers/cannontower/Base.png"));
+        renderer.linkMesh("/models/towers/cannontower/CANNON.obj")
+                .setMaterial(new Material("/models/towers/cannontower/Cannon.png"));
+        renderer.linkMesh("/models/towers/rockettower/base.obj")
+                .setMaterial(new Material("/models/towers/rockettower/base.png"));
+        renderer.linkMesh("/models/towers/rockettower/rocket.obj")
+                .setMaterial(new Material("/models/towers/rockettower/rocket.png"));
         renderTimer = engine.getRenderLoopTimer();
     }
 
