@@ -2,7 +2,6 @@ package nl.tue.c2IOE0.group5.userinterface;
 
 import nl.tue.c2IOE0.group5.engine.controller.input.events.MouseEvent;
 import nl.tue.c2IOE0.group5.engine.rendering.Hud;
-import nl.tue.c2IOE0.group5.util.PositionState;
 import org.joml.Vector2i;
 
 import java.util.function.Consumer;
@@ -49,16 +48,6 @@ public class MenuToggle extends UIButton {
 
     public MenuToggle(String text, Vector2i pos, Consumer<Boolean> handler) {
         this(text, pos.x, pos.y, handler);
-    }
-
-    public MenuToggle(String text, PositionState pos, String[] names, Consumer<Boolean> handler) {
-        this(text, pos.getX(), pos.getY(), names, handler);
-
-    }
-
-    public MenuToggle(String text, PositionState pos, Consumer<Boolean> handler) {
-        this(text, pos.getX(), pos.getY(), handler);
-
     }
 
     @Override

@@ -42,7 +42,6 @@ public class MenuTextField extends UIElement {
         hud.text(x + width /2, y + MARGIN, TEXT_LARGE, Hud.Font.MEDIUM,
                 NVG_ALIGN_CENTER | NVG_ALIGN_TOP, title, COLOR_TEXT);
 
-        //PositionState pos = new PositionState(x + width/2, (int) (y + BUTTON_HEIGHT + 20 + TEXT_SIZE), (int) (TEXT_SIZE * 1.2));
         MenuPositioner pos = new MenuPositioner(x + width/2, (int) (y + TEXT_LARGE + 2*MARGIN), 6);
         for (String line : content) {
             Vector2i p = pos.place(0, (int) TEXT_SMALL, true);

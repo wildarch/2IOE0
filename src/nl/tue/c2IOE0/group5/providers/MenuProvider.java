@@ -16,7 +16,7 @@ import org.joml.Vector4f;
  */
 public class MenuProvider implements Provider<Engine>, Clickable {
 
-    private final static String[] creditTextfield = // newlines with backslash because of Regex splitting
+    private final static String[] creditTextfield =
             ("Staff:\n" +
                     "Tim Beurskens\n" +
                     "Daan Drijver\n" +
@@ -71,7 +71,7 @@ public class MenuProvider implements Provider<Engine>, Clickable {
         UIButton startGame = new MenuButton("Start Game", (event) -> engine.pause(false));
         UIButton options = new MenuButton("Options", (event) -> activeElements = optionMenu);
         {
-            UIButton graphics = new MenuButton("Graphics", (event) -> { activeElements = graphicsMenu; });
+            UIButton graphics = new MenuButton("Graphics", (event) -> activeElements = graphicsMenu);
             {
                 UIButton shadow = new MenuToggle("Shadow", (b) -> renderer.setShadowMapping(b));
                 UIButton vsync = new MenuToggle("vSync", (b) -> window.getOptions().vSync = b);
