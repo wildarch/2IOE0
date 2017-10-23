@@ -15,7 +15,7 @@ public class Skybox extends GameObject {
     private Texture texture;
     private Material material;
 
-    public Skybox(String objModel, String textureFile) throws Exception {
+    public Skybox(String objModel, String textureFile) {
         super();
         this.model = objModel;
         this.texture = new Texture(textureFile);
@@ -29,16 +29,12 @@ public class Skybox extends GameObject {
 
     @Override
     public void renderInit(Renderer renderer) {
-        try {
-            InstancedMesh mesh = renderer.linkMesh(model, () -> {
-                setModelView(renderer);
-                renderer.drawSkybox();
-            });
+        InstancedMesh mesh = renderer.linkMesh(model, () -> {
+            setModelView(renderer);
+            renderer.drawSkybox();
+        });
 
-            mesh.getMesh().setMaterial(material);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        mesh.getMesh().setMaterial(material);
     }
 
     @Override

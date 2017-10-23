@@ -20,16 +20,12 @@ public class TestObject extends GameObject {
 
     @Override
     public void renderInit(Renderer renderer) {
-        try {
-            Mesh tower = renderer.linkMesh("/tower.obj");
-            tower.setMaterial(new Material("/tower.png"));
-            renderer.linkMesh(tower, () -> {
-                setModelView(renderer);
-                renderer.boink(tower, getBounceDegree());
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Mesh tower = renderer.linkMesh("/tower.obj");
+        tower.setMaterial(new Material("/tower.png"));
+        renderer.linkMesh(tower, () -> {
+            setModelView(renderer);
+            renderer.boink(tower, getBounceDegree());
+        });
     }
 
     private float getBounceDegree() {

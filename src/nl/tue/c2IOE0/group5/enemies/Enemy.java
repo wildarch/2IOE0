@@ -67,7 +67,6 @@ public abstract class Enemy extends GameObject {
         if (tower == null || (targetReached && attacking)) {
             // Road is clear, move ahead
             attacking = false;
-            //System.out.println("Set target position!");
             interpolator.setTarget(targetPosition, loopTimer.getLoopTime());
         }
         else {

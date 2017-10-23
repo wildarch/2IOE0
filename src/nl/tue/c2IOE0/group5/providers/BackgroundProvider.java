@@ -19,13 +19,9 @@ public class BackgroundProvider implements Provider<Engine> {
     @Override
     public void init(Engine engine) {
         this.camera = engine.getCamera();
-        try {
-            this.skybox = new Skybox("/skybox/skybox.obj", "/skybox/skybox.png");
-            this.skybox.setScale(1000f);
-            this.skybox.init(engine.getRenderer());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.skybox = new Skybox("/skybox/skybox.obj", "/skybox/skybox.png");
+        this.skybox.setScale(1000f);
+        this.skybox.init(engine.getRenderer());
     }
 
     @Override
