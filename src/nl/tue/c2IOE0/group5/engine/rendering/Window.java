@@ -366,6 +366,8 @@ public class Window {
 
         public int antialiasing = 4;
 
+        public int invertedXAxis = -1;
+
         public boolean antialiasing() {
             return antialiasing > 0;
         }
