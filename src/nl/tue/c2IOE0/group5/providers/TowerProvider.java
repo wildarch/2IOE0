@@ -36,13 +36,16 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
         enemyProvider = engine.getProvider(EnemyProvider.class);
         bulletProvider = engine.getProvider(BulletProvider.class);
         loopTimer = engine.getGameloopTimer();
-
+        gameStarted = false;
     }
 
+    /**
+     * called when the "start game" button is pressed.
+     */
     public void startGame() {
         //only place towers when game is started for the first time
         if(gameStarted) return;
-        
+
         putMainTower();
         buildTower(7, 8, WallTower.class);
         buildTower(6, 8, WallTower.class);
