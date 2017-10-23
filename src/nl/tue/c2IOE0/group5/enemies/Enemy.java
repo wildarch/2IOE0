@@ -1,5 +1,6 @@
 package nl.tue.c2IOE0.group5.enemies;
 
+import nl.tue.c2IOE0.group5.ai.QLearner;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
 import nl.tue.c2IOE0.group5.engine.objects.PositionInterpolator;
@@ -29,9 +30,11 @@ public abstract class Enemy extends GameObject {
     private final float speed;
     private final long attackSpeed;
     private Vector3f offset;
+    private QLearner qLearner;
 
     public Enemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider,
-                 Vector2i initialPosition, List<Vector2i> targetPositions, int maxHealth, float speed, long attackSpeed) {
+                 Vector2i initialPosition, List<Vector2i> targetPositions, int maxHealth, float speed, long attackSpeed, QLearner qlearner) {
+        this.qLearner = qlearner;
         this.gridProvider = gridProvider;
         this.maxHealth = maxHealth;
         this.health = maxHealth;
@@ -64,7 +67,7 @@ public abstract class Enemy extends GameObject {
         if (tower == null || (targetReached && attacking)) {
             // Road is clear, move ahead
             attacking = false;
-            System.out.println("Set target position!");
+            //System.out.println("Set target position!");
             interpolator.setTarget(targetPosition, loopTimer.getLoopTime());
         }
         else {
@@ -117,6 +120,8 @@ public abstract class Enemy extends GameObject {
             health = 0;
             this.die();
         }
+        qLearner.updateRewardsMatrix(QLearner.getState(this.getCurrentCell().getGridPosition()), damage);
+        qLearner.execute();
     }
 
     public void die() {

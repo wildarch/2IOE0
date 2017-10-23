@@ -17,14 +17,15 @@ import java.util.Random;
  * y = s / gridSize (integer devision)
  */
 
-public class QLearner {
+public class QLearner extends Thread {
 
     private Integer[][] rewards;
     private int[] policy;
     private List<Integer[]> paths;
     private int noIterations;
     private List<Integer> outerStates;
-    private boolean converged = false;
+    private volatile boolean converged = false;
+    private double gamma;
 
     private Double[][] Q;
 
@@ -47,7 +48,8 @@ public class QLearner {
     /**
      * @param gridSize obvious
      */
-    public QLearner(int gridSize, int noIterations) {
+    public QLearner(int gridSize, int noIterations, double gamma) {
+        this.gamma = gamma;
         makeRewardMatrix();
         paths = new ArrayList<>();
         this.noIterations = noIterations;
@@ -67,6 +69,10 @@ public class QLearner {
         }
     }
 
+    public double getGamma() {return this.gamma;}
+
+    public void getGamma(double gamma) {this.gamma = gamma;}
+
     public boolean isConverged() {return this.converged;}
 
     public void initializeQ() {
@@ -84,11 +90,8 @@ public class QLearner {
         converged = false;
     }
 
-    /**
-     * @param gamma the learning coefficient
-     * @return Whether or not the Q Learner has converged and is done learning for this specific rewards matrix
-     */
-    public boolean execute(Double gamma) {
+    @Override
+    public void run() {
         boolean convergedLocal = false;
         // Do Q-learning
         for (int iteration = 0; iteration < noIterations; iteration++) {
@@ -101,7 +104,30 @@ public class QLearner {
         }
         policy();
         converged = convergedLocal;
-        return converged;
+        nrofThreads--;
+    }
+
+    private static final int MAX_THREADS = 5;
+    private volatile int nrofThreads = 0;
+    private Thread first;
+    /**
+     * @return Whether or not the Q Learner has converged and is done learning for this specific rewards matrix
+     */
+    public void execute() {
+        if (first == null) {
+            first = new Thread(this);
+            first.start();
+            try {
+                first.join();       //wait for the first thread to finish
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return;
+        } else if (nrofThreads < MAX_THREADS) {
+            Thread t = new Thread(this);
+            t.start();
+            nrofThreads++;
+        }
     }
 
     public void setNoIterations(int noIterations) {
@@ -129,10 +155,20 @@ public class QLearner {
     }
 
 
-    public void updateRewardsMatrix(int state, int reward) {
+    public void setRewardsMatrix(int state, int reward) {
         List<Integer> neighbours = getStatesAdjacent(state);
         for (int neighbour : neighbours) {
             this.rewards[neighbour][state] = reward;
+        }
+        converged = false;
+    }
+
+    public void updateRewardsMatrix(int state, int rewardAdd) {
+        List<Integer> neighbours = getStatesAdjacent(state);
+        for (int neighbour : neighbours) {
+            if (rewards[neighbour][state] != null) {
+                this.rewards[neighbour][state] += rewardAdd;
+            }
         }
         converged = false;
     }
@@ -266,6 +302,9 @@ public class QLearner {
      * Return the optimal path for a specific staten
      */
     public List<Integer> getOptimalPath(int state) {
+        if (policy == null) {
+            throw new NullPointerException("QLearner has not yet learned anything. Please call execute first.");
+        }
         List<Integer> optimalPath = new ArrayList<>();
         optimalPath.add(state);
         int nextState = policy[state];

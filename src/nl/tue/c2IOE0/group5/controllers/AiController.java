@@ -70,7 +70,8 @@ public class AiController implements Controller, Listener {
             List<Integer> path = qlearner.getOptimalPath(startCell.getGridPosition());
             enemyProvider.putEnemy(
                     start,
-                    path.stream().map(QLearner::getPoint).collect(Collectors.toList())
+                    path.stream().map(QLearner::getPoint).collect(Collectors.toList()),
+                    qlearner
             );
         }
         if (big) {
@@ -81,7 +82,8 @@ public class AiController implements Controller, Listener {
                 List<Integer> path = qlearner.getOptimalPath(startCell.getGridPosition());
                 enemyProvider.putEnemy(
                         start,
-                        path.stream().map(QLearner::getPoint).collect(Collectors.toList())
+                        path.stream().map(QLearner::getPoint).collect(Collectors.toList()),
+                        qlearner
                 );
             }
         }
@@ -89,21 +91,17 @@ public class AiController implements Controller, Listener {
 
     private void trainQLearner() {
         int noIterations = 1000;
-        qlearner = new QLearner(GridProvider.SIZE, noIterations);
+        double gamma = 0.1d;
+        qlearner = new QLearner(GridProvider.SIZE, noIterations, gamma);
         qlearner.initializeQ();
-        qlearner.updateRewardsMatrix(QLearner.getState(GridProvider.SIZE/2, GridProvider.SIZE/2), 1000);
-        for (int i = 3; i <= 9; i++) {
-            qlearner.updateRewardsMatrix(QLearner.getState(3, i), -5);
-            qlearner.updateRewardsMatrix(QLearner.getState(9, i), -5);
-        }
-        for (int i = 0; i < 20; i++) {
+        qlearner.setRewardsMatrix(QLearner.getState(GridProvider.SIZE/2, GridProvider.SIZE/2), 1000);
+        for (int i = 0; i < 200; i++) {
             qlearner.generateRandomPath(10);
         }
         qlearner.addBasicPath();
         //to prevent going to 0,0
         qlearner.generateRandomPath(100, 0);
-        double gamma = 0.1d;
-        qlearner.execute(gamma);
+        qlearner.execute();
     }
 
     @Override
