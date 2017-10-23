@@ -132,8 +132,9 @@ public class Renderer {
             depthMap = new DepthMap();
             initDepthShader();
         } catch (Exception e) {
+            System.err.println("Fatal exception in Renderer");
             e.printStackTrace();
-            System.exit(0);
+            System.exit(1);
         }
     }
 

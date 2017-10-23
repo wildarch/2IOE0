@@ -61,14 +61,20 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
      * @Returns true if build succesful, false if there already is a tower
      * @Throws Many exceptions when passing class type as argument fails: So an incorrect type was passed (not a tower)
      */
-    public boolean buildTower(int x, int y, Class<? extends AbstractTower> towertype) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public boolean buildTower(int x, int y, Class<? extends AbstractTower> towertype) {
         if (gridProvider.getCell(x, y).getTower() != null) {
             //not null: tower exists here already
             return false;
         }
         //create the tower
-        Constructor<?> constructor = towertype.getDeclaredConstructor(TowerProvider.class);
-        AbstractTower tower = (AbstractTower) constructor.newInstance(this);
+        AbstractTower tower = null;
+        try {
+            Constructor<?> constructor = towertype.getDeclaredConstructor(TowerProvider.class);
+            tower = (AbstractTower) constructor.newInstance(this);
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new IllegalStateException("Class " + towertype.getName() +
+                    " does not have a matching constructor, should take one parameter: TowerProvider");
+        }
         tower.init(getRenderer());
         //place it
         gridProvider.placeTower(x, y, tower);
