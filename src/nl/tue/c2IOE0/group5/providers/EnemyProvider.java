@@ -29,12 +29,12 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
         super.init(engine);
         loopTimer = engine.getGameloopTimer();
         gridProvider = engine.getProvider(GridProvider.class);
-        animationProvider = engine.getProvider(AnimationProvider.class);
     }
 
     @Override
     public void renderInit(Engine engine) {
         this.engine = engine;
+        animationProvider = engine.getProvider(AnimationProvider.class);
         Mesh m = engine.getRenderer().linkMesh("/cube.obj");
         m.setMaterial(new Material("/square.png"));
         renderTimer = engine.getRenderLoopTimer();
@@ -71,7 +71,8 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
                         gridProvider,
                         initialPosition,
                         targets, qlearner,
-                        animationProvider);
+                        animationProvider
+                );
                 break;
             case DRILL:
                 newEnemy = new DrillEnemy(

@@ -39,11 +39,14 @@ public class DrillEnemy extends Enemy implements Animatable {
 
     private SmoothUpdatable drillOffset;
 
+    private AnimationProvider animationProvider;
+
     public DrillEnemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider, Vector2i initialPosition,
                       List<Vector2i> targetPositions, QLearner qlearner, AnimationProvider animationProvider) {
         super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, MAXHEALTH, DAMAGE, SPEED, ATTACKSPEED, qlearner);
         setScale(0.03f);
-        animationProvider.add(this);
+
+        this.animationProvider = animationProvider;
     }
 
     @Override
@@ -81,6 +84,7 @@ public class DrillEnemy extends Enemy implements Animatable {
 
     @Override
     public void renderInit(Renderer renderer) {
+        animationProvider.add(this);
         drillOffset = new LinearlyUpdatable(0f, 100);
 
         this.renderer = renderer;

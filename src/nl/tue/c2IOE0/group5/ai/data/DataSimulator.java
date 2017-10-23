@@ -93,6 +93,8 @@ public class DataSimulator {
                                 result = 0;
                             }
 
+                            System.out.println("T: " + threadIndex + "; I: " + r + "; R: " + result + ";");
+
                             outputs.putScalar(r, 0, result);
                         }
                         System.out.println("Thread " + threadIndex + " stopped.");
@@ -135,8 +137,7 @@ public class DataSimulator {
         assert simulator.isInitialized();
 
         QLearner routingLearner = new QLearner(totalSize, 1000, 0.1);
-
-        //TODO: train q-learner here
+        trainQLearner(routingLearner, gp);
 
         for (EnemyType type : buffer) {
             int index = random.nextInt(7);
@@ -171,6 +172,19 @@ public class DataSimulator {
         }
 
         return 0;
+    }
+
+    private void trainQLearner(QLearner qLearner, GridProvider gridProvider) {
+        qLearner.initializeQ();
+        qLearner.setRewardsMatrix(QLearner.getState(gridProvider.SIZE / 2, gridProvider.SIZE / 2, gridProvider.SIZE), 1000);
+
+        for (int i = 0; i < 200; i++) {
+            qLearner.generateRandomPath(10);
+        }
+        qLearner.addBasicPath();
+        //to prevent going to 0,0
+        qLearner.generateRandomPath(100, 0);
+        qLearner.execute();
     }
 
     public void run(){

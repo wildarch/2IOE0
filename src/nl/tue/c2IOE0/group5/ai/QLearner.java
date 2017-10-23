@@ -74,7 +74,7 @@ public class QLearner extends Thread {
 
     public double getGamma() {return this.gamma;}
 
-    public void getGamma(double gamma) {this.gamma = gamma;}
+    public void setGamma(double gamma) {this.gamma = gamma;}
 
     public boolean isConverged() {return this.converged;}
 

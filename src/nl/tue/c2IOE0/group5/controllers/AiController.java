@@ -44,6 +44,8 @@ public class AiController implements Controller {
     private ComputationGraph network;
     private final File networkFile;
 
+    private boolean gameStarted = false;
+
     public AiController(File networkFile) {
         this.networkFile = networkFile;
     }
@@ -66,10 +68,20 @@ public class AiController implements Controller {
         isPaused = engine::isPaused;
     }
 
+    public void startGame(){
+        nextWaveTime = loopTimer.getLoopTime() + WAVE_TIME * 2;
+        gameStarted = true;
+    }
+
     @Override
     public void update() {
         if(isPaused.getAsBoolean()) return;
-        boolean bigWave = wave % NR_SUB_WAVES == 0 && enemyProvider.countEnemies() == 0;
+
+        if(!gameStarted){
+            startGame();
+        }
+
+        boolean bigWave = wave % NR_SUB_WAVES == 0 && enemyProvider.countEnemies() == 0 && loopTimer.getLoopTime() > nextWaveTime;
         boolean smallWave = wave % NR_SUB_WAVES != 0 && loopTimer.getLoopTime() > nextWaveTime;
         if (bigWave || smallWave) {
             wave(bigWave);
@@ -113,8 +125,7 @@ public class AiController implements Controller {
         System.out.println(size + " wave at " + loopTimer.getLoopTime());
 
         for (EnemyType enemy : selectedBuffer) {
-            int random = r.nextInt(5);
-            Cell startCell = gridProvider.getCell(qLearner.getOptimalNSpawnStates(5)[random]);
+            Cell startCell = gridProvider.getCell(qLearner.getOptimalSpawnState());
             Vector2i start = startCell.getGridPosition();
             List<Integer> path = qLearner.getOptimalPath(startCell.getGridPosition());
             enemyProvider.putEnemy(
@@ -132,10 +143,10 @@ public class AiController implements Controller {
 
         qLearner = new QLearner(gridProvider.SIZE, noIterations, gamma);
         qLearner.initializeQ();
-        qLearner.setRewardsMatrix(QLearner.getState(gridProvider.SIZE / 2, gridProvider.SIZE / 2, gridProvider.SIZE), 1000);
+        qLearner.setRewardsMatrix(QLearner.getState(gridProvider.SIZE / 2, gridProvider.SIZE / 2, gridProvider.SIZE), Integer.MAX_VALUE);
 
         for (int i = 0; i < 200; i++) {
-            qLearner.generateRandomPath(10);
+            qLearner.generateRandomPath(100);
         }
         qLearner.addBasicPath();
         //to prevent going to 0,0

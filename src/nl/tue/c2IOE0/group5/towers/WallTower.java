@@ -15,7 +15,7 @@ public class WallTower extends AbstractTower {
     private static final int RANGE = 0;
     private static final int MAX_LEVEL = 1;
     private static final int MAX_HEALTH = 100;
-    private static final int PRICE = 10;
+    private static final int PRICE = 30;
 
     public static MetaData metadata = new MetaData();
     static {
@@ -35,7 +35,10 @@ public class WallTower extends AbstractTower {
     public void renderInit(Renderer renderer) {
         setScale(0.9f);
         Mesh mesh = renderer.linkMesh("/models/towers/walltower/walltower.obj");
-        iMesh = renderer.linkMesh("/models/towers/walltower/walltower.obj", () -> setModelView(renderer));
+        iMesh = renderer.linkMesh(mesh, () -> {
+            setModelView(renderer, getPositionOffset());
+            renderer.boink(getBounceDegree(), mesh);
+        });
         this.renderer = renderer;
     }
 

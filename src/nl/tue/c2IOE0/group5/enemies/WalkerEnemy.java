@@ -40,12 +40,14 @@ public class WalkerEnemy extends Enemy implements Animatable {
     private SmoothUpdatable leftArmOffset;
     private SmoothUpdatable rightArmOffset;
 
+    private AnimationProvider animationProvider;
+
     public WalkerEnemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider, Vector2i initialPosition,
                        List<Vector2i> targetPositions, QLearner qlearner, AnimationProvider animationProvider) {
         super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, MAXHEALTH, DAMAGE, SPEED, ATTACKSPEED, qlearner);
         setScale(0.5f);
 //        move(0, 1, 0);
-        animationProvider.add(this);
+        this.animationProvider = animationProvider;
     }
 
     /**
@@ -95,6 +97,8 @@ public class WalkerEnemy extends Enemy implements Animatable {
 
     @Override
     public void renderInit(Renderer renderer) {
+        animationProvider.add(this);
+
         this.renderer = renderer;
         headOffset = new LinearlyUpdatable(headOffset(0), 0.1f);
         leftArmOffset = new LinearlyUpdatable(armOffset(0), 0.1f);

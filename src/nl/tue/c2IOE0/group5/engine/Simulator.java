@@ -83,6 +83,11 @@ public class Simulator implements Cleanable {
         initialized = true;
     }
 
+    public void forceInit() throws IOException {
+        initialized = false;
+        init();
+    }
+
     @Override
     public void cleanup() {
 
