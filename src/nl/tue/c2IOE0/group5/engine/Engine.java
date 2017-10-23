@@ -59,7 +59,7 @@ public class Engine extends Simulator {
      * Cleanup used objects
      */
     @Override
-    protected void cleanup() {
+    public void cleanup() {
         providers.forEach(provider -> {
             if (provider instanceof Cleanable) ((Cleanable) provider).cleanup();
         });
