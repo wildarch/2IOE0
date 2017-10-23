@@ -71,7 +71,7 @@ public class DrillEnemy extends Enemy implements Animatable {
      * @return offset based on current animation
      */
     private float drillOffset(float loopTime){
-        return attacking ? (float) (0.1 * sin(0.005 * loopTime)) : 0;
+        return attacking ? (float) (0.2 * sin(1000/ATTACKSPEED * loopTime)) : 0;
     }
 
     @Override
