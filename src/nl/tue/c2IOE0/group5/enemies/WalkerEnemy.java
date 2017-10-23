@@ -5,6 +5,7 @@ import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.objects.Animatable;
 import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
+import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.providers.AnimationProvider;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
 import nl.tue.c2IOE0.group5.util.LinearlyUpdatable;
@@ -15,7 +16,6 @@ import org.joml.Vector3f;
 import java.util.List;
 
 import static java.lang.Math.sin;
-import static nl.tue.c2IOE0.group5.engine.rendering.shader.Material.SILVER;
 import static nl.tue.c2IOE0.group5.util.Angle.rotateVector;
 
 /**
@@ -95,6 +95,7 @@ public class WalkerEnemy extends Enemy implements Animatable {
         rightArmOffset = new LinearlyUpdatable(-armOffset(0), 0.1f);
 
         Vector3f yVec = new Vector3f(0, 1, 0);
+        Material SILVER = new Material("/silver.png");
 
         head = renderer.linkMesh("/models/enemies/walkerEnemy/HEAD.obj", SILVER, () -> {
             final Vector3f finalHeadOffset = new Vector3f(0f, 0.438f + this.headOffset.current(), 0f).mul(getScale());

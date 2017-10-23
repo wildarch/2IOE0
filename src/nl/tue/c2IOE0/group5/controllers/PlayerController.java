@@ -203,6 +203,7 @@ public class PlayerController implements Controller,Listener {
                     if (uiProvider.getSelected() != null) {
                         Vector2i pos = gridProvider.getActiveCell();
                         towerProvider.buildTower(pos.x, pos.y, uiProvider.getSelected());
+                        uiProvider.select(null);
                     }
                 }
             }

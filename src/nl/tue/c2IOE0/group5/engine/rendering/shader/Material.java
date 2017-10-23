@@ -8,23 +8,6 @@ import org.joml.Vector4f;
  */
 public class Material {
 
-    /** metallic material */
-    public static final Material SILVER = new Material(
-            new Vector4f(0.75f, 0.75f, 0.75f, 1),
-            new Vector4f(0.75f, 0.75f, 0.75f, 1),
-            new Vector4f(0.92f, 0.92f, 1.0f, 1),
-            null,
-            30
-    );
-
-    public static final Material ORANGE = new Material(
-            new Vector4f(1, 0.71f, 0.14f, 1f),
-            new Vector4f(1, 0.71f, 0.14f, 1f),
-            new Vector4f(1, 0.71f, 0.51f, 1f),
-            null,
-            2
-    );
-
     private static final Vector4f DEFAULT_COLOUR = new Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 
     private Vector4f ambientColour;
@@ -37,6 +20,7 @@ public class Material {
 
     private Texture texture;
 
+    @Deprecated
     public Material() {
         this.ambientColour = DEFAULT_COLOUR;
         this.diffuseColour = DEFAULT_COLOUR;
@@ -45,6 +29,7 @@ public class Material {
         this.reflectance = 0;
     }
 
+    @Deprecated
     public Material(Vector4f colour, float reflectance) {
         this(colour, colour, colour, null, reflectance);
     }
@@ -65,6 +50,7 @@ public class Material {
         this(DEFAULT_COLOUR, DEFAULT_COLOUR, DEFAULT_COLOUR, texture, reflectance);
     }
 
+    @Deprecated
     public Material(Vector4f ambientColour, Vector4f diffuseColour, Vector4f specularColour, Texture texture, float reflectance) {
         this.ambientColour = ambientColour;
         this.diffuseColour = diffuseColour;

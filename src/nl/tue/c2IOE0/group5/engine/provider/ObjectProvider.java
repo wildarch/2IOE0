@@ -11,6 +11,7 @@ import java.util.List;
 public abstract class ObjectProvider<T extends GameObject> implements Provider<Simulator> {
     protected List<T> objects = new ArrayList<>();
     private Renderer renderer;
+    private Engine engine;
 
     @Override
     public void init(Simulator sim) {
@@ -18,6 +19,7 @@ public abstract class ObjectProvider<T extends GameObject> implements Provider<S
             Engine e = (Engine) sim;
             renderInit(e);
             renderer = e.getRenderer();
+            engine = e;
         }
     }
 
@@ -33,4 +35,6 @@ public abstract class ObjectProvider<T extends GameObject> implements Provider<S
     public Renderer getRenderer() {
         return renderer;
     }
+
+    public Engine getEngine() {return this.engine;}
 }

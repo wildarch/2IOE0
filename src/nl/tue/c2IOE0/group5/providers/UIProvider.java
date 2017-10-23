@@ -13,6 +13,8 @@ import nl.tue.c2IOE0.group5.userinterface.UIButton;
 import nl.tue.c2IOE0.group5.userinterface.UIText;
 import org.joml.Vector4f;
 
+import java.lang.reflect.Field;
+
 /**
  * @author Jorren
  */
@@ -39,7 +41,7 @@ public class UIProvider implements Provider<Engine> {
         this.window = engine.getWindow();
         this.towerProvider = engine.getProvider(TowerProvider.class);
 
-        buildBar = new Buildbar(80, 80, this);
+        buildBar = new Buildbar(80, 120, this);
         PlayerController playerController = engine.getController(PlayerController.class);
         playerBudget = new UIText(10, 40, 100, 20,
                 () -> "Budget: " +playerController.getBudget()
@@ -86,11 +88,28 @@ public class UIProvider implements Provider<Engine> {
     }
 
     public void select(Class<? extends AbstractTower> tower) {
-        if (this.selectedTower == tower) {
+        if (this.selectedTower == tower || tower == null) {
             this.selectedTower = null;
             return;
+        } else {
+            PlayerController playerController = towerProvider.getEngine().getController(PlayerController.class);
+            int budget = playerController.getBudget();
+            AbstractTower.MetaData metaData;
+            try {
+                Field meta = tower.getField("metadata");
+                metaData = (AbstractTower.MetaData) meta.get(null);
+            } catch (IllegalAccessException | NoSuchFieldException e) {
+                throw new IllegalStateException("Tower " + tower.getName() +
+                        " does not have a field metadata, or it is not marked static public");
+            }
+            int price = metaData.price;
+
+            if (price > budget) {
+                this.selectedTower = null;
+            } else {
+                this.selectedTower = tower;
+            }
         }
-        this.selectedTower = tower;
     }
 
     public Class<? extends AbstractTower> getSelected() {

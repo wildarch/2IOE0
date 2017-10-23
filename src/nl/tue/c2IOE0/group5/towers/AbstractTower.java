@@ -1,5 +1,6 @@
 package nl.tue.c2IOE0.group5.towers;
 
+import nl.tue.c2IOE0.group5.controllers.PlayerController;
 import nl.tue.c2IOE0.group5.enemies.Enemy;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
@@ -10,6 +11,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.providers.*;
 import org.joml.Vector3f;
 
+import java.lang.reflect.Field;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -40,8 +42,7 @@ public abstract class AbstractTower extends GameObject {
     private Renderer renderer;
 
 
-    public AbstractTower(int range, int maxLevel, int maxHealth, int attackTime, float bulletSpeed, int bulletDamage, float healthHeight, float bulletOffset,
-                         TowerProvider towerProvider) {
+    public AbstractTower(int range, int maxLevel, int maxHealth, int attackTime, float bulletSpeed, int bulletDamage, float healthHeight, float bulletOffset, TowerProvider towerProvider) {
         this.range = range;
         this.maxLevel = maxLevel;
         this.maxHealth = maxHealth;
@@ -208,5 +209,6 @@ public abstract class AbstractTower extends GameObject {
     public static class MetaData {
         public String name;
         public String icon;
+        public int price;
     }
 }
