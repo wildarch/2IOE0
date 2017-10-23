@@ -83,6 +83,11 @@ public class Simulator {
         initialized = true;
     }
 
+    public void forceInit() throws IOException {
+        initialized = false;
+        init();
+    }
+
     /**
      * Cleanup used objects
      */

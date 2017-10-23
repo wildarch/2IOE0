@@ -2,6 +2,8 @@ package nl.tue.c2IOE0.group5.ai;
 
 import nl.tue.c2IOE0.group5.ai.data.DataSimulator;
 import nl.tue.c2IOE0.group5.ai.data.InputGenerator;
+import nl.tue.c2IOE0.group5.enemies.EnemyType;
+import nl.tue.c2IOE0.group5.towers.TowerType;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
@@ -47,9 +49,9 @@ public class TrainingManager extends JFrame{
 
     SpinnerModel intModel1 = new SpinnerNumberModel(50000, 0, 1000000, 1);
     SpinnerModel intModel2 = new SpinnerNumberModel(9, 0, 1000000, 1);
-    SpinnerModel intModel3 = new SpinnerNumberModel(5, 0, 1000000, 1);
+    SpinnerModel intModel3 = new SpinnerNumberModel(TowerType.getSize(), 1, 1000000, 1);
     SpinnerModel intModel4 = new SpinnerNumberModel(5, 0, 1000000, 1);
-    SpinnerModel intModel5 = new SpinnerNumberModel(5, 0, 1000000, 1);
+    SpinnerModel intModel5 = new SpinnerNumberModel(EnemyType.getSize(), 1, 1000000, 1);
     SpinnerModel intModel6 = new SpinnerNumberModel(5, 0, 1000000, 1);
     SpinnerModel intModel7 = new SpinnerNumberModel(50, 0, 1000000, 1);
     SpinnerModel intModel8 = new SpinnerNumberModel(5, 0, 1000000, 1);

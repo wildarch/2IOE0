@@ -5,7 +5,6 @@ import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.Simulator;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.provider.ObjectProvider;
-import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
