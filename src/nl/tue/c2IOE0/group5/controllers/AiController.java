@@ -69,7 +69,7 @@ public class AiController implements Controller {
     }
 
     public void startGame(){
-        nextWaveTime = loopTimer.getLoopTime() + WAVE_TIME * 2;
+        nextWaveTime = loopTimer.getTime() + WAVE_TIME * 2;
         gameStarted = true;
     }
 
@@ -81,12 +81,12 @@ public class AiController implements Controller {
             startGame();
         }
 
-        boolean bigWave = wave % NR_SUB_WAVES == 0 && enemyProvider.countEnemies() == 0 && loopTimer.getLoopTime() > nextWaveTime;
-        boolean smallWave = wave % NR_SUB_WAVES != 0 && loopTimer.getLoopTime() > nextWaveTime;
+        boolean bigWave = wave % NR_SUB_WAVES == 0 && enemyProvider.countEnemies() == 0 && loopTimer.getTime() > nextWaveTime;
+        boolean smallWave = wave % NR_SUB_WAVES != 0 && loopTimer.getTime() > nextWaveTime;
         if (bigWave || smallWave) {
             wave(bigWave);
             wave++;
-            nextWaveTime = loopTimer.getLoopTime() + WAVE_TIME;
+            nextWaveTime = loopTimer.getTime() + WAVE_TIME;
         }
     }
 
@@ -122,7 +122,7 @@ public class AiController implements Controller {
 
         // Do a wave!
         String size = big ? "Big  " : "Small";
-        System.out.println(size + " wave at " + loopTimer.getLoopTime());
+        System.out.println(size + " wave at " + loopTimer.getTime());
 
         for (EnemyType enemy : selectedBuffer) {
             Cell startCell = gridProvider.getCell(qLearner.getOptimalSpawnState());

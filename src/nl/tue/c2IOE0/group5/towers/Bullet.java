@@ -4,13 +4,11 @@ import nl.tue.c2IOE0.group5.enemies.Enemy;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
 import nl.tue.c2IOE0.group5.engine.objects.PositionInterpolator;
-import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
-import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
-import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
+import nl.tue.c2IOE0.group5.engine.rendering.*;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import org.joml.Vector3f;
 
-public class Bullet extends GameObject {
+public class Bullet extends GameObject implements Drawable {
     private float speed;
     private int damage;
     private Enemy target;
@@ -21,6 +19,7 @@ public class Bullet extends GameObject {
     protected Timer renderTimer;
     private PositionInterpolator interpolator;
     private boolean isDone = false; //When target is hit
+    private Vector3f drawOffset = new Vector3f();
 
     public Bullet(float speed, int damage, float verticalOffset, Enemy target, AbstractTower source, Timer loopTimer, Timer renderTimer) {
         this.speed = speed;
@@ -40,8 +39,9 @@ public class Bullet extends GameObject {
     @Override
     public void update() {
         Vector3f targetPosition = new Vector3f(target.getPosition());
-        interpolator.setTarget(targetPosition, loopTimer.getLoopTime());
-        //boolean targetReached = interpolator.update(loopTimer.getLoopTime());                 //doesn't seem to work as I expect it to work
+        interpolator.setTarget(targetPosition);
+        interpolator.update(loopTimer.getElapsedTime());
+        //boolean targetReached = interpolator.update(loopTimer.getTime());                 //doesn't seem to work as I expect it to work
         boolean targetReached = this.getPosition().distance(target.getPosition()) < 0.1f;       //so using this method instead
         if (targetReached || target.isDead()) {
             target.getDamage(damage);
@@ -58,11 +58,15 @@ public class Bullet extends GameObject {
         Mesh bullet = renderer.linkMesh("/b4.obj");
         bullet.setMaterial(new Material("/square.png"));
         iMesh = renderer.linkMesh(bullet, () -> {
-            setModelView(renderer);
+            setModelView(renderer, drawOffset);
             renderer.ambientLight(color);
             renderer.noDirectionalLight();
-            interpolator.draw(renderTimer.getElapsedTime());
         });
         this.renderer = renderer;
+    }
+
+    @Override
+    public void draw(Window window, Renderer renderer) {
+        drawOffset = interpolator.getOffset(renderTimer.getTime() - loopTimer.getTime());
     }
 }

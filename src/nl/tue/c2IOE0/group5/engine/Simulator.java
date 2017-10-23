@@ -65,8 +65,10 @@ public class Simulator implements Cleanable {
     }
 
     protected void step() {
+        // simulate time passing
         time += TPS_INTERVAL;
         timer.updateLoopTime(time);
+
         providers.forEach(Provider::update);
     }
 
@@ -78,7 +80,7 @@ public class Simulator implements Cleanable {
             return;
         }
         timer.init();
-        time = timer.getLoopTime();
+        time = timer.getTime();
         providers.forEach(provider -> provider.init(this));
         initialized = true;
     }

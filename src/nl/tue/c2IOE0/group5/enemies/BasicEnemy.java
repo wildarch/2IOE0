@@ -7,7 +7,6 @@ import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
 import org.joml.Vector2i;
-import org.joml.Vector4f;
 
 import java.util.List;
 
@@ -39,8 +38,7 @@ public class BasicEnemy extends Enemy {
         Mesh body = renderer.linkMesh("/models/enemies/basicEnemy/body.obj");
         body.setMaterial(new Material("/orange.png"));
         iMeshBody = renderer.linkMesh(body, () -> {
-            setModelView(renderer);
-            if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
+            setModelView(renderer, drawOffset);
         });
         this.renderer = renderer;
     }

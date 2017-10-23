@@ -9,19 +9,15 @@ import org.joml.Vector3fc;
  * @author Daan de Graaf
  */
 public class PositionInterpolator {
-    /**
-     * Difference in position so small that nobody cares anymore
-     */
-    private static final double EPSILON = 0.01;
+
+    private static final Vector3f ZERO_VECTOR = new Vector3f();
 
     private Positionable p;
-    private Vector3f position;
     private Vector3f target = null;
-    private long targetReachTime = 0;
     private float speed;    // In milliseconds
 
+    private Vector3f direction = new Vector3f();
 
-    private float time = 0;
 
     /**
      * Creates a new PositionInterpolator
@@ -30,7 +26,6 @@ public class PositionInterpolator {
      */
     public PositionInterpolator(Positionable p, float speed) {
         this.p = p;
-        this.position = p.getPosition();
         this.speed = speed / 1000;
     }
 
@@ -39,55 +34,53 @@ public class PositionInterpolator {
         return target.toImmutable();
     }
 
-    public void setTarget(Vector3f target, long currentTime) {
-        this.position = p.getPosition();
+    public void setTarget(Vector3f target) {
         this.target = new Vector3f(target);
-        float distance = target.distance(position.toImmutable());
-        targetReachTime = currentTime + (long)(distance / speed);
-        time = 0;
+
+        direction = new Vector3f(target);
+        direction.sub(p.getPosition()).normalize();
+    }
+
+    public boolean targetReached() {
+        return target == null || target.equals(p.getPosition());
     }
 
     /**
      * Call this at every game tick
-     * @param currentTime Current time in milliseconds
-     *                    (as returned by {@link Timer#getLoopTime()}
+     * @param elapsedTime Current time in milliseconds
+     *                    (as returned by {@link Timer#getTime()}
      * @return whether or not the target was reached
      */
-    public boolean update(long currentTime) {
-        if (currentTime > targetReachTime) {
-            if (target != null) p.setPosition(target);
+    public long update(long elapsedTime) {
+        if (target == null) return 0;
+
+        float distance = elapsedTime * speed;
+        float maxDist = p.getPosition().sub(target).length();
+        if (distance > maxDist) {
+            p.setPosition(target);
             target = null;
-            time = 0;
-            targetReachTime = Long.MAX_VALUE;
-            return true;
+            return (long) ((distance - maxDist) / speed);
         }
-        return false;
+        Vector3f path = new Vector3f(target).sub(p.getPosition()).normalize().mul(distance);
+        p.move(path);
+        return 0;
     }
 
     /**
      * Call this at each draw call
-     * @param deltaTime Time between now and the last frame, in milliseconds
-     *                  (as returned by {@link Timer#getElapsedTime()})
-     * @return whether or not the target was reached
+     * @param deltaTime Time between now and the last gametick, in milliseconds
+     * @return the offset since last gametick
      */
-    public boolean draw(float deltaTime) {
-        if(target == null) return true;
-        time += deltaTime;
-        float step = deltaTime * speed;
-        p.move(getDirection().mul(step));
-        float distance = p.getPosition().distance(target.toImmutable());
-        if (distance < EPSILON) {
-            target = null;
-            return true;
-        }
-        return false;
+    public Vector3f getOffset(long deltaTime) {
+        if (target == null) return ZERO_VECTOR;
+
+        float distance = deltaTime * speed;
+        float maxDist = p.getPosition().sub(target).length();
+        if (distance > maxDist) distance = maxDist;
+        return new Vector3f(target).sub(p.getPosition()).normalize().mul(distance);
     }
 
     public Vector3f getDirection() {
-        if(target == null) return new Vector3f(0);
-        Vector3f offset = new Vector3f(target);
-        offset.sub(p.getPosition().toImmutable());
-        offset.normalize();
-        return offset;
+        return direction;
     }
 }

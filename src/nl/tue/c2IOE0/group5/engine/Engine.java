@@ -77,7 +77,7 @@ public class Engine extends Simulator {
      */
     @Override
     protected void step() {
-        long elapsedTime = timer.getSystemTime() - timer.getLoopTime();
+        long elapsedTime = timer.getSystemTime() - timer.getTime();
 
         while (elapsedTime >= TPS_INTERVAL) {
             timer.updateLoopTime();
@@ -100,10 +100,8 @@ public class Engine extends Simulator {
             window.updateProjectionMatrix();
 
             // render everything
+            providers.forEach(provider -> provider.draw(window, renderer));
             renderer.render();
-                // render everything
-                providers.forEach(provider -> provider.draw(window, renderer));
-                renderer.render();
 
             // draw the hud
             hud.draw(window, renderer);

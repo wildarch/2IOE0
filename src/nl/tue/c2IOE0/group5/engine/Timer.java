@@ -26,7 +26,7 @@ public class Timer {
     /**
      * @return the time of the start of the frame
      */
-    public long getLoopTime(){
+    public long getTime(){
         return time.current();
     }
 

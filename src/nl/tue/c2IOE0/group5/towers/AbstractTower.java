@@ -1,6 +1,5 @@
 package nl.tue.c2IOE0.group5.towers;
 
-import nl.tue.c2IOE0.group5.controllers.PlayerController;
 import nl.tue.c2IOE0.group5.enemies.Enemy;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
@@ -63,7 +62,7 @@ public abstract class AbstractTower extends GameObject {
         this.bulletDamage = bulletDamage;
         this.healthHeight = healthHeight;
         this.bulletOffset = bulletOffset;
-        startTime = renderTimer.getLoopTime();
+        startTime = renderTimer.getTime();
     }
 
     @Override
@@ -165,9 +164,9 @@ public abstract class AbstractTower extends GameObject {
 
     @Override
     public void update() {
-        if (timeToDoDamage < loopTimer.getLoopTime()) {
+        if (timeToDoDamage < loopTimer.getTime()) {
             attack();
-            timeToDoDamage = loopTimer.getLoopTime() + attackTime;
+            timeToDoDamage = loopTimer.getTime() + attackTime;
         }
         this.healthBolletje.update();
     }
@@ -228,7 +227,7 @@ public abstract class AbstractTower extends GameObject {
     public abstract int getPrice();
 
     Vector3f getPositionOffset() {
-        float deltaTime = renderTimer.getLoopTime() - startTime;
+        float deltaTime = renderTimer.getTime() - startTime;
         float r = deltaTime / FALL_TIME;
         if(r > 1) {
             return new Vector3f(0);
@@ -239,7 +238,7 @@ public abstract class AbstractTower extends GameObject {
     }
 
     float getBounceDegree() {
-        float deltaTime = renderTimer.getLoopTime() - startTime - FALL_TIME;
+        float deltaTime = renderTimer.getTime() - startTime - FALL_TIME;
         if (deltaTime < 0) return 0;
         float r = deltaTime / BOUNCE_TIME;
         if (r > 1) {

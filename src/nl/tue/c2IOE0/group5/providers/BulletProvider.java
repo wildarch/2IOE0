@@ -1,7 +1,6 @@
 package nl.tue.c2IOE0.group5.providers;
 
 import nl.tue.c2IOE0.group5.engine.Engine;
-import nl.tue.c2IOE0.group5.engine.Simulator;
 import nl.tue.c2IOE0.group5.engine.provider.ObjectProvider;
 import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
@@ -20,7 +19,7 @@ public class BulletProvider extends ObjectProvider<Bullet> {
     @Override
     public void renderInit(Engine engine) {
         this.engine = engine;
-        Mesh bullet = ((Engine) engine).getRenderer().linkMesh("/b4.obj");
+        Mesh bullet = engine.getRenderer().linkMesh("/b4.obj");
         bullet.setMaterial(new Material("/square.png"));
     }
 
@@ -33,6 +32,6 @@ public class BulletProvider extends ObjectProvider<Bullet> {
 
     @Override
     public void draw(Window window, Renderer renderer) {
-
+        objects.forEach(bullet -> bullet.draw(window, renderer));
     }
 }

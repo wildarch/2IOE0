@@ -108,6 +108,6 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
 
     @Override
     public void draw(Window window, Renderer renderer) {
-
+        objects.forEach(enemy -> enemy.draw(window, renderer));
     }
 }

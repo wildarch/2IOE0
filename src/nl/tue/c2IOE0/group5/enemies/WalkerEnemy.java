@@ -25,7 +25,7 @@ import static nl.tue.c2IOE0.group5.util.Angle.rotateVector;
 public class WalkerEnemy extends Enemy implements Animatable {
 
     private final static int MAXHEALTH = 100;
-    private final static float SPEED = 0.05f;
+    private final static float SPEED = 0.5f;
     private final static int ATTACKSPEED = 1000;
     private final static int DAMAGE = 20;
 
@@ -98,6 +98,7 @@ public class WalkerEnemy extends Enemy implements Animatable {
     @Override
     public void renderInit(Renderer renderer) {
         animationProvider.add(this);
+        rotationOffset = 180f;
 
         this.renderer = renderer;
         headOffset = new LinearlyUpdatable(headOffset(0), 0.1f);
@@ -135,8 +136,8 @@ public class WalkerEnemy extends Enemy implements Animatable {
     private void rotateAndSet(Renderer renderer, Vector3f offset) {
         final Vector3f finalBodyOffset = offset.mul(getScale());
         final Vector3f displacement = rotateVector(finalBodyOffset, new Vector3f(0, 1, 0), getRotation().y);
-        setModelView(renderer, displacement, new Vector3f(0, 180, 0));
-        if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
+        if(!attacking) displacement.add(interpolator.getOffset(renderTimer.getTime() - loopTimer.getTime()));
+        setModelView(renderer, displacement);
     }
 
 }

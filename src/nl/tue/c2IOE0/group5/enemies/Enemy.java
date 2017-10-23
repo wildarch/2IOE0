@@ -4,8 +4,10 @@ import nl.tue.c2IOE0.group5.ai.QLearner;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
 import nl.tue.c2IOE0.group5.engine.objects.PositionInterpolator;
+import nl.tue.c2IOE0.group5.engine.rendering.Drawable;
 import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
+import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.providers.Cell;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
@@ -16,7 +18,7 @@ import org.joml.Vector3f;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Enemy extends GameObject {
+public abstract class Enemy extends GameObject implements Drawable {
 
     private final int maxHealth;
     private final float speed;
@@ -32,11 +34,13 @@ public abstract class Enemy extends GameObject {
     protected Timer loopTimer;
     protected Timer renderTimer;
     protected boolean attacking = false;
+    protected float rotationOffset = 0f;
 
     private Vector3f offset;
     private QLearner qLearner;
     private Vector3f ambientLight = new Vector3f(0, 0, 1f);
     private int damage;
+    protected Vector3f drawOffset = new Vector3f();
 
     public Enemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider,
                  Vector2i initialPosition, List<Vector2i> targetPositions, int maxHealth, int damage, float speed, long attackSpeed, QLearner qlearner) {
@@ -62,7 +66,8 @@ public abstract class Enemy extends GameObject {
         if(targetPositions.isEmpty()) {
             return;
         }
-        boolean targetReached = interpolator.update(loopTimer.getLoopTime());
+        long targetTime = interpolator.update(loopTimer.getElapsedTime());
+        boolean targetReached = interpolator.targetReached();
         if(targetReached) {
             targetPositions.remove(0);
             if(targetPositions.isEmpty()) {
@@ -77,14 +82,14 @@ public abstract class Enemy extends GameObject {
             // Road is clear, move ahead
             attacking = false;
             //System.out.println("Set target position!");
-            interpolator.setTarget(targetPosition, loopTimer.getLoopTime());
-        }
-        else {
+            interpolator.setTarget(targetPosition);
+            interpolator.update(targetTime);
+        } else {
             // Destroy the tower first
             attacking = true;
             doDamage(tower);
         }
-        setRotation(interpolator.getDirection());
+        setRotation(interpolator.getDirection(), rotationOffset);
     }
 
     private void setOffset() {
@@ -110,18 +115,22 @@ public abstract class Enemy extends GameObject {
         iMeshBody = renderer.linkMesh("/cube.obj", () -> {
             setModelView(renderer);
             renderer.ambientLight(ambientLight);
-            if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
         });
         this.renderer = renderer;
+    }
+
+    @Override
+    public void draw(Window window, Renderer renderer) {
+        if(!attacking) drawOffset = interpolator.getOffset(renderTimer.getTime() - loopTimer.getTime());
     }
 
     private long timeToDoDamage;
     private void doDamage(AbstractTower tower) {
         double factor = 1;
         if (this instanceof WalkerEnemy && tower instanceof WallTower) factor = 2; //walkers do double the damage to walls
-        if (timeToDoDamage < loopTimer.getLoopTime()) {
+        if (timeToDoDamage < loopTimer.getTime()) {
             tower.takeDamage(damage*factor);
-            timeToDoDamage = loopTimer.getLoopTime() + attackSpeed;
+            timeToDoDamage = loopTimer.getTime() + attackSpeed;
         }
     }
 

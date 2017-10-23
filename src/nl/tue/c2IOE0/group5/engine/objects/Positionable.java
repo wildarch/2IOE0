@@ -1,7 +1,6 @@
 package nl.tue.c2IOE0.group5.engine.objects;
 
 import nl.tue.c2IOE0.group5.util.Angle;
-import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 /**
@@ -128,9 +127,13 @@ public abstract class Positionable {
      * Set the y rotation of the object in a certain direction.
      * @param d
      */
-    public void setRotation(Vector3f d) {
+    public void setRotation(Vector3f d, float offset) {
         float rotY = Angle.degf((float)Math.atan2(d.z, d.x));
-        setRotation(rotation.x, rotY, rotation.z);
+        setRotation(rotation.x, rotY+offset, rotation.z);
+    }
+
+    public void setRotation(Vector3f d) {
+        setRotation(d, 0);
     }
 
     /**

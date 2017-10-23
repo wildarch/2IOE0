@@ -26,7 +26,7 @@ import static nl.tue.c2IOE0.group5.util.Angle.rotateVector;
 public class DrillEnemy extends Enemy implements Animatable {
 
     private final static int MAXHEALTH = 100;
-    private final static float SPEED = 0.1f;
+    private final static float SPEED = 0.5f;
     private final static int ATTACKSPEED = 100;
     private final static int DAMAGE = 2;
 
@@ -45,6 +45,7 @@ public class DrillEnemy extends Enemy implements Animatable {
                       List<Vector2i> targetPositions, QLearner qlearner, AnimationProvider animationProvider) {
         super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, MAXHEALTH, DAMAGE, SPEED, ATTACKSPEED, qlearner);
         setScale(0.03f);
+        setRotation(0, 90, 0);
 
         this.animationProvider = animationProvider;
     }
@@ -85,6 +86,8 @@ public class DrillEnemy extends Enemy implements Animatable {
     @Override
     public void renderInit(Renderer renderer) {
         animationProvider.add(this);
+        rotationOffset = -90f;
+
         drillOffset = new LinearlyUpdatable(0f, 100);
 
         this.renderer = renderer;
@@ -92,25 +95,19 @@ public class DrillEnemy extends Enemy implements Animatable {
         Vector3f yVec = new Vector3f(0, -1, 0);
 
         body = renderer.linkMesh("/models/enemies/drillEnemy/BODY.obj", darkMatter, () -> {
-            setModelView(renderer, new Vector3f(), new Vector3f(0, -90, 0));
-
-            if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
+            setModelView(renderer, drawOffset);
         });
 
         drill = renderer.linkMesh("/models/enemies/drillEnemy/DRILL.obj", darkMatter, () -> {
             final Vector3f drillOffset = new Vector3f(2.713f + this.drillOffset.current(), 1.674f, 0f).mul(getScale());
             final Vector3f displacement = rotateVector(drillOffset, yVec, getRotation().y);
-            setModelView(renderer, displacement, new Vector3f(0, -90, 0));
-
-            if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
+            setModelView(renderer, displacement.add(drawOffset));
         });
 
         wheel = renderer.linkMesh("/models/enemies/drillEnemy/WHEEL.obj", darkMatter, () -> {
             final Vector3f wheelOffset = new Vector3f(2.08f, 0.628f, 0f).mul(getScale());
             final Vector3f displacement = rotateVector(wheelOffset, yVec, getRotation().y);
-            setModelView(renderer, displacement, new Vector3f(0, -90, 0));
-
-            if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
+            setModelView(renderer, displacement.add(drawOffset));
         });
     }
 }
