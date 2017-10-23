@@ -88,7 +88,6 @@ public class WalkerEnemy extends Enemy implements Animatable {
 
     @Override
     protected void onDie() {
-        // unnecessary
         renderer.unlinkMesh(body);
         renderer.unlinkMesh(head);
         renderer.unlinkMesh(leftArm);
@@ -99,6 +98,7 @@ public class WalkerEnemy extends Enemy implements Animatable {
 
     @Override
     public void renderInit(Renderer renderer) {
+        this.renderer = renderer;
         headOffset = new LinearlyUpdatable(headOffset(0), 0.1f);
         leftArmOffset = new LinearlyUpdatable(armOffset(0), 0.1f);
         rightArmOffset = new LinearlyUpdatable(-armOffset(0), 0.1f);
