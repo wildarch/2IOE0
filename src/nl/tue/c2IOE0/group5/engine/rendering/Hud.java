@@ -17,6 +17,7 @@ import java.util.Map;
 import static org.lwjgl.nanovg.NanoVG.*;
 import static org.lwjgl.nanovg.NanoVGGL3.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
+import static org.lwjgl.system.MemoryUtil.memFree;
 
 /**
  * @author Jorren
@@ -223,13 +224,6 @@ public class Hud implements Drawable {
 
         // restore window state
         window.restoreState();
-    }
-
-    /**
-     * Clean up the Hud.
-     */
-    public void cleanup() {
-        nvgDelete(vg);
     }
 
 }
