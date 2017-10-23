@@ -1,11 +1,7 @@
 package nl.tue.c2IOE0.group5.towers;
 
-import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
-import nl.tue.c2IOE0.group5.providers.BulletProvider;
-import nl.tue.c2IOE0.group5.providers.EnemyProvider;
-import nl.tue.c2IOE0.group5.providers.GridProvider;
 import nl.tue.c2IOE0.group5.providers.TowerProvider;
 
 public class MainTower extends AbstractTower {
@@ -19,7 +15,7 @@ public class MainTower extends AbstractTower {
     private InstancedMesh iMesh;
 
     public MainTower(TowerProvider towerProvider) {
-        super(RANGE, MAX_LEVEL, MAX_HEALTH, 500, 3f, 1000, 2.5f, 1f, towerProvider);
+        super(RANGE, MAX_LEVEL, MAX_HEALTH, 1000 , 3f, 20, 2.5f, 1f, towerProvider);
     }
 
     @Override

@@ -6,6 +6,7 @@ import nl.tue.c2IOE0.group5.engine.objects.Animatable;
 import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
+import nl.tue.c2IOE0.group5.providers.AnimationProvider;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
 import nl.tue.c2IOE0.group5.util.LinearlyUpdatable;
 import nl.tue.c2IOE0.group5.util.SmoothUpdatable;
@@ -37,9 +38,11 @@ public class DrillEnemy extends Enemy implements Animatable {
 
     private SmoothUpdatable drillOffset;
 
-    public DrillEnemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider, Vector2i initialPosition, List<Vector2i> targetPositions, QLearner qlearner) {
+    public DrillEnemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider, Vector2i initialPosition,
+                      List<Vector2i> targetPositions, QLearner qlearner, AnimationProvider animationProvider) {
         super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, MAXHEALTH, SPEED, ATTACKSPEED, qlearner);
         setScale(0.03f);
+        animationProvider.add(this);
     }
 
     @Override
@@ -67,10 +70,7 @@ public class DrillEnemy extends Enemy implements Animatable {
      * @return offset based on current animation
      */
     private float drillOffset(float loopTime){
-        if (attacking) {
-            return (float) (20 * sin(5*loopTime));
-        }
-        return 0;
+        return attacking ? (float) (0.1 * sin(0.005 * loopTime)) : 0;
     }
 
     @Override
@@ -83,9 +83,7 @@ public class DrillEnemy extends Enemy implements Animatable {
         drillOffset = new LinearlyUpdatable(0f, 100);
 
         this.renderer = renderer;
-        Material darkMatter = new Material("/silver.png");
-        Material SILVER = new Material("/silver.png");
-        Material ORANGE = new Material("/orange.png");
+        Material darkMatter = new Material();
         Vector3f yVec = new Vector3f(0, -1, 0);
 
         body = renderer.linkMesh("/models/enemies/drillEnemy/BODY.obj", darkMatter, () -> {
@@ -94,18 +92,18 @@ public class DrillEnemy extends Enemy implements Animatable {
             if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
         });
 
-        drill = renderer.linkMesh("/models/enemies/drillEnemy/DRILL.obj", SILVER, () -> {
-            final Vector3f displacement = new Vector3f(2.713f+ drillOffset.current(), 1.674f, 0f).mul(getScale());
-            final Vector3f drillOffset = rotateVector(displacement, yVec, getRotation().y);
-            setModelView(renderer, drillOffset, new Vector3f(0, -90, 0));
+        drill = renderer.linkMesh("/models/enemies/drillEnemy/DRILL.obj", darkMatter, () -> {
+            final Vector3f drillOffset = new Vector3f(2.713f+ this.drillOffset.current(), 1.674f, 0f).mul(getScale());
+            final Vector3f displacement = rotateVector(drillOffset, yVec, getRotation().y);
+            setModelView(renderer, displacement, new Vector3f(0, -90, 0));
 
             if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
         });
 
-        wheel = renderer.linkMesh("/models/enemies/drillEnemy/WHEEL.obj", ORANGE, () -> {
-            final Vector3f displacement = new Vector3f(2.08f, 0.628f, 0f).mul(getScale());
-            final Vector3f wheelOffset = rotateVector(displacement, yVec, getRotation().y);
-            setModelView(renderer, wheelOffset, new Vector3f(0, -90, 0));
+        wheel = renderer.linkMesh("/models/enemies/drillEnemy/WHEEL.obj", darkMatter, () -> {
+            final Vector3f wheelOffset = new Vector3f(2.08f, 0.628f, 0f).mul(getScale());
+            final Vector3f displacement = rotateVector(wheelOffset, yVec, getRotation().y);
+            setModelView(renderer, displacement, new Vector3f(0, -90, 0));
 
             if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
         });
