@@ -19,9 +19,11 @@ import java.util.Set;
 public class AnimationProvider implements Provider<Engine> {
     private Set<AnimatedObjectRecord> targets;
     private Timer timer;
+    private Engine engine;
 
     @Override
     public void init(Engine engine) {
+        this.engine = engine;
         targets = new HashSet<>();
         timer = engine.getRenderLoopTimer();
     }
@@ -38,6 +40,7 @@ public class AnimationProvider implements Provider<Engine> {
 
     @Override
     public void update() {
+        if (engine == null || engine.isPaused()) return;
         targets.removeIf(AnimatedObjectRecord::mustBeRemoved);
     }
 }

@@ -173,14 +173,15 @@ public abstract class AbstractTower extends GameObject {
 
         @Override
         public void renderInit(Renderer renderer) {
-            setScale(10f);
+            setScale(0.00001f);
             Mesh mesh = renderer.linkMesh("/health.obj");
             mesh.setMaterial(new Material("/square.png"));
             iMesh = renderer.linkMesh(mesh, () -> {
                 setModelView(renderer);
                 renderer.ambientLight(color);
                 renderer.noDirectionalLight();
-            });;
+                //this.setPosition(tower.getPosition().add(new Vector3f(0, healthHeight, 0)));
+            });
         }
 
         public void stopDrawing() {

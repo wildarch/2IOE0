@@ -24,12 +24,16 @@ public class TowerConnectionProvider extends ObjectProvider<TowerConnection> {
         this.objects.remove(tc);
     }
 
+    private Engine engine;
+
     @Override
     public void renderInit(Engine engine) {
+        this.engine = engine;
     }
 
     @Override
     public void update() {
+        if (engine == null || engine.isPaused()) return;
         super.update();
     }
 
