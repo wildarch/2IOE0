@@ -28,6 +28,7 @@ public abstract class Enemy extends GameObject {
     protected boolean attacking = false;
     private final float speed;
     private final long attackSpeed;
+    private Vector3f offset;
 
     public Enemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider,
                  Vector2i initialPosition, List<Vector2i> targetPositions, int maxHealth, float speed, long attackSpeed) {
@@ -41,6 +42,7 @@ public abstract class Enemy extends GameObject {
         this.speed = speed;
         this.interpolator = new PositionInterpolator(this, this.speed);
         this.attackSpeed = attackSpeed;
+        this.offset = new Vector3f(0);
     }
 
     @Override
@@ -55,21 +57,35 @@ public abstract class Enemy extends GameObject {
                 System.out.println("Target reached!");
                 return;
             }
+            setOffset();
         }
         Cell targetCell = gridProvider.getCell(targetPositions.get(0));
         AbstractTower tower = targetCell.getTower();
-        Vector3f targetPosition = targetCell.getPosition().add(0, 0.5f, 0);
+        Vector3f targetPosition = targetCell.getPosition().add(0, 0.5f, 0).add(offset.toImmutable());
         if (tower == null || (targetReached && attacking)) {
             // Road is clear, move ahead
             attacking = false;
+            System.out.println("Set target position!");
             interpolator.setTarget(targetPosition, loopTimer.getLoopTime());
         }
-        else if(tower != null) {
+        else {
             // Destroy the tower first
             attacking = true;
             doDamage(tower);
         }
         setRotation(interpolator.getDirection());
+    }
+
+    private void setOffset() {
+       offset.set(
+                jitter(),
+                0,
+                jitter()
+        );
+    }
+
+    private float jitter() {
+        return (float) (Math.random()-0.5f) * Cell.CELL_SIZE * 0.5f;
     }
 
     /**
