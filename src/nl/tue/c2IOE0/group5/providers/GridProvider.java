@@ -86,6 +86,13 @@ public class GridProvider extends ObjectProvider<Cell> {
         cell.setMaterial(new Material("/square.png"));
     }
 
+    private boolean isActiveCell(int x, int y) {
+        int minBorder = (SIZE - PLAYFIELDSIZE) / 2;
+        int maxBorder = SIZE - minBorder - 1;
+
+        return minBorder <= x && x <= maxBorder && minBorder <= y && y <= maxBorder;
+    }
+
     /**
      * Get a cell at a specific coordinate
      * @param x
@@ -210,12 +217,11 @@ public class GridProvider extends ObjectProvider<Cell> {
 
     /**
      * Set the active cell and color it
-     * @param x the x coordinate of the active cell
-     * @param y the y coordinate of the active cell
+     * @param cell the Cell to activate.
      */
-    public void setActiveCell(int x, int y) {
+    public void setActiveCell(Cell cell) {
         activeCell.deactivate();
-        this.activeCell = getCell(x, y);
+        this.activeCell = cell;
         activeCell.activate();
     }
 
@@ -236,9 +242,11 @@ public class GridProvider extends ObjectProvider<Cell> {
         float z = c.getPosition().z() + lambda * direction3f.z();
         int gridX = Math.round(x);
         int gridY = Math.round(z);
-        if (!(gridX < 0 || gridY < 0 || gridX >= SIZE || gridY >= SIZE)) {
-            setActiveCell(gridX, gridY);
-            activeCell.activate();
+        if (isActiveCell(gridX, gridY)) {
+            Cell cell = getCell(gridX, gridY);
+            setActiveCell(cell);
+        } else {
+            activeCell.deactivate();
         }
     }
 

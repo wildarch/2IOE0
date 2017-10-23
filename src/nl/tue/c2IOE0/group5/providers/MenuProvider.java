@@ -42,10 +42,10 @@ public class MenuProvider implements Provider<Engine>, Clickable {
     public static final int STROKE_WIDTH = 5;
     public static final int INDENT = 10;
 
-    public static final Vector4f COLOR_BACK = new Vector4f(0.3f, 0.3f, 0.8f, 0.8f);
-    public static final Vector4f COLOR_BACK_DARK = new Vector4f(0f, 0f, 0f, 0.6f);
     public static final Vector4f COLOR_TEXT = new Vector4f(1f, 1f, 1f, 1f);
-    public static final Vector4f COLOR_STROKE = new Vector4f(0.8f, 0.3f, 0.3f, 0.8f);
+    public static final Vector4f COLOR_BLUE = new Vector4f(0.14118f, 0.20392f, 0.49804f, 1f);
+    public static final Vector4f COLOR_PINK = new Vector4f(0.81569f, 0.15686f, 0.35686f, 1f);
+    public static final Vector4f COLOR_DARK = new Vector4f(0f, 0f, 0f, 0.3f);
 
     private UIButton[] mainMenu;
     private UIButton[] optionMenu;

@@ -1,5 +1,6 @@
 package nl.tue.c2IOE0.group5.engine;
 
+import nl.tue.c2IOE0.group5.controllers.PlayerController;
 import nl.tue.c2IOE0.group5.engine.controller.Controller;
 import nl.tue.c2IOE0.group5.engine.controller.input.InputHandler;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.Listener;
@@ -14,6 +15,7 @@ import nl.tue.c2IOE0.group5.providers.MusicProvider;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * @author Jorren Hendriks.
@@ -186,5 +188,15 @@ public class Engine extends Simulator {
 
     public Renderer getRenderer() {
         return this.renderer;
+    }
+
+    public <T extends Controller> T getController(Class<T> type) {
+        return controllers.stream()
+                .filter(type::isInstance)
+                .findAny()
+                .map(type::cast)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Requested Controller does not exist"
+                ));
     }
 }

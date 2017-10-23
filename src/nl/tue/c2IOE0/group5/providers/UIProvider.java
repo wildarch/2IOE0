@@ -1,5 +1,6 @@
 package nl.tue.c2IOE0.group5.providers;
 
+import nl.tue.c2IOE0.group5.controllers.PlayerController;
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.MouseEvent;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
@@ -9,6 +10,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
 import nl.tue.c2IOE0.group5.userinterface.Buildbar;
 import nl.tue.c2IOE0.group5.userinterface.UIButton;
+import nl.tue.c2IOE0.group5.userinterface.UIText;
 import org.joml.Vector4f;
 
 /**
@@ -23,10 +25,13 @@ public class UIProvider implements Provider<Engine> {
 
     private Class<? extends AbstractTower> selectedTower;
 
-    private final Vector4f color = new Vector4f(0.3f, 0.3f, 0.8f, 0.8f);
-    private final Vector4f textColor = new Vector4f(1f, 1f, 1f, 1f);
+    public static final Vector4f COLOR_TEXT = new Vector4f(1f, 1f, 1f, 1f);
+    public static final Vector4f COLOR_BLUE = new Vector4f(0.14118f, 0.20392f, 0.49804f, 1f);
+    public static final Vector4f COLOR_PINK = new Vector4f(0.81569f, 0.15686f, 0.35686f, 1f);
+    public static final Vector4f COLOR_DARK = new Vector4f(0f, 0f, 0f, 0.3f);
 
     private UIButton buildBar;
+    private UIText playerBudget;
 
     @Override
     public void init(Engine engine) {
@@ -35,11 +40,16 @@ public class UIProvider implements Provider<Engine> {
         this.towerProvider = engine.getProvider(TowerProvider.class);
 
         buildBar = new Buildbar(80, 80, this);
+        PlayerController playerController = engine.getController(PlayerController.class);
+        playerBudget = new UIText(10, 40, 100, 20,
+                () -> "Budget: " +playerController.getBudget()
+        );
 
         hud.create(() -> {
             if (engine.isPaused()) return;
 
             buildBar.draw(hud);
+            playerBudget.draw(hud);
         });
 
     }
@@ -76,6 +86,10 @@ public class UIProvider implements Provider<Engine> {
     }
 
     public void select(Class<? extends AbstractTower> tower) {
+        if (this.selectedTower == tower) {
+            this.selectedTower = null;
+            return;
+        }
         this.selectedTower = tower;
     }
 

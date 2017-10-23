@@ -34,11 +34,12 @@ public class MenuSlider extends UIButton {
 
     @Override
     public void draw(Hud hud) {
-        hud.roundedRectangle(x, y, (int) (width * Math.max(value, 0.05f)), height, INDENT);
-        hud.fill(COLOR_BACK_DARK.x, COLOR_BACK_DARK.y, COLOR_BACK_DARK.z, COLOR_BACK_DARK.w);
         hud.roundedRectangle(x, y, width, height, INDENT);
-        hud.fill(COLOR_BACK.x, COLOR_BACK.y, COLOR_BACK.z, COLOR_BACK.w);
-        hud.stroke(STROKE_WIDTH, COLOR_STROKE.x, COLOR_STROKE.y, COLOR_STROKE.z, COLOR_STROKE.w);
+        hud.fill(COLOR_BLUE);
+        hud.stroke(STROKE_WIDTH, COLOR_PINK);
+        hud.roundedRectangle(x + STROKE_WIDTH/2, y + STROKE_WIDTH/2,
+                (int) ((width - STROKE_WIDTH) * Math.max(value, 0.05f)),height - STROKE_WIDTH, INDENT);
+        hud.fill(COLOR_DARK);
         hud.text(x + width /2, (int) (y + TEXT_LARGE + 10), TEXT_LARGE, Hud.Font.MEDIUM, NVG_ALIGN_CENTER,
                 String.format("%1$s: %2$d%%", text, (int) ((value * 100) >= 1 ? value * 100 : 1)), COLOR_TEXT);
     }

@@ -1,7 +1,6 @@
 package nl.tue.c2IOE0.group5.controllers;
 
 import nl.tue.c2IOE0.group5.engine.Engine;
-import nl.tue.c2IOE0.group5.engine.Simulator;
 import nl.tue.c2IOE0.group5.engine.controller.Controller;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.Event;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.Listener;
@@ -42,6 +41,7 @@ public class PlayerController implements Controller,Listener {
     private float minX;
     private float minY = 0.1f;
     private float minZ;
+    private int budget = 1000;
 
     public PlayerController() {
     }
@@ -322,6 +322,14 @@ public class PlayerController implements Controller,Listener {
         Vector3f directionOfCamera = gridProvider.getDirectionOfCamera(renderer, event.getSource(), 0, 0);
         float speed = 0.04f;
         moveLocal((event.getY()) * directionOfCamera.x()*speed,(event.getY()) * directionOfCamera.y()*speed,(event.getY()) * directionOfCamera.z()*speed);
+    }
+
+    public int getBudget() {
+        return budget;
+    }
+
+    public void addBudget(int n) {
+        budget += n;
     }
 
     private class PositionContainer{
