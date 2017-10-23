@@ -192,7 +192,7 @@ public class InputConverter {
 
         //count the number of units
         for (EnemyType t : buffer){
-            result[t.getValue()] += 1;
+            result[t.ordinal()] += 1;
         }
 
         //only divide at the end to preserve decimal precision

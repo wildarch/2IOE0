@@ -93,7 +93,7 @@ public class DrillEnemy extends Enemy implements Animatable {
         });
 
         drill = renderer.linkMesh("/models/enemies/drillEnemy/DRILL.obj", darkMatter, () -> {
-            final Vector3f drillOffset = new Vector3f(2.713f+ this.drillOffset.current(), 1.674f, 0f).mul(getScale());
+            final Vector3f drillOffset = new Vector3f(2.713f + this.drillOffset.current(), 1.674f, 0f).mul(getScale());
             final Vector3f displacement = rotateVector(drillOffset, yVec, getRotation().y);
             setModelView(renderer, displacement, new Vector3f(0, -90, 0));
 
