@@ -11,6 +11,9 @@ import org.joml.Vector3f;
  */
 
 public class Cell extends GameObject {
+
+    public final static float CELL_SIZE = 1.0f;
+
     //the tower on this cell
     AbstractTower tower;
 
