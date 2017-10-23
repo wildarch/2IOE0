@@ -163,7 +163,7 @@ public class Renderer {
                 new Vector3f(0.78f, 0.4f, 0.66f),
                 1f
         );
-        directionalLight.setOrthoCords(-10.0f, 10.0f, -10.0f, 10.0f, -7.0f, 20.0f);
+        directionalLight.setOrthoCords(-10.0f, 10.0f, -14.0f, 14.0f, -14f, 14.0f);
         sceneShader.setDirectionalLight(directionalLight);
 
         sceneShader.setUniform("texture_sampler", 0);

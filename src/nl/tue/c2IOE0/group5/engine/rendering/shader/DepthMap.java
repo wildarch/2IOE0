@@ -13,8 +13,8 @@ public class DepthMap {
     public int width = 4096;
     public int height = 4096;
     */
-    public int width = 1024;
-    public int height = 1024;
+    public int width = 1500;
+    public int height = 1500;
 
     private int depthFboID;
 
