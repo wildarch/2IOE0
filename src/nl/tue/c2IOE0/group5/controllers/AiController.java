@@ -44,6 +44,8 @@ public class AiController implements Controller {
     private ComputationGraph network;
     private final File networkFile;
 
+    private boolean gameStarted = false;
+
     public AiController(File networkFile) {
         this.networkFile = networkFile;
     }
@@ -66,10 +68,20 @@ public class AiController implements Controller {
         isPaused = engine::isPaused;
     }
 
+    public void startGame(){
+        nextWaveTime = loopTimer.getLoopTime() + WAVE_TIME * 2;
+        gameStarted = true;
+    }
+
     @Override
     public void update() {
         if(isPaused.getAsBoolean()) return;
-        boolean bigWave = wave % NR_SUB_WAVES == 0 && enemyProvider.countEnemies() == 0;
+
+        if(!gameStarted){
+            startGame();
+        }
+
+        boolean bigWave = wave % NR_SUB_WAVES == 0 && enemyProvider.countEnemies() == 0 && loopTimer.getLoopTime() > nextWaveTime;
         boolean smallWave = wave % NR_SUB_WAVES != 0 && loopTimer.getLoopTime() > nextWaveTime;
         if (bigWave || smallWave) {
             wave(bigWave);
