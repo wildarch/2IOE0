@@ -29,6 +29,7 @@ public class MusicProvider extends Thread implements Provider<Engine> {
     public void init(Engine engine) {
         this.loopTimer = engine.getRenderLoopTimer();
         this.engine = engine;
+        if (!on) return;
         try {
             String file = "res/soundfile.wav";
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(file));
@@ -49,7 +50,7 @@ public class MusicProvider extends Thread implements Provider<Engine> {
     @Override
     public void update() {
         if (timeToPlay < loopTimer.getLoopTime()) { //start again after 2 times the duration
-            clip.start();
+            if(clip != null) clip.start();
             timeToPlay = loopTimer.getLoopTime() + duration * 1000 * 2; //1000 to convert to miliseconds
         }
     }
@@ -154,5 +155,9 @@ public class MusicProvider extends Thread implements Provider<Engine> {
     @Override
     public void draw(Window window, Renderer renderer) {
 
+    }
+
+    public boolean isOn() {
+        return on;
     }
 }
