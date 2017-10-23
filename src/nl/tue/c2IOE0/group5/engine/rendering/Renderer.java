@@ -229,7 +229,7 @@ public class Renderer implements Cleanable {
      *                     B > 0 a horizontal expansion and B < 0 a vertical stretch
      * @param mesh mesh to be boinked
      */
-    public void boink(Mesh mesh, float bounceDegree) {
+    public void boink(float bounceDegree, Mesh mesh) {
         ShaderProgram shader = task == Task.SCENE ? sceneShader : depthShader;
 
         shader.setUniform("bounceDegree", bounceDegree);
@@ -238,6 +238,19 @@ public class Renderer implements Cleanable {
 
         modifiers.push(() ->
                 shader.setUniform("bounceDegree", 0f));
+    }
+
+    public void boink(float bounceDegree, Mesh... meshes) {
+        ShaderProgram shader = task == Task.SCENE ? sceneShader : depthShader;
+
+        shader.setUniform("bounceDegree", bounceDegree);
+        shader.setUniform("boundingMin", Mesh.combinedMinBoundingBox(meshes));
+        shader.setUniform("boundingMax", Mesh.combinedMaxBoundingBox(meshes));
+
+        modifiers.push(() ->
+                shader.setUniform("bounceDegree", 0f));
+
+
     }
 
     /**

@@ -200,4 +200,24 @@ public class Mesh {
         return maxBoundingBox;
     }
 
+    public static Vector3f combinedMinBoundingBox(Mesh... meshes) {
+        Vector3f boundingBox = new Vector3f();
+        for (Mesh mesh : meshes) {
+            boundingBox.x = Math.min(mesh.minBoundingBox.x, boundingBox.x);
+            boundingBox.y = Math.min(mesh.minBoundingBox.y, boundingBox.y);
+            boundingBox.z = Math.min(mesh.minBoundingBox.z, boundingBox.z);
+        }
+        return boundingBox;
+    }
+
+    public static Vector3f combinedMaxBoundingBox(Mesh... meshes) {
+        Vector3f boundingBox = new Vector3f();
+        for (Mesh mesh : meshes) {
+            boundingBox.x = Math.max(mesh.maxBoundingBox.x, boundingBox.x);
+            boundingBox.y = Math.max(mesh.maxBoundingBox.y, boundingBox.y);
+            boundingBox.z = Math.max(mesh.maxBoundingBox.z, boundingBox.z);
+        }
+        return boundingBox;
+    }
+
 }
