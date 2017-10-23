@@ -83,7 +83,7 @@ public class DrillEnemy extends Enemy implements Animatable {
         drillOffset = new LinearlyUpdatable(0f, 100);
 
         this.renderer = renderer;
-        Material darkMatter = new Material();
+        Material darkMatter = new Material("/silver.png");
         Vector3f yVec = new Vector3f(0, -1, 0);
 
         body = renderer.linkMesh("/models/enemies/drillEnemy/BODY.obj", darkMatter, () -> {
