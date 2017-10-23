@@ -36,7 +36,7 @@ public class RocketTower extends AbstractTower {
     private InstancedMesh iRocketMesh;
 
     public RocketTower(TowerProvider towerProvider) {
-        super(RANGE, MAX_LEVEL, MAX_HEALTH, ATTACK_TIME, BULLET_SPEED, BULLET_DAMAGE, 1f, 0.32f, towerProvider);
+        super(RANGE, MAX_LEVEL, MAX_HEALTH, ATTACK_TIME, BULLET_SPEED, BULLET_DAMAGE, 1f, 0.30f, towerProvider);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class RocketTower extends AbstractTower {
             renderer.boink(getBounceDegree(), baseMesh, rocketMesh);
         });
         iRocketMesh = renderer.linkMesh(rocketMesh, () -> {
-            setModelView(renderer, new Vector3f(0f, 0.148f, 0f).add(getPositionOffset().toImmutable()));
+            setModelView(renderer, new Vector3f(0f, 0.148f, 0f).add(getPositionOffset().toImmutable()), rocketRotation);
             renderer.boink(getBounceDegree(), baseMesh, rocketMesh);
         });
 

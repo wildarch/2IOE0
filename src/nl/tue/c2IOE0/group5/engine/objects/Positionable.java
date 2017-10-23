@@ -107,7 +107,7 @@ public abstract class Positionable {
      * @return The rotation of the object in degrees.
      */
     public Vector3f getRotation() {
-        return rotation;
+        return new Vector3f(rotation);
     }
 
     /**
