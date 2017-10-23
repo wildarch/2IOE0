@@ -29,6 +29,9 @@ public class TowerConnectionProvider extends ObjectProvider<TowerConnection> {
     @Override
     public void renderInit(Engine engine) {
         this.engine = engine;
+        engine.getRenderer().linkMesh("/models/towers/walltower/wall.obj")
+                .setMaterial(new Material("/models/towers/walltower/wall.png"));
+
     }
 
     @Override

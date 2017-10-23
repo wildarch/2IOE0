@@ -35,9 +35,7 @@ public class WallTower extends AbstractTower {
     public void renderInit(Renderer renderer) {
         setScale(0.9f);
         Mesh mesh = renderer.linkMesh("/models/towers/walltower/walltower.obj");
-        mesh.setMaterial(new Material("/models/towers/walltower/walltower.png"));
-
-        iMesh = renderer.linkMesh(mesh, () -> setModelView(renderer));
+        iMesh = renderer.linkMesh("/models/towers/walltower/walltower.obj", () -> setModelView(renderer));
         this.renderer = renderer;
     }
 

@@ -51,13 +51,9 @@ public class RocketTower extends AbstractTower {
     @Override
     public void renderInit(Renderer renderer) {
         setScale(1f);
-        Mesh base = renderer.linkMesh("/models/towers/rockettower/base.obj");
-        Mesh rocket = renderer.linkMesh("/models/towers/rockettower/rocket.obj");
-        base.setMaterial(new Material("/models/towers/rockettower/base.png"));
-        rocket.setMaterial(new Material("/models/towers/rockettower/rocket.png"));
 
-        iBaseMesh = renderer.linkMesh(base, () -> setModelView(renderer));
-        iRocketMesh = renderer.linkMesh(rocket, () -> setModelView(renderer, new Vector3f(0f, 0.148f, 0f), rocketRotation));
+        iBaseMesh = renderer.linkMesh("/models/towers/rockettower/base.obj", () -> setModelView(renderer));
+        iRocketMesh = renderer.linkMesh("/models/towers/rockettower/rocket.obj", () -> setModelView(renderer, new Vector3f(0f, 0.148f, 0f), rocketRotation));
 
 
         this.renderer = renderer;
