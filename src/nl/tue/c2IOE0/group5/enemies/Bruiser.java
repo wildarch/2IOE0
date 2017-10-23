@@ -3,12 +3,15 @@ package nl.tue.c2IOE0.group5.enemies;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.objects.Animatable;
 import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
+import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
+import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
 import nl.tue.c2IOE0.group5.util.LinearlyUpdatable;
 import nl.tue.c2IOE0.group5.util.SmoothUpdatable;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import java.util.List;
 
@@ -26,6 +29,7 @@ public class Bruiser extends Enemy implements Animatable {
     private static final long ATTACKSPEED = 5;
 
     private InstancedMesh head;
+    private InstancedMesh body;
     private InstancedMesh leftArm;
     private InstancedMesh rightArm;
 
@@ -93,6 +97,7 @@ public class Bruiser extends Enemy implements Animatable {
         renderer.unlinkMesh(head);
         renderer.unlinkMesh(leftArm);
         renderer.unlinkMesh(rightArm);
+        renderer.unlinkMesh(body);
     }
 
     @Override
@@ -100,18 +105,22 @@ public class Bruiser extends Enemy implements Animatable {
         headOffset = new LinearlyUpdatable(headOffset(0), 0.1f);
         leftArmOffset = new LinearlyUpdatable(armOffset(0), 0.1f);
         rightArmOffset = new LinearlyUpdatable(-armOffset(0), 0.1f);
-
-        renderer.linkMesh("/bruiser_head.obj", () ->
+        Material material = new Material(new Vector4f(1f, 0.5f, 1f, 1f), 1f);
+        Mesh headMesh = renderer.linkMesh("/bruiser_head.obj");
+        Mesh bodyMesh = renderer.linkMesh("/bruiser_body.obj");
+        Mesh lArmMesh = renderer.linkMesh("/bruiser_lArm.obj");
+        Mesh rArmMesh = renderer.linkMesh("/bruiser_rArm.obj");
+        headMesh.setMaterial(material);
+        bodyMesh.setMaterial(material);
+        lArmMesh.setMaterial(material);
+        rArmMesh.setMaterial(material);
+        head = renderer.linkMesh(headMesh, () ->
                 setModelView(renderer, new Vector3f(0f, 1f + headOffset.current(), 1f)));
-
-        renderer.linkMesh("/bruiser_body.obj", () ->
+        body = renderer.linkMesh(bodyMesh, () ->
                 setModelView(renderer));
-
-        renderer.linkMesh("/bruiser_lArm.obj", () ->
+        leftArm = renderer.linkMesh(lArmMesh, () ->
                 setModelView(renderer, new Vector3f(1f, 0f, leftArmOffset.current())));
-
-        renderer.linkMesh("/bruiser_rArm.obj", () ->
+        rightArm = renderer.linkMesh(rArmMesh, () ->
                 setModelView(renderer, new Vector3f(1f, 0f, rightArmOffset.current())));
-
     }
 }

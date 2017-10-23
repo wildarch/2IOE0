@@ -3,10 +3,13 @@ package nl.tue.c2IOE0.group5.enemies;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.objects.Animatable;
 import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
+import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
+import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import java.util.List;
 
@@ -68,13 +71,20 @@ public class DrillEnemy extends Enemy implements Animatable {
     public void renderInit(Renderer renderer) {
         this.renderer = renderer;
 
-        body = renderer.linkMesh("/models/enemies/drill/BODY.obj", () -> {
+        Mesh bodyMesh = renderer.linkMesh("/models/enemies/drill/BODY.obj");
+        Mesh drillMesh = renderer.linkMesh("/models/enemies/drill/DRILL.obj");
+        Mesh wheelMesh = renderer.linkMesh("/models/enemies/drill/WHEEL.obj");
+        Material material = new Material(new Vector4f(0f, 1f, 0f, 1f), 1f);
+        bodyMesh.setMaterial(material);
+        drillMesh.setMaterial(material);
+        wheelMesh.setMaterial(material);
+        body = renderer.linkMesh(bodyMesh, () -> {
             setModelView(renderer);
         });
-        drill = renderer.linkMesh("/models/enemies/drill/DRILL.obj", () -> {
+        drill = renderer.linkMesh(drillMesh, () -> {
             setModelView(renderer, new Vector3f(), new Vector3f());
         });
-        wheel = renderer.linkMesh("/models/enemies/drill/WHEEL.obj", () -> {
+        wheel = renderer.linkMesh(wheelMesh, () -> {
             setModelView(renderer, new Vector3f(), new Vector3f());
         });
     }
