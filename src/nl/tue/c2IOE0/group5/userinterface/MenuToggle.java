@@ -50,6 +50,10 @@ public class MenuToggle extends UIButton {
         this(text, pos.x, pos.y, handler);
     }
 
+    public void setValue(boolean value) {
+        this.value = value;
+    }
+
     @Override
     public void draw(Hud hud) {
         hud.roundedRectangle(x, y, width, height, INDENT);
