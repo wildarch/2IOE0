@@ -55,7 +55,9 @@ public class AiController implements Controller {
         gridProvider = engine.getProvider(GridProvider.class);
 
         try {
-            if (networkFile != null) network = ModelSerializer.restoreComputationGraph(networkFile);
+            if(networkFile != null && networkFile.exists() && networkFile.canRead()){
+                network = ModelSerializer.restoreComputationGraph(networkFile);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -83,25 +85,30 @@ public class AiController implements Controller {
         EnemyType[] sampleBuffer = new EnemyType[big ? BIG_WAVE_SIZE : SMALL_WAVE_SIZE];
 
         EnemyType[] selectedBuffer = null;
-        double bufferScore = Double.MIN_VALUE;
-
+        double bufferScore = Double.NEGATIVE_INFINITY;
+        double sampleScore;
         for (int i = 0; i < BUFFER_SAMPLE_SIZE; i++){
             for (int j = 0; j < sampleBuffer.length; j++){
                 EnemyType t = EnemyType.values()[r.nextInt(EnemyType.getSize())];
                 sampleBuffer[j] = t;
             }
-            converter = InputConverter.fromGameState(gridProvider, 1, sampleBuffer);
-            converter.convert();
-            INDArray aiInput = converter.getInput();
-            INDArray aiOutput = network.outputSingle(false, aiInput);
-            double score = aiOutput.getDouble(0, 0);
 
-            if(score > bufferScore){
+            if(network != null){
+                converter = InputConverter.fromGameState(gridProvider, 1, sampleBuffer);
+                converter.convert();
+                INDArray aiInput = converter.getInput();
+                INDArray aiOutput = network.outputSingle(false, aiInput);
+                sampleScore = aiOutput.getDouble(0, 0);
+            } else {
+                sampleScore = 0;
+            }
+
+            if(sampleScore > bufferScore){
                 selectedBuffer = Arrays.copyOf(sampleBuffer, sampleBuffer.length);
             }
         }
 
-        assert selectedBuffer != null;
+        if(selectedBuffer == null) throw new RuntimeException("probleem");
 
         // Do a wave!
         String size = big ? "Big  " : "Small";
