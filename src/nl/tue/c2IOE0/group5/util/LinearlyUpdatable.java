@@ -28,14 +28,16 @@ public class LinearlyUpdatable extends SmoothUpdatable {
      */
     @Override
     public void updateFluent(float target, float deltaTime){
-        if (current() < target){
-            super.update(
-                    Math.min(target, current() + (acceleration * deltaTime))
-            );
-        } else {
-            super.update(
-                    Math.min(target, current() - (acceleration * deltaTime))
-            );
+        if (current() != target) {
+            if (current() < target){
+                super.update(
+                        Math.min(target, current() + (acceleration * deltaTime))
+                );
+            } else {
+                super.update(
+                        Math.max(target, current() - (acceleration * deltaTime))
+                );
+            }
         }
     }
 }

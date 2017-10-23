@@ -442,6 +442,7 @@ public class PlayerController implements Controller,Listener {
 
     @Override
     public void onMouseHover(MouseEvent event) {
+        if (true) return;
         if (freeCameraMode) {
             if (engine.isPaused()) return;
             Window window = event.getSource();
