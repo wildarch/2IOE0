@@ -27,8 +27,8 @@ public class DrillEnemy extends Enemy implements Animatable {
 
     private final static int MAXHEALTH = 100;
     private final static float SPEED = 0.1f;
-    private final static int ATTACKSPEED = 400;
-    private final static int DAMAGE = 10;
+    private final static int ATTACKSPEED = 100;
+    private final static int DAMAGE = 2;
 
     private InstancedMesh body;
     private InstancedMesh drill;
