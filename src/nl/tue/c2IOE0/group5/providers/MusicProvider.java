@@ -162,7 +162,6 @@ public class MusicProvider extends Thread implements Provider<Engine>,Cleanable 
             System.err.println("Interrupted while waiting for music thread to join");
             e.printStackTrace();
         }
-
     }
 
     @Override
