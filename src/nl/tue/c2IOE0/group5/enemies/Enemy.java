@@ -9,6 +9,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.providers.Cell;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
+import nl.tue.c2IOE0.group5.towers.WallTower;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 
@@ -31,9 +32,10 @@ public abstract class Enemy extends GameObject {
     private final long attackSpeed;
     private Vector3f offset;
     private QLearner qLearner;
+    private int damage;
 
     public Enemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider,
-                 Vector2i initialPosition, List<Vector2i> targetPositions, int maxHealth, float speed, long attackSpeed, QLearner qlearner) {
+                 Vector2i initialPosition, List<Vector2i> targetPositions, int maxHealth, int damage, float speed, long attackSpeed, QLearner qlearner) {
         this.qLearner = qlearner;
         this.gridProvider = gridProvider;
         this.maxHealth = maxHealth;
@@ -46,6 +48,7 @@ public abstract class Enemy extends GameObject {
         this.interpolator = new PositionInterpolator(this, this.speed);
         this.attackSpeed = attackSpeed;
         this.offset = new Vector3f(0);
+        this.damage = damage;
     }
 
     public abstract EnemyType getType();
@@ -110,8 +113,10 @@ public abstract class Enemy extends GameObject {
 
     private long timeToDoDamage;
     private void doDamage(AbstractTower tower) {
+        int factor = 1;
+        if (this instanceof WalkerEnemy && tower instanceof WallTower) factor = 2;
         if (timeToDoDamage < loopTimer.getLoopTime()) {
-            tower.takeDamage(1);
+            tower.takeDamage(damage*factor);
             timeToDoDamage = loopTimer.getLoopTime() + attackSpeed;
         }
     }

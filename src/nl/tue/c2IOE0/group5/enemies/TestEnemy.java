@@ -10,11 +10,11 @@ import java.util.List;
 public class TestEnemy extends Enemy {
     private static final float SPEED = 0.5f;
     private static final long ATTACKSPEED = 500;
-
+    private final static int DAMAGE = 10;
 
     public TestEnemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider,
                      Vector2i initialPosition, List<Vector2i> targetPositions, int maxHealth, QLearner qlearner) {
-        super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, maxHealth, SPEED, ATTACKSPEED, qlearner);
+        super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, maxHealth, DAMAGE, SPEED, ATTACKSPEED, qlearner);
     }
 
 

@@ -28,6 +28,7 @@ public class DrillEnemy extends Enemy implements Animatable {
     private final static int MAXHEALTH = 100;
     private final static float SPEED = 0.1f;
     private final static int ATTACKSPEED = 400;
+    private final static int DAMAGE = 10;
 
     private InstancedMesh body;
     private InstancedMesh drill;
@@ -40,7 +41,7 @@ public class DrillEnemy extends Enemy implements Animatable {
 
     public DrillEnemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider, Vector2i initialPosition,
                       List<Vector2i> targetPositions, QLearner qlearner, AnimationProvider animationProvider) {
-        super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, MAXHEALTH, SPEED, ATTACKSPEED, qlearner);
+        super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, MAXHEALTH, DAMAGE, SPEED, ATTACKSPEED, qlearner);
         setScale(0.03f);
         animationProvider.add(this);
     }
