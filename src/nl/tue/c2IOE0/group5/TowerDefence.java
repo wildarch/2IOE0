@@ -23,8 +23,8 @@ public class TowerDefence {
     }
 
     public static void runGame(boolean music) {
-        Engine e = new Engine();
-        e.addProviders(new Provider[] {
+        Engine engine = new Engine();
+        engine.addProviders(new Provider[] {
                 new MenuProvider(),
                 //new TestProvider(),
                 new EnemyProvider(),
@@ -38,16 +38,16 @@ public class TowerDefence {
                 new TowerConnectionProvider()
         });
         if (!music) {
-            e.getProvider(MusicProvider.class).toggle();
+            engine.getProvider(MusicProvider.class).toggle();
         }
-        e.addControllers(new Controller[] {
+        engine.addControllers(new Controller[] {
                 new PlayerController(),
                 new AiController()
         });
         try {
-            e.run();
-        } catch (Exception e1) {
-            e1.printStackTrace();
+            engine.run();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
