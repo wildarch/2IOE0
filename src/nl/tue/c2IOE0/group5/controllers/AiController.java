@@ -129,16 +129,10 @@ public class AiController implements Controller {
         qLearner.setRewardsMatrix(QLearner.getState(gridProvider.SIZE / 2, gridProvider.SIZE / 2, gridProvider.SIZE), 1000);
         for (int i = 0; i < 200; i++) {
             qLearner.generateRandomPath(10);
-            qLearner = new QLearner(gridProvider.SIZE, noIterations, gamma);
-            qLearner.updateRewardsMatrix(QLearner.getState(gridProvider.SIZE / 2, gridProvider.SIZE / 2, gridProvider.SIZE), 1000);
-            for (int j = 3; j <= 9; j++) {
-                qLearner.updateRewardsMatrix(QLearner.getState(3, j, gridProvider.SIZE), -5);
-                qLearner.updateRewardsMatrix(QLearner.getState(9, j, gridProvider.SIZE), -5);
-            }
-            qLearner.addBasicPath();
-            //to prevent going to 0,0
-            qLearner.generateRandomPath(100, 0);
-            qLearner.execute();
         }
+        qLearner.addBasicPath();
+        //to prevent going to 0,0
+        qLearner.generateRandomPath(100, 0);
+        qLearner.execute();
     }
 }

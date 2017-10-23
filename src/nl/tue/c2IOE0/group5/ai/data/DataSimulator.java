@@ -109,12 +109,14 @@ public class DataSimulator {
         TowerProvider tp = new TowerProvider();
         GridProvider gp = new GridProvider(totalSize, playSize);
         BulletProvider bp = new BulletProvider();
+        TowerConnectionProvider tcp = new TowerConnectionProvider();
 
         simulator.addProviders(new Provider[]{
             ep,
             tp,
             gp,
-            bp
+            bp,
+            tcp
         });
 
         try {

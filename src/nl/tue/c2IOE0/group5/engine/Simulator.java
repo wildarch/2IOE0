@@ -48,7 +48,9 @@ public class Simulator {
             running = true;
             init();
             loop();
-        } finally {
+        } catch (Exception e){
+            e.printStackTrace();
+        }finally {
             cleanup();
         }
     }

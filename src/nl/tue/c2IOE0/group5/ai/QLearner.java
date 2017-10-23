@@ -51,10 +51,11 @@ public class QLearner extends Thread {
      */
     public QLearner(int gridSize, int noIterations, double gamma) {
         this.gamma = gamma;
-        makeRewardMatrix();
-        paths = new ArrayList<>();
         this.noIterations = noIterations;
         this.gridSize = gridSize;
+
+        makeRewardMatrix();
+        paths = new ArrayList<>();
 
         outerStates = new ArrayList<>();
         for (int i = 0; i < gridSize; i++) { //add bottom states
@@ -78,6 +79,8 @@ public class QLearner extends Thread {
     public boolean isConverged() {return this.converged;}
 
     public void initializeQ() {
+        if (rewards != null);
+
         // Initialize Q as only 0
         Q = new Double[rewards.length][rewards[0].length];
         for (int i = 0; i < Q.length; i++) {
@@ -141,6 +144,7 @@ public class QLearner extends Thread {
      */
     private void makeRewardMatrix() {
         this.rewards = new Integer[gridSize*gridSize][gridSize*gridSize];
+
         for (int y = 0; y < gridSize; y++) {
             for (int x = 0; x < gridSize; x++) { //first y and the x to make sure the state increases
                 int state = getState(x, y);
