@@ -26,6 +26,7 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
     public Timer renderTimer;
 
     private MainTower mainTower;
+    private Engine engine;
 
     @Override
     public void init(Simulator engine) {
@@ -49,6 +50,7 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
 
     @Override
     public void renderInit(Engine engine) {
+        this.engine = engine;
         Mesh m = engine.getRenderer().linkMesh("/models/towers/mainbase/mainbase.obj");
         m.setMaterial(new Material("/models/towers/mainbase/mainbase.png"));
         renderTimer = engine.getRenderLoopTimer();
@@ -97,6 +99,7 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
 
     @Override
     public void update() {
+        if (engine == null || engine.isPaused()) return;
         objects.removeIf((t -> t.isDead()));
         super.update();
     }

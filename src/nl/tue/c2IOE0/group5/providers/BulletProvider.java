@@ -15,14 +15,18 @@ public class BulletProvider extends ObjectProvider<Bullet> {
         this.objects.add(b);
     }
 
+    private Engine engine;
+
     @Override
     public void renderInit(Engine engine) {
+        this.engine = engine;
         Mesh bullet = ((Engine) engine).getRenderer().linkMesh("/b4.obj");
         bullet.setMaterial(new Material("/square.png"));
     }
 
     @Override
     public void update() {
+        if (engine == null || engine.isPaused()) return;
         objects.removeIf(Bullet::isDone);
         super.update();
     }
