@@ -39,7 +39,7 @@ public class Hud implements Drawable {
     private long vg;
     private NVGColor color;
     private NVGPaint paint;
-    private ByteBuffer fontBuffer;
+    private ByteBuffer[] fontBuffer;
     private Map<String, Integer> imageBuffer;
 
     private List<Runnable> drawBuffer;
@@ -57,12 +57,16 @@ public class Hud implements Drawable {
             throw new IOException("Could not initialize NanoVG");
         }
 
-        Font font = Font.MEDIUM;
-        fontBuffer = Resource.toByteBuffer(font.source, 96 * 1024);
-        int f = nvgCreateFontMem(vg, font.name , fontBuffer, 0);
-        if (f == -1) {
-            throw new IOException("Could not create font " + font.name);
+        fontBuffer = new ByteBuffer[Font.values().length];
+        int i = 0;
+        for (Font font : Font.values()) {
+            fontBuffer[i] = Resource.toByteBuffer(font.source, 96 * 1024);
+            if (nvgCreateFontMem(vg, font.name, fontBuffer[i], 1) == -1) {
+                throw new IOException("Could not create font " + font.name);
+            }
+            i++;
         }
+
         imageBuffer = new HashMap<>();
         color = NVGColor.create();
         paint = NVGPaint.create();
@@ -167,10 +171,18 @@ public class Hud implements Drawable {
         nvgFill(vg);
     }
 
+    public void fill(Vector4f color) {
+        fill(color.x, color.y, color.z, color.w);
+    }
+
     public void stroke(int width, float red, float green, float blue, float alpha) {
         nvgStrokeWidth(vg, width);
         nvgStrokeColor(vg, rgba(red, green, blue, alpha));
         nvgStroke(vg);
+    }
+
+    public void stroke(int width, Vector4f color) {
+        stroke(width, color.x, color.y, color.z, color.w);
     }
 
     public void image(String filename, int x, int y, int width, int height, float alpha) throws IOException {
