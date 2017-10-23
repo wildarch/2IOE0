@@ -20,6 +20,8 @@ public class Material {
 
     private Texture texture;
 
+    private boolean transparent = false;
+
     @Deprecated
     public Material() {
         this.ambientColour = DEFAULT_COLOUR;
@@ -28,6 +30,11 @@ public class Material {
         this.texture = null;
         this.reflectance = 0;
     }
+
+
+
+    public void setTransparency(boolean value) { this.transparent = value; }
+    public boolean getTransparency() { return this.transparent; };
 
     @Deprecated
     public Material(Vector4f colour, float reflectance) {

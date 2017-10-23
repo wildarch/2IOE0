@@ -433,10 +433,19 @@ public class Renderer {
             sceneShader.setUniform("depthMapEnabled", 0);
         }
 
+        //first draw non transparent meshes
         instancedMeshes.forEach((mesh, consumers) -> {
-            setMaterial(mesh.getMaterial());
-
-            renderAll(mesh, consumers.stream().map(InstancedMesh::getRender));
+            if (!mesh.getMaterial().getTransparency()) {
+                setMaterial(mesh.getMaterial());
+                renderAll(mesh, consumers.stream().map(InstancedMesh::getRender));
+            }
+        });
+        //overlay with transparent meshes
+        instancedMeshes.forEach((mesh, consumers) -> {
+            if (mesh.getMaterial().getTransparency()) {
+                setMaterial(mesh.getMaterial());
+                renderAll(mesh, consumers.stream().map(InstancedMesh::getRender));
+            }
         });
 
         sceneShader.unbind();

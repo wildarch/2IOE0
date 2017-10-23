@@ -131,7 +131,7 @@ public class Cell extends GameObject {
 
     @Override
     public void renderInit(Renderer renderer) {
-        renderer.linkMesh("/cube.obj", () -> {
+        renderer.linkMesh("/models/cell/cell.obj", () -> {
             setModelView(renderer);
             renderer.ambientLight(color);
         });
