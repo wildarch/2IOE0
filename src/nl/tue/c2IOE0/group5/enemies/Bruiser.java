@@ -4,7 +4,6 @@ import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.objects.Animatable;
 import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
-import nl.tue.c2IOE0.group5.providers.AnimationProvider;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
 import nl.tue.c2IOE0.group5.util.LinearlyUpdatable;
 import nl.tue.c2IOE0.group5.util.SmoothUpdatable;
@@ -91,6 +90,9 @@ public class Bruiser extends Enemy implements Animatable {
     protected void onDie() {
         // unnecessary
         currentAnim = DEFAULT;
+        renderer.unlinkMesh(head);
+        renderer.unlinkMesh(leftArm);
+        renderer.unlinkMesh(rightArm);
     }
 
     @Override
