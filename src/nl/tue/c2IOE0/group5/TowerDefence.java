@@ -13,10 +13,16 @@ import nl.tue.c2IOE0.group5.providers.*;
 public class TowerDefence {
 
     public static void main(String[] args) {
-        runGame();
+        boolean music = true;
+        if(args.length > 0) {
+            if(args[0].equals("--no-music")) {
+                music = false;
+            }
+        }
+        runGame(music);
     }
 
-    public static void runGame() {
+    public static void runGame(boolean music) {
         Engine e = new Engine();
         e.addProviders(new Provider[] {
                 new MenuProvider(),
@@ -31,6 +37,9 @@ public class TowerDefence {
                 new MusicProvider(),
                 new TowerConnectionProvider()
         });
+        if (!music) {
+            e.getProvider(MusicProvider.class).toggle();
+        }
         e.addControllers(new Controller[] {
                 new PlayerController(),
                 new AiController()
