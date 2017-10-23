@@ -21,7 +21,7 @@ public class Buildbar extends UIButton {
 
     private UIProvider provider;
 
-    private final static int MARGIN = 20;
+    private final static int MARGIN = 10;
     public static final int STROKE_WIDTH = 5;
     public static final int INDENT = 10;
 
@@ -54,8 +54,13 @@ public class Buildbar extends UIButton {
                     @Override
                     public void draw(Hud hud) {
                         try {
-                            hud.image(metaData.icon, this.x + 5, this.y, this.width - 10, this.height - 10, 1f);
-                            hud.text(this.x + tilewidth/2, this.y + this.height - 10, 18, Hud.Font.MEDIUM, NVG_ALIGN_CENTER | NVG_ALIGN_TOP, metaData.name, COLOR_TEXT);
+                            hud.image(metaData.icon, this.x + 10, this.y, this.width - 10, this.height - 30, 1f);
+                            hud.text(this.x + tilewidth/2, this.y + this.height - 20, 18, Hud.Font.MEDIUM,
+                                    NVG_ALIGN_CENTER | NVG_ALIGN_TOP, metaData.name, COLOR_TEXT);
+                            if (provider.getSelected() == tower) {
+                                hud.rectangle(this.x, this.y, this.width, this.height);
+                                hud.fill(COLOR_BACK_DARK.x, COLOR_BACK_DARK.y, COLOR_BACK_DARK.z, COLOR_BACK_DARK.w);
+                            }
                         } catch (IOException ignored) {
 
                         }
