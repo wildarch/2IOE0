@@ -1,5 +1,6 @@
 package nl.tue.c2IOE0.group5.providers;
 
+import nl.tue.c2IOE0.group5.controllers.PlayerController;
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.MouseEvent;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
@@ -51,12 +52,14 @@ public class MenuProvider implements Provider<Engine>, Clickable {
     private UIButton[] optionMenu;
     private UIButton[] graphicsMenu;
     private UIButton[] audioMenu;
+    private UIButton[] controlsMenu;
     private UIElement[] creditScreen;
 
     private UIElement[] activeElements;
 
     private Hud hud;
     private Renderer renderer;
+    private PlayerController playerController;
     private Window window;
     private MusicProvider musicProvider;
     private TowerProvider towerProvider;
@@ -92,11 +95,17 @@ public class MenuProvider implements Provider<Engine>, Clickable {
                 UIButton backAudio = new MenuButton("Back", (event) -> activeElements = optionMenu);
                 audioMenu = new UIButton[]{master, toggleAudio, backAudio};
             }
+            UIButton controls = new MenuButton("Controls", (event) -> activeElements = controlsMenu);
+            {
+                UIButton InvertedX = new MenuToggle("Invert x-axis", (b) -> window.getOptions().invertedXAxis *= -1);
+                UIButton backControls = new MenuButton("Back", (event) -> activeElements = optionMenu);
+                controlsMenu = new UIButton[]{InvertedX, backControls};
+            }
 
             //UIButton parameters = new MenuButton("Parameters", (event) -> {});
             //UIButton gameState = new MenuButton("Game state", (event) -> {});
             UIButton backOptions = new MenuButton("Back", (event) -> activeElements = mainMenu);
-            optionMenu = new UIButton[]{graphics, audio, /*parameters, gameState, */backOptions};
+            optionMenu = new UIButton[]{graphics, audio, controls,/*parameters, gameState, */backOptions};
         }
         UIButton credits = new MenuButton("Credits", (event) -> activeElements = creditScreen);
         {

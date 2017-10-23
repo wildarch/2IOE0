@@ -2,6 +2,7 @@ package nl.tue.c2IOE0.group5.providers;
 
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.Timer;
+import nl.tue.c2IOE0.group5.engine.Cleanable;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
@@ -14,7 +15,7 @@ import java.io.IOException;
  * @author Tom Peters
  */
 
-public class MusicProvider extends Thread implements Provider<Engine> {
+public class MusicProvider extends Thread implements Provider<Engine>,Cleanable {
 
     private Engine engine;
     private Clip clip;
@@ -54,14 +55,6 @@ public class MusicProvider extends Thread implements Provider<Engine> {
             if(clip != null) clip.start();
             timeToPlay = loopTimer.getLoopTime() + duration * 1000 * 2; //1000 to convert to miliseconds
         }
-    }
-
-    public void cleanup() {
-        if (clip != null)
-            clip.stop();
-        cancelled = true;
-        waitForMusicThread(fadeThread);
-        cancelled = false;
     }
 
     private boolean on = true;
@@ -169,6 +162,14 @@ public class MusicProvider extends Thread implements Provider<Engine> {
             System.err.println("Interrupted while waiting for music thread to join");
             e.printStackTrace();
         }
+    }
 
+    @Override
+    public void cleanup() {
+        if (clip != null)
+            clip.stop();
+        cancelled = true;
+        waitForMusicThread(fadeThread);
+        cancelled = false;
     }
 }

@@ -1,6 +1,5 @@
 package nl.tue.c2IOE0.group5.engine;
 
-import nl.tue.c2IOE0.group5.controllers.PlayerController;
 import nl.tue.c2IOE0.group5.engine.controller.Controller;
 import nl.tue.c2IOE0.group5.engine.controller.input.InputHandler;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.Listener;
@@ -10,12 +9,10 @@ import nl.tue.c2IOE0.group5.engine.rendering.Hud;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.ShaderException;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
-import nl.tue.c2IOE0.group5.providers.MusicProvider;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * @author Jorren Hendriks.
@@ -62,16 +59,12 @@ public class Engine extends Simulator {
      * Cleanup used objects
      */
     @Override
-    protected void cleanup() {
-        super.cleanup();
-        window.cleanup();
+    public void cleanup() {
+        providers.forEach(provider -> {
+            if (provider instanceof Cleanable) ((Cleanable) provider).cleanup();
+        });
         renderer.cleanup();
-        hud.cleanup();
-        try {
-            getProvider(MusicProvider.class).cleanup();
-        } catch (IllegalArgumentException e) {
-            // If there was no MusicProvider found, we don't need to clean it
-        }
+        window.cleanup();
     }
 
 

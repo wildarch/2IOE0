@@ -25,8 +25,9 @@ import static nl.tue.c2IOE0.group5.util.Angle.rotateVector;
 public class WalkerEnemy extends Enemy implements Animatable {
 
     private final static int MAXHEALTH = 100;
-    private final static float SPEED = 0.1f;
-    private final static int ATTACKSPEED = 400;
+    private final static float SPEED = 0.05f;
+    private final static int ATTACKSPEED = 1000;
+    private final static int DAMAGE = 20;
 
     private InstancedMesh body;
     private InstancedMesh head;
@@ -43,7 +44,7 @@ public class WalkerEnemy extends Enemy implements Animatable {
 
     public WalkerEnemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider, Vector2i initialPosition,
                        List<Vector2i> targetPositions, QLearner qlearner, AnimationProvider animationProvider) {
-        super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, MAXHEALTH, SPEED, ATTACKSPEED, qlearner);
+        super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, MAXHEALTH, DAMAGE, SPEED, ATTACKSPEED, qlearner);
         setScale(0.5f);
 //        move(0, 1, 0);
         this.animationProvider = animationProvider;
@@ -55,7 +56,7 @@ public class WalkerEnemy extends Enemy implements Animatable {
      * @return offset based on current animation
      */
     private float armOffset(float loopTime){
-        return !attacking ? (float) (0.001 * sin(0.001 * loopTime)) : 0;
+        return !attacking ? (float) (0.04 * sin(0.02 * loopTime)) : 0;
     }
 
     /**
@@ -64,7 +65,7 @@ public class WalkerEnemy extends Enemy implements Animatable {
      * @return offset based on current animation
      */
     private float headOffset(float loopTime){
-        return attacking ? 0 : (float) (0.002 * sin(0.002 * loopTime));
+        return attacking ? 0 : (float) (0.04 * sin(0.002 * loopTime));
     }
 
     @Override
@@ -103,51 +104,39 @@ public class WalkerEnemy extends Enemy implements Animatable {
         leftArmOffset = new LinearlyUpdatable(armOffset(0), 0.1f);
         rightArmOffset = new LinearlyUpdatable(-armOffset(0), 0.1f);
 
-        Vector3f yVec = new Vector3f(0, 1, 0);
         Material SILVER = new Material("/silver.png");
 
         head = renderer.linkMesh("/models/enemies/walkerEnemy/HEAD.obj", SILVER, () -> {
-            final Vector3f finalHeadOffset = new Vector3f(0f, 0.438f + this.headOffset.current(), 0f).mul(getScale());
-            final Vector3f displacement = rotateVector(finalHeadOffset, yVec, getRotation().y);
-            setModelView(renderer, displacement);
-            if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
+            rotateAndSet(renderer, new Vector3f(0f, 0.438f + this.headOffset.current(), 0f));
         });
 
         body = renderer.linkMesh("/models/enemies/walkerEnemy/BODY.obj", SILVER, () -> {
-            final Vector3f finalBodyOffset = new Vector3f(0f, 0.272f, 0f).mul(getScale());
-            final Vector3f displacement = rotateVector(finalBodyOffset, yVec, getRotation().y);
-            setModelView(renderer, displacement);
-            if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
+            rotateAndSet(renderer, new Vector3f(0f, 0.272f, 0f));
         });
 
         leftArm = renderer.linkMesh("/models/enemies/walkerEnemy/FRONT_LEFT.obj", SILVER, () -> {
-            final Vector3f finalLeftArmOffset = new Vector3f(-0.167f + this.leftArmOffset.current(), 0.245f, 0.131f).mul(getScale());
-            final Vector3f displacement = rotateVector(finalLeftArmOffset, yVec, getRotation().y);
-            setModelView(renderer, displacement);
-            if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
+            rotateAndSet(renderer, new Vector3f(0.167f + this.leftArmOffset.current(), 0.245f, 0.131f));
         });
 
         rightArm = renderer.linkMesh("/models/enemies/walkerEnemy/FRONT_RIGHT.obj", SILVER, () -> {
-            final Vector3f finalRightArmOffset = new Vector3f(-0.167f + rightArmOffset.current(), 0.245f, -0.131f).mul(getScale());
-            final Vector3f displacement = rotateVector(finalRightArmOffset, yVec, getRotation().y);
-            setModelView(renderer, displacement);
-            if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
+            rotateAndSet(renderer, new Vector3f(0.167f + rightArmOffset.current(), 0.245f, -0.131f));
         });
 
         leftLeg = renderer.linkMesh("/models/enemies/walkerEnemy/BACK_LEFT.obj", SILVER, () -> {
-            final Vector3f finalLeftLegOffset = new Vector3f(0.118f + rightArmOffset.current(), 0.245f, 0.131f).mul(getScale());
-            final Vector3f displacement = rotateVector(finalLeftLegOffset, yVec, getRotation().y);
-            setModelView(renderer, displacement);
-            if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
+            rotateAndSet(renderer, new Vector3f(-0.118f + rightArmOffset.current(), 0.245f, 0.131f));
         });
 
         rightLeg = renderer.linkMesh("/models/enemies/walkerEnemy/BACK_RIGHT.obj", SILVER, () -> {
-            final Vector3f finalRightLegOffset = new Vector3f(0.118f + leftArmOffset.current(), 0.245f, -0.131f).mul(getScale());
-            final Vector3f displacement = rotateVector(finalRightLegOffset, yVec, getRotation().y);
-            setModelView(renderer, displacement);
-            if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
+            rotateAndSet(renderer, new Vector3f(-0.118f + leftArmOffset.current(), 0.245f, -0.131f));
         });
 
+    }
+
+    private void rotateAndSet(Renderer renderer, Vector3f offset) {
+        final Vector3f finalBodyOffset = offset.mul(getScale());
+        final Vector3f displacement = rotateVector(finalBodyOffset, new Vector3f(0, 1, 0), getRotation().y);
+        setModelView(renderer, displacement, new Vector3f(0, 180, 0));
+        if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
     }
 
 }

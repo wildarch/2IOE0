@@ -13,7 +13,7 @@ import java.util.function.Predicate;
  *
  * @author Daan de Graaf
  */
-public class Simulator {
+public class Simulator implements Cleanable {
 
     public final static int TARGET_TPS = 20;
     public final static int TARGET_FPS = 144;
@@ -88,10 +88,9 @@ public class Simulator {
         init();
     }
 
-    /**
-     * Cleanup used objects
-     */
-    protected void cleanup() {
+    @Override
+    public void cleanup() {
+
     }
 
     /**

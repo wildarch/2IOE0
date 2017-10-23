@@ -27,7 +27,8 @@ public class DrillEnemy extends Enemy implements Animatable {
 
     private final static int MAXHEALTH = 100;
     private final static float SPEED = 0.1f;
-    private final static int ATTACKSPEED = 400;
+    private final static int ATTACKSPEED = 100;
+    private final static int DAMAGE = 2;
 
     private InstancedMesh body;
     private InstancedMesh drill;
@@ -42,7 +43,7 @@ public class DrillEnemy extends Enemy implements Animatable {
 
     public DrillEnemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider, Vector2i initialPosition,
                       List<Vector2i> targetPositions, QLearner qlearner, AnimationProvider animationProvider) {
-        super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, MAXHEALTH, SPEED, ATTACKSPEED, qlearner);
+        super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, MAXHEALTH, DAMAGE, SPEED, ATTACKSPEED, qlearner);
         setScale(0.03f);
 
         this.animationProvider = animationProvider;
@@ -73,7 +74,7 @@ public class DrillEnemy extends Enemy implements Animatable {
      * @return offset based on current animation
      */
     private float drillOffset(float loopTime){
-        return attacking ? (float) (0.1 * sin(0.005 * loopTime)) : 0;
+        return attacking ? (float) (0.2 * sin(1000/ATTACKSPEED * loopTime)) : 0;
     }
 
     @Override
@@ -87,7 +88,7 @@ public class DrillEnemy extends Enemy implements Animatable {
         drillOffset = new LinearlyUpdatable(0f, 100);
 
         this.renderer = renderer;
-        Material darkMatter = new Material();
+        Material darkMatter = new Material("/silver.png");
         Vector3f yVec = new Vector3f(0, -1, 0);
 
         body = renderer.linkMesh("/models/enemies/drillEnemy/BODY.obj", darkMatter, () -> {
@@ -97,7 +98,7 @@ public class DrillEnemy extends Enemy implements Animatable {
         });
 
         drill = renderer.linkMesh("/models/enemies/drillEnemy/DRILL.obj", darkMatter, () -> {
-            final Vector3f drillOffset = new Vector3f(2.713f+ this.drillOffset.current(), 1.674f, 0f).mul(getScale());
+            final Vector3f drillOffset = new Vector3f(2.713f + this.drillOffset.current(), 1.674f, 0f).mul(getScale());
             final Vector3f displacement = rotateVector(drillOffset, yVec, getRotation().y);
             setModelView(renderer, displacement, new Vector3f(0, -90, 0));
 

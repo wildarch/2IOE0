@@ -37,8 +37,9 @@ public class PlayerController implements Controller,Listener {
     private float sensitivity = 5;//Camera Sensitivity on a scale from 1 to 10
     private boolean rightMouseButton = false;
     private boolean middleMouseButton = false;
-    private boolean freeCameraMode = true;
-    private boolean lockedCameraMode = false;
+    private boolean freeCameraMode = false;
+    private boolean lockedCameraMode = true;
+    private int invertedXaxis;
 
     private float gCentreX = 0;
     private float gCentreY = 0;
@@ -66,19 +67,20 @@ public class PlayerController implements Controller,Listener {
     public void toggleCameraMode(){
         lockedCameraMode = !lockedCameraMode;
         freeCameraMode = !freeCameraMode;
-
-        System.out.println("lockedCameraMode: " + lockedCameraMode);
         System.out.println("freeCameraMode: " + freeCameraMode);
 
         accumulatedx = 180;
         oldaccumulatedx = 180;
         accumulatedy = 15;
         oldaccumulatedy = 15;
-        gCentreY = 6;
-        gCentreX = 6;
+        cameraDistance = gridProvider.SIZE/2;
+        oldangley = 0;
 
-        camera.setRotation(15,0,0);
-        camera.setPosition(gridProvider.SIZE/2, (accumulatedy * sensitivity/10), gridProvider.SIZE);
+        gCentreX = gridProvider.SIZE/2;
+        gCentreY = gridProvider.SIZE/2;
+
+        camera.setPosition(gridProvider.SIZE/2, 2f, gridProvider.SIZE);
+        camera.setRotation(accumulatedy, 0, 0);
     }
 
     @Override
@@ -91,6 +93,7 @@ public class PlayerController implements Controller,Listener {
         this.towerProvider = engine.getProvider(TowerProvider.class);
 
         cameraDistance = gridProvider.SIZE/2;
+        invertedXaxis = engine.getWindow().getOptions().invertedXAxis;
 
         this.camera = engine.getCamera();
         this.renderer = engine.getRenderer();
@@ -135,6 +138,8 @@ public class PlayerController implements Controller,Listener {
                 break;
             case GLFW_KEY_ESCAPE:
                 engine.pause(true);
+                break;
+            case GLFW_KEY_LEFT_SHIFT:
         }
     }
 
@@ -299,6 +304,8 @@ public class PlayerController implements Controller,Listener {
 
     @Override
     public void onMouseButtonPressed(MouseEvent event) {
+        invertedXaxis = engine.getWindow().getOptions().invertedXAxis;
+        System.out.println("InvertedXAxis: " + invertedXaxis);
         if (event.getSubject() == GLFW_MOUSE_BUTTON_1) {
             if (engine.isPaused()) {
                 menuProvider.onClick(event);
@@ -387,7 +394,7 @@ public class PlayerController implements Controller,Listener {
             float zDiff = gCentreY - camera.getPosition().z();
             cameraDiameter = (float)Math.sqrt(Math.pow(xDiff,2) + Math.pow(zDiff,2));
 
-            accumulatedx += deltaXMouse * sensitivity;
+            accumulatedx += deltaXMouse * sensitivity * invertedXaxis;
             if (accumulatedy + deltaYMouse * sensitivity2 < maxY-5 && accumulatedy + deltaYMouse * sensitivity2 > 1) {
                 accumulatedy += deltaYMouse * sensitivity2;
             }
@@ -424,7 +431,7 @@ public class PlayerController implements Controller,Listener {
         } else {
             angley = 0;
         }
-/*
+
         System.out.println("x: " + camera.getPosition().x());
         System.out.println("y: " + camera.getPosition().y());
         System.out.println("z: " + camera.getPosition().z());
@@ -433,7 +440,7 @@ public class PlayerController implements Controller,Listener {
         System.out.println("cameraDiameter: " + cameraDiameter);
         System.out.println("cameraDistance: " + cameraDistance);
         System.out.println("angley: " + angley);
-        */
+
         double diffangley = angley - oldangley;
 
         camera.rotate((float) diffangley, (float) anglex, 0);

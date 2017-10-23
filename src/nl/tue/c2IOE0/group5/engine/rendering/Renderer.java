@@ -1,6 +1,7 @@
 package nl.tue.c2IOE0.group5.engine.rendering;
 
 import nl.tue.c2IOE0.group5.engine.objects.Camera;
+import nl.tue.c2IOE0.group5.engine.Cleanable;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.DepthMap;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.DirectionalLight;
 import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
@@ -23,7 +24,7 @@ import static org.lwjgl.opengl.GL30.glBindFramebuffer;
 /**
  * @author Jorren Hendriks.
  */
-public class Renderer {
+public class Renderer implements Cleanable {
 
     private ArrayDeque<Runnable> modifiers;
 
@@ -192,6 +193,7 @@ public class Renderer {
         depthShader.createUniform("modelLightViewMatrix");
     }
 
+    @Override
     public void cleanup() {
         meshes.values().forEach(Mesh::cleanup);
         sceneShader.cleanup();
@@ -227,7 +229,7 @@ public class Renderer {
      *                     B > 0 a horizontal expansion and B < 0 a vertical stretch
      * @param mesh mesh to be boinked
      */
-    public void boink(Mesh mesh, float bounceDegree) {
+    public void boink(float bounceDegree, Mesh mesh) {
         ShaderProgram shader = task == Task.SCENE ? sceneShader : depthShader;
 
         shader.setUniform("bounceDegree", bounceDegree);
@@ -236,6 +238,19 @@ public class Renderer {
 
         modifiers.push(() ->
                 shader.setUniform("bounceDegree", 0f));
+    }
+
+    public void boink(float bounceDegree, Mesh... meshes) {
+        ShaderProgram shader = task == Task.SCENE ? sceneShader : depthShader;
+
+        shader.setUniform("bounceDegree", bounceDegree);
+        shader.setUniform("boundingMin", Mesh.combinedMinBoundingBox(meshes));
+        shader.setUniform("boundingMax", Mesh.combinedMaxBoundingBox(meshes));
+
+        modifiers.push(() ->
+                shader.setUniform("bounceDegree", 0f));
+
+
     }
 
     /**

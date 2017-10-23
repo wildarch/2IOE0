@@ -24,7 +24,7 @@ public class TestObject extends GameObject {
         tower.setMaterial(new Material("/tower.png"));
         renderer.linkMesh(tower, () -> {
             setModelView(renderer);
-            renderer.boink(tower, getBounceDegree());
+            renderer.boink(getBounceDegree(), tower);
         });
     }
 

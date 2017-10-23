@@ -9,6 +9,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.providers.Cell;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
+import nl.tue.c2IOE0.group5.towers.WallTower;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 
@@ -16,10 +17,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Enemy extends GameObject {
+
+    private final int maxHealth;
+    private final float speed;
+    private final long attackSpeed;
+    private int health;
+
     private boolean dead = false;
     protected GridProvider gridProvider;
-    private final int maxHealth;
-    private int health;
     private List<Vector2i> targetPositions;
     protected PositionInterpolator interpolator;
     protected Renderer renderer;
@@ -27,13 +32,14 @@ public abstract class Enemy extends GameObject {
     protected Timer loopTimer;
     protected Timer renderTimer;
     protected boolean attacking = false;
-    private final float speed;
-    private final long attackSpeed;
+
     private Vector3f offset;
     private QLearner qLearner;
+    private Vector3f ambientLight = new Vector3f(0, 0, 1f);
+    private int damage;
 
     public Enemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider,
-                 Vector2i initialPosition, List<Vector2i> targetPositions, int maxHealth, float speed, long attackSpeed, QLearner qlearner) {
+                 Vector2i initialPosition, List<Vector2i> targetPositions, int maxHealth, int damage, float speed, long attackSpeed, QLearner qlearner) {
         this.qLearner = qlearner;
         this.gridProvider = gridProvider;
         this.maxHealth = maxHealth;
@@ -46,6 +52,7 @@ public abstract class Enemy extends GameObject {
         this.interpolator = new PositionInterpolator(this, this.speed);
         this.attackSpeed = attackSpeed;
         this.offset = new Vector3f(0);
+        this.damage = damage;
     }
 
     public abstract EnemyType getType();
@@ -102,7 +109,7 @@ public abstract class Enemy extends GameObject {
 
         iMeshBody = renderer.linkMesh("/cube.obj", () -> {
             setModelView(renderer);
-            renderer.ambientLight(new Vector3f(0f, 0f,1f ));
+            renderer.ambientLight(ambientLight);
             if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
         });
         this.renderer = renderer;
@@ -110,8 +117,10 @@ public abstract class Enemy extends GameObject {
 
     private long timeToDoDamage;
     private void doDamage(AbstractTower tower) {
+        double factor = 1;
+        if (this instanceof WalkerEnemy && tower instanceof WallTower) factor = 2; //walkers do double the damage to walls
         if (timeToDoDamage < loopTimer.getLoopTime()) {
-            tower.takeDamage(1);
+            tower.takeDamage(damage*factor);
             timeToDoDamage = loopTimer.getLoopTime() + attackSpeed;
         }
     }
@@ -124,6 +133,11 @@ public abstract class Enemy extends GameObject {
         }
         qLearner.updateRewardsMatrix(qLearner.getState(this.getCurrentCell().getGridPosition()), damage);
         qLearner.execute();
+
+        if (health < 0.2 * maxHealth) {
+            float redness = ((0.2f * maxHealth) - health) * 5;
+            this.ambientLight = new Vector3f(1f, 0f, 0f).mul(redness);
+        }
     }
 
     public void die() {
