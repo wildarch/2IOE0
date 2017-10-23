@@ -60,6 +60,9 @@ public class PlayerController implements Controller,Listener {
     private float minZ;
     private int budget = 1000;
 
+    public PlayerController() {
+    }
+
     public void toggleCameraMode(){
         lockedCameraMode = !lockedCameraMode;
         freeCameraMode = !freeCameraMode;
@@ -85,6 +88,7 @@ public class PlayerController implements Controller,Listener {
         this.menuProvider = engine.getProvider(MenuProvider.class);
         this.uiProvider = engine.getProvider(UIProvider.class);
         this.gridProvider = engine.getProvider(GridProvider.class);
+        this.towerProvider = engine.getProvider(TowerProvider.class);
 
         cameraDistance = gridProvider.SIZE/2;
 
@@ -438,6 +442,7 @@ public class PlayerController implements Controller,Listener {
 
     @Override
     public void onMouseHover(MouseEvent event) {
+        if (true) return;
         if (freeCameraMode) {
             if (engine.isPaused()) return;
             Window window = event.getSource();
