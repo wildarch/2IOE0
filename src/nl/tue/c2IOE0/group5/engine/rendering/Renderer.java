@@ -152,6 +152,7 @@ public class Renderer {
 
         // Create uniforms for shadow mapping
         sceneShader.createUniform("depthMap");
+        sceneShader.createUniform("depthMapEnabled");
         sceneShader.createUniform("orthoProjectionMatrix");
         sceneShader.createUniform("modelLightViewMatrix");
 
@@ -415,12 +416,14 @@ public class Renderer {
 
 
         if (shadowMapping) {
+            sceneShader.setUniform("depthMapEnabled", 1);
             sceneShader.setUniform("depthMap", 1);
 
             glActiveTexture(GL_TEXTURE1);
             glBindTexture(GL_TEXTURE_2D, depthMap.getDepthMapTexture().getId());
         } else {
             sceneShader.setUniform("depthMap", 0);
+            sceneShader.setUniform("depthMapEnabled", 0);
         }
 
         instancedMeshes.forEach((mesh, consumers) -> {
@@ -465,8 +468,8 @@ public class Renderer {
     }
 
     public void render() {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         if (shadowMapping) {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             renderDepthMap();
         }
 

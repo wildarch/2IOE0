@@ -53,6 +53,7 @@ uniform PointLight pointLights[MAX_POINT_LIGHTS];
 uniform DirectionalLight directionalLight;
 uniform vec3 camera_pos;
 uniform int isSkybox;
+uniform int depthMapEnabled;
 
 vec4 ambientC;
 vec4 diffuseC;
@@ -150,9 +151,12 @@ void main()
                 diffuseSpecularComponent += calcPointLight(pointLights[i], mvVertexPosition, mvVertexNormal);
             }
         }
-
-        float shadow = calcShadow(mlightviewVertexPos);
-
+        float shadow;
+        if (depthMapEnabled == 1) {
+            shadow = calcShadow(mlightviewVertexPos);
+        } else {
+            shadow = 1.0;
+        }
         fragColor = ambientC * vec4(ambientLight, 1) + diffuseSpecularComponent * shadow;
     } else {
         fragColor = texture(texture_sampler, outTexture);
