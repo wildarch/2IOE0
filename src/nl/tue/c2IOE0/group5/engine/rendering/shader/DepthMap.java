@@ -13,8 +13,9 @@ public class DepthMap {
     public int width = 4096;
     public int height = 4096;
     */
-    public int width = 1500;
-    public int height = 1500;
+    //Has to be a multiple of 2 to be run on intel graphics!
+    public int width = 1024;
+    public int height = 1024;
 
     private int depthFboID;
 
