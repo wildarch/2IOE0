@@ -84,6 +84,10 @@ public class UIProvider implements Provider<Engine> {
     }
 
     public void select(Class<? extends AbstractTower> tower) {
+        if (this.selectedTower == tower) {
+            this.selectedTower = null;
+            return;
+        }
         this.selectedTower = tower;
     }
 
