@@ -40,8 +40,8 @@ public class MenuButton extends UIButton {
     @Override
     public void draw(Hud hud) {
         hud.roundedRectangle(x, y, width, height, INDENT);
-        hud.fill(COLOR_BACK.x, COLOR_BACK.y, COLOR_BACK.z, COLOR_BACK.w);
-        hud.stroke(STROKE_WIDTH, COLOR_STROKE.x, COLOR_STROKE.y, COLOR_STROKE.z, COLOR_STROKE.w);
+        hud.fill(COLOR_BLUE);
+        hud.stroke(STROKE_WIDTH, COLOR_PINK);
         hud.text(x + width /2, (int) (y + TEXT_LARGE + 10), TEXT_LARGE, Hud.Font.MEDIUM, NVG_ALIGN_CENTER, text, COLOR_TEXT);
     }
 

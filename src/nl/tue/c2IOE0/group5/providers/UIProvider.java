@@ -25,8 +25,10 @@ public class UIProvider implements Provider<Engine> {
 
     private Class<? extends AbstractTower> selectedTower;
 
-    private final Vector4f color = new Vector4f(0.3f, 0.3f, 0.8f, 0.8f);
-    private final Vector4f textColor = new Vector4f(1f, 1f, 1f, 1f);
+    public static final Vector4f COLOR_TEXT = new Vector4f(1f, 1f, 1f, 1f);
+    public static final Vector4f COLOR_BLUE = new Vector4f(0.14118f, 0.20392f, 0.49804f, 1f);
+    public static final Vector4f COLOR_PINK = new Vector4f(0.81569f, 0.15686f, 0.35686f, 1f);
+    public static final Vector4f COLOR_DARK = new Vector4f(0f, 0f, 0f, 0.3f);
 
     private UIButton buildBar;
     private UIText playerBudget;

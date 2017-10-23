@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import static nl.tue.c2IOE0.group5.providers.UIProvider.*;
 import static org.lwjgl.nanovg.NanoVG.NVG_ALIGN_CENTER;
 import static org.lwjgl.nanovg.NanoVG.NVG_ALIGN_TOP;
 
@@ -25,10 +26,6 @@ public class Buildbar extends UIButton {
     public static final int STROKE_WIDTH = 5;
     public static final int INDENT = 10;
 
-    public static final Vector4f COLOR_BACK = new Vector4f(0.3f, 0.3f, 0.8f, 0.8f);
-    public static final Vector4f COLOR_BACK_DARK = new Vector4f(0f, 0f, 0f, 0.6f);
-    public static final Vector4f COLOR_TEXT = new Vector4f(1f, 1f, 1f, 1f);
-    public static final Vector4f COLOR_STROKE = new Vector4f(0.8f, 0.3f, 0.3f, 0.8f);
     private UIButton[] buildings;
 
     public Buildbar(int tilewidth, int tileheight, UIProvider provider) {
@@ -59,7 +56,7 @@ public class Buildbar extends UIButton {
                                     NVG_ALIGN_CENTER | NVG_ALIGN_TOP, metaData.name, COLOR_TEXT);
                             if (provider.getSelected() == tower) {
                                 hud.rectangle(this.x, this.y, this.width, this.height);
-                                hud.fill(COLOR_BACK_DARK.x, COLOR_BACK_DARK.y, COLOR_BACK_DARK.z, COLOR_BACK_DARK.w);
+                                hud.fill(COLOR_DARK);
                             }
                         } catch (IOException ignored) {
 
@@ -76,8 +73,8 @@ public class Buildbar extends UIButton {
     @Override
     public void draw(Hud hud) {
         hud.roundedRectangle(x, y, width, height, INDENT);
-        hud.fill(COLOR_BACK.x, COLOR_BACK.y, COLOR_BACK.z, COLOR_BACK.w);
-        hud.stroke(STROKE_WIDTH, COLOR_STROKE.x, COLOR_STROKE.y, COLOR_STROKE.z, COLOR_STROKE.w);
+        hud.fill(COLOR_BLUE);
+        hud.stroke(STROKE_WIDTH, COLOR_PINK);
 
         for (UIButton button : buildings) {
             button.draw(hud);
