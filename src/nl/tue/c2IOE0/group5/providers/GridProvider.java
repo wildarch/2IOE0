@@ -92,8 +92,10 @@ public class GridProvider extends ObjectProvider<Cell> {
     @Override
     public void renderInit(Engine engine) {
         // Setup cell mesh
-        Mesh cell = engine.getRenderer().linkMesh("/cube.obj");
-        cell.setMaterial(new Material("/square.png"));
+        Mesh cell = engine.getRenderer().linkMesh("/models/cell/cell.obj");
+        Material cellMaterial = new Material("/models/cell/cell.png");
+        cellMaterial.setTransparency(true);
+        cell.setMaterial(cellMaterial);
     }
 
     private boolean isActiveCell(int x, int y) {
