@@ -6,6 +6,8 @@ import org.lwjgl.opengl.GL12;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL30.glGenerateMipmap;
@@ -14,6 +16,8 @@ import static org.lwjgl.opengl.GL30.glGenerateMipmap;
  * @author Jorren Hendriks.
  */
 public class Texture {
+
+    private static Map<String, Integer> cache = new HashMap<>();
 
     int id;
 
@@ -31,6 +35,10 @@ public class Texture {
 
     private static int loadTexture(String filename) throws MeshException {
         int id;
+
+        if (cache.containsKey(filename)) {
+            return cache.get(filename);
+        }
 
         try {
             PNGDecoder decoder = new PNGDecoder(Texture.class.getResourceAsStream(filename));
@@ -54,14 +62,14 @@ public class Texture {
             // generate MipMap
             glGenerateMipmap(GL_TEXTURE_2D);
 
+            cache.put(filename, id);
             return id;
         } catch (IOException e) {
             throw new MeshException(e.getMessage());
         }
     }
 
-    //create empty texture according to parameters
-    public Texture(int width, int height, int pixelFormat) throws Exception {
+    Texture(int width, int height, int pixelFormat) throws Exception {
         this.id = glGenTextures();
         this.width = width;
         this.height = height;

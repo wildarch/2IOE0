@@ -20,6 +20,8 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
     private GridProvider gridProvider;
     private Timer renderTimer;
 
+    private Engine engine;
+
     @Override
     public void init(Simulator engine) {
         super.init(engine);
@@ -29,6 +31,7 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
 
     @Override
     public void renderInit(Engine engine) {
+        this.engine = engine;
         Mesh m = engine.getRenderer().linkMesh("/cube.obj");
         m.setMaterial(new Material("/square.png"));
         renderTimer = engine.getRenderLoopTimer();
@@ -86,6 +89,7 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
 
     @Override
     public void update() {
+        if (engine == null || engine.isPaused()) return;
         objects.removeIf(Enemy::isDead);
         super.update();
 
