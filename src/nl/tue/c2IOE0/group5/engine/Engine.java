@@ -70,7 +70,7 @@ public class Engine extends Simulator {
         try {
             getProvider(MusicProvider.class).cleanup();
         } catch (IllegalArgumentException e) {
-            // Don't need to clean what you don't use
+            // If there was no MusicProvider found, we don't need to clean it
         }
     }
 
@@ -124,7 +124,7 @@ public class Engine extends Simulator {
                 try { // use sleep(1) for more accurate intervals
                     Thread.sleep(1);
                 } catch (InterruptedException ignored) {
-
+                    System.err.println("Main thread was interrupted while going to sleep!");
                 }
             }
         }

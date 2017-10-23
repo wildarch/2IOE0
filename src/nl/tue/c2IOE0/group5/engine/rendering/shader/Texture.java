@@ -69,7 +69,7 @@ public class Texture {
         }
     }
 
-    Texture(int width, int height, int pixelFormat) throws Exception {
+    Texture(int width, int height, int pixelFormat) {
         this.id = glGenTextures();
         this.width = width;
         this.height = height;

@@ -37,16 +37,20 @@ public class Buildbar extends UIButton {
         x += MARGIN;
         y += MARGIN;
         for (int i = 0; i < buildings.length; i++) {
+            Class<? extends AbstractTower> tower = towers.get(i);
+            MetaData metaData;
             try {
-                Class<? extends AbstractTower> tower = towers.get(i);
                 Field meta = tower.getField("metadata");
-                MetaData metaData = (MetaData) meta.get(null);
-
-                buildings[i] = new UIButton(x, y, tilewidth, tileheight) {
-                    @Override
-                    public void onClick(MouseEvent event) {
-                        provider.select(tower);
-                    }
+                metaData = (MetaData) meta.get(null);
+            } catch (IllegalAccessException | NoSuchFieldException e) {
+                throw new IllegalStateException("Tower " + towers.get(0).getName() +
+                        " does not have a field metadata, or it is not marked static public");
+            }
+            buildings[i] = new UIButton(x, y, tilewidth, tileheight) {
+                @Override
+                public void onClick(MouseEvent event) {
+                                                    provider.select(tower);
+                                                                           }
 
                     @Override
                     public void draw(Hud hud) {
@@ -58,14 +62,13 @@ public class Buildbar extends UIButton {
                                 hud.rectangle(this.x, this.y, this.width, this.height);
                                 hud.fill(COLOR_DARK);
                             }
-                        } catch (IOException ignored) {
-
+                        } catch (IOException e) {
+                            throw new RuntimeException("Failed to " + metaData.icon, e);
                         }
                     }
                 };
 
-                x += tilewidth + MARGIN;
-            } catch (NoSuchFieldException | IllegalAccessException ignored) {}
+            x += tilewidth + MARGIN;
         }
 
     }

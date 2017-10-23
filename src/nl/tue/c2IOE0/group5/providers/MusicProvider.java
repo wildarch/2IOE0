@@ -8,6 +8,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.Window;
 
 import javax.sound.sampled.*;
 import java.io.File;
+import java.io.IOException;
 
 /**
  * @author Tom Peters
@@ -42,8 +43,8 @@ public class MusicProvider extends Thread implements Provider<Engine> {
                     (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
             gainControl.setValue(baseVolume);
             this.clip.start();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
+            throw new RuntimeException("Failed to play music: " + e.getMessage());
         }
     }
 
@@ -59,11 +60,7 @@ public class MusicProvider extends Thread implements Provider<Engine> {
         if (clip != null)
             clip.stop();
         cancelled = true;
-        try {
-            t.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        waitForMusicThread(fadeThread);
         cancelled = false;
     }
 
@@ -88,29 +85,25 @@ public class MusicProvider extends Thread implements Provider<Engine> {
     private float currentVolume;
     private boolean fading = false;
     private float fadeStep = 0.1f;
-    Thread t = new Thread();
+    private Thread fadeThread = new Thread();
     private volatile boolean cancelled = false;
 
     public void fadeVolumeTo(float value, boolean overridePrevious) {
         currentVolume = gainControl.getValue();
         if (!fading && currentVolume != value && !overridePrevious) {  //prevent running it twice
             targetVolume = value;
-            t = new Thread(this);
-            t.start();
+            fadeThread = new Thread(this);
+            fadeThread.start();
         } else if (overridePrevious) {
-            //cancel t
+            //cancel fadeThread
             cancelled = true;
             //wait for it to finish
-            try {
-                t.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            waitForMusicThread(fadeThread);
             cancelled = false;
-            //start t again
+            //start fadeThread again
             targetVolume = value;
-            t = new Thread(this);
-            t.start();
+            fadeThread = new Thread(this);
+            fadeThread.start();
         }
     }
 
@@ -127,7 +120,7 @@ public class MusicProvider extends Thread implements Provider<Engine> {
                 currentVolume -= fadeStep;
                 gainControl.setValue(currentVolume);
                 try {
-                    Thread.sleep(10);
+                    fadeThread.sleep(1);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -142,7 +135,7 @@ public class MusicProvider extends Thread implements Provider<Engine> {
                 currentVolume += fadeStep;
                 gainControl.setValue(currentVolume);
                 try {
-                    Thread.sleep(10);
+                    fadeThread.sleep(1);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -159,5 +152,15 @@ public class MusicProvider extends Thread implements Provider<Engine> {
 
     public boolean isOn() {
         return on;
+    }
+
+    private void waitForMusicThread(Thread t) {
+        try {
+            t.join();
+        } catch(InterruptedException e) {
+            System.err.println("Interrupted while waiting for music thread to join");
+            e.printStackTrace();
+        }
+
     }
 }

@@ -39,28 +39,21 @@ public class Cell extends GameObject {
         this.cellType = type;
         this.position = new Vector2i(x, y);
 
-        try {
-            //this.mesh = OBJLoader.loadMesh("/cube.obj");
-
-            //initialize textures
-            //mesh.setMaterial(new Material("/square.png"));
-            switch (cellType) {
-                case BASE:
-                    defaultColor = new Vector3f(0f, 0.3f, 0f);
-                    break;
-                case BORDER:
-                    defaultColor = new Vector3f(0.3f, 0f, 0f);
-                    break;
-                case SPAWN:
-                    defaultColor = new Vector3f(0.3f);
-                    break;
-            }
-            color = defaultColor;
-            this.deactivate();
-            this.setPosition(x*this.getScale(), -0.5f, y*this.getScale());
-        } catch (Exception e) {
-            e.printStackTrace();
+        //initialize textures
+        switch (cellType) {
+            case BASE:
+                defaultColor = new Vector3f(0f, 0.3f, 0f);
+                break;
+            case BORDER:
+                defaultColor = new Vector3f(0.3f, 0f, 0f);
+                break;
+            case SPAWN:
+                defaultColor = new Vector3f(0.3f);
+                break;
         }
+        color = defaultColor;
+        this.deactivate();
+        this.setPosition(x*this.getScale(), -0.5f, y*this.getScale());
     }
 
     //set the texture of this cell to activated
