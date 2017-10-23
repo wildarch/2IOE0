@@ -8,11 +8,11 @@ import nl.tue.c2IOE0.group5.engine.rendering.Hud;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
-import nl.tue.c2IOE0.group5.userinterface.Buildbar;
-import nl.tue.c2IOE0.group5.userinterface.UIButton;
-import nl.tue.c2IOE0.group5.userinterface.UIText;
+import nl.tue.c2IOE0.group5.userinterface.*;
+import org.joml.Vector2i;
 import org.joml.Vector4f;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 
 /**
@@ -34,9 +34,31 @@ public class UIProvider implements Provider<Engine> {
 
     private UIButton buildBar;
     private UIText playerBudget;
+    private UIElement[] deadScreen;
+
+    private final static String[] creditTextfield =
+            (       "You did a good job.\n" +
+                    "Defended the tower well.\n" +
+                    "But in the end,\n" +
+                    "you lost.\n" +
+                    "Good luck with the rest of your life.\n" +
+                    "\n" +
+                    "Produced by TU/entertainment"
+            ).split("\n");
+
+
+    private static final int HEIGHT_FROM_TOP = 100;
+    private static final int TEXTFIELD_WIDTH = 750;
+    private static final int TEXTFIELD_HEIGHT = 450;
+    public static final int MARGIN = 20;
+
+
+    private boolean dead = false;
+    private Engine engine;
 
     @Override
     public void init(Engine engine) {
+        this.engine = engine;
         this.hud = engine.getHud();
         this.window = engine.getWindow();
         this.towerProvider = engine.getProvider(TowerProvider.class);
@@ -47,25 +69,56 @@ public class UIProvider implements Provider<Engine> {
                 () -> "Budget: " +playerController.getBudget()
         );
 
+        UIElement dead = new MenuTextField("You are dead", creditTextfield, TEXTFIELD_WIDTH, TEXTFIELD_HEIGHT);
+        MenuButton deadQuitButton = new MenuButton("Quit", (event) -> {
+            //shutdown
+            System.exit(0);
+        });
+        deadScreen = new UIElement[]{dead, deadQuitButton};
+
         hud.create(() -> {
             if (engine.isPaused()) return;
+            if (!this.dead) {
+                buildBar.draw(hud);
+                playerBudget.draw(hud);
+            } else {
+                for (UIElement element : deadScreen) {
+                    element.draw(hud);
+                }
+                MenuPositioner pos = new MenuPositioner((window.getWidth()/2), HEIGHT_FROM_TOP, MARGIN);
 
-            buildBar.draw(hud);
-            playerBudget.draw(hud);
+                for (UIElement element : deadScreen) {
+                    Vector2i p = pos.place(element, true);
+                    element.setX(p.x - element.getWidth()/2);
+                    element.setY(p.y);
+                }
+            }
         });
+    }
 
+    public void die() {
+        dead = true;
     }
 
     public boolean onClick(MouseEvent event) {
-        boolean passthrough = true;
+        if (!dead) {
+            boolean passthrough = true;
 
-        if (buildBar.contains(event.getPosition())) {
-            buildBar.onClick(event);
-            passthrough = false;
+            if (buildBar.contains(event.getPosition())) {
+                buildBar.onClick(event);
+                passthrough = false;
+            }
+
+            return passthrough;
+        } else {
+            Vector2i mousePosition = new Vector2i(event.getX(), event.getY());
+            for (UIElement element : deadScreen){
+                if (element instanceof UIButton && element.contains(mousePosition)) {
+                    ((UIButton)element).onClick(event);
+                }
+            }
+            return false;
         }
-
-        return passthrough;
-
     }
 
     private int bottom(int y) {

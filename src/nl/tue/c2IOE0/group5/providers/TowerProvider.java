@@ -21,6 +21,7 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
     public GridProvider gridProvider;
     public EnemyProvider enemyProvider;
     public BulletProvider bulletProvider;
+    public UIProvider uiProvider;
     public Timer loopTimer;
     public Timer renderTimer;
 
@@ -35,6 +36,7 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
         gridProvider = engine.getProvider(GridProvider.class);
         enemyProvider = engine.getProvider(EnemyProvider.class);
         bulletProvider = engine.getProvider(BulletProvider.class);
+        uiProvider = engine.getProvider(UIProvider.class);
         loopTimer = engine.getGameloopTimer();
         gameStarted = false;
     }
@@ -140,6 +142,11 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
     @Override
     public void update() {
         if (engine == null || engine.isPaused()) return;
+        objects.stream().forEach(t -> {
+            if (t instanceof MainTower && t.isDead()) {
+                uiProvider.die();
+            }
+        });
         objects.removeIf((t -> t.isDead()));
         super.update();
     }

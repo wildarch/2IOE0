@@ -31,6 +31,7 @@ public class MainTower extends AbstractTower {
     protected void onDie() {
         //renderer.unlinkMesh(mesh, render, shadowRender);
         renderer.unlinkMesh(iMesh);
+        //When the main tower dies, game should end
     }
 
     @Override
