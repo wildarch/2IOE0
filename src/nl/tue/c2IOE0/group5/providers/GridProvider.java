@@ -45,6 +45,7 @@ public class GridProvider extends ObjectProvider<Cell> {
 
     //the cell currently active (pointed to)
     private Cell activeCell;
+    private Cell rangedCell;
 
     @Override
     public void init(Simulator engine) {
@@ -258,21 +259,27 @@ public class GridProvider extends ObjectProvider<Cell> {
     }
 
     public void click() {
-        AbstractTower t = activeCell.getTower();
-        if (t == null) {
-            deRangeAll();
-            return;
-        }
+        if (rangedCell == null || rangedCell != activeCell) {
+            rangedCell = activeCell;
+            AbstractTower t = activeCell.getTower();
+            if (t == null) {
+                deRangeAll();
+                return;
+            }
 
-        for (int x = 0; x < SIZE; x++) {
-            for (int y = 0; y < SIZE; y++) {
-                Cell c = getCell(x, y);
-                if (inRange(t, c)) {
-                    c.range();
-                } else {
-                    c.deRange();
+            for (int x = 0; x < SIZE; x++) {
+                for (int y = 0; y < SIZE; y++) {
+                    Cell c = getCell(x, y);
+                    if (inRange(t, c)) {
+                        c.range();
+                    } else {
+                        c.deRange();
+                    }
                 }
             }
+        } else if (activeCell == rangedCell){
+            deRangeAll();
+            rangedCell = null;
         }
     }
 
