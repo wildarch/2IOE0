@@ -32,7 +32,7 @@ public class TowerDefence {
         });
         e.addControllers(new Controller[] {
                 new PlayerController(),
-                new AiController(networkFile)
+                new AiController(null)
         });
         try {
             e.run();

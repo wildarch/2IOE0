@@ -84,7 +84,14 @@ public class DataSimulator {
                             assert grid != null;
                             assert buffer != null;
 
-                            double result = simulate(grid, buffer, trust);
+                            double result;
+
+                            try {
+                                result = simulate(grid, buffer, trust);
+                            } catch (Exception e){
+                                e.printStackTrace();
+                                result = 0;
+                            }
 
                             outputs.putScalar(r, 0, result);
                         }

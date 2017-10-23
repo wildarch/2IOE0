@@ -44,7 +44,7 @@ public class AiController implements Controller, Listener {
     private List<Integer> optimalPath; //the current optimal path for the active cell
     private GridProvider gridProvider;
 
-    private ComputationGraph network;
+    private ComputationGraph network = null;
     private final File networkFile;
 
     public AiController(File networkFile) {
@@ -58,7 +58,9 @@ public class AiController implements Controller, Listener {
         gridProvider = engine.getProvider(GridProvider.class);
 
         try {
-            network = ModelSerializer.restoreComputationGraph(networkFile);
+            if(networkFile.exists() && networkFile.canRead()){
+                network = ModelSerializer.restoreComputationGraph(networkFile);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -85,19 +87,23 @@ public class AiController implements Controller, Listener {
 
         EnemyType[] selectedBuffer = null;
         double bufferScore = Double.MIN_VALUE;
-
+        double sampleScore;
         for (int i = 0; i < BUFFER_SAMPLE_SIZE; i++){
             for (int j = 0; j < sampleBuffer.length; j++){
                 EnemyType t = EnemyType.values()[r.nextInt(EnemyType.getSize())];
                 sampleBuffer[j] = t;
             }
-            converter = InputConverter.fromGameState(gridProvider, 1, sampleBuffer);
-            converter.convert();
-            INDArray aiInput = converter.getInput();
-            INDArray aiOutput = network.outputSingle(false, aiInput);
-            double score = aiOutput.getDouble(0, 0);
+            if(network != null){
+                converter = InputConverter.fromGameState(gridProvider, 1, sampleBuffer);
+                converter.convert();
+                INDArray aiInput = converter.getInput();
+                INDArray aiOutput = network.outputSingle(false, aiInput);
+                sampleScore = aiOutput.getDouble(0, 0);
+            } else {
+                sampleScore = 0;
+            }
 
-            if(score > bufferScore){
+            if(sampleScore > bufferScore){
                 selectedBuffer = Arrays.copyOf(sampleBuffer, sampleBuffer.length);
             }
         }
