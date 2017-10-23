@@ -155,7 +155,7 @@ public class Hud implements Drawable {
         }
         nvgBeginPath(vg);
 
-        nvgMoveTo(vg, points[0].x, points[1].y);
+        nvgMoveTo(vg, points[points.length-1].x, points[points.length-1].y);
         for(Vector2i point : points) {
             nvgLineTo(vg, point.x, point.y);
         }
