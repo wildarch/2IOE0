@@ -16,6 +16,7 @@ public class MainTower extends AbstractTower {
     private static final int RANGE = 2;
     private static final int MAX_LEVEL = 1;
     private static final int MAX_HEALTH = 100;
+    private static final int PRICE = 0;
 
     private Renderer renderer;
     private InstancedMesh iMesh;
