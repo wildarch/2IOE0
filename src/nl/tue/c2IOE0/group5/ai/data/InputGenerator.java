@@ -1,6 +1,7 @@
 package nl.tue.c2IOE0.group5.ai.data;
 
 import com.google.common.collect.Sets;
+import nl.tue.c2IOE0.group5.towers.TowerType;
 import org.deeplearning4j.datasets.iterator.impl.ListDataSetIterator;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
@@ -171,11 +172,18 @@ public class InputGenerator {
         //grid data
         for (int x = 0; x < gridSize; x++){
             for (int y = 0; y < gridSize; y++){
-                if(!r.nextBoolean()) continue;
-
                 //this cell contains a tower
                 int towerType = r.nextInt(nrTowers);
-                double towerLevel = r.nextInt(nrTowerLevels) / (double)nrTowerLevels;
+
+                //tower levels are disabled
+                double towerLevel = 1;//r.nextInt(nrTowerLevels) / (double)nrTowerLevels;
+
+                if(x == gridSize / 2 && y == gridSize / 2){
+                    towerType = TowerType.CASTLE.getValue();
+                }
+
+                if(!r.nextBoolean()) continue;
+
                 grid[x * gridSize * nrTowers + y * nrTowers + towerType] = towerLevel;
 
             }
@@ -183,6 +191,7 @@ public class InputGenerator {
         return grid;
     }
 
+    @Deprecated
     public Set<List<Float>> getInputs() {
         if (inputs != null) {
             return inputs;

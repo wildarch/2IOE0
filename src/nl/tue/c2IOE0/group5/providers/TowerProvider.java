@@ -26,6 +26,8 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
         enemyProvider = engine.getProvider(EnemyProvider.class);
         bulletProvider = engine.getProvider(BulletProvider.class);
         loopTimer = engine.getGameloopTimer();
+
+        //the following method creates a dependency conflict, call this after init()
         //putMainTower();
     }
 
@@ -35,8 +37,8 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
         m.setMaterial(new Material("/tower.png"));
     }
 
-    private void putMainTower() {
-        int x = GridProvider.SIZE / 2;
+    public void putMainTower() {
+        int x = gridProvider.SIZE / 2;
         Cell baseCell = gridProvider.getCell(x, x);
         mainTower = new MainTower(enemyProvider, bulletProvider, loopTimer).init(getRenderer());
         baseCell.placeTower(mainTower);

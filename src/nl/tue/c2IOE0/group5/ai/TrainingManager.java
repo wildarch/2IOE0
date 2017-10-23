@@ -56,6 +56,7 @@ public class TrainingManager extends JFrame{
     SpinnerModel intModel9 = new SpinnerNumberModel(5, 0, 1000000, 1);
     SpinnerModel intModel10 = new SpinnerNumberModel(4, 1, 500, 1);
     SpinnerModel intModel11 = new SpinnerNumberModel(5, 0, 50000, 1);
+    SpinnerModel intModel12 = new SpinnerNumberModel(2, 1, 5000, 1);
 
     JLabel labelDataSetSize = new JLabel("input size: ");
     JLabel labelGridSize = new JLabel("grid size: ");
@@ -68,6 +69,7 @@ public class TrainingManager extends JFrame{
     JLabel labelEpochs = new JLabel("epochs: ");
     JLabel labelNumThreads = new JLabel("num threads: ");
     JLabel labelBufferSize = new JLabel("buffer size: ");
+    JLabel labelBorderSize = new JLabel("border size: ");
 
     //DATASET INPUTS
     //numin
@@ -92,6 +94,7 @@ public class TrainingManager extends JFrame{
     JSpinner inputNumEpochs = new JSpinner(intModel9);
 
     JSpinner inputNumThreads = new JSpinner(intModel10);
+    JSpinner inputBorderSize = new JSpinner(intModel12);
 
     JFileChooser modelSelector = new JFileChooser();
     JFileChooser dataSelector = new JFileChooser();
@@ -215,11 +218,12 @@ public class TrainingManager extends JFrame{
             int nrTowers = (int)inputNumTowers.getValue();
             int nrDeployTypes = (int)inputNumDeployTypes.getValue();
             int bufferSize = (int)inputBufferSize.getValue();
+            int borderSize = (int) inputBorderSize.getValue();
 
             new Thread(() -> {
                 lockButtons();
                 status("Creating simulator");
-                simulator = new DataSimulator(numThreads, inputs, gridSize, nrTowers, nrDeployTypes,
+                simulator = new DataSimulator(numThreads, inputs, gridSize, borderSize, nrTowers, nrDeployTypes,
                     bufferSize);
                 simulator.initialize();
                 status("Done creating simulator");
@@ -294,6 +298,7 @@ public class TrainingManager extends JFrame{
         dataOptionsPanel.add(inputBatchSize);
         dataOptionsPanel.add(inputNumThreads);
         dataOptionsPanel.add(inputBufferSize);
+        dataOptionsPanel.add(inputBorderSize);
 
         dataOptionsPanel.add(labelDataSetSize);
         dataOptionsPanel.add(labelGridSize);
@@ -304,6 +309,7 @@ public class TrainingManager extends JFrame{
         dataOptionsPanel.add(labelBatchSize);
         dataOptionsPanel.add(labelNumThreads);
         dataOptionsPanel.add(labelBufferSize);
+        dataOptionsPanel.add(labelBorderSize);
 
         dataLayout.putConstraint(SpringLayout.WEST, labelDataSetSize, 5, SpringLayout.WEST, dataOptionsPanel);
         dataLayout.putConstraint(SpringLayout.WEST, labelGridSize, 5, SpringLayout.WEST, dataOptionsPanel);
@@ -314,6 +320,7 @@ public class TrainingManager extends JFrame{
         dataLayout.putConstraint(SpringLayout.WEST, labelBatchSize, 5, SpringLayout.WEST, dataOptionsPanel);
         dataLayout.putConstraint(SpringLayout.WEST, labelNumThreads, 5, SpringLayout.WEST, dataOptionsPanel);
         dataLayout.putConstraint(SpringLayout.WEST, labelBufferSize, 5, SpringLayout.WEST, dataOptionsPanel);
+        dataLayout.putConstraint(SpringLayout.WEST, labelBorderSize, 5, SpringLayout.WEST, dataOptionsPanel);
 
         dataLayout.putConstraint(SpringLayout.NORTH, labelDataSetSize, 5, SpringLayout.NORTH, dataOptionsPanel);
         dataLayout.putConstraint(SpringLayout.NORTH, labelGridSize, 5, SpringLayout.SOUTH, labelDataSetSize);
@@ -324,6 +331,7 @@ public class TrainingManager extends JFrame{
         dataLayout.putConstraint(SpringLayout.NORTH, labelBatchSize, 5, SpringLayout.SOUTH, labelQtrustSteps);
         dataLayout.putConstraint(SpringLayout.NORTH, labelNumThreads, 5, SpringLayout.SOUTH, labelBatchSize);
         dataLayout.putConstraint(SpringLayout.NORTH, labelBufferSize, 5, SpringLayout.SOUTH, labelNumThreads);
+        dataLayout.putConstraint(SpringLayout.NORTH, labelBorderSize, 5, SpringLayout.SOUTH, labelBufferSize);
 
         dataLayout.putConstraint(SpringLayout.WEST, inputDataSetSize, 5, SpringLayout.EAST, labelDataSetSize);
         dataLayout.putConstraint(SpringLayout.WEST, inputGridSize, 5, SpringLayout.EAST, labelGridSize);
@@ -334,6 +342,7 @@ public class TrainingManager extends JFrame{
         dataLayout.putConstraint(SpringLayout.WEST, inputBatchSize, 5, SpringLayout.EAST, labelBatchSize);
         dataLayout.putConstraint(SpringLayout.WEST, inputNumThreads, 5, SpringLayout.EAST, labelNumThreads);
         dataLayout.putConstraint(SpringLayout.WEST, inputBufferSize, 5, SpringLayout.EAST, labelBufferSize);
+        dataLayout.putConstraint(SpringLayout.WEST, inputBorderSize, 5, SpringLayout.EAST, labelBorderSize);
 
         dataLayout.putConstraint(SpringLayout.NORTH, inputDataSetSize, 0, SpringLayout.NORTH, labelDataSetSize);
         dataLayout.putConstraint(SpringLayout.NORTH, inputGridSize, 0, SpringLayout.NORTH, labelGridSize);
@@ -344,6 +353,7 @@ public class TrainingManager extends JFrame{
         dataLayout.putConstraint(SpringLayout.NORTH, inputBatchSize, 0, SpringLayout.NORTH, labelBatchSize);
         dataLayout.putConstraint(SpringLayout.NORTH, inputNumThreads, 0, SpringLayout.NORTH, labelNumThreads);
         dataLayout.putConstraint(SpringLayout.NORTH, inputBufferSize, 0, SpringLayout.NORTH, labelBufferSize);
+        dataLayout.putConstraint(SpringLayout.NORTH, inputBorderSize, 0, SpringLayout.NORTH, labelBorderSize);
 
         modelOptionsPanel.add(inputNumIterations);
         modelOptionsPanel.add(inputNumEpochs);

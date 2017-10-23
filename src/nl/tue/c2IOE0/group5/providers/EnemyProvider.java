@@ -1,6 +1,8 @@
 package nl.tue.c2IOE0.group5.providers;
 
+import nl.tue.c2IOE0.group5.enemies.Bruiser;
 import nl.tue.c2IOE0.group5.enemies.Enemy;
+import nl.tue.c2IOE0.group5.enemies.EnemyType;
 import nl.tue.c2IOE0.group5.enemies.TestEnemy;
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.Simulator;
@@ -40,6 +42,22 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
 
     public int countEnemies() {
         return objects.size();
+    }
+
+    public Enemy putEnemy(EnemyType enemyType, Vector2i initialPosition, List<Vector2i> targets){
+        Enemy enemy;
+
+        switch (enemyType){
+            default:
+                enemy = new Bruiser(loopTimer, renderTimer, gridProvider, initialPosition, targets, 100);
+                break;
+        }
+
+        System.out.println("placing " + enemyType + " at " + initialPosition.toString());
+
+        objects.add(enemy);
+
+        return enemy;
     }
 
     public void putEnemy(Vector2i initialPosition, List<Vector2i> targets) {

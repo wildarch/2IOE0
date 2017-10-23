@@ -67,7 +67,7 @@ public class AiController implements Controller, Listener {
             List<Integer> path = qlearner.getOptimalPath(startCell.getGridPosition());
             enemyProvider.putEnemy(
                     start,
-                    path.stream().map(QLearner::getPoint).collect(Collectors.toList())
+                    path.stream().map(p -> QLearner.getPoint(p, gridProvider.SIZE)).collect(Collectors.toList())
             );
         }
         if (big) {
@@ -78,7 +78,7 @@ public class AiController implements Controller, Listener {
                 List<Integer> path = qlearner.getOptimalPath(startCell.getGridPosition());
                 enemyProvider.putEnemy(
                         start,
-                        path.stream().map(QLearner::getPoint).collect(Collectors.toList())
+                        path.stream().map(p -> QLearner.getPoint(p, gridProvider.SIZE)).collect(Collectors.toList())
                 );
             }
         }
@@ -86,11 +86,11 @@ public class AiController implements Controller, Listener {
 
     private void trainQLearner() {
         int noIterations = 1000;
-        qlearner = new QLearner(GridProvider.SIZE, noIterations);
-        qlearner.updateRewardsMatrix(QLearner.getState(GridProvider.SIZE/2, GridProvider.SIZE/2), 1000);
+        qlearner = new QLearner(gridProvider.SIZE, noIterations);
+        qlearner.updateRewardsMatrix(QLearner.getState(gridProvider.SIZE/2, gridProvider.SIZE/2, gridProvider.SIZE), 1000);
         for (int i = 3; i <= 9; i++) {
-            qlearner.updateRewardsMatrix(QLearner.getState(3, i), -5);
-            qlearner.updateRewardsMatrix(QLearner.getState(9, i), -5);
+            qlearner.updateRewardsMatrix(QLearner.getState(3, i, gridProvider.SIZE), -5);
+            qlearner.updateRewardsMatrix(QLearner.getState(9, i, gridProvider.SIZE), -5);
         }
         for (int i = 0; i < 20; i++) {
             qlearner.generateRandomPath(100);
@@ -119,7 +119,7 @@ public class AiController implements Controller, Listener {
     @Override
     public void onMouseButtonPressed(MouseEvent event) {
         if (event.getSubject() == GLFW_MOUSE_BUTTON_1) {
-            optimalPath = qlearner.getOptimalPath(QLearner.getState(gridProvider.getActiveCell()));
+            optimalPath = qlearner.getOptimalPath(qlearner.getState(gridProvider.getActiveCell()));
             gridProvider.drawPath(optimalPath);
         }
     }

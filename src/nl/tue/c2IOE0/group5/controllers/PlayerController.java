@@ -1,7 +1,6 @@
 package nl.tue.c2IOE0.group5.controllers;
 
 import nl.tue.c2IOE0.group5.engine.Engine;
-import nl.tue.c2IOE0.group5.engine.Simulator;
 import nl.tue.c2IOE0.group5.engine.controller.Controller;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.Event;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.Listener;
@@ -61,18 +60,18 @@ public class PlayerController implements Controller,Listener {
         this.renderer = engine.getRenderer();
         //this.window = engine.getWindow();
 
-        camera.setPosition(GridProvider.SIZE /2, 6f, GridProvider.SIZE /2);
+        camera.setPosition(gridProvider.SIZE /2, 6f, gridProvider.SIZE /2);
         camera.setRotation(90, 90, 0);
         calculateXYZ();
     }
 
     private void calculateXYZ(){
-        maxX = GridProvider.SIZE /2 + GridProvider.SIZE;
-        maxY = GridProvider.SIZE;
-        maxZ = GridProvider.SIZE /2 + GridProvider.SIZE;
+        maxX = gridProvider.SIZE /2 + gridProvider.SIZE;
+        maxY = gridProvider.SIZE;
+        maxZ = gridProvider.SIZE /2 + gridProvider.SIZE;
 
-        minX = GridProvider.SIZE /2 - GridProvider.SIZE;
-        minZ = GridProvider.SIZE /2 - GridProvider.SIZE;
+        minX = gridProvider.SIZE /2 - gridProvider.SIZE;
+        minZ = gridProvider.SIZE /2 - gridProvider.SIZE;
     }
 
     @Override

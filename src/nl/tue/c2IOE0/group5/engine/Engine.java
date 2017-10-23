@@ -45,7 +45,7 @@ public class Engine extends Simulator {
      * Initialize necessary objects
      */
     @Override
-    protected void init() throws ShaderException, IOException {
+    public void init() throws ShaderException, IOException {
         renderTimer.init();
         window.init();
         renderer.init(window);

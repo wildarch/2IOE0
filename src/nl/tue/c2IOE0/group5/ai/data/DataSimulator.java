@@ -1,21 +1,23 @@
 package nl.tue.c2IOE0.group5.ai.data;
 
+import nl.tue.c2IOE0.group5.ai.QLearner;
 import nl.tue.c2IOE0.group5.enemies.EnemyType;
 import nl.tue.c2IOE0.group5.engine.Simulator;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
-import nl.tue.c2IOE0.group5.providers.BulletProvider;
-import nl.tue.c2IOE0.group5.providers.EnemyProvider;
-import nl.tue.c2IOE0.group5.providers.GridProvider;
-import nl.tue.c2IOE0.group5.providers.TowerProvider;
+import nl.tue.c2IOE0.group5.providers.*;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
 import nl.tue.c2IOE0.group5.towers.MainTower;
 import nl.tue.c2IOE0.group5.towers.TowerType;
+import org.joml.Vector2i;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * TowerDefence
@@ -26,9 +28,10 @@ public class DataSimulator {
     private final boolean[] activeThreads;
     private final INDArray inputs;
     private final INDArray outputs;
-    private final int gridSize, nrTowers, nrDeployTypes, bufferSize, numThreads;
+    private final int playSize, totalSize, borderSize, nrTowers, nrDeployTypes, bufferSize, numThreads;
+    private final Random random = new Random();
 
-    public DataSimulator(int numThreads, final INDArray inputs, int gridSize, int nrTowers,
+    public DataSimulator(int numThreads, final INDArray inputs, int playSize, int borderSize, int nrTowers,
                          int nrDeployTypes, int bufferSize){
         threads = new Thread[numThreads];
         activeThreads = new boolean[numThreads];
@@ -38,7 +41,9 @@ public class DataSimulator {
         //create label output matrix with one column
         this.outputs = Nd4j.create(inputs.rows(), 1);
 
-        this.gridSize = gridSize;
+        this.playSize = playSize;
+        this.totalSize = borderSize * 2 + playSize;
+        this.borderSize = borderSize;
         this.nrTowers = nrTowers;
         this.nrDeployTypes = nrDeployTypes;
         this.bufferSize = bufferSize;
@@ -70,7 +75,7 @@ public class DataSimulator {
 
                             final INDArray row = inputs.getRow(r);
                             final InputConverter converter = InputConverter.fromNNInput(row,
-                                gridSize, nrTowers, nrDeployTypes, bufferSize);
+                                playSize, nrTowers, nrDeployTypes, bufferSize);
 
                             TowerType[][] grid = converter.getGrid();
                             EnemyType[] buffer = converter.getBuffer();
@@ -102,32 +107,8 @@ public class DataSimulator {
 
         EnemyProvider ep = new EnemyProvider();
         TowerProvider tp = new TowerProvider();
-        GridProvider gp = new GridProvider();
+        GridProvider gp = new GridProvider(totalSize, playSize);
         BulletProvider bp = new BulletProvider();
-
-//        for (int i = 0; i < buffer.length; i++){
-//            Enemy enemy;
-//            switch (buffer[i]){
-//                default:
-//
-//                    break;
-//            }
-//
-//        }
-
-        for (int x = 0; x < gridSize; x++){
-            for (int y = 0; y < gridSize; y++){
-                if (grid[x][y] != null){
-                    AbstractTower tower;
-                    switch (grid[x][y]){
-                        default:
-                            tower = new MainTower(ep, bp, simulator.getGameloopTimer());
-                            break;
-                    }
-                    //gp.placeTower(x, y, tower);
-                }
-            }
-        }
 
         simulator.addProviders(new Provider[]{
             ep,
@@ -135,6 +116,44 @@ public class DataSimulator {
             gp,
             bp
         });
+
+        try {
+            simulator.init();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        assert simulator.isInitialized();
+
+        QLearner routingLearner = new QLearner(totalSize, 1000);
+
+        //TODO: train q-learner here
+
+        for (EnemyType type : buffer) {
+            int index = random.nextInt(7);
+            Cell startCell = gp.getCell(routingLearner.getOptimalNSpawnStates(7)[index]);
+            Vector2i start = startCell.getGridPosition();
+            List<Integer> path = routingLearner.getOptimalPath(startCell.getGridPosition());
+            List<Vector2i> targets = path.stream().map(p -> QLearner.getPoint(p, totalSize)).collect(Collectors.toList());
+            ep.putEnemy(type, start, targets);
+        }
+
+        tp.putMainTower();
+
+        for (int x = 0; x < playSize; x++){
+            for (int y = 0; y < playSize; y++){
+                if (grid[x][y] != null){
+                    AbstractTower tower;
+                    switch (grid[x][y]){
+                        default:
+                            tower = new MainTower(ep, bp, simulator.getGameloopTimer());
+                            break;
+                    }
+
+                    gp.placePlayFieldTower(x, y, tower);
+                }
+            }
+        }
 
         try {
             simulator.run();

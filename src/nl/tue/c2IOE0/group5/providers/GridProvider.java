@@ -25,14 +25,25 @@ import java.util.List;
 public class GridProvider extends ObjectProvider<Cell> {
 
     //total size of the grid (including spawn cells). Change this to change the total grid
-    public static final int SIZE = 13;
+    public final int SIZE;
     //size of the grid in which towers can be placed
-    public static final int PLAYFIELDSIZE = 9;
+    public final int PLAYFIELDSIZE;
     //the actual grid
-    private final Cell[][] grid = new Cell[SIZE][SIZE];
+    private final Cell[][] grid;
 
     //the cell currently active (pointed to)
     private Cell activeCell;
+
+    public GridProvider(){
+        this(9, 13);
+    }
+
+    public GridProvider(int gridSize, int playFieldSize){
+        super();
+        SIZE = gridSize;
+        PLAYFIELDSIZE = playFieldSize;
+        grid = new Cell[SIZE][SIZE];
+    }
 
     @Override
     public void init(Simulator engine) {
@@ -100,6 +111,15 @@ public class GridProvider extends ObjectProvider<Cell> {
             throw new ArrayIndexOutOfBoundsException("The coordinates of this cell are outside the grid.");
         }
         getCell(x, y).placeTower(tower);
+    }
+
+    public void placePlayFieldTower(int x, int y, AbstractTower tower){
+        if (x < 0 || x >= PLAYFIELDSIZE || y < 0 || y >= PLAYFIELDSIZE) {
+            throw new ArrayIndexOutOfBoundsException("The coordinates of this cell are outside the grid.");
+        }
+
+        final int diff = ((SIZE - PLAYFIELDSIZE) / 2);
+        placeTower(x + diff, y + diff, tower);
     }
 
     public void levelUpTower(int x, int y) {
@@ -193,7 +213,7 @@ public class GridProvider extends ObjectProvider<Cell> {
     public void drawPath(List<Integer> path) {
         deactivateAll();
         for (int state : path) {
-            Vector2i position = QLearner.getPoint(state);
+            Vector2i position = QLearner.getPoint(state, SIZE);
             getCell(position).activate();
         }
     }
