@@ -55,9 +55,16 @@ public class RocketTower extends AbstractTower {
     public void renderInit(Renderer renderer) {
         setScale(1f);
 
-        iBaseMesh = renderer.linkMesh("/models/towers/rockettower/base.obj", () -> setModelView(renderer));
-        iRocketMesh = renderer.linkMesh("/models/towers/rockettower/rocket.obj", () -> setModelView(renderer, new Vector3f(0f, 0.148f, 0f), rocketRotation));
-
+        Mesh baseMesh = renderer.linkMesh("/models/towers/rockettower/base.obj");
+        Mesh rocketMesh = renderer.linkMesh("/models/towers/rockettower/rocket.obj");
+        iBaseMesh = renderer.linkMesh(baseMesh, () -> {
+            setModelView(renderer, getPositionOffset());
+            renderer.boink(getBounceDegree(), baseMesh, rocketMesh);
+        });
+        iRocketMesh = renderer.linkMesh(rocketMesh, () -> {
+            setModelView(renderer, new Vector3f(0f, 0.148f, 0f).add(getPositionOffset().toImmutable()));
+            renderer.boink(getBounceDegree(), baseMesh, rocketMesh);
+        });
 
         this.renderer = renderer;
     }

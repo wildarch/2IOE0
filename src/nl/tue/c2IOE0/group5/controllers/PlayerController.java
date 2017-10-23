@@ -9,9 +9,13 @@ import nl.tue.c2IOE0.group5.engine.objects.Camera;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.providers.*;
+import nl.tue.c2IOE0.group5.towers.AbstractTower;
+import nl.tue.c2IOE0.group5.towers.TowerType;
 import nl.tue.c2IOE0.group5.util.Angle;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
+
+import java.util.Vector;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -37,9 +41,14 @@ public class PlayerController implements Controller,Listener {
     private float sensitivity = 5;//Camera Sensitivity on a scale from 1 to 10
     private boolean rightMouseButton = false;
     private boolean middleMouseButton = false;
-    private boolean freeCameraMode = false;
-    private boolean lockedCameraMode = true;
+    private boolean freeCameraMode = true;
+    private boolean lockedCameraMode = false;
     private int invertedXaxis;
+    private boolean ctrl = false;
+    private boolean leftMouseButton = false;
+
+    private Class<? extends AbstractTower> prevTower;
+    private Vector2i prevpos;
 
     private float gCentreX = 0;
     private float gCentreY = 0;
@@ -139,7 +148,6 @@ public class PlayerController implements Controller,Listener {
             case GLFW_KEY_ESCAPE:
                 engine.pause(true);
                 break;
-            case GLFW_KEY_LEFT_SHIFT:
         }
     }
 
@@ -148,6 +156,9 @@ public class PlayerController implements Controller,Listener {
         switch (event.getSubject()) {
             case GLFW_KEY_C:
                 toggleCameraMode();
+                break;
+            case GLFW_KEY_LEFT_CONTROL:
+                uiProvider.select(null);
                 break;
         }
     }
@@ -176,6 +187,14 @@ public class PlayerController implements Controller,Listener {
                     break;
                 case GLFW_KEY_LEFT_SHIFT:
                     moveRelativeLocal(0f, -movement, 0f);
+                    break;
+                case GLFW_KEY_LEFT_CONTROL:
+                    if (leftMouseButton) {
+                        Vector2i pos = gridProvider.getActiveCell();
+                        if (gridProvider.getCell(pos.x(),pos.y()).getTower() == null) {
+                            buildTower(true);
+                        }
+                    }
                     break;
             }
         }
@@ -302,21 +321,33 @@ public class PlayerController implements Controller,Listener {
         camera.setPosition(XPosition, YPosition, ZPosition);
     }
 
+    private void buildTower(boolean shift){
+        gridProvider.click();
+        if (shift){
+            uiProvider.select(prevTower);
+        }
+        if (uiProvider.getSelected() != null) {
+            Vector2i pos = gridProvider.getActiveCell();
+            towerProvider.buildTower(pos.x, pos.y, uiProvider.getSelected());
+            System.out.println("Should Build");
+            prevTower = uiProvider.getSelected();
+            if (!shift){
+                uiProvider.select(null);
+            }
+        }
+    }
+
     @Override
     public void onMouseButtonPressed(MouseEvent event) {
         invertedXaxis = engine.getWindow().getOptions().invertedXAxis;
-        System.out.println("InvertedXAxis: " + invertedXaxis);
+        //System.out.println("InvertedXAxis: " + invertedXaxis);
         if (event.getSubject() == GLFW_MOUSE_BUTTON_1) {
+            leftMouseButton = true;
             if (engine.isPaused()) {
                 menuProvider.onClick(event);
             } else {
                 if (uiProvider.onClick(event)) {
-                    gridProvider.click();
-                    if (uiProvider.getSelected() != null) {
-                        Vector2i pos = gridProvider.getActiveCell();
-                        towerProvider.buildTower(pos.x, pos.y, uiProvider.getSelected());
-                        uiProvider.select(null);
-                    }
+                    buildTower(false);
                 }
             }
         }
@@ -346,6 +377,9 @@ public class PlayerController implements Controller,Listener {
 
     @Override
     public void onMouseButtonReleased(MouseEvent event) {
+        if (event.getSubject() == GLFW_MOUSE_BUTTON_1) {
+            leftMouseButton = false;
+        }
         if (event.getSubject() == GLFW_MOUSE_BUTTON_2) {
             //System.out.println("M at (" + event.getX() + ", " + event.getY() + ")");
             rightMouseButton = false;
