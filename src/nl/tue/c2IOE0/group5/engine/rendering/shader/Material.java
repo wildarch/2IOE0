@@ -3,12 +3,19 @@ package nl.tue.c2IOE0.group5.engine.rendering.shader;
 import nl.tue.c2IOE0.group5.engine.rendering.MeshException;
 import org.joml.Vector4f;
 
-import java.io.IOException;
-
 /**
  * @author Jorren Hendriks.
  */
 public class Material {
+
+    /** metallic material */
+    public static final Material SILVER = new Material(
+            new Vector4f(0.75f, 0.75f, 0.75f, 1),
+            new Vector4f(0.75f, 0.75f, 0.75f, 1),
+            new Vector4f(0.92f, 0.92f, 1.0f, 1),
+            null,
+            30
+    );
 
     private static final Vector4f DEFAULT_COLOUR = new Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
 

@@ -4,6 +4,7 @@ import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.objects.Animatable;
 import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
+import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
@@ -67,15 +68,16 @@ public class DrillEnemy extends Enemy implements Animatable {
     @Override
     public void renderInit(Renderer renderer) {
         this.renderer = renderer;
+        Material darkMatter = new Material();
 
-        body = renderer.linkMesh("/models/enemies/drill/BODY.obj", () -> {
+        body = renderer.linkMesh("/models/enemies/drillEnemy/BODY.obj", darkMatter, () -> {
             setModelView(renderer);
         });
-        drill = renderer.linkMesh("/models/enemies/drill/DRILL.obj", () -> {
-            setModelView(renderer, new Vector3f(), new Vector3f());
+        drill = renderer.linkMesh("/models/enemies/drillEnemy/DRILL.obj", Material.SILVER, () -> {
+            setModelView(renderer, new Vector3f(0f, 1.674f, 2.713f), new Vector3f());
         });
-        wheel = renderer.linkMesh("/models/enemies/drill/WHEEL.obj", () -> {
-            setModelView(renderer, new Vector3f(), new Vector3f());
+        wheel = renderer.linkMesh("/models/enemies/drillEnemy/WHEEL.obj", darkMatter, () -> {
+            setModelView(renderer, new Vector3f(0f, 0.628f, 2.08f), new Vector3f());
         });
     }
 }

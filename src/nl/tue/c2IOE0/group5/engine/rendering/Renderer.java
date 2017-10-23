@@ -96,6 +96,18 @@ public class Renderer {
         return linkMesh(mesh, render);
     }
 
+    /**
+     * @param filename target .obj file with the mesh
+     * @param material material of the mesh
+     * @param render execution method for drawing
+     * @return handle to this instance
+     */
+    public InstancedMesh linkMesh(String filename, Material material, Runnable render) {
+        Mesh mesh = linkMesh(filename);
+        mesh.setMaterial(material);
+        return linkMesh(mesh, render);
+    }
+
     public void unlinkMesh(InstancedMesh iMesh) {
         if (!instancedMeshes.get(iMesh.getMesh()).remove(iMesh)) {
             throw new IllegalArgumentException("The given instanced mesh was not linked to its mesh");
