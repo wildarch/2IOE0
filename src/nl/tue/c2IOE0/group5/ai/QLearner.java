@@ -174,6 +174,9 @@ public class QLearner extends Thread {
         for (int neighbour : neighbours) {
             if (rewards[neighbour][state] != null) {
                 this.rewards[neighbour][state] += rewardAdd;
+                if (this.rewards[neighbour][state] <= Integer.MIN_VALUE + 100000000) { //if damage is becoming too low, set it back to prevent overflow
+                    this.rewards[neighbour][state] += 100000000;
+                }
             }
         }
         converged = false;
@@ -346,13 +349,14 @@ public class QLearner extends Thread {
     }
 
     /**
-     * Get the n best spawnstates
+     * Get the n best spawnstates, if there are more than needed with the same Q value, return random ones
      * @param n the number of spawnstates to get
      * @return the best n spawnstates
      */
     public Vector2i[] getOptimalNSpawnStates(int n) {
         int[] maxQ = new int[n];
         int[] maxStates = new int[n];
+        List<Integer> equalBestStates = new ArrayList<>();
         for (int i = 0; i < n; i++) {
             maxQ[i] = 0;
             maxStates[i] = 0;
@@ -362,11 +366,19 @@ public class QLearner extends Thread {
             for (int j = 0; j < n; j++) {
                 if (getMaximumAction(i) >= maxQ[j]) {
                     maxQ[j] = getMaximumAction(i);
-                    maxStates[j] = i;
+                    equalBestStates.add(i);
                     break; // it is already in the array, so continue with the next element
                 }
             }
         }
+        //pick a couple of random ones
+        Random r = new Random();
+        for (int i = 0; i < n; i++) {
+            int random = r.nextInt(equalBestStates.size());
+            maxStates[i] = equalBestStates.get(random);
+            equalBestStates.remove(random);
+        }
+
         Vector2i[] results = new Vector2i[n];
         for (int i = 0; i < n; i++) {
             results[i] = new Vector2i(getPoint(maxStates[i], gridSize));
