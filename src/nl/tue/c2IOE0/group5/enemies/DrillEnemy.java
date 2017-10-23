@@ -11,7 +11,8 @@ import org.joml.Vector3f;
 
 import java.util.List;
 
-import static nl.tue.c2IOE0.group5.engine.objects.Animatable.AnimationLoop.*;
+import static nl.tue.c2IOE0.group5.engine.objects.Animatable.AnimationLoop.DEFAULT;
+import static nl.tue.c2IOE0.group5.util.Angle.rotateVector;
 
 /**
  * @author Geert van Ieperen
@@ -21,7 +22,7 @@ import static nl.tue.c2IOE0.group5.engine.objects.Animatable.AnimationLoop.*;
 public class DrillEnemy extends Enemy implements Animatable {
 
     private final static int MAXHEALTH = 100;
-    private final static float SPEED = 0.5f;
+    private final static float SPEED = 0.1f;
     private final static int ATTACKSPEED = 400;
 
     private InstancedMesh body;
@@ -34,7 +35,7 @@ public class DrillEnemy extends Enemy implements Animatable {
 
     public DrillEnemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider, Vector2i initialPosition, List<Vector2i> targetPositions) {
         super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, MAXHEALTH, SPEED, ATTACKSPEED);
-        setScale(0.03f);
+        setScale(0.1f);
     }
 
     @Override
@@ -68,22 +69,31 @@ public class DrillEnemy extends Enemy implements Animatable {
 
     @Override
     public void renderInit(Renderer renderer) {
+
         this.renderer = renderer;
         Material darkMatter = new Material();
-        final Vector3f drillOffset = new Vector3f(0f, 1.674f, 2.713f);
-        final Vector3f wheelOffset = new Vector3f(0f, 0.628f, 2.08f);
+        Vector3f yVec = new Vector3f(0, 1, 0);
 
         body = renderer.linkMesh("/models/enemies/drillEnemy/BODY.obj", darkMatter, () -> {
+            setModelView(renderer, new Vector3f(), new Vector3f(0, 90, 0));
+
             if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
-            setModelView(renderer);
         });
+
         drill = renderer.linkMesh("/models/enemies/drillEnemy/DRILL.obj", Material.SILVER, () -> {
+            final Vector3f displacement = new Vector3f(0f, 1.674f, 2.713f).mul(getScale());
+            final Vector3f drillOffset = rotateVector(displacement, yVec, 90);
+            setModelView(renderer, drillOffset, new Vector3f(0, 90, 0));
+
             if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
-            setModelView(renderer, drillOffset.mul(getScale()), new Vector3f());
         });
+
         wheel = renderer.linkMesh("/models/enemies/drillEnemy/WHEEL.obj", darkMatter, () -> {
+            final Vector3f displacement = new Vector3f(0f, 0.628f, 2.08f).mul(getScale());
+            final Vector3f wheelOffset = rotateVector(displacement, yVec, 90);
+            setModelView(renderer, wheelOffset, new Vector3f(0, 90, 0));
+
             if(!attacking) interpolator.draw(renderTimer.getElapsedTime());
-            setModelView(renderer, wheelOffset.mul(getScale()), new Vector3f());
         });
     }
 }
