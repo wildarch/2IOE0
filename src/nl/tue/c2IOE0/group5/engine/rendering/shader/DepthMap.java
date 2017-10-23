@@ -21,7 +21,7 @@ public class DepthMap {
 
     private Texture depthMap;
 
-    public DepthMap() throws Exception {
+    public DepthMap() {
         // Create an FBO to render the depth map
         depthFboID = glGenFramebuffers();
 

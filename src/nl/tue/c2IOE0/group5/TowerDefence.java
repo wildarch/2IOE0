@@ -7,6 +7,8 @@ import nl.tue.c2IOE0.group5.engine.controller.Controller;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
 import nl.tue.c2IOE0.group5.providers.*;
 
+import java.io.IOException;
+
 /**
  * @author Jorren Hendriks
  */
@@ -26,7 +28,6 @@ public class TowerDefence {
         Engine engine = new Engine();
         engine.addProviders(new Provider[] {
                 new MenuProvider(),
-                //new TestProvider(),
                 new EnemyProvider(),
                 new AnimationProvider(),
                 new GridProvider(),
@@ -46,8 +47,8 @@ public class TowerDefence {
         });
         try {
             engine.run();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            throw new RuntimeException("IOException occured: " + e.getMessage());
         }
     }
 

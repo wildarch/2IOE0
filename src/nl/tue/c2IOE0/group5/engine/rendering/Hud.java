@@ -130,16 +130,17 @@ public class Hud implements Drawable {
         int xMax = x + width;
         int yMax = y + height;
 
-        polygon(
-            new Vector2i(x + indent, y),
-            new Vector2i(xMax - indent, y),
-            new Vector2i(xMax, y + indent),
-            new Vector2i(xMax, yMax - indent),
-            new Vector2i(xMax - indent, yMax),
-            new Vector2i(x + indent, yMax),
-            new Vector2i(x, yMax - indent),
-            new Vector2i(x, y + indent)
-        );
+
+            polygon(
+                new Vector2i(x + indent, y),
+                new Vector2i(xMax - indent, y),
+                new Vector2i(xMax, y + indent),
+                new Vector2i(xMax, yMax - indent),
+                new Vector2i(xMax - indent, yMax),
+                new Vector2i(x + indent, yMax),
+                new Vector2i(x, yMax - indent),
+                new Vector2i(x, y + indent)
+            );
 
     }
 

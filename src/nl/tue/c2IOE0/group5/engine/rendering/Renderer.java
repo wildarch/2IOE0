@@ -125,17 +125,11 @@ public class Renderer {
      * @throws ShaderException When an error occurred.
      */
     public void init(Window window) throws ShaderException, IOException {
-        try {
-            this.window = window;
-            initSceneShader();
-            initDepthShader();
-            depthMap = new DepthMap();
-            initDepthShader();
-        } catch (Exception e) {
-            System.err.println("Fatal exception in Renderer");
-            e.printStackTrace();
-            System.exit(1);
-        }
+        this.window = window;
+        initSceneShader();
+        initDepthShader();
+        depthMap = new DepthMap();
+        initDepthShader();
     }
 
     private void initSceneShader() throws ShaderException, IOException {
