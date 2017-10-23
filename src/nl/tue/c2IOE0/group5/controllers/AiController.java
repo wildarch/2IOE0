@@ -1,6 +1,6 @@
 package nl.tue.c2IOE0.group5.controllers;
 
-import nl.tue.c2IOE0.group5.AI.QLearner;
+import nl.tue.c2IOE0.group5.ai.QLearner;
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.controller.Controller;

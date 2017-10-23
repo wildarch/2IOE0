@@ -1,6 +1,6 @@
-package nl.tue.c2IOE0.group5.AI;
+package nl.tue.c2IOE0.group5.ai;
 
-import nl.tue.c2IOE0.group5.AI.Data.NetworkBuilder;
+import nl.tue.c2IOE0.group5.ai.data.NetworkBuilder;
 import org.deeplearning4j.api.storage.StatsStorage;
 import org.deeplearning4j.nn.conf.ComputationGraphConfiguration;
 import org.deeplearning4j.nn.graph.ComputationGraph;
@@ -42,7 +42,8 @@ public class TacticalTrainer {
         //Attach the StatsStorage instance to the UI: this allows the contents of the StatsStorage to be visualized
         uiServer.attach(statsStorage);
 
-        network.setListeners(new ScoreIterationListener(10), new StatsListener(statsStorage));
+        network.setListeners(new ScoreIterationListener(10),
+            new StatsListener(statsStorage));
     }
 
     /**

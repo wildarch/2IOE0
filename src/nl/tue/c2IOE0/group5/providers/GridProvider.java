@@ -1,5 +1,6 @@
 package nl.tue.c2IOE0.group5.providers;
 
+import nl.tue.c2IOE0.group5.ai.QLearner;
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.Simulator;
 import nl.tue.c2IOE0.group5.engine.objects.Camera;
@@ -192,7 +193,7 @@ public class GridProvider extends ObjectProvider<Cell> {
     public void drawPath(List<Integer> path) {
         deactivateAll();
         for (int state : path) {
-            Vector2i position = nl.tue.c2IOE0.group5.AI.QLearner.getPoint(state);
+            Vector2i position = QLearner.getPoint(state);
             getCell(position).activate();
         }
     }

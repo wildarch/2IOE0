@@ -1,4 +1,4 @@
-package nl.tue.c2IOE0.group5.AI.Data;
+package nl.tue.c2IOE0.group5.ai.data;
 
 import nl.tue.c2IOE0.group5.enemies.EnemyType;
 import nl.tue.c2IOE0.group5.engine.Simulator;
@@ -28,7 +28,8 @@ public class DataSimulator {
     private final INDArray outputs;
     private final int gridSize, nrTowers, nrDeployTypes, bufferSize, numThreads;
 
-    public DataSimulator(int numThreads, final INDArray inputs, int gridSize, int nrTowers, int nrDeployTypes, int bufferSize){
+    public DataSimulator(int numThreads, final INDArray inputs, int gridSize, int nrTowers,
+                         int nrDeployTypes, int bufferSize){
         threads = new Thread[numThreads];
         activeThreads = new boolean[numThreads];
 
@@ -62,10 +63,14 @@ public class DataSimulator {
                 public void run() {
                     synchronized (this){
                         System.out.println("Thread " + threadIndex + " started.");
-                        System.out.println("Thread " + threadIndex + " will simulate rows " + rowStart + " till " + rowEnd);
-                        for (int r = rowStart; r < numInputs && r < rowEnd && activeThreads[threadIndex]; r++){
+                        System.out.println(
+                            "Thread " + threadIndex + " will simulate rows " + rowStart + " till " + rowEnd);
+                        for (int r = rowStart; r < numInputs &&
+                            r < rowEnd && activeThreads[threadIndex]; r++){
+
                             final INDArray row = inputs.getRow(r);
-                            final InputConverter converter = InputConverter.fromNNInput(row, gridSize, nrTowers, nrDeployTypes, bufferSize);
+                            final InputConverter converter = InputConverter.fromNNInput(row,
+                                gridSize, nrTowers, nrDeployTypes, bufferSize);
 
                             TowerType[][] grid = converter.getGrid();
                             EnemyType[] buffer = converter.getBuffer();
@@ -148,22 +153,17 @@ public class DataSimulator {
     }
 
     public void waitTillDone(){
-        while (true){
-            boolean allDone = true;
-            for (int i = 0; i < threads.length; i++) {
-                Thread t = threads[i];
-                if(!t.isAlive()) continue;
-                allDone = false;
-                synchronized (t){
-                    try {
-                        t.wait();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    if(activeThreads[i]) throw new RuntimeException("thread " + i + " did not abort correctly");
+        for (int i = 0; i < threads.length; i++) {
+            Thread t = threads[i];
+            if(!t.isAlive()) continue;
+            synchronized (t){
+                try {
+                    t.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
+                if(activeThreads[i]) throw new RuntimeException("thread " + i + " did not abort correctly");
             }
-            if (allDone) break;
         }
     }
 

@@ -1,7 +1,7 @@
-package nl.tue.c2IOE0.group5.AI;
+package nl.tue.c2IOE0.group5.ai;
 
-import nl.tue.c2IOE0.group5.AI.Data.DataSimulator;
-import nl.tue.c2IOE0.group5.AI.Data.InputGenerator;
+import nl.tue.c2IOE0.group5.ai.data.DataSimulator;
+import nl.tue.c2IOE0.group5.ai.data.InputGenerator;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
@@ -202,7 +202,8 @@ public class TrainingManager extends JFrame{
             new Thread(() -> {
                 lockButtons();
                 status("generating input data...");
-                inputs = InputGenerator.getInputs(numInputs, gridSize, nrTowers, nrTowerLevels, nrDeployTypes, qtruststeps);
+                inputs = InputGenerator.getInputs(numInputs, gridSize, nrTowers, nrTowerLevels,
+                    nrDeployTypes, qtruststeps);
                 setEnabled();
                 status("done generating input data!");
             }).start();
@@ -218,7 +219,8 @@ public class TrainingManager extends JFrame{
             new Thread(() -> {
                 lockButtons();
                 status("Creating simulator");
-                simulator = new DataSimulator(numThreads, inputs, gridSize, nrTowers, nrDeployTypes, bufferSize);
+                simulator = new DataSimulator(numThreads, inputs, gridSize, nrTowers, nrDeployTypes,
+                    bufferSize);
                 simulator.initialize();
                 status("Done creating simulator");
                 status("Starting simulation..");
@@ -253,7 +255,8 @@ public class TrainingManager extends JFrame{
                 int c = 1;
                 int numEpochs = (int) inputNumEpochs.getValue();
                 while (trainerActive){
-                    status("Starting " + (iterator != null ? "iterator" : "dataset") + " round " + c + " with " + numEpochs + " epochs...");
+                    status("Starting " + (iterator != null ? "iterator" : "dataset") +
+                        " round " + c + " with " + numEpochs + " epochs...");
 
                     if(iterator != null){
                         trainer.fit(iterator, numEpochs);

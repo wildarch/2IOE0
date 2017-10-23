@@ -1,4 +1,4 @@
-package nl.tue.c2IOE0.group5.AI.Data;
+package nl.tue.c2IOE0.group5.ai.data;
 
 import com.google.common.collect.Sets;
 import org.deeplearning4j.datasets.iterator.impl.ListDataSetIterator;
@@ -28,7 +28,8 @@ public class InputGenerator {
     private Set<List<Float>> inputs;
     private List<String> labels;
 
-    public InputGenerator(int nrTowers, int nrTowerLevels, int nrDeployTypes, int nrTimeSteps, int unitBufSize, int qLearnerTrustSteps) {
+    public InputGenerator(int nrTowers, int nrTowerLevels, int nrDeployTypes, int nrTimeSteps,
+                          int unitBufSize, int qLearnerTrustSteps) {
         this.nrTowers = nrTowers;
         this.nrTowerLevels = nrTowerLevels;
         this.nrDeployTypes = nrDeployTypes;
@@ -37,7 +38,8 @@ public class InputGenerator {
         this.qLearnerTrustSteps = qLearnerTrustSteps;
     }
 
-    public static INDArray getInputs(int numInputs, int gridSize, int nrTowers, int nrTowerLevels, int nrDeployTypes, int qLearnerTrustSteps) {
+    public static INDArray getInputs(int numInputs, int gridSize, int nrTowers, int nrTowerLevels,
+                                     int nrDeployTypes, int qLearnerTrustSteps) {
         List<double[]> data = new ArrayList<>(numInputs);
         Random r = new Random();
 
@@ -93,7 +95,8 @@ public class InputGenerator {
      * @param batchSize Batch size (number of examples for every call of DataSetIterator.next())
      * @param rng Random number generator (for repeatability)
      */
-    public static DataSetIterator getTrainingData(final INDArray x, final TD_Q_Function function, final int batchSize, final Random rng) {
+    public static DataSetIterator getTrainingData(final INDArray x, final TD_Q_Function function,
+                                                  final int batchSize, final Random rng) {
         final INDArray y = function.getOutputValues(x);
         final org.nd4j.linalg.dataset.MultiDataSet allData = new org.nd4j.linalg.dataset.MultiDataSet(x, y);
 //        MultiDataSet ds = new (x, new INDArray[]{y});
@@ -103,13 +106,16 @@ public class InputGenerator {
         return new ListDataSetIterator(list,batchSize);
     }
 
-    public static DataSetIterator getTrainingData(final DataSet allData, final int batchSize, final Random rng){
+    public static DataSetIterator getTrainingData(final DataSet allData, final int batchSize,
+                                                  final Random rng){
         final List<org.nd4j.linalg.dataset.DataSet> list = allData.asList();
         Collections.shuffle(list,rng);
         return new ListDataSetIterator(list,batchSize);
     }
 
-    public static void export(File output, int numInputs, int gridSize, int nrTowers, int nrTowerLevels, int nrDeployTypes, int qLearnerTrustSteps, final TD_Q_Function function) throws IOException {
+    public static void export(File output, int numInputs, int gridSize, int nrTowers,
+                              int nrTowerLevels, int nrDeployTypes, int qLearnerTrustSteps,
+                              final TD_Q_Function function) throws IOException {
         DataSet data = getTrainingData(numInputs, gridSize, nrTowers, nrTowerLevels, nrDeployTypes, qLearnerTrustSteps, function);
         data.save(output);
     }
@@ -135,7 +141,9 @@ public class InputGenerator {
         return new DataSet(x, y);
     }
 
-    public static DataSet getTrainingData(int numInputs, int gridSize, int nrTowers, int nrTowerLevels, int nrDeployTypes, int qLearnerTrustSteps, final TD_Q_Function function){
+    public static DataSet getTrainingData(int numInputs, int gridSize, int nrTowers,
+                                          int nrTowerLevels, int nrDeployTypes,
+                                          int qLearnerTrustSteps, final TD_Q_Function function){
         INDArray genData = getInputs(numInputs, gridSize, nrTowers, nrTowerLevels, nrDeployTypes, qLearnerTrustSteps);
         return getTrainingData(genData, function);
     }

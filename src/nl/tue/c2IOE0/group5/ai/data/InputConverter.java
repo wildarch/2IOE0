@@ -1,4 +1,4 @@
-package nl.tue.c2IOE0.group5.AI.Data;
+package nl.tue.c2IOE0.group5.ai.data;
 
 import nl.tue.c2IOE0.group5.enemies.Enemy;
 import nl.tue.c2IOE0.group5.enemies.EnemyType;
@@ -32,7 +32,8 @@ public class InputConverter {
 
     private final ConverterDirection direction;
 
-    public static InputConverter fromNNInput(INDArray row, int gridSize, int nrTowers, int nrDeployTypes, int bufferSize){
+    public static InputConverter fromNNInput(INDArray row, int gridSize, int nrTowers,
+                                             int nrDeployTypes, int bufferSize){
         InputConverter converter = new InputConverter(ConverterDirection.AIToGame);
         converter.gridSize = gridSize;
         converter.nrTowers = nrTowers;
