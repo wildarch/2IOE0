@@ -9,10 +9,7 @@ import nl.tue.c2IOE0.group5.engine.controller.input.events.MouseEvent;
 import nl.tue.c2IOE0.group5.engine.objects.Camera;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
-import nl.tue.c2IOE0.group5.providers.GridProvider;
-import nl.tue.c2IOE0.group5.providers.MenuProvider;
-import nl.tue.c2IOE0.group5.providers.TestProvider;
-import nl.tue.c2IOE0.group5.providers.UIProvider;
+import nl.tue.c2IOE0.group5.providers.*;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 
@@ -28,6 +25,7 @@ public class PlayerController implements Controller,Listener {
     private MenuProvider menuProvider;
     private UIProvider uiProvider;
     private GridProvider gridProvider;
+    private TowerProvider towerProvider;
     private Camera camera;
     private Renderer renderer;
     private float oldx = 0;
@@ -55,6 +53,7 @@ public class PlayerController implements Controller,Listener {
         this.menuProvider = engine.getProvider(MenuProvider.class);
         this.uiProvider = engine.getProvider(UIProvider.class);
         this.gridProvider = engine.getProvider(GridProvider.class);
+        this.towerProvider = engine.getProvider(TowerProvider.class);
         this.camera = engine.getCamera();
         this.renderer = engine.getRenderer();
         //this.window = engine.getWindow();
@@ -200,9 +199,16 @@ public class PlayerController implements Controller,Listener {
                 menuProvider.onClick(event);
             } else {
                 if (uiProvider.onClick(event)) {
-                    System.out.println("Click at (" + event.getX() + ", " + event.getY() + ")");
+                    gridProvider.click();
+                    try {
+                        if (uiProvider.getSelected() != null) {
+                            Vector2i pos = gridProvider.getActiveCell();
+                            towerProvider.buildTower(pos.x, pos.y, uiProvider.getSelected());
+                        }
+                    } catch (Exception e) {
+                        throw new RuntimeException(e.getMessage());
+                    }
                 }
-                gridProvider.click();
             }
         }
 

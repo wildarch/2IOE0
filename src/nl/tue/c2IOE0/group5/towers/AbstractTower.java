@@ -60,6 +60,20 @@ public abstract class AbstractTower extends GameObject {
         this.bulletOffset = bulletOffset;
     }
 
+    @Override
+    public void setPosition(float x, float y, float z) {
+        super.setPosition(x, y, z);
+
+        healthBolletje.setPosition(x, y + healthHeight, z);
+    }
+
+    @Override
+    public void setPosition(Vector3f p) {
+        super.setPosition(p);
+
+        healthBolletje.setPosition(p.add(0, healthHeight, 0));
+    }
+
     public void setCell(Cell cell) {
         this.cell = cell;
     }
@@ -155,33 +169,34 @@ public abstract class AbstractTower extends GameObject {
         final float MAX_SIZE = 0.15f;
         final float MIN_SIZE = 0.075f;
         private AbstractTower tower;
-        private Vector3f color;
+        private Vector3f color = new Vector3f(0f, 1f, 0f);
         private InstancedMesh iMesh;
 
         public HealthBolletje(AbstractTower t) {
             this.tower = t;
-            color =  new Vector3f(0f, 1f, 0f);
+            this.setScale(MAX_SIZE);
         }
 
         @Override
         public void update() {
-            float percentage = (float)tower.health / (float)tower.maxHealth;
-            this.setScale(percentage * (MAX_SIZE-MIN_SIZE) + MIN_SIZE);
+            float percentage = getPercentage();
             color =  new Vector3f(1-percentage, percentage, 0f);
-            this.setPosition(tower.getPosition().add(new Vector3f(0, healthHeight, 0)));
+            this.setScale(getPercentage() * (MAX_SIZE-MIN_SIZE) + MIN_SIZE);
         }
 
         @Override
         public void renderInit(Renderer renderer) {
-            setScale(0.00001f);
             Mesh mesh = renderer.linkMesh("/health.obj");
             mesh.setMaterial(new Material("/square.png"));
             iMesh = renderer.linkMesh(mesh, () -> {
                 setModelView(renderer);
                 renderer.ambientLight(color);
                 renderer.noDirectionalLight();
-                //this.setPosition(tower.getPosition().add(new Vector3f(0, healthHeight, 0)));
             });
+        }
+
+        private float getPercentage() {
+            return (float) tower.health / (float) tower.maxHealth;
         }
 
         public void stopDrawing() {
