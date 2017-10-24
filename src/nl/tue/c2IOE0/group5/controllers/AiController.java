@@ -141,7 +141,7 @@ public class AiController implements Controller {
         int noIterations = 1000;
         double gamma = 0.1d;
 
-        qLearner = new QLearner(gridProvider.SIZE, noIterations, gamma);
+        qLearner = new QLearner(gridProvider.SIZE, noIterations, gamma, gridProvider);
         qLearner.initializeQ();
         qLearner.setRewardsMatrix(QLearner.getState(gridProvider.SIZE / 2, gridProvider.SIZE / 2, gridProvider.SIZE), Integer.MAX_VALUE);
 
