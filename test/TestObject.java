@@ -1,5 +1,3 @@
-package nl.tue.c2IOE0.group5.providers;
-
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
 import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
@@ -20,8 +18,8 @@ public class TestObject extends GameObject {
 
     @Override
     public void renderInit(Renderer renderer) {
-        Mesh tower = renderer.linkMesh("/tower.obj");
-        tower.setMaterial(new Material("/tower.png"));
+        Mesh tower = renderer.linkMesh("/testobjects/tower.obj");
+        tower.setMaterial(new Material("/testobjects/tower.png"));
         renderer.linkMesh(tower, () -> {
             setModelView(renderer);
             renderer.boink(getBounceDegree(), tower);

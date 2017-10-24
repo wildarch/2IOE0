@@ -133,6 +133,11 @@ public class WalkerEnemy extends Enemy implements Animatable {
 
     }
 
+    /**
+     * rotates the offset vector along the y-axis, set modelview with respect to this new offset and draw.
+     * @param renderer renderer object
+     * @param offset initial offset regarding this object according to the specification of the .obj file
+     */
     private void rotateAndSet(Renderer renderer, Vector3f offset) {
         final Vector3f finalBodyOffset = offset.mul(getScale());
         final Vector3f displacement = rotateVector(finalBodyOffset, new Vector3f(0, 1, 0), getRotation().y);

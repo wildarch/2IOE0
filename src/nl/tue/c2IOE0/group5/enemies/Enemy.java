@@ -112,7 +112,7 @@ public abstract class Enemy extends GameObject implements Drawable {
     public void renderInit(Renderer renderer) {
         setScale(0.25f);
 
-        iMeshBody = renderer.linkMesh("/cube.obj", () -> {
+        iMeshBody = renderer.linkMesh("/testobjects/cube.obj", () -> {
             setModelView(renderer);
             renderer.ambientLight(ambientLight);
         });

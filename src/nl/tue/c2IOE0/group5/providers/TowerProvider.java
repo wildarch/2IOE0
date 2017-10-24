@@ -48,10 +48,10 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
         if(gameStarted) return;
 
         putMainTower();
-        buildTower(7, 8, WallTower.class);
-        buildTower(6, 8, WallTower.class);
-        buildTower(8, 8, RocketTower.class);
-        buildTower(7, 7, CannonTower.class);
+//        buildTower(7, 8, WallTower.class);
+//        buildTower(6, 8, WallTower.class);
+//        buildTower(8, 8, RocketTower.class);
+//        buildTower(7, 7, CannonTower.class);
         gameStarted = true;
     }
 
@@ -77,10 +77,10 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
 
     /**
      * Create a tower according to a tower type at a certain location
-     * @Returns true if build succesful, false if there already is a tower
-     * @Throws Many exceptions when passing class type as argument fails: So an incorrect type was passed (not a tower)
+     * @return true if build succesful, false if there already is a tower
+     * @throws IllegalStateException Many exceptions when passing class type as argument fails: So an incorrect type was passed (not a tower)
      */
-    public boolean buildTower(int x, int y, Class<? extends AbstractTower> towertype) {
+    public boolean buildTower(int x, int y, Class<? extends AbstractTower> towertype) throws IllegalStateException {
         if (gridProvider.getCell(x, y).getTower() != null) {
             //not null: tower exists here already
             return false;

@@ -1,18 +1,14 @@
 package nl.tue.c2IOE0.group5.towers;
 
-import nl.tue.c2IOE0.group5.enemies.Enemy;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
-import nl.tue.c2IOE0.group5.engine.objects.PositionInterpolator;
 import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
-import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
-import org.joml.Vector2i;
 import org.joml.Vector3f;
 
 /**
- * @Author Yoeri Poels
+ * @author Yoeri Poels
  * Gameobject that appears between 2 adjacent WallTowers to connect them.
  */
 
@@ -54,27 +50,14 @@ public class TowerConnection extends GameObject {
         });
     }
 
-    Vector3f getPositionOffset() {
+    private Vector3f getPositionOffset() {
         float deltaTime = renderTimer.getTime() - startTime;
-        float r = deltaTime / FALL_TIME;
-        if(r > 1) {
-            return new Vector3f(0);
-        }
-        r *= r;
-        Vector3f off = new Vector3f(FALL_OFFSET).mul(1-r);
-        return off;
+        return AbstractTower.getPositionOffset(deltaTime);
     }
 
-    float getBounceDegree() {
+    private float getBounceDegree() {
         float deltaTime = renderTimer.getTime() - startTime - FALL_TIME;
-        if (deltaTime < 0) return 0;
-        float r = deltaTime / BOUNCE_TIME;
-        if (r > 1) {
-            return 0;
-        }
-        r *= Math.PI;
-        r = (float) Math.sin(r);
-        return r;
+        return AbstractTower.getBounceDegree(deltaTime);
     }
 
     public void destroy() {

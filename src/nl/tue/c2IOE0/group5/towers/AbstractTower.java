@@ -197,7 +197,7 @@ public abstract class AbstractTower extends GameObject {
 
         @Override
         public void renderInit(Renderer renderer) {
-            Mesh mesh = renderer.linkMesh("/health.obj");
+            Mesh mesh = renderer.linkMesh("/models/items/health.obj");
             mesh.setMaterial(new Material("/square.png"));
             iMesh = renderer.linkMesh(mesh, () -> {
                 setModelView(renderer);
@@ -226,19 +226,24 @@ public abstract class AbstractTower extends GameObject {
 
     public abstract int getPrice();
 
-    Vector3f getPositionOffset() {
-        float deltaTime = renderTimer.getTime() - startTime;
+    protected Vector3f getPositionOffset() {
+        return getPositionOffset(renderTimer.getTime() - startTime);
+    }
+
+    protected float getBounceDegree() {
+        return getBounceDegree(renderTimer.getTime() - startTime - FALL_TIME);
+    }
+
+    public static Vector3f getPositionOffset(float deltaTime) {
         float r = deltaTime / FALL_TIME;
         if(r > 1) {
             return new Vector3f(0);
         }
         r *= r;
-        Vector3f off = new Vector3f(FALL_OFFSET).mul(1-r);
-        return off;
+        return new Vector3f(FALL_OFFSET).mul(1-r);
     }
 
-    float getBounceDegree() {
-        float deltaTime = renderTimer.getTime() - startTime - FALL_TIME;
+    public static float getBounceDegree(float deltaTime) {
         if (deltaTime < 0) return 0;
         float r = deltaTime / BOUNCE_TIME;
         if (r > 1) {

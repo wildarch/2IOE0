@@ -1,6 +1,6 @@
-package nl.tue.c2IOE0.group5.enemies;
-
 import nl.tue.c2IOE0.group5.ai.QLearner;
+import nl.tue.c2IOE0.group5.enemies.Enemy;
+import nl.tue.c2IOE0.group5.enemies.EnemyType;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
 import org.joml.Vector2i;

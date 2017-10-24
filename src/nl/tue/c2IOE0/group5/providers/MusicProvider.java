@@ -33,7 +33,7 @@ public class MusicProvider extends Thread implements Provider<Engine>,Cleanable 
         this.engine = engine;
         if (!on) return;
         try {
-            String file = "res/soundfile.wav";
+            String file = "res/SICCMIXX.wav";
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(file));
             AudioFormat format = audioInputStream.getFormat();
             long frames = audioInputStream.getFrameLength();

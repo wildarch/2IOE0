@@ -35,7 +35,7 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
     public void renderInit(Engine engine) {
         this.engine = engine;
         animationProvider = engine.getProvider(AnimationProvider.class);
-        Mesh m = engine.getRenderer().linkMesh("/cube.obj");
+        Mesh m = engine.getRenderer().linkMesh("/testobjects/cube.obj");
         m.setMaterial(new Material("/square.png"));
         renderTimer = engine.getRenderLoopTimer();
     }
@@ -84,13 +84,12 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
                         animationProvider);
                 break;
             default:
-                newEnemy = new TestEnemy(
-                        loopTimer,
-                        renderTimer,
-                        gridProvider,
-                        initialPosition,
-                        targets, 10, qlearner
-                );
+                newEnemy = new Enemy(loopTimer, renderTimer, gridProvider,
+                        initialPosition, targets, 10, 1, 1, 300, qlearner)
+                {
+                    public EnemyType getType(){ return EnemyType.DROID; }
+                    protected void onDie(){ renderer.unlinkMesh(iMeshBody); }
+                };
         }
 //        System.out.println("EnemyProvider.putEnemy(): spawn " + newEnemy.getClass().getSimpleName() +
 //                " at (" + initialPosition.x + ", " + initialPosition.y + ")");

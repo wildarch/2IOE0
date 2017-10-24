@@ -55,7 +55,7 @@ public class Bullet extends GameObject implements Drawable {
     @Override
     public void renderInit(Renderer renderer) {
         setScale(0.05f);
-        Mesh bullet = renderer.linkMesh("/b4.obj");
+        Mesh bullet = renderer.linkMesh("/models/items/bullet4.obj");
         bullet.setMaterial(new Material("/square.png"));
         iMesh = renderer.linkMesh(bullet, () -> {
             setModelView(renderer, drawOffset);
