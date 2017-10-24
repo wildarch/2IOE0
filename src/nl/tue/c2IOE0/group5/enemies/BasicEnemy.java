@@ -1,6 +1,7 @@
 package nl.tue.c2IOE0.group5.enemies;
 
 import nl.tue.c2IOE0.group5.ai.QLearner;
+import nl.tue.c2IOE0.group5.controllers.PlayerController;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
@@ -18,8 +19,8 @@ public class BasicEnemy extends Enemy {
     private final static int DAMAGE = 4;
 
     public BasicEnemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider,
-                      Vector2i initialPosition, List<Vector2i> targetPositions, QLearner qlearner) {
-        super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, MAX_HEALTH, DAMAGE, SPEED, ATTACKSPEED, qlearner);
+                      Vector2i initialPosition, List<Vector2i> targetPositions, QLearner qlearner, PlayerController playerController) {
+        super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, MAX_HEALTH, DAMAGE, SPEED, ATTACKSPEED, qlearner, playerController);
     }
 
     @Override

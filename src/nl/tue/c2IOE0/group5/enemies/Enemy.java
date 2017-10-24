@@ -1,6 +1,7 @@
 package nl.tue.c2IOE0.group5.enemies;
 
 import nl.tue.c2IOE0.group5.ai.QLearner;
+import nl.tue.c2IOE0.group5.controllers.PlayerController;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
 import nl.tue.c2IOE0.group5.engine.objects.PositionInterpolator;
@@ -41,9 +42,12 @@ public abstract class Enemy extends GameObject implements Drawable {
     private Vector3f ambientLight = new Vector3f(0, 0, 1f);
     private int damage;
     protected Vector3f drawOffset = new Vector3f();
+    private PlayerController playerController;
 
     public Enemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider,
-                 Vector2i initialPosition, List<Vector2i> targetPositions, int maxHealth, int damage, float speed, long attackSpeed, QLearner qlearner) {
+                 Vector2i initialPosition, List<Vector2i> targetPositions,
+                 int maxHealth, int damage, float speed, long attackSpeed, QLearner qlearner,
+                 PlayerController playerController) {
         this.qLearner = qlearner;
         this.gridProvider = gridProvider;
         this.maxHealth = maxHealth;
@@ -57,6 +61,7 @@ public abstract class Enemy extends GameObject implements Drawable {
         this.attackSpeed = attackSpeed;
         this.offset = new Vector3f(0);
         this.damage = damage;
+        this.playerController = playerController;
     }
 
     public abstract EnemyType getType();
@@ -152,7 +157,14 @@ public abstract class Enemy extends GameObject implements Drawable {
     public void die() {
         if(dead) return;
         dead = true;
+        if (playerController != null) {
+            playerController.addBudget(getDieReward());
+        }
         onDie();
+    }
+
+    private int getDieReward() {
+        return (int) (maxHealth * attackSpeed / 1000);
     }
 
     protected abstract void onDie();
