@@ -146,7 +146,7 @@ public class QLearner extends Thread {
         this.rewards = new Integer[gridSize*gridSize][gridSize*gridSize];
 
         for (int y = 0; y < gridSize; y++) {
-            for (int x = 0; x < gridSize; x++) { //first y and the x to make sure the state increases
+            for (int x = 0; x < gridSize; x++) { //first y and then x to make sure the state increases
                 int state = getState(x, y);
                 if (x == gridSize / 2 && y == gridSize / 2) { //the middle cell
                     this.rewards[state][state] = 0; //can only go to itself
@@ -158,6 +158,7 @@ public class QLearner extends Thread {
             }
         }
         converged = false;
+        setRewardsMatrix(getState(gridSize / 2, gridSize / 2, gridSize), Integer.MAX_VALUE); //set the middle to the max
     }
 
 
@@ -334,7 +335,46 @@ public class QLearner extends Thread {
             optimalPath.add(state);
             nextState = policy[state];
         }
+        if (optimalPath.get(optimalPath.size() - 1) != getState(gridSize / 2, gridSize / 2)) {
+            return getBasicPath(state);
+        }
         return optimalPath;
+    }
+
+    /**
+     * Return a basic path for a specific state. Just go horizontal until the middleline, then go vertical to the center
+     * @param state
+     * @return a basic path
+     */
+    private List<Integer> getBasicPath(int state) {
+        int x = getPoint(state).x();
+        int y = getPoint(state).y();
+        List<Integer> path = new ArrayList<>();
+        path.add(state);
+        if (x < gridSize / 2) { //do the horizontal stuff
+            while (x < gridSize / 2) {
+                x++;
+                path.add(getState(x, y));
+            }
+        } else if (x > gridSize / 2) {
+            while (x > gridSize / 2) {
+                x--;
+                path.add(getState(x, y));
+            }
+        }
+
+        if (y < gridSize / 2) {
+            while (y < gridSize / 2) {
+                y++;
+                path.add(getState(x, y));
+            }
+        } else if (y > gridSize / 2) {
+            while (y > gridSize / 2) {
+                y--;
+                path.add(getState(x, y));
+            }
+        }
+        return path;
     }
 
     public List<Integer> getOptimalPath(Vector2i state) {
