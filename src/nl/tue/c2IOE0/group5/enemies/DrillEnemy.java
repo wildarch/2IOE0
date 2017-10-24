@@ -91,22 +91,26 @@ public class DrillEnemy extends Enemy implements Animatable {
 
         this.renderer = renderer;
         Material darkMatter = new Material("/silver.png");
-        Vector3f yVec = new Vector3f(0, -1, 0);
 
         body = renderer.linkMesh("/models/enemies/drillEnemy/BODY.obj", darkMatter, () -> {
-            setModelView(renderer, new Vector3f(), new Vector3f(0, -90, 0));
+            rotateAndSet(renderer, new Vector3f());
         });
 
         drill = renderer.linkMesh("/models/enemies/drillEnemy/DRILL.obj", darkMatter, () -> {
-            final Vector3f drillOffset = new Vector3f(2.713f + this.drillOffset.current(), 1.674f, 0f).mul(getScale());
-            final Vector3f displacement = rotateVector(drillOffset, yVec, getRotation().y);
-            setModelView(renderer, displacement, new Vector3f(0, -90, 0));
+            final Vector3f offset = new Vector3f(2.713f + this.drillOffset.current(), 1.674f, 0f);
+            rotateAndSet(renderer, offset);
         });
 
         wheel = renderer.linkMesh("/models/enemies/drillEnemy/WHEEL.obj", darkMatter, () -> {
-            final Vector3f wheelOffset = new Vector3f(2.08f, 0.628f, 0f).mul(getScale());
-            final Vector3f displacement = rotateVector(wheelOffset, yVec, getRotation().y);
-            setModelView(renderer, displacement, new Vector3f(0, -90, 0));
+            final Vector3f offset = new Vector3f(2.08f, 0.628f, 0f);
+            rotateAndSet(renderer, offset);
         });
+    }
+
+    private void rotateAndSet(Renderer renderer, Vector3f offset) {
+        final Vector3f wheelOffset = offset.mul(getScale());
+        final Vector3f displacement = rotateVector(wheelOffset, new Vector3f(0, -1, 0), getRotation().y + 90);
+        if(!attacking) displacement.add(interpolator.getOffset(renderTimer.getTime() - loopTimer.getTime()));
+        setModelView(renderer, displacement, new Vector3f(0, 0, 0));
     }
 }
