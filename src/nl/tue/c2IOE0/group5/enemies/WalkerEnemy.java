@@ -1,6 +1,7 @@
 package nl.tue.c2IOE0.group5.enemies;
 
 import nl.tue.c2IOE0.group5.ai.QLearner;
+import nl.tue.c2IOE0.group5.controllers.PlayerController;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.objects.Animatable;
 import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
@@ -43,8 +44,8 @@ public class WalkerEnemy extends Enemy implements Animatable {
     private AnimationProvider animationProvider;
 
     public WalkerEnemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider, Vector2i initialPosition,
-                       List<Vector2i> targetPositions, QLearner qlearner, AnimationProvider animationProvider) {
-        super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, MAXHEALTH, DAMAGE, SPEED, ATTACKSPEED, qlearner);
+                       List<Vector2i> targetPositions, QLearner qlearner, AnimationProvider animationProvider, PlayerController playerController) {
+        super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, MAXHEALTH, DAMAGE, SPEED, ATTACKSPEED, qlearner, playerController);
         setScale(0.5f);
 //        move(0, 1, 0);
         this.animationProvider = animationProvider;

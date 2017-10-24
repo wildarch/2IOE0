@@ -1,6 +1,7 @@
 package nl.tue.c2IOE0.group5.providers;
 
 import nl.tue.c2IOE0.group5.ai.QLearner;
+import nl.tue.c2IOE0.group5.controllers.PlayerController;
 import nl.tue.c2IOE0.group5.enemies.*;
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.Simulator;
@@ -23,12 +24,17 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
     private AnimationProvider animationProvider;
 
     private Engine engine;
+    private PlayerController playerController;
 
     @Override
     public void init(Simulator engine) {
         super.init(engine);
         loopTimer = engine.getGameloopTimer();
         gridProvider = engine.getProvider(GridProvider.class);
+        if(engine instanceof Engine) {
+            Engine e = (Engine) engine;
+            playerController = e.getController(PlayerController.class);
+        }
     }
 
     @Override
@@ -61,7 +67,8 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
                         renderTimer,
                         gridProvider,
                         initialPosition,
-                        targets, qlearner
+                        targets, qlearner,
+                        playerController
                 );
                 break;
             case WALKER:
@@ -71,7 +78,8 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
                         gridProvider,
                         initialPosition,
                         targets, qlearner,
-                        animationProvider
+                        animationProvider,
+                        playerController
                 );
                 break;
             case DRILL:
@@ -81,11 +89,13 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
                         gridProvider,
                         initialPosition,
                         targets, qlearner,
-                        animationProvider);
+                        animationProvider,
+                        playerController
+                );
                 break;
             default:
                 newEnemy = new Enemy(loopTimer, renderTimer, gridProvider,
-                        initialPosition, targets, 10, 1, 1, 300, qlearner)
+                        initialPosition, targets, 10, 1, 1, 300, qlearner, playerController)
                 {
                     public EnemyType getType(){ return EnemyType.DROID; }
                     protected void onDie(){ renderer.unlinkMesh(iMeshBody); }

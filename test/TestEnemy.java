@@ -1,4 +1,5 @@
 import nl.tue.c2IOE0.group5.ai.QLearner;
+import nl.tue.c2IOE0.group5.controllers.PlayerController;
 import nl.tue.c2IOE0.group5.enemies.Enemy;
 import nl.tue.c2IOE0.group5.enemies.EnemyType;
 import nl.tue.c2IOE0.group5.engine.Timer;
@@ -13,8 +14,8 @@ public class TestEnemy extends Enemy {
     private final static int DAMAGE = 10;
 
     public TestEnemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider,
-                     Vector2i initialPosition, List<Vector2i> targetPositions, int maxHealth, QLearner qlearner) {
-        super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, maxHealth, DAMAGE, SPEED, ATTACKSPEED, qlearner);
+                     Vector2i initialPosition, List<Vector2i> targetPositions, int maxHealth, QLearner qlearner, PlayerController playerController) {
+        super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, maxHealth, DAMAGE, SPEED, ATTACKSPEED, qlearner, playerController);
     }
 
 
