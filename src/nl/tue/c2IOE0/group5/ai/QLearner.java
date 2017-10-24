@@ -1,6 +1,5 @@
 package nl.tue.c2IOE0.group5.ai;
 
-import nl.tue.c2IOE0.group5.providers.GridProvider;
 import org.joml.Vector2i;
 
 import java.util.ArrayList;
@@ -26,7 +25,6 @@ public class QLearner extends Thread {
     private List<Integer> outerStates;
     private volatile boolean converged = false;
     private double gamma;
-    private GridProvider gridProvider;
 
     private final int gridSize;
 
@@ -51,11 +49,10 @@ public class QLearner extends Thread {
     /**
      * @param gridSize obvious
      */
-    public QLearner(int gridSize, int noIterations, double gamma, GridProvider gridProvider) {
+    public QLearner(int gridSize, int noIterations, double gamma) {
         this.gamma = gamma;
         this.noIterations = noIterations;
         this.gridSize = gridSize;
-        this.gridProvider = gridProvider;
 
         makeRewardMatrix();
         paths = new ArrayList<>();
@@ -149,17 +146,11 @@ public class QLearner extends Thread {
         this.rewards = new Integer[gridSize*gridSize][gridSize*gridSize];
 
         for (int y = 0; y < gridSize; y++) {
-            for (int x = 0; x < gridSize; x++) { //first y and then x to make sure the state increases
+            for (int x = 0; x < gridSize; x++) { //first y and the x to make sure the state increases
                 int state = getState(x, y);
                 if (x == gridSize / 2 && y == gridSize / 2) { //the middle cell
                     this.rewards[state][state] = 0; //can only go to itself
                     continue; //continue with the next cell
-                }
-                if (gridProvider.getCell(x, y).isBorderCell()) {
-                    for (int neighbour : getStatesAdjacent(state)) {
-                        this.rewards[state][neighbour] = Integer.MIN_VALUE; //set entering a bordercell to minus infinity
-                    }
-                    continue;
                 }
                 for (int neighbour : getStatesAdjacent(state)) {
                     this.rewards[state][neighbour] = 0;
@@ -167,13 +158,10 @@ public class QLearner extends Thread {
             }
         }
         converged = false;
-        setRewardsMatrix(getState(gridSize / 2, gridSize / 2), Integer.MAX_VALUE); //set the middle to the max
     }
 
 
     public void setRewardsMatrix(int state, int reward) {
-        if (gridProvider.getCell(getPoint(state)).isBorderCell()) return;   //don't change anything to the bordercells
-        if (getPoint(state).x == gridSize / 2 && getPoint(state).y == gridSize / 2) return; //don't change anything to the middle
         List<Integer> neighbours = getStatesAdjacent(state);
         for (int neighbour : neighbours) {
             this.rewards[neighbour][state] = reward;
@@ -182,8 +170,6 @@ public class QLearner extends Thread {
     }
 
     public void updateRewardsMatrix(int state, int rewardAdd) {
-        if (gridProvider.getCell(getPoint(state)).isBorderCell()) return;   //don't change anything to the bordercells
-        if (getPoint(state).x == gridSize / 2 && getPoint(state).y == gridSize / 2) return; //don't change anything to the middle
         List<Integer> neighbours = getStatesAdjacent(state);
         for (int neighbour : neighbours) {
             if (rewards[neighbour][state] != null) {
@@ -348,46 +334,7 @@ public class QLearner extends Thread {
             optimalPath.add(state);
             nextState = policy[state];
         }
-        if (optimalPath.get(optimalPath.size() - 1) != getState(gridSize / 2, gridSize / 2)) {
-            return getBasicPath(state);
-        }
         return optimalPath;
-    }
-
-    /**
-     * Return a basic path for a specific state. Just go horizontal until the middleline, then go vertical to the center
-     * @param state
-     * @return a basic path
-     */
-    private List<Integer> getBasicPath(int state) {
-        int x = getPoint(state).x();
-        int y = getPoint(state).y();
-        List<Integer> path = new ArrayList<>();
-        path.add(state);
-        if (x < gridSize / 2) { //do the horizontal stuff
-            while (x < gridSize / 2) {
-                x++;
-                path.add(getState(x, y));
-            }
-        } else if (x > gridSize / 2) {
-            while (x > gridSize / 2) {
-                x--;
-                path.add(getState(x, y));
-            }
-        }
-
-        if (y < gridSize / 2) {
-            while (y < gridSize / 2) {
-                y++;
-                path.add(getState(x, y));
-            }
-        } else if (y > gridSize / 2) {
-            while (y > gridSize / 2) {
-                y--;
-                path.add(getState(x, y));
-            }
-        }
-        return path;
     }
 
     public List<Integer> getOptimalPath(Vector2i state) {

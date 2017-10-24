@@ -136,7 +136,7 @@ public class DataSimulator {
 
         assert simulator.isInitialized();
 
-        QLearner routingLearner = new QLearner(totalSize, 1000, 0.1, gp);
+        QLearner routingLearner = new QLearner(totalSize, 1000, 0.1);
         trainQLearner(routingLearner, gp);
 
         for (EnemyType type : buffer) {
