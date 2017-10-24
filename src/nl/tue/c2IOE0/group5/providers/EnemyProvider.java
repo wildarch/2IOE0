@@ -98,6 +98,19 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
         objects.add(newEnemy.init(getRenderer()));
     }
 
+    /**
+     * Return true if there is an enemy on the specified cell, false otherwise
+     * @param c the cell to look for
+     */
+    public boolean enemyOnCell(Cell c) {
+        for (Enemy e : objects) {
+            if (e.getCurrentCell().equals(c)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public void update() {
         if (engine == null || engine.isPaused()) return;

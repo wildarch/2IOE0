@@ -85,6 +85,9 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
             //not null: tower exists here already
             return false;
         }
+        if (enemyProvider.enemyOnCell(gridProvider.getCell(x, y))) {
+            return false;
+        }
         //create the tower
         AbstractTower tower = null;
         try {

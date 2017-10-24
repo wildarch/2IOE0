@@ -238,10 +238,11 @@ public class GridProvider extends ObjectProvider<Cell> {
 
     /**
      * Set the active cell and color it
-     * @param cell the Cell to activate.
+     * @param cell the Cell to activate.s
      */
     public void setActiveCell(Cell cell) {
-        activeCell.deactivate();
+        if (activeCell != null)
+            activeCell.deactivate();
         this.activeCell = cell;
         activeCell.activate();
     }
@@ -256,7 +257,9 @@ public class GridProvider extends ObjectProvider<Cell> {
 
         //the ray is now defined using the position of the camera and direction
         if (direction3f.y() >= 0) {
-            activeCell.deactivate();
+            if (activeCell != null)
+                activeCell.deactivate();
+            activeCell = null;
         }
         float lambda = -c.getPosition().y()/direction3f.y(); //assuming the y = 0
         float x = c.getPosition().x() + lambda * direction3f.x();
@@ -267,7 +270,9 @@ public class GridProvider extends ObjectProvider<Cell> {
             Cell cell = getCell(gridX, gridY);
             setActiveCell(cell);
         } else {
-            activeCell.deactivate();
+            if (activeCell != null)
+                activeCell.deactivate();
+            activeCell = null;
         }
     }
 
@@ -288,6 +293,7 @@ public class GridProvider extends ObjectProvider<Cell> {
     }
 
     public void click() {
+        if (activeCell == null) return;
         if (rangedCell == null || rangedCell != activeCell) {
             rangedCell = activeCell;
             AbstractTower t = activeCell.getTower();
@@ -351,6 +357,7 @@ public class GridProvider extends ObjectProvider<Cell> {
     }
 
     public Vector2i getActiveCell() {
+        if (activeCell == null) return null;
         return this.activeCell.getGridPosition();
     }
 

@@ -350,11 +350,13 @@ public class PlayerController implements Controller,Listener {
         }
         if (uiProvider.getSelected() != null) {
             Vector2i pos = gridProvider.getActiveCell();
-            towerProvider.buildTower(pos.x, pos.y, uiProvider.getSelected());
-            System.out.println("Should Build");
-            prevTower = uiProvider.getSelected();
-            if (!shift){
-                uiProvider.select(null);
+            if (pos != null) {
+                towerProvider.buildTower(pos.x, pos.y, uiProvider.getSelected());
+                System.out.println("Should Build");
+                prevTower = uiProvider.getSelected();
+                if (!shift) {
+                    uiProvider.select(null);
+                }
             }
         }
     }
