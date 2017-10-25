@@ -422,10 +422,12 @@ public class QLearner extends Thread {
     /**
      * Gets the reward for a specific cell on x, y
      */
-    public int getReward(int x, int y) {
-        int state = getState(x, y);
-        int neighbour = getStatesAdjacent(state).get(0);
-        return rewards[neighbour][state];
+    public int getReward(Vector2i pos) {
+        int state = getState(pos.x, pos.y);
+        List<Integer> neighbours = getStatesAdjacent(state);
+        Integer reward = rewards[neighbours.get(0)][state];
+
+        return reward == null ? 0 : reward;
     }
 
 }

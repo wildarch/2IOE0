@@ -55,7 +55,7 @@ public class UIProvider implements Provider<Engine> {
 
     private static final int HEIGHT_FROM_TOP = 100;
     private static final int TEXTFIELD_WIDTH = 750;
-    private static final int TEXTFIELD_HEIGHT = 450;
+    private static final int TEXTFIELD_HEIGHT = 340;
     public static final int MARGIN = 20;
 
 
@@ -74,11 +74,11 @@ public class UIProvider implements Provider<Engine> {
         budget = new UIText(0, 20, NVG_ALIGN_LEFT,
                 () -> String.format("Budget: %d", playerController.getBudget()));
         mainHealth = new UIText(0, 20, NVG_ALIGN_RIGHT,
-                () -> String.format("Health: %d", towerProvider.getMainTower().getHealth()));
-
+                () -> String.format("Health: %d/%d", towerProvider.getMainTower().getHealth(), towerProvider.getMainTower().maxHealth));
         AiController aiController = engine.getController(AiController.class);
         waveIndicator = new UIText(0, 40, NVG_ALIGN_CENTER,
                 () -> "Wave: " + aiController.getBigWaves());
+
 
         UIElement dead = new MenuTextField("You are dead", creditTextfield, TEXTFIELD_WIDTH, TEXTFIELD_HEIGHT);
         MenuButton deadQuitButton = new MenuButton("Quit", (event) -> {

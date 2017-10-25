@@ -52,6 +52,7 @@ public class MenuProvider implements Provider<Engine>, Clickable {
     private UIButton[] optionMenu;
     private UIButton[] graphicsMenu;
     private UIButton[] audioMenu;
+    private UIButton[] visualizeMenu;
     private UIButton[] controlsMenu;
     private UIElement[] creditScreen;
 
@@ -63,6 +64,7 @@ public class MenuProvider implements Provider<Engine>, Clickable {
     private Window window;
     private MusicProvider musicProvider;
     private TowerProvider towerProvider;
+    private GridProvider gridProvider;
 
     @Override
     public void init(Engine engine) {
@@ -72,6 +74,7 @@ public class MenuProvider implements Provider<Engine>, Clickable {
         window = engine.getWindow();
         musicProvider = engine.getProvider(MusicProvider.class);
         towerProvider = engine.getProvider(TowerProvider.class);
+        gridProvider = engine.getProvider(GridProvider.class);
 
         UIButton startGame = new MenuButton("Start Game", (event) -> {
             engine.pause(false);
@@ -95,6 +98,12 @@ public class MenuProvider implements Provider<Engine>, Clickable {
                 UIButton backAudio = new MenuButton("Back", (event) -> activeElements = optionMenu);
                 audioMenu = new UIButton[]{master, toggleAudio, backAudio};
             }
+            UIButton visualize = new MenuButton("Visualize", (event -> activeElements = visualizeMenu));
+            {
+                UIButton qLearner = new MenuToggle("QLearner", (b) -> gridProvider.setQLearnerValue(b));
+                UIButton backVisualize = new MenuButton("Back", (event -> activeElements = optionMenu));
+                visualizeMenu = new UIButton[]{qLearner, backVisualize};
+            }
             UIButton controls = new MenuButton("Controls", (event) -> activeElements = controlsMenu);
             {
                 UIButton InvertedX = new MenuToggle("Invert x-axis", (b) -> window.getOptions().invertedXAxis *= -1);
@@ -105,7 +114,7 @@ public class MenuProvider implements Provider<Engine>, Clickable {
             //UIButton parameters = new MenuButton("Parameters", (event) -> {});
             //UIButton gameState = new MenuButton("Game state", (event) -> {});
             UIButton backOptions = new MenuButton("Back", (event) -> activeElements = mainMenu);
-            optionMenu = new UIButton[]{graphics, audio, controls,/*parameters, gameState, */backOptions};
+            optionMenu = new UIButton[]{graphics, audio, visualize, controls, backOptions};
         }
         UIButton credits = new MenuButton("Credits", (event) -> activeElements = creditScreen);
         {

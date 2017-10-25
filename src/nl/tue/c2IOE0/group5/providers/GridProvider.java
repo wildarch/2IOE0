@@ -1,6 +1,7 @@
 package nl.tue.c2IOE0.group5.providers;
 
 import nl.tue.c2IOE0.group5.ai.QLearner;
+import nl.tue.c2IOE0.group5.controllers.AiController;
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.Simulator;
 import nl.tue.c2IOE0.group5.engine.objects.Camera;
@@ -27,6 +28,8 @@ import java.util.stream.Stream;
  */
 public class GridProvider extends ObjectProvider<Cell> {
 
+    private boolean vQLearner = true;
+
     //total size of the grid (including spawn cells). Change this to change the total grid
     public final int SIZE;
     //size of the grid in which towers can be placed
@@ -41,6 +44,8 @@ public class GridProvider extends ObjectProvider<Cell> {
     private final TowerConnection[][] towerconnections;
 
     private TowerConnectionProvider towerConnectionProvider;
+
+    private AiController controller;
 
     //the cell currently active (pointed to)
     private Cell activeCell;
@@ -63,6 +68,8 @@ public class GridProvider extends ObjectProvider<Cell> {
         super.init(engine);
 
         towerConnectionProvider = engine.getProvider(TowerConnectionProvider.class);
+
+        controller = getEngine().getController(AiController.class);
 
         // Create the player base cells
         int bordersize = (SIZE - PLAYFIELDSIZE - 1)/2;
@@ -370,7 +377,12 @@ public class GridProvider extends ObjectProvider<Cell> {
 
     @Override
     public void update() {
-
+        objects.forEach(cell -> {
+            if (!cell.isBorderCell()) {
+                int reward = controller.getQLearner().getReward(cell.getGridPosition());
+                cell.setQReward(reward, vQLearner);
+            }
+        });
     }
 
     @Override
@@ -379,6 +391,10 @@ public class GridProvider extends ObjectProvider<Cell> {
 
     public Stream<Cell> stream() {
         return objects.stream();
+    }
+
+    public void setQLearnerValue(boolean b) {
+        vQLearner = b;
     }
 
 }

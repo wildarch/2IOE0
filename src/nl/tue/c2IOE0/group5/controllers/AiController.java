@@ -103,6 +103,10 @@ public class AiController implements Controller {
         return wave / NR_SUB_WAVES;
     }
 
+    public QLearner getQLearner() {
+        return qLearner;
+    }
+
     private void wave(final boolean big) {
         new Thread(() -> {
             InputConverter converter;
