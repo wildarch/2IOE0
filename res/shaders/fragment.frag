@@ -54,6 +54,8 @@ uniform DirectionalLight directionalLight;
 uniform vec3 camera_pos;
 uniform int isSkybox;
 uniform int depthMapEnabled;
+uniform int background;
+uniform int blackAsAlpha;
 
 vec4 ambientC;
 vec4 diffuseC;
@@ -142,7 +144,7 @@ float calcShadow(vec4 position)
 
 void main()
 {
-    if (isSkybox == 0) {
+    if (isSkybox == 0 && background == 0) {
         setupColours(material, outTexture);
 
         vec4 diffuseSpecularComponent = calcDirectionalLight(directionalLight, mvVertexPosition, mvVertexNormal);
@@ -158,8 +160,17 @@ void main()
             shadow = 1.0;
         }
         fragColor = ambientC * vec4(ambientLight, 1) + diffuseSpecularComponent * shadow;
-    } else {
+    } else if (isSkybox == 1 && background == 0) {
         fragColor = texture(texture_sampler, outTexture);
-    }
+    } else if (isSkybox == 0 && background == 1) {
+        setupColours(material, outTexture);
+        vec4 diffuseSpecularComponent = calcDirectionalLight(directionalLight, mvVertexPosition, mvVertexNormal);
 
+        if (blackAsAlpha == 1) {
+            vec3 colorstart = ambientC.xyz * vec4(ambientLight, 1).xyz + diffuseSpecularComponent.xyz;
+            fragColor = vec4(colorstart.x, colorstart.y, colorstart.z, 0.0);
+        } else {
+            fragColor = ambientC * vec4(ambientLight, 1) + diffuseSpecularComponent;
+        }
+    }
 }
