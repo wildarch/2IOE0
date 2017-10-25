@@ -350,7 +350,16 @@ public class PlayerController implements Controller,Listener {
     private void buildTower(boolean hold){
         gridProvider.click();
         if (hold){
-            uiProvider.select(prevTower);
+            AbstractTower.MetaData metaData = AbstractTower.getMetaData(prevTower);
+            int price = metaData.price;
+            if (price > budget) {
+                uiProvider.select(null);
+            } else {
+                Vector2i pos = gridProvider.getActiveCell();
+                if (pos != null) {
+                    towerProvider.buildTower(pos.x, pos.y, prevTower);
+                }
+            }
         }
         if (uiProvider.getSelected() != null) {
             Vector2i pos = gridProvider.getActiveCell();

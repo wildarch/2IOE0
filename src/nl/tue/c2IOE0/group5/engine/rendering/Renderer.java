@@ -50,6 +50,8 @@ public class Renderer implements Cleanable {
 
     private DirectionalLight directionalLight;
 
+    private Vector3f ambientLight;
+
     private Task task;
     private enum Task {
         SCENE,
@@ -167,12 +169,14 @@ public class Renderer implements Cleanable {
         // Create uniform for special lighting conditions for background elements
         sceneShader.createUniform("background");
         sceneShader.createUniform("blackAsAlpha");
+        sceneShader.createUniform("directionalLightOff");
 
 
 
 
         // Initialize some fields
-        sceneShader.setAmbientLight(new Vector3f(0.3f, 0.3f, 0.3f));
+        ambientLight = new Vector3f(0.1f, 0.1f, 0.1f);
+        sceneShader.setAmbientLight(ambientLight);
         directionalLight = new DirectionalLight(
                 new Vector3f(1f, 1f, 1f),
                 new Vector3f(0.78f, 0.4f, 0.66f),
@@ -290,8 +294,8 @@ public class Renderer implements Cleanable {
      */
     public void ambientLight(Vector3f color) {
         if (task == Task.DEPTH_MAP) return;
-
-        sceneShader.setUniform("ambientLight", color);
+        Vector3f newColor = new Vector3f(color);
+        sceneShader.setUniform("ambientLight", newColor.add(ambientLight));
         modifiers.push(() ->
                 sceneShader.setUniform("ambientLight", sceneShader.getAmbientLight()));
     }
@@ -302,14 +306,9 @@ public class Renderer implements Cleanable {
     public void noDirectionalLight() {
         if (task == Task.DEPTH_MAP) return;
 
-        DirectionalLight directionalLightOff = new DirectionalLight(
-                new Vector3f(),
-                new Vector3f(),
-                0f
-        );
-        sceneShader.setDirectionalLight(directionalLightOff);
+        sceneShader.setUniform("directionalLightOff", 1);
         modifiers.push(() ->
-                sceneShader.setDirectionalLight(directionalLight));
+                sceneShader.setUniform("directionalLightOff", 0));
     }
 
     /**
