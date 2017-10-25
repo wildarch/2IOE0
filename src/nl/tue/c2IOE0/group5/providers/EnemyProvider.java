@@ -97,7 +97,7 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
                         playerController
                 );
                 break;
-            case BOSS:
+            default:
                 newEnemy = new HeadOfDoomEnemy(
                         loopTimer,
                         renderTimer,
@@ -107,13 +107,6 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
                         playerController
                 );
                 break;
-            default:
-                newEnemy = new Enemy(loopTimer, renderTimer, gridProvider,
-                        initialPosition, targets, 10, 1, 1, 300, qlearner, playerController, 100)
-                {
-                    public EnemyType getType(){ return EnemyType.BASIC; }
-                    protected void onDie(){ renderer.unlinkMesh(iMeshBody); }
-                };
         }
         objects.add(newEnemy.init(getRenderer()));
     }

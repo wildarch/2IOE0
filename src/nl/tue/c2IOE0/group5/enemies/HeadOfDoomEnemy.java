@@ -27,8 +27,6 @@ public class HeadOfDoomEnemy extends Enemy {
                 MAXHEALTH, DAMAGE, SPEED, ATTACKSPEED, qlearner, playerController, 0);
         move(0, -1, 0);
 
-        rotationOffset = 180f;
-        drawOffset = new Vector3f(0, 5, 0);
         System.out.println("HeadOfDoomEnemy: spawning at " + initialPosition);
     }
 
@@ -48,6 +46,8 @@ public class HeadOfDoomEnemy extends Enemy {
      */
     @Override
     public void renderInit(Renderer renderer) {
+        rotationOffset = 180f;
+        drawOffset = new Vector3f(0, 5, -1);
         setScale(5f);
 
         Material SILVER = new Material("/general/white.png");
