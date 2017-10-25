@@ -176,8 +176,8 @@ public abstract class Enemy extends GameObject implements Drawable {
 
     public Cell getCurrentCell() {
         Vector3f position = this.getPosition();
-        int x = (int)position.x();
-        int y = (int)position.z();
+        int x = (int)(position.x() + 0.5f);
+        int y = (int)(position.z() + 0.5f);
         return gridProvider.getCell(x, y);
     }
 }
