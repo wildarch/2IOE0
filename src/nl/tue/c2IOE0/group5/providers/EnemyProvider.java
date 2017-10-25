@@ -134,6 +134,7 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
 
     @Override
     public void draw(Window window, Renderer renderer) {
+        if (engine != null && engine.isPaused()) return;
         objects.forEach(enemy -> enemy.draw(window, renderer));
     }
 }
