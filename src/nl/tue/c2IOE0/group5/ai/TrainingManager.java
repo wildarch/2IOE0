@@ -426,7 +426,7 @@ public class TrainingManager extends JFrame{
             loadDataBtn.setEnabled(true);
             generateDataBtn.setEnabled(true);
             resetBtn.setEnabled(true);
-            stopSimulateBtn.setEnabled(simulator.running());
+            stopSimulateBtn.setEnabled(simulator != null && simulator.running());
         });
     }
 
@@ -443,7 +443,7 @@ public class TrainingManager extends JFrame{
             loadDataBtn.setEnabled(false);
             generateDataBtn.setEnabled(false);
             resetBtn.setEnabled(false);
-            stopSimulateBtn.setEnabled(simulator.running());
+            stopSimulateBtn.setEnabled(simulator != null && simulator.running());
         });
     }
 

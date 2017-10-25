@@ -88,6 +88,7 @@ public class WalkerEnemy extends Enemy implements Animatable {
 
     @Override
     protected void onDie() {
+        if(renderer == null) return;
         renderer.unlinkMesh(body);
         renderer.unlinkMesh(head);
         renderer.unlinkMesh(leftArm);

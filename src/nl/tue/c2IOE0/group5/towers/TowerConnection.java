@@ -33,9 +33,6 @@ public class TowerConnection extends GameObject {
         startTime = renderTimer.getTime();
     }
 
-
-
-
     @Override
     public void update() {    }
 
@@ -61,6 +58,7 @@ public class TowerConnection extends GameObject {
     }
 
     public void destroy() {
+        if(renderer == null) return;
         renderer.unlinkMesh(iMesh);
     }
 }

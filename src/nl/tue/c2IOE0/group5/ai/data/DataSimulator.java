@@ -2,7 +2,7 @@ package nl.tue.c2IOE0.group5.ai.data;
 
 import nl.tue.c2IOE0.group5.ai.GameSimulator;
 import nl.tue.c2IOE0.group5.enemies.EnemyType;
-import nl.tue.c2IOE0.group5.engine.Simulator;
+import nl.tue.c2IOE0.group5.providers.EnemyProvider;
 import nl.tue.c2IOE0.group5.towers.TowerType;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
@@ -87,7 +87,7 @@ public class DataSimulator {
                             }
 
                             System.out.println("Thread: " + threadIndex + "; Iteration: " + r +
-                                "; Result: " + result + "; Done: " + Math.round(((r - rowStart) / (double)(rowEnd - rowStart)) * 10.0) / 10 + "%;");
+                                "; Result: " + result + "; Done: " + Math.round(((r - rowStart) / (double)(rowEnd - rowStart)) * 1000.0) / 10 + "%;");
 
                             outputs.putScalar(r, 0, result);
                         }
@@ -101,8 +101,10 @@ public class DataSimulator {
     }
 
     private double simulate(final TowerType[][] grid, final EnemyType[] buffer, final double trust){
-        Simulator sim = new Simulator(s -> true);
-        GameSimulator simulator = new GameSimulator(sim, totalSize, playSize);
+        //Simulator sim = new Simulator(s -> true);
+        GameSimulator simulator = new GameSimulator(false, sim -> sim.getProvider(EnemyProvider.class)
+            .getEnemies().stream().filter(e -> !e.isDead()).count() == 0, totalSize, playSize);
+
         try {
             simulator.init();
         } catch (IOException e) {
