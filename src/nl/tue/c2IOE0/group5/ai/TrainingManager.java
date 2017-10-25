@@ -46,6 +46,7 @@ public class TrainingManager extends JFrame{
     JButton resetBtn = new JButton("Reset");
     JButton batchBtn = new JButton("Create Batches");
     JButton simulateBtn = new JButton("Simulate Output");
+    JButton stopSimulateBtn = new JButton("Stop Simulation");
 
     SpinnerModel intModel1 = new SpinnerNumberModel(50000, 0, 1000000, 1);
     SpinnerModel intModel2 = new SpinnerNumberModel(9, 0, 1000000, 1);
@@ -240,6 +241,10 @@ public class TrainingManager extends JFrame{
             }).start();
         });
 
+        stopSimulateBtn.addActionListener(a -> {
+            simulator.stop();
+        });
+
         resetBtn.addActionListener(a -> resetState());
 
         batchBtn.addActionListener(a -> {
@@ -387,6 +392,7 @@ public class TrainingManager extends JFrame{
         btnPanel.add(generateDataBtn);
         btnPanel.add(batchBtn);
         btnPanel.add(simulateBtn);
+        btnPanel.add(stopSimulateBtn);
 
         btnPanel.add(resetBtn);
 
@@ -420,6 +426,7 @@ public class TrainingManager extends JFrame{
             loadDataBtn.setEnabled(true);
             generateDataBtn.setEnabled(true);
             resetBtn.setEnabled(true);
+            stopSimulateBtn.setEnabled(simulator.running());
         });
     }
 
@@ -436,6 +443,7 @@ public class TrainingManager extends JFrame{
             loadDataBtn.setEnabled(false);
             generateDataBtn.setEnabled(false);
             resetBtn.setEnabled(false);
+            stopSimulateBtn.setEnabled(simulator.running());
         });
     }
 

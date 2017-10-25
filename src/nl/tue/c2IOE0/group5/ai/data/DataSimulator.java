@@ -86,7 +86,8 @@ public class DataSimulator {
                                 result = 0;
                             }
 
-                            System.out.println("Thread: " + threadIndex + "; Iteration: " + r + "; Result: " + result + ";");
+                            System.out.println("Thread: " + threadIndex + "; Iteration: " + r +
+                                "; Result: " + result + "; Done: " + Math.round(((r - rowStart) / (double)(rowEnd - rowStart)) * 10.0) / 10 + "%;");
 
                             outputs.putScalar(r, 0, result);
                         }
@@ -115,7 +116,7 @@ public class DataSimulator {
         for (int x = 0; x < playSize; x++){
             for (int y = 0; y < playSize; y++){
                 TowerType type = grid[x][y];
-                if (type != null) {
+                if (type != null && type != TowerType.CASTLE) {
                     simulator.placeTower(type, x + borderSize, y + borderSize);
                 }
             }
@@ -132,6 +133,12 @@ public class DataSimulator {
         for (int i = 0; i < threads.length; i++){
             activeThreads[i] = true;
             threads[i].start();
+        }
+    }
+
+    public void stop(){
+        for (int i = 0; i < threads.length; i++){
+            activeThreads[i] = false;
         }
     }
 
