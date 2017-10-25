@@ -26,9 +26,9 @@ import static nl.tue.c2IOE0.group5.util.Angle.rotateVector;
 public class WalkerEnemy extends Enemy implements Animatable {
 
     private final static int MAXHEALTH = 100;
-    private final static float SPEED = 0.5f;
-    private final static int ATTACKSPEED = 1000;
-    private final static int DAMAGE = 20;
+    private final static float SPEED = 0.3f;
+    private final static int ATTACKSPEED = 100;
+    private final static int DAMAGE = 2;
 
     private InstancedMesh body;
     private InstancedMesh head;
@@ -106,7 +106,7 @@ public class WalkerEnemy extends Enemy implements Animatable {
         leftArmOffset = new LinearlyUpdatable(armOffset(0), 0.1f);
         rightArmOffset = new LinearlyUpdatable(-armOffset(0), 0.1f);
 
-        Material SILVER = new Material("/silver.png");
+        Material SILVER = new Material("/general/silver.png");
 
         head = renderer.linkMesh("/models/enemies/walkerEnemy/HEAD.obj", SILVER, () -> {
             rotateAndSet(renderer, new Vector3f(0f, 0.438f + this.headOffset.current(), 0f));

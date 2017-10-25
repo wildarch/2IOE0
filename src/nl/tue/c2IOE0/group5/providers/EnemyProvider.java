@@ -42,7 +42,7 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
         this.engine = engine;
         animationProvider = engine.getProvider(AnimationProvider.class);
         Mesh m = engine.getRenderer().linkMesh("/testobjects/cube.obj");
-        m.setMaterial(new Material("/square.png"));
+        m.setMaterial(new Material("/general/square.png"));
         renderTimer = engine.getRenderLoopTimer();
     }
 

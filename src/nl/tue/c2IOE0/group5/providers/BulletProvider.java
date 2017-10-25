@@ -20,7 +20,7 @@ public class BulletProvider extends ObjectProvider<Bullet> {
     public void renderInit(Engine engine) {
         this.engine = engine;
         Mesh bullet = engine.getRenderer().linkMesh("/models/items/bullet4.obj");
-        bullet.setMaterial(new Material("/square.png"));
+        bullet.setMaterial(new Material("/general/square.png"));
     }
 
     @Override

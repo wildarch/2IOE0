@@ -26,10 +26,10 @@ import static nl.tue.c2IOE0.group5.util.Angle.rotateVector;
  */
 public class DrillEnemy extends Enemy implements Animatable {
 
-    private final static int MAXHEALTH = 50;
+    private final static int MAXHEALTH = 20;
     private final static float SPEED = 0.7f;
     private final static int ATTACKSPEED = 100;
-    private final static int DAMAGE = 3;
+    private final static int DAMAGE = 4;
 
     private InstancedMesh body;
     private InstancedMesh drill;
@@ -91,7 +91,7 @@ public class DrillEnemy extends Enemy implements Animatable {
         drillOffset = new LinearlyUpdatable(0f, 100);
 
         this.renderer = renderer;
-        Material darkMatter = new Material("/silver.png");
+        Material darkMatter = new Material("/general/silver.png");
 
         body = renderer.linkMesh("/models/enemies/drillEnemy/BODY.obj", darkMatter, () -> {
             rotateAndSet(renderer, new Vector3f());
