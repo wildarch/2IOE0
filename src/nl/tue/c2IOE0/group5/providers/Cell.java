@@ -132,8 +132,15 @@ public class Cell extends GameObject {
     @Override
     public void renderInit(Renderer renderer) {
         renderer.linkMesh("/models/cell/cell.obj", () -> {
-            setModelView(renderer);
-            renderer.ambientLight(color);
+            if (!isBorderCell()) { //only draw when this cell is activated
+                setModelView(renderer);
+                renderer.drawBlackAsAlpha();
+                if (color != activeColor) {
+                    renderer.ambientLight(new Vector3f(0, 0, 0));
+                } else {
+                    renderer.ambientLight(color);
+                }
+            }
         });
     }
 
