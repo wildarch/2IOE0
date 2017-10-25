@@ -40,6 +40,7 @@ public abstract class AbstractTower extends GameObject {
     public final int bulletDamage;
     private float healthHeight;
     private float bulletOffset;
+    float damage = 0f;
 
     private Cell cell;
     private Renderer renderer;
@@ -117,6 +118,10 @@ public abstract class AbstractTower extends GameObject {
         }
     }
 
+    public Vector3f getDamageColor() {
+        return new Vector3f(0.4f * damage, 0, 0);
+    }
+
     /**
      * Get the range of this tower
      * @return
@@ -134,8 +139,8 @@ public abstract class AbstractTower extends GameObject {
     }
 
     public void takeDamage(double damage) {
-        System.err.println("Taking damage: " + damage);
         health -= damage;
+        this.damage = (float) Math.min(this.damage + 100f * damage / (double) maxHealth, 1f);
         if (health <= 0) {
             die();
         }
@@ -188,6 +193,7 @@ public abstract class AbstractTower extends GameObject {
             timeToDoDamage = loopTimer.getTime() + attackTime;
         }
         this.healthBolletje.update();
+        damage = Math.max(damage - 0.1f, 0f);
     }
 
     protected void setMesh(Mesh m) {

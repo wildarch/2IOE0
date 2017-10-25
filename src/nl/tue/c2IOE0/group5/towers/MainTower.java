@@ -22,7 +22,10 @@ public class MainTower extends AbstractTower {
     public void renderInit(Renderer renderer) {
         setScale(1f);
 
-        iMesh = renderer.linkMesh("/models/towers/mainbase/mainbase.obj", () -> setModelView(renderer));
+        iMesh = renderer.linkMesh("/models/towers/mainbase/mainbase.obj", () -> {
+            setModelView(renderer);
+            renderer.ambientLight(getDamageColor());
+        });
 
         this.renderer = renderer;
     }
