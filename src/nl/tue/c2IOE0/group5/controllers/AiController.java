@@ -87,8 +87,12 @@ public class AiController implements Controller {
         boolean smallWave = wave % NR_SUB_WAVES != 0 && loopTimer.getTime() > nextWaveTime;
         if (bigWave || smallWave) {
             wave(bigWave);
-            SMALL_WAVE_SIZE++;
-            BIG_WAVE_SIZE = SMALL_WAVE_SIZE * 2;
+
+            if(bigWave){
+                SMALL_WAVE_SIZE++;
+                BIG_WAVE_SIZE = SMALL_WAVE_SIZE * 2;
+            }
+
             wave++;
             nextWaveTime = loopTimer.getTime() + WAVE_TIME;
         }
