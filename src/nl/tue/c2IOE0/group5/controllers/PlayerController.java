@@ -10,13 +10,9 @@ import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.providers.*;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
-import nl.tue.c2IOE0.group5.towers.TowerType;
 import nl.tue.c2IOE0.group5.util.Angle;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
-
-import java.lang.reflect.Field;
-import java.util.Vector;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -204,13 +200,13 @@ public class PlayerController implements Controller,Listener {
 
                         if (cellTower.getTower().getType().getValue() != 0) { //Don't sell your own castle you gobsmack ;)
                             //Refund some percentage of money
-                            double refundPercentage = 1d;
+                            double refundPercentage = 0.8d;
                             int price = cellTower.getTower().getPrice();
                             double towerHealth = cellTower.getTower().getHealth();
                             double maxTowerHealth = cellTower.getTower().getMaxHealth();
                             double valueHealth = towerHealth/maxTowerHealth;
                             addBudget((int) (price * refundPercentage * valueHealth));
-                            System.out.println("Selling tower: " + cellTower.getTower().getType().toString() + " for: " + (price * valueHealth) + " With health: " + towerHealth + "/" + maxTowerHealth + " healthPortion: " + valueHealth);
+//                            System.out.println("Selling tower: " + cellTower.getTower().getType().toString() + " for: " + (price * valueHealth) + " With health: " + towerHealth + "/" + maxTowerHealth + " healthPortion: " + valueHealth);
 
                             //Kill Tower
                             cellTower.getTower().die();
@@ -352,7 +348,6 @@ public class PlayerController implements Controller,Listener {
             Vector2i pos = gridProvider.getActiveCell();
             if (pos != null) {
                 towerProvider.buildTower(pos.x, pos.y, uiProvider.getSelected());
-                System.out.println("Should Build");
                 prevTower = uiProvider.getSelected();
                 if (!shift) {
                     uiProvider.select(null);
@@ -490,14 +485,15 @@ public class PlayerController implements Controller,Listener {
             angley = 0;
         }
 
-        System.out.println("x: " + camera.getPosition().x());
-        System.out.println("y: " + camera.getPosition().y());
-        System.out.println("z: " + camera.getPosition().z());
-        System.out.println("gCentreX: " + gCentreX);
-        System.out.println("gCentreY: " + gCentreY);
-        System.out.println("cameraDiameter: " + cameraDiameter);
-        System.out.println("cameraDistance: " + cameraDistance);
-        System.out.println("angley: " + angley);
+//        spam system.out with camera information
+//        System.out.println("x: " + camera.getPosition().x());
+//        System.out.println("y: " + camera.getPosition().y());
+//        System.out.println("z: " + camera.getPosition().z());
+//        System.out.println("gCentreX: " + gCentreX);
+//        System.out.println("gCentreY: " + gCentreY);
+//        System.out.println("cameraDiameter: " + cameraDiameter);
+//        System.out.println("cameraDistance: " + cameraDistance);
+//        System.out.println("angley: " + angley);
 
         double diffangley = angley - oldangley;
 

@@ -75,7 +75,7 @@ public class DrillEnemy extends Enemy implements Animatable {
      * @return offset based on current animation
      */
     private float drillOffset(float loopTime){
-        return attacking ? (float) (0.2 * sin(3141.5/ATTACKSPEED * loopTime)) : 0;
+        return attacking ? (float) (0.5 * sin((ATTACKSPEED / 3141.5) * loopTime)) : 0;
     }
 
     @Override
@@ -112,6 +112,6 @@ public class DrillEnemy extends Enemy implements Animatable {
         final Vector3f wheelOffset = offset.mul(getScale());
         final Vector3f displacement = rotateVector(wheelOffset, new Vector3f(0, -1, 0), getRotation().y + 90);
         if(!attacking) displacement.add(interpolator.getOffset(renderTimer.getTime() - loopTimer.getTime()));
-        setModelView(renderer, displacement, new Vector3f(0, 0, 0));
+        setModelView(renderer, displacement);
     }
 }

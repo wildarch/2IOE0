@@ -10,6 +10,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.providers.*;
 import org.joml.Vector3f;
 
+import java.lang.reflect.Field;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -65,6 +66,22 @@ public abstract class AbstractTower extends GameObject {
         this.healthHeight = healthHeight;
         this.bulletOffset = bulletOffset;
         startTime = renderTimer.getTime();
+    }
+
+    /**
+     * @param towertype a tower class
+     * @return the general metadata of this tower, as defined in {@link MetaData}
+     */
+    public static MetaData getMetaData(Class<? extends AbstractTower> towertype) {
+        MetaData metaData;
+        try {
+            Field meta = towertype.getField("metadata");
+            metaData = (MetaData) meta.get(null);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            throw new IllegalStateException("Tower " + towertype.getName() +
+                    " does not have a field metadata, or it is not marked static public");
+        }
+        return metaData;
     }
 
     @Override

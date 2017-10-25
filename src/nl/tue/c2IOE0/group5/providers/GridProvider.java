@@ -127,7 +127,6 @@ public class GridProvider extends ObjectProvider<Cell> {
      * @param x the x coordinate to set the tower to
      * @param y the y coordinate to set the tower to
      * @param tower the tower to place
-     * @return true if succeeded, false if the cell on the coordinates is a bordercell
      * @throws ArrayIndexOutOfBoundsException when the cell is a bordercell or the cell is not even in the grid
      */
     public void placeTower(int x, int y, AbstractTower tower) throws ArrayIndexOutOfBoundsException {
@@ -165,6 +164,16 @@ public class GridProvider extends ObjectProvider<Cell> {
         TowerConnection tower = new TowerConnection(position, rotation, getRenderer(), getEngine().getRenderLoopTimer()).init(getRenderer());
         towerconnections[x][y] = tower;
         towerConnectionProvider.addTowerConnection(tower);
+    }
+
+    public void destroyConnectingTower(int x, int y) {
+        TowerConnection tower = towerconnections[x][y];
+        if (tower == null) {
+            throw new NullPointerException("Connecting tower being removed at " + x + ", " + y + " does not exist");
+        }
+        tower.destroy();
+        towerconnections[x][y] = null;
+        towerConnectionProvider.deleteTowerConnection(tower);
     }
 
     public void placePlayFieldTower(int x, int y, AbstractTower tower){
@@ -211,22 +220,18 @@ public class GridProvider extends ObjectProvider<Cell> {
                 throw new ArrayIndexOutOfBoundsException("Walltower was on the edge of the grid, should not be possible.");
             }
             //check for surrounding towers
-            destroyIfWalltower(x+1, y);
-            destroyIfWalltower(x, y+1);
-            destroyIfWalltower(x-1, y);
-            destroyIfWalltower(x, y-1);
+            if (getCell(x-1, y).getTower() instanceof WallTower) {
+                destroyConnectingTower(2*x-1, 2*y);
         }
+            if (getCell(x+1, y).getTower() instanceof WallTower) {
+                destroyConnectingTower(2*x+1, 2*y);
     }
-
-    private void destroyIfWalltower(int x, int y) {
-        if (getCell(x, y).getTower() instanceof WallTower) {
-            TowerConnection tower = towerconnections[2*x][2*y];
-            if (tower == null) {
-                throw new NullPointerException("Connecting tower being removed at " + 2*x + ", " + 2*y + " does not exist");
+            if (getCell(x, y-1).getTower() instanceof WallTower) {
+                destroyConnectingTower(2*x, 2*y-1);
             }
-            tower.destroy();
-            towerconnections[2*x][2*y] = null;
-            towerConnectionProvider.deleteTowerConnection(tower);
+            if (getCell(x, y+1).getTower() instanceof WallTower) {
+                destroyConnectingTower(2*x, 2*y+1);
+            }
         }
     }
 

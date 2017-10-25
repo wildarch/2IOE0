@@ -8,7 +8,7 @@ import nl.tue.c2IOE0.group5.providers.TowerProvider;
 import org.joml.Vector3f;
 
 /**
- * @Author Yoeri Poels
+ * @author Yoeri Poels
  */
 public class RocketTower extends AbstractTower {
 

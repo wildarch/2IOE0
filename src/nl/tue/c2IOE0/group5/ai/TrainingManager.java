@@ -109,7 +109,7 @@ public class TrainingManager extends JFrame{
         SwingUtilities.invokeLater(this::buildUI);
     }
 
-    void buildUI(){
+    private void buildUI(){
         System.out.println("Building GUI...");
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

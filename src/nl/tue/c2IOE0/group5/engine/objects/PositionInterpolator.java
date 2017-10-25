@@ -49,7 +49,7 @@ public class PositionInterpolator {
      * Call this at every game tick
      * @param elapsedTime Current time in milliseconds
      *                    (as returned by {@link Timer#getTime()}
-     * @return whether or not the target was reached
+     * @return remaining time to reach target | TODO check this
      */
     public long update(long elapsedTime) {
         if (target == null) return 0;

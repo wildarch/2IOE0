@@ -19,7 +19,7 @@ public class Bullet extends GameObject implements Drawable {
     protected Timer renderTimer;
     private PositionInterpolator interpolator;
     private boolean isDone = false; //When target is hit
-    private Vector3f drawOffset = new Vector3f();
+    private Vector3f offset = new Vector3f();
 
     public Bullet(float speed, int damage, float verticalOffset, Enemy target, AbstractTower source, Timer loopTimer, Timer renderTimer) {
         this.speed = speed;
@@ -43,7 +43,7 @@ public class Bullet extends GameObject implements Drawable {
         interpolator.update(loopTimer.getElapsedTime());
         //boolean targetReached = interpolator.update(loopTimer.getTime());                 //doesn't seem to work as I expect it to work
         boolean targetReached = this.getPosition().distance(target.getPosition()) < 0.1f;       //so using this method instead
-        if (targetReached || target.isDead()) {
+        if (targetReached) {
             target.getDamage(damage);
             isDone = true; //target is hit and this bullet should be removed
             renderer.unlinkMesh(iMesh); //stop drawing this bullet
@@ -58,7 +58,7 @@ public class Bullet extends GameObject implements Drawable {
         Mesh bullet = renderer.linkMesh("/models/items/bullet4.obj");
         bullet.setMaterial(new Material("/general/square.png"));
         iMesh = renderer.linkMesh(bullet, () -> {
-            setModelView(renderer, drawOffset);
+            setModelView(renderer, offset);
             renderer.ambientLight(color);
             renderer.noDirectionalLight();
         });
@@ -67,6 +67,6 @@ public class Bullet extends GameObject implements Drawable {
 
     @Override
     public void draw(Window window, Renderer renderer) {
-        drawOffset = interpolator.getOffset(renderTimer.getTime() - loopTimer.getTime());
+        offset = interpolator.getOffset(renderTimer.getTime() - loopTimer.getTime());
     }
 }
