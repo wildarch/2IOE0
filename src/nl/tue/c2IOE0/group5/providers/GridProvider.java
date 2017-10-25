@@ -12,14 +12,11 @@ import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
 import nl.tue.c2IOE0.group5.towers.TowerConnection;
 import nl.tue.c2IOE0.group5.towers.WallTower;
-import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -173,6 +170,7 @@ public class GridProvider extends ObjectProvider<Cell> {
     }
 
     public void destroyConnectingTower(int x, int y) {
+        if(getRenderer() == null) return;
         TowerConnection tower = towerconnections[x][y];
         if (tower == null) {
             throw new NullPointerException("Connecting tower being removed at " + x + ", " + y + " does not exist");

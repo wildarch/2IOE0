@@ -27,8 +27,8 @@ public class AiController implements Controller {
     private static int NR_WAVES = 10;
     private static int NR_SUB_WAVES = 5;
     private static long WAVE_TIME = 5000; // 5 seconds
-    private static int BIG_WAVE_SIZE = 5;
-    private static int SMALL_WAVE_SIZE = 2;
+    private int BIG_WAVE_SIZE = 2;
+    private int SMALL_WAVE_SIZE = 1;
     private static int BUFFER_SAMPLE_SIZE = 100;
 
     private int wave = 0;
@@ -56,13 +56,15 @@ public class AiController implements Controller {
         loopTimer = engine.getRenderLoopTimer();
         gridProvider = engine.getProvider(GridProvider.class);
 
-        try {
-            if(networkFile != null && networkFile.exists() && networkFile.canRead()){
-                network = ModelSerializer.restoreComputationGraph(networkFile);
+        new Thread(() -> {
+            try {
+                if(networkFile != null && networkFile.exists() && networkFile.canRead()){
+                    network = ModelSerializer.restoreComputationGraph(networkFile);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        }).run();
 
         trainQLearner();
         isPaused = engine::isPaused;
@@ -85,56 +87,67 @@ public class AiController implements Controller {
         boolean smallWave = wave % NR_SUB_WAVES != 0 && loopTimer.getTime() > nextWaveTime;
         if (bigWave || smallWave) {
             wave(bigWave);
+
+            if(bigWave){
+                SMALL_WAVE_SIZE++;
+                BIG_WAVE_SIZE = SMALL_WAVE_SIZE * 2;
+            }
+
             wave++;
             nextWaveTime = loopTimer.getTime() + WAVE_TIME;
         }
     }
 
-    private void wave(boolean big) {
+    private void wave(final boolean big) {
         final Random r = new Random();
-        InputConverter converter;
 
-        EnemyType[] sampleBuffer = new EnemyType[big ? BIG_WAVE_SIZE : SMALL_WAVE_SIZE];
+        new Thread(() -> {
+            InputConverter converter;
 
-        EnemyType[] selectedBuffer = null;
-        double bufferScore = Double.NEGATIVE_INFINITY;
-        double sampleScore;
-        for (int i = 0; i < BUFFER_SAMPLE_SIZE; i++){
-            for (int j = 0; j < sampleBuffer.length; j++){
-                EnemyType t = EnemyType.values()[r.nextInt(EnemyType.getSize())];
-                sampleBuffer[j] = t;
+            EnemyType[] sampleBuffer = new EnemyType[big ? BIG_WAVE_SIZE : SMALL_WAVE_SIZE];
+
+            EnemyType[] selectedBuffer = null;
+            double bufferScore = Double.NEGATIVE_INFINITY;
+            double sampleScore;
+            for (int i = 0; i < BUFFER_SAMPLE_SIZE; i++){
+                for (int j = 0; j < sampleBuffer.length; j++){
+                    EnemyType t = EnemyType.values()[r.nextInt(EnemyType.getSize())];
+                    sampleBuffer[j] = t;
+                }
+
+                if(network != null){
+                    converter = InputConverter.fromGameState(gridProvider, 1, sampleBuffer);
+                    converter.convert();
+                    INDArray aiInput = converter.getInput();
+                    INDArray aiOutput = network.outputSingle(false, aiInput);
+                    sampleScore = aiOutput.getDouble(0, 0);
+                } else {
+                    sampleScore = 0;
+                }
+
+                if(sampleScore > bufferScore){
+                    selectedBuffer = Arrays.copyOf(sampleBuffer, sampleBuffer.length);
+                }
             }
 
-            if(network != null){
-                converter = InputConverter.fromGameState(gridProvider, 1, sampleBuffer);
-                converter.convert();
-                INDArray aiInput = converter.getInput();
-                INDArray aiOutput = network.outputSingle(false, aiInput);
-                sampleScore = aiOutput.getDouble(0, 0);
-            } else {
-                sampleScore = 0;
-            }
+            if(selectedBuffer == null) throw new NullPointerException("selectedBuffer == null");
 
-            if(sampleScore > bufferScore){
-                selectedBuffer = Arrays.copyOf(sampleBuffer, sampleBuffer.length);
-            }
-        }
+            // Do a wave!
+            String size = big ? "Big  " : "Small";
+            System.out.println(size + " wave at " + loopTimer.getTime());
 
-        // Do a wave!
-        String size = big ? "Big  " : "Small";
-        System.out.println(size + " wave at " + loopTimer.getTime());
-
-        for (EnemyType enemy : selectedBuffer) {
-            Cell startCell = gridProvider.getCell(qLearner.getOptimalSpawnState());
-            Vector2i start = startCell.getGridPosition();
-            List<Integer> path = qLearner.getOptimalPath(startCell.getGridPosition());
-            enemyProvider.putEnemy(
+            for (EnemyType enemy : selectedBuffer) {
+                Cell startCell = gridProvider.getCell(qLearner.getOptimalSpawnState());
+                Vector2i start = startCell.getGridPosition();
+                List<Integer> path = qLearner.getOptimalPath(startCell.getGridPosition());
+                enemyProvider.putEnemy(
                     enemy,
                     start,
                     path.stream().map(p -> qLearner.getPoint(p, gridProvider.SIZE)).collect(Collectors.toList()),
                     qLearner
-            );
-        }
+                );
+            }
+        }).run();
     }
 
     private void trainQLearner() {

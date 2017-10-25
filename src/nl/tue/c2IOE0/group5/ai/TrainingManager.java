@@ -261,7 +261,7 @@ public class TrainingManager extends JFrame{
         trainBtn.addActionListener(a -> {
             trainerActive = true;
             new Thread(() -> {
-                //lockButtons();
+                lockButtons();
                 status("Starting trainer...");
                 int c = 1;
                 int numEpochs = (int) inputNumEpochs.getValue();
@@ -435,7 +435,7 @@ public class TrainingManager extends JFrame{
             saveDataBtn.setEnabled(false);
             saveNetworkBtn.setEnabled(false);
             trainBtn.setEnabled(false);
-            stopTrainBtn.setEnabled(false);
+            stopTrainBtn.setEnabled(trainerActive);
             batchBtn.setEnabled(false);
             simulateBtn.setEnabled(false);
             loadNetworkBtn.setEnabled(false);
