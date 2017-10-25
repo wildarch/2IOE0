@@ -10,9 +10,7 @@ import java.util.Random;
 public enum EnemyType {
     BASIC(10),
     WALKER(5),
-    DRILL(30),
-    BOSS(1),
-    NONE(0);
+    DRILL(30)
 
     private final int weight;
 
@@ -42,6 +40,6 @@ public enum EnemyType {
             selection -= e.weight;
             if (selection < 0) return e;
         }
-        return NONE;
+        return BASIC;
     }
 }
