@@ -166,9 +166,11 @@ public class GridProvider extends ObjectProvider<Cell> {
     public void placeConnectingTower(int x, int y, boolean rotate) {
         Vector3f position = new Vector3f(((float) x ) / 2.0f, 0f, ((float) y ) / 2.0f);
         float rotation = rotate ? 0f : 90f;
-        TowerConnection tower = new TowerConnection(position, rotation, getRenderer(), getEngine().getRenderLoopTimer()).init(getRenderer());
-        towerconnections[x][y] = tower;
-        towerConnectionProvider.addTowerConnection(tower);
+        if(getRenderer() != null) {
+            TowerConnection tower = new TowerConnection(position, rotation, getRenderer(), getEngine().getRenderLoopTimer()).init(getRenderer());
+            towerconnections[x][y] = tower;
+            towerConnectionProvider.addTowerConnection(tower);
+        }
     }
 
     public void destroyConnectingTower(int x, int y) {

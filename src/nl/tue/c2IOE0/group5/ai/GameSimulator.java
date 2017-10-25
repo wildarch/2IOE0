@@ -30,10 +30,8 @@ public class GameSimulator {
             new TowerConnectionProvider();
     private Random random = new Random();
 
-
     private int gridSize;
     private int playSize;
-
 
     public GameSimulator(Simulator simulator, int gridSize, int playSize) {
         setup(simulator,gridSize, playSize);
