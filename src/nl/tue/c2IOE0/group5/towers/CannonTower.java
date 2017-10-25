@@ -63,10 +63,12 @@ public class CannonTower extends AbstractTower {
         iBaseMesh = renderer.linkMesh(baseMesh, () -> {
             setModelView(renderer, getPositionOffset());
             renderer.boink(getBounceDegree(), baseMesh, cannonMesh);
+            renderer.ambientLight(getDamageColor());
         });
         iCannonMesh = renderer.linkMesh("/models/towers/cannontower/CANNON.obj", () -> {
             setModelView(renderer, new Vector3f(0f, 0.269f, 0f).add(getPositionOffset().toImmutable()), cannonRotation);
             renderer.boink(getBounceDegree(), baseMesh, cannonMesh);
+            renderer.ambientLight(getDamageColor());
         });
 
 

@@ -65,7 +65,7 @@ public class PlayerController implements Controller,Listener {
     private float minX;
     private float minY = 0.1f;
     private float minZ;
-    private int budget = 1000;
+    private int budget = 200;
 
     public PlayerController() {
     }
@@ -347,9 +347,9 @@ public class PlayerController implements Controller,Listener {
         camera.setPosition(XPosition, YPosition, ZPosition);
     }
 
-    private void buildTower(boolean shift){
+    private void buildTower(boolean hold){
         gridProvider.click();
-        if (shift){
+        if (hold){
             uiProvider.select(prevTower);
         }
         if (uiProvider.getSelected() != null) {
@@ -357,7 +357,7 @@ public class PlayerController implements Controller,Listener {
             if (pos != null) {
                 towerProvider.buildTower(pos.x, pos.y, uiProvider.getSelected());
                 prevTower = uiProvider.getSelected();
-                if (!shift) {
+                if (!hold) {
                     uiProvider.select(null);
                 }
             }

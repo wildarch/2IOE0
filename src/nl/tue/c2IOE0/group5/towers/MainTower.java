@@ -8,21 +8,24 @@ public class MainTower extends AbstractTower {
 
     private static final int RANGE = 2;
     private static final int MAX_LEVEL = 1;
-    private static final int MAX_HEALTH = 100;
+    private static final int MAX_HEALTH = 200;
     private static final int PRICE = 1000000;
 
     private Renderer renderer;
     private InstancedMesh iMesh;
 
     public MainTower(TowerProvider towerProvider) {
-        super(RANGE, MAX_LEVEL, MAX_HEALTH, 1000 , 3f, 20, 2.5f, 1f, towerProvider);
+        super(RANGE, MAX_LEVEL, MAX_HEALTH, 1200 , 10f, 25, 2.5f, 1f, towerProvider);
     }
 
     @Override
     public void renderInit(Renderer renderer) {
         setScale(1f);
 
-        iMesh = renderer.linkMesh("/models/towers/mainbase/mainbase.obj", () -> setModelView(renderer));
+        iMesh = renderer.linkMesh("/models/towers/mainbase/mainbase.obj", () -> {
+            setModelView(renderer);
+            renderer.ambientLight(getDamageColor());
+        });
 
         this.renderer = renderer;
     }
