@@ -29,6 +29,7 @@ public class WalkerEnemy extends Enemy implements Animatable {
     private final static float SPEED = 0.3f;
     private final static int ATTACKSPEED = 100;
     private final static int DAMAGE = 1;
+    public static final int DIE_REWARD = 30;
 
     private InstancedMesh body;
     private InstancedMesh head;
@@ -45,7 +46,7 @@ public class WalkerEnemy extends Enemy implements Animatable {
 
     public WalkerEnemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider, Vector2i initialPosition,
                        List<Vector2i> targetPositions, QLearner qlearner, AnimationProvider animationProvider, PlayerController playerController) {
-        super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, MAXHEALTH, DAMAGE, SPEED, ATTACKSPEED, qlearner, playerController);
+        super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, MAXHEALTH, DAMAGE, SPEED, ATTACKSPEED, qlearner, playerController, DIE_REWARD);
         setScale(0.5f);
 //        move(0, 1, 0);
         this.animationProvider = animationProvider;

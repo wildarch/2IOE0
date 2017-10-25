@@ -110,7 +110,9 @@ public class AiController implements Controller {
             double sampleScore;
             for (int i = 0; i < BUFFER_SAMPLE_SIZE; i++){
                 for (int j = 0; j < sampleBuffer.length; j++){
-                    EnemyType t = EnemyType.values()[random.nextInt(EnemyType.getSize())];
+                    EnemyType t = EnemyType.getRandomEnemy(random);
+                    // make sure BOSS doesn't spawn too early
+                    if (t == EnemyType.BOSS && wave < 3) t = EnemyType.BASIC;
                     sampleBuffer[j] = t;
                 }
 

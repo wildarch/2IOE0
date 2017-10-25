@@ -21,6 +21,7 @@ import java.util.List;
 
 public abstract class Enemy extends GameObject implements Drawable {
 
+    private final int onDieReward;
     private final int maxHealth;
     private final float speed;
     private final long attackSpeed;
@@ -47,7 +48,7 @@ public abstract class Enemy extends GameObject implements Drawable {
     public Enemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider,
                  Vector2i initialPosition, List<Vector2i> targetPositions,
                  int maxHealth, int damage, float speed, long attackSpeed, QLearner qlearner,
-                 PlayerController playerController) {
+                 PlayerController playerController, int onDieReward) {
         this.qLearner = qlearner;
         this.gridProvider = gridProvider;
         this.maxHealth = maxHealth;
@@ -62,6 +63,7 @@ public abstract class Enemy extends GameObject implements Drawable {
         this.offset = new Vector3f(0);
         this.damage = damage;
         this.playerController = playerController;
+        this.onDieReward = onDieReward;
     }
 
     public abstract EnemyType getType();
@@ -163,7 +165,7 @@ public abstract class Enemy extends GameObject implements Drawable {
     }
 
     private int getDieReward() {
-        return (int) (maxHealth * attackSpeed / 1000);
+        return onDieReward;
     }
 
     protected abstract void onDie();

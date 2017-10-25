@@ -167,6 +167,7 @@ public abstract class AbstractTower extends GameObject {
     }
 
     private void attack() {
+        if (attackTime == -1) return;
         List<Enemy> inRange = enemyProvider.getEnemies().stream().filter(this::isInRange).collect(Collectors.toList());
         Optional<Enemy> e = inRange.stream()
                 .min(Comparator.comparingDouble(a -> manDist(a.getCurrentCell(), this.cell)));

@@ -64,7 +64,6 @@ public class RocketTower extends AbstractTower {
         iBaseMesh = renderer.linkMesh(baseMesh, () -> {
             setModelView(renderer, getPositionOffset());
             renderer.boink(getBounceDegree(), baseMesh, rocketMesh);
-            System.out.println(this.damage);
             renderer.ambientLight(getDamageColor());
         });
         iRocketMesh = renderer.linkMesh(rocketMesh, () -> {
