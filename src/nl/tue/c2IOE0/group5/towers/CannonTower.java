@@ -15,10 +15,10 @@ public class CannonTower extends AbstractTower {
 
     private static final int RANGE = 3;
     private static final int MAX_LEVEL = 1;
-    private static final int MAX_HEALTH = 75;
-    private static final int ATTACK_TIME = 130;
+    private static final int MAX_HEALTH = 100;
+    private static final int ATTACK_TIME = 2000;
     private static final float BULLET_SPEED = 8f;
-    private static final int BULLET_DAMAGE = 1;
+    private static final int BULLET_DAMAGE = 30;
     private static final int PRICE = 50;
 
     public static MetaData metadata = new MetaData();
