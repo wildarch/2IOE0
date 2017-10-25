@@ -81,7 +81,7 @@ public class MenuProvider implements Provider<Engine>, Clickable {
         {
             UIButton graphics = new MenuButton("Graphics", (event) -> activeElements = graphicsMenu);
             {
-                UIButton shadow = new MenuToggle("Shadow", (b) -> renderer.setShadowMapping(b));
+                UIButton shadow = new MenuToggleMultiple("Shadow", new String[]{"low", "medium", "high", "disabled"}, (i) -> renderer.setShadowQuality(i));
                 UIButton vsync = new MenuToggle("vSync", (b) -> window.getOptions().vSync = b);
                 UIButton antia = new MenuToggle("Anti Aliasing", (b) -> window.getOptions().antialiasing = b ? 4 : 0);
                 UIButton backGraphics = new MenuButton("Back", (event) -> activeElements = optionMenu);

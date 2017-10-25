@@ -131,7 +131,7 @@ public class Renderer implements Cleanable {
         this.window = window;
         initSceneShader();
         initDepthShader();
-        depthMap = new DepthMap();
+        depthMap = new DepthMap(1024);
         initDepthShader();
     }
 
@@ -230,6 +230,24 @@ public class Renderer implements Cleanable {
 
     public void setShadowMapping(boolean value) {
         this.shadowMapping = value;
+    }
+
+    public void setShadowQuality(int quality) {
+        switch (quality) {
+            case 0:
+                setShadowMapping(true);
+                depthMap = new DepthMap(1024);
+                break;
+            case 1:
+                depthMap = new DepthMap(2048);
+                break;
+            case 2:
+                depthMap = new DepthMap(4096);
+                break;
+            case 3:
+                setShadowMapping(false);
+                break;
+        }
     }
 
     /**

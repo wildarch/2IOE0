@@ -12,6 +12,9 @@ import nl.tue.c2IOE0.group5.userinterface.*;
 import org.joml.Vector2i;
 import org.joml.Vector4f;
 
+import static org.lwjgl.nanovg.NanoVG.NVG_ALIGN_LEFT;
+import static org.lwjgl.nanovg.NanoVG.NVG_ALIGN_RIGHT;
+
 /**
  * @author Jorren
  */
@@ -30,6 +33,9 @@ public class UIProvider implements Provider<Engine> {
     public static final Vector4f COLOR_DARK = new Vector4f(0f, 0f, 0f, 0.3f);
 
     private UIButton buildBar;
+    private UIElement budget;
+    private UIElement mainHealth;
+
     private UIText playerBudget;
     private UIElement[] deadScreen;
 
@@ -62,9 +68,16 @@ public class UIProvider implements Provider<Engine> {
 
         buildBar = new Buildbar(80, 120, this);
         PlayerController playerController = engine.getController(PlayerController.class);
+        budget = new UIText(0, 20, NVG_ALIGN_LEFT,
+                () -> String.format("Budget: %d", playerController.getBudget()));
+        mainHealth = new UIText(0, 20, NVG_ALIGN_RIGHT,
+                () -> String.format("Health: %d", towerProvider.getMainTower().getHealth()));
+
+        /*
         playerBudget = new UIText(10, 40, 100, 20,
                 () -> "Budget: " +playerController.getBudget()
         );
+        */
 
         UIElement dead = new MenuTextField("You are dead", creditTextfield, TEXTFIELD_WIDTH, TEXTFIELD_HEIGHT);
         MenuButton deadQuitButton = new MenuButton("Quit", (event) -> {
@@ -77,7 +90,8 @@ public class UIProvider implements Provider<Engine> {
             if (engine.isPaused()) return;
             if (!this.dead) {
                 buildBar.draw(hud);
-                playerBudget.draw(hud);
+                budget.draw(hud);
+                mainHealth.draw(hud);
             } else {
                 for (UIElement element : deadScreen) {
                     element.draw(hud);
@@ -134,7 +148,12 @@ public class UIProvider implements Provider<Engine> {
     @Override
     public void draw(Window window, Renderer renderer) {
         buildBar.setX(window.getWidth()/2 - buildBar.getWidth()/2);
-        buildBar.setY(window.getHeight() - buildBar.getHeight() - 20);
+        buildBar.setY(window.getHeight() - buildBar.getHeight() - MARGIN);
+        budget.setX(MARGIN);
+        budget.setY(window.getHeight() - budget.getHeight() - MARGIN);
+        mainHealth.setX(window.getWidth() - mainHealth.getWidth() - MARGIN);
+        mainHealth.setY(window.getHeight() - mainHealth.getHeight() - MARGIN);
+
     }
 
     public void select(Class<? extends AbstractTower> tower) {
