@@ -5,10 +5,8 @@ import nl.tue.c2IOE0.group5.engine.rendering.Hud;
 import nl.tue.c2IOE0.group5.providers.UIProvider;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
 import nl.tue.c2IOE0.group5.towers.AbstractTower.MetaData;
-import org.joml.Vector4f;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.List;
 
 import static nl.tue.c2IOE0.group5.providers.UIProvider.*;
@@ -38,14 +36,7 @@ public class Buildbar extends UIButton {
         y += MARGIN;
         for (int i = 0; i < buildings.length; i++) {
             Class<? extends AbstractTower> tower = towers.get(i);
-            MetaData metaData;
-            try {
-                Field meta = tower.getField("metadata");
-                metaData = (MetaData) meta.get(null);
-            } catch (IllegalAccessException | NoSuchFieldException e) {
-                throw new IllegalStateException("Tower " + towers.get(0).getName() +
-                        " does not have a field metadata, or it is not marked static public");
-            }
+            MetaData metaData = AbstractTower.getMetaData(tower);
             buildings[i] = new UIButton(x, y, tilewidth, tileheight) {
                 @Override
                 public void onClick(MouseEvent event) {

@@ -12,9 +12,6 @@ import nl.tue.c2IOE0.group5.userinterface.*;
 import org.joml.Vector2i;
 import org.joml.Vector4f;
 
-import java.io.IOException;
-import java.lang.reflect.Field;
-
 /**
  * @author Jorren
  */
@@ -147,14 +144,7 @@ public class UIProvider implements Provider<Engine> {
         } else {
             PlayerController playerController = towerProvider.getEngine().getController(PlayerController.class);
             int budget = playerController.getBudget();
-            AbstractTower.MetaData metaData;
-            try {
-                Field meta = tower.getField("metadata");
-                metaData = (AbstractTower.MetaData) meta.get(null);
-            } catch (IllegalAccessException | NoSuchFieldException e) {
-                throw new IllegalStateException("Tower " + tower.getName() +
-                        " does not have a field metadata, or it is not marked static public");
-            }
+            AbstractTower.MetaData metaData = AbstractTower.getMetaData(tower);
             int price = metaData.price;
 
             if (price > budget) {

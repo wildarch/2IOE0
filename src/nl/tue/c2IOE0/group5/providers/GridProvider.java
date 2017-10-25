@@ -12,14 +12,11 @@ import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
 import nl.tue.c2IOE0.group5.towers.TowerConnection;
 import nl.tue.c2IOE0.group5.towers.WallTower;
-import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -131,7 +128,6 @@ public class GridProvider extends ObjectProvider<Cell> {
      * @param x the x coordinate to set the tower to
      * @param y the y coordinate to set the tower to
      * @param tower the tower to place
-     * @return true if succeeded, false if the cell on the coordinates is a bordercell
      * @throws ArrayIndexOutOfBoundsException when the cell is a bordercell or the cell is not even in the grid
      */
     public void placeTower(int x, int y, AbstractTower tower) throws ArrayIndexOutOfBoundsException {
@@ -174,6 +170,7 @@ public class GridProvider extends ObjectProvider<Cell> {
     }
 
     public void destroyConnectingTower(int x, int y) {
+        if(getRenderer() == null) return;
         TowerConnection tower = towerconnections[x][y];
         if (tower == null) {
             throw new NullPointerException("Connecting tower being removed at " + x + ", " + y + " does not exist");
@@ -229,10 +226,10 @@ public class GridProvider extends ObjectProvider<Cell> {
             //check for surrounding towers
             if (getCell(x-1, y).getTower() instanceof WallTower) {
                 destroyConnectingTower(2*x-1, 2*y);
-            }
+        }
             if (getCell(x+1, y).getTower() instanceof WallTower) {
                 destroyConnectingTower(2*x+1, 2*y);
-            }
+    }
             if (getCell(x, y-1).getTower() instanceof WallTower) {
                 destroyConnectingTower(2*x, 2*y-1);
             }
@@ -318,7 +315,7 @@ public class GridProvider extends ObjectProvider<Cell> {
                     }
                 }
             }
-        } else if (activeCell == rangedCell){
+        } else {
             deRangeAll();
             rangedCell = null;
         }
@@ -327,12 +324,16 @@ public class GridProvider extends ObjectProvider<Cell> {
     private boolean inRange(AbstractTower t, Cell c) {
         Cell tc = t.getCell();
         int range = t.getRange();
-        int dist = Math.abs(tc.getGridPosition().x() - c.getGridPosition().x()) + Math.abs(tc.getGridPosition().y() - c.getGridPosition().y());
+        int dist = manDist(tc, c);
 
         if (dist <= range) {
             return true;
         }
         return false;
+    }
+
+    public static int manDist(Cell a, Cell b) {
+        return Math.abs(a.getGridPosition().x() - b.getGridPosition().x()) + Math.abs(a.getGridPosition().y() - b.getGridPosition().y());
     }
 
     private void deRangeAll() {
