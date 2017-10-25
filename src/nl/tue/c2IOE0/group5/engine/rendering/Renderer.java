@@ -164,6 +164,12 @@ public class Renderer implements Cleanable {
         sceneShader.createUniform("orthoProjectionMatrix");
         sceneShader.createUniform("modelLightViewMatrix");
 
+        // Create uniform for special lighting conditions for background elements
+        sceneShader.createUniform("background");
+        sceneShader.createUniform("blackAsAlpha");
+
+
+
 
         // Initialize some fields
         sceneShader.setAmbientLight(new Vector3f(0.3f, 0.3f, 0.3f));
@@ -264,6 +270,19 @@ public class Renderer implements Cleanable {
                 sceneShader.setUniform("isSkybox", 0));
     }
 
+    public void drawNoShadow() {
+        if (task == Task.DEPTH_MAP) return;
+        sceneShader.setUniform("background", 1);
+        modifiers.push(() ->
+                sceneShader.setUniform("background", 0));
+    }
+
+    public void drawBlackAsAlpha() {
+        if (task == Task.DEPTH_MAP) return;
+        sceneShader.setUniform("blackAsAlpha", 1);
+        modifiers.push(() ->
+                sceneShader.setUniform("blackAsAlpha", 0));
+    }
     /**
      * Temporarily change the ambient light of an object. This effect applies to the object currently rendered.
      *

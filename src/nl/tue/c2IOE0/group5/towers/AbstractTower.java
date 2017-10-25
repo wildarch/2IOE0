@@ -10,10 +10,13 @@ import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.providers.*;
 import org.joml.Vector3f;
 
+import java.lang.reflect.Field;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static nl.tue.c2IOE0.group5.providers.GridProvider.manDist;
 
 public abstract class AbstractTower extends GameObject {
 
@@ -64,6 +67,22 @@ public abstract class AbstractTower extends GameObject {
         if(renderTimer != null) {
             startTime = renderTimer.getTime();
         }
+    }
+
+    /**
+     * @param towertype a tower class
+     * @return the general metadata of this tower, as defined in {@link MetaData}
+     */
+    public static MetaData getMetaData(Class<? extends AbstractTower> towertype) {
+        MetaData metaData;
+        try {
+            Field meta = towertype.getField("metadata");
+            metaData = (MetaData) meta.get(null);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            throw new IllegalStateException("Tower " + towertype.getName() +
+                    " does not have a field metadata, or it is not marked static public");
+        }
+        return metaData;
     }
 
     @Override
@@ -145,7 +164,7 @@ public abstract class AbstractTower extends GameObject {
     private void attack() {
         List<Enemy> inRange = enemyProvider.getEnemies().stream().filter(this::isInRange).collect(Collectors.toList());
         Optional<Enemy> e = inRange.stream()
-                .min(Comparator.comparingDouble(a -> this.cell.getGridPosition().distance(a.getCurrentCell().getGridPosition())));
+                .min(Comparator.comparingDouble(a -> manDist(a.getCurrentCell(), this.cell)));
         if (e.isPresent()) {
             Enemy closest = e.get();
             attack(closest);
@@ -159,7 +178,7 @@ public abstract class AbstractTower extends GameObject {
 
     private boolean isInRange(Enemy e) {
         Cell enemyCell = e.getCurrentCell();
-        return this.cell.getGridPosition().distance(enemyCell.getGridPosition()) <= range;
+        return manDist(enemyCell, this.cell) <= range;
     }
 
     @Override

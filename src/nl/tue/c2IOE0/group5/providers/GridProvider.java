@@ -128,7 +128,6 @@ public class GridProvider extends ObjectProvider<Cell> {
      * @param x the x coordinate to set the tower to
      * @param y the y coordinate to set the tower to
      * @param tower the tower to place
-     * @return true if succeeded, false if the cell on the coordinates is a bordercell
      * @throws ArrayIndexOutOfBoundsException when the cell is a bordercell or the cell is not even in the grid
      */
     public void placeTower(int x, int y, AbstractTower tower) throws ArrayIndexOutOfBoundsException {
@@ -227,10 +226,10 @@ public class GridProvider extends ObjectProvider<Cell> {
             //check for surrounding towers
             if (getCell(x-1, y).getTower() instanceof WallTower) {
                 destroyConnectingTower(2*x-1, 2*y);
-            }
+        }
             if (getCell(x+1, y).getTower() instanceof WallTower) {
                 destroyConnectingTower(2*x+1, 2*y);
-            }
+    }
             if (getCell(x, y-1).getTower() instanceof WallTower) {
                 destroyConnectingTower(2*x, 2*y-1);
             }
@@ -316,7 +315,7 @@ public class GridProvider extends ObjectProvider<Cell> {
                     }
                 }
             }
-        } else if (activeCell == rangedCell){
+        } else {
             deRangeAll();
             rangedCell = null;
         }
@@ -325,12 +324,16 @@ public class GridProvider extends ObjectProvider<Cell> {
     private boolean inRange(AbstractTower t, Cell c) {
         Cell tc = t.getCell();
         int range = t.getRange();
-        int dist = Math.abs(tc.getGridPosition().x() - c.getGridPosition().x()) + Math.abs(tc.getGridPosition().y() - c.getGridPosition().y());
+        int dist = manDist(tc, c);
 
         if (dist <= range) {
             return true;
         }
         return false;
+    }
+
+    public static int manDist(Cell a, Cell b) {
+        return Math.abs(a.getGridPosition().x() - b.getGridPosition().x()) + Math.abs(a.getGridPosition().y() - b.getGridPosition().y());
     }
 
     private void deRangeAll() {

@@ -68,30 +68,30 @@ public abstract class Enemy extends GameObject implements Drawable {
 
     @Override
     public void update() {
-        if(targetPositions.isEmpty()) {
-            return;
-        }
-        long targetTime = interpolator.update(loopTimer.getElapsedTime());
-        boolean targetReached = interpolator.targetReached();
-        if(targetReached) {
-            targetPositions.remove(0);
-            if(targetPositions.isEmpty()) {
-                return;
+        if (!targetPositions.isEmpty()) {
+            long targetTime = interpolator.update(loopTimer.getElapsedTime());
+            boolean targetReached = interpolator.targetReached();
+            if (targetReached) {
+                targetPositions.remove(0);
+                if (targetPositions.isEmpty()) {
+                    return;
+                }
+                setOffset();
             }
-            setOffset();
-        }
-        Cell targetCell = gridProvider.getCell(targetPositions.get(0));
-        AbstractTower tower = targetCell.getTower();
-        Vector3f targetPosition = targetCell.getPosition().add(0, 0.5f, 0).add(offset.toImmutable());
-        if (tower == null || (targetReached && attacking)) {
-            // Road is clear, move ahead
-            attacking = false;
-            interpolator.setTarget(targetPosition);
-            interpolator.update(targetTime);
-        } else {
-            // Destroy the tower first
-            attacking = true;
-            doDamage(tower);
+            Cell targetCell = gridProvider.getCell(targetPositions.get(0));
+            AbstractTower tower = targetCell.getTower();
+            Vector3f targetPosition = targetCell.getPosition().add(0, 0.5f, 0).add(offset.toImmutable());
+            if (tower == null || (targetReached && attacking)) {
+                // Road is clear, move ahead
+                attacking = false;
+                //System.out.println("Set target position!");
+                interpolator.setTarget(targetPosition);
+                interpolator.update(targetTime);
+            } else {
+                // Destroy the tower first
+                attacking = true;
+                doDamage(tower);
+            }
         }
         setRotation(interpolator.getDirection(), rotationOffset);
     }
@@ -159,7 +159,6 @@ public abstract class Enemy extends GameObject implements Drawable {
         if (playerController != null) {
             playerController.addBudget(getDieReward());
         }
-        System.out.println("Dead!");
         onDie();
     }
 
