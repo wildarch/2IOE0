@@ -294,8 +294,8 @@ public class Renderer implements Cleanable {
      */
     public void ambientLight(Vector3f color) {
         if (task == Task.DEPTH_MAP) return;
-
-        sceneShader.setUniform("ambientLight", color.add(ambientLight));
+        Vector3f newColor = new Vector3f(color);
+        sceneShader.setUniform("ambientLight", newColor.add(ambientLight));
         modifiers.push(() ->
                 sceneShader.setUniform("ambientLight", sceneShader.getAmbientLight()));
     }
