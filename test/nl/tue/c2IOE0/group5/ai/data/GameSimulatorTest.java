@@ -32,7 +32,7 @@ public class GameSimulatorTest {
 
         sim.run();
 
-        float score = sim.getDestructionScore();
+        double score = sim.getDestructionScore();
         System.out.println("Score: " + score);
         assertTrue(score > 0 && score <= 1);
     }
