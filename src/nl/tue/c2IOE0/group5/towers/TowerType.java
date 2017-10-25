@@ -7,11 +7,7 @@ package nl.tue.c2IOE0.group5.towers;
 public enum TowerType {
     CASTLE(0),
     WALL(1),
-    LASER(2),
-    FREEZE(3),
     ROCKET(4),
-    SHOTGUN(5),
-    NUCLEAR(6),
     CANNON(7);
 
     private final int value;

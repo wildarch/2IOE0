@@ -1,24 +1,14 @@
 package nl.tue.c2IOE0.group5.ai.data;
 
 import nl.tue.c2IOE0.group5.ai.GameSimulator;
-import nl.tue.c2IOE0.group5.ai.QLearner;
 import nl.tue.c2IOE0.group5.enemies.EnemyType;
 import nl.tue.c2IOE0.group5.engine.Simulator;
-import nl.tue.c2IOE0.group5.engine.provider.Provider;
-import nl.tue.c2IOE0.group5.providers.*;
-import nl.tue.c2IOE0.group5.towers.AbstractTower;
-import nl.tue.c2IOE0.group5.towers.MainTower;
 import nl.tue.c2IOE0.group5.towers.TowerType;
-import org.joml.Vector2i;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * TowerDefence
@@ -29,8 +19,13 @@ public class DataSimulator {
     private final boolean[] activeThreads;
     private final INDArray inputs;
     private final INDArray outputs;
-    private final int playSize, totalSize, borderSize, nrTowers, nrDeployTypes, bufferSize, numThreads;
-    private final Random random = new Random();
+    private final int playSize;
+    private final int totalSize;
+    private final int nrTowers;
+    private final int nrDeployTypes;
+    private final int bufferSize;
+    private final int numThreads;
+    private final int borderSize;
 
     public DataSimulator(int numThreads, final INDArray inputs, int playSize, int borderSize, int nrTowers,
                          int nrDeployTypes, int bufferSize){
@@ -82,9 +77,6 @@ public class DataSimulator {
                             EnemyType[] buffer = converter.getBuffer();
                             double trust = converter.getqTrust();
 
-                            assert grid != null;
-                            assert buffer != null;
-
                             double result;
 
                             try {
@@ -94,7 +86,7 @@ public class DataSimulator {
                                 result = 0;
                             }
 
-                            System.out.println("T: " + threadIndex + "; I: " + r + "; R: " + result + ";");
+                            System.out.println("Thread: " + threadIndex + "; Iteration: " + r + "; Result: " + result + ";");
 
                             outputs.putScalar(r, 0, result);
                         }
@@ -124,7 +116,7 @@ public class DataSimulator {
             for (int y = 0; y < playSize; y++){
                 TowerType type = grid[x][y];
                 if (type != null) {
-                    simulator.placeTower(type, x, y);
+                    simulator.placeTower(type, x + borderSize, y + borderSize);
                 }
             }
         }
@@ -134,19 +126,6 @@ public class DataSimulator {
             throw new RuntimeException("Failed to simulate because of exception: " + e.getMessage(), e);
         }
         return simulator.getDestructionScore();
-    }
-
-    private void trainQLearner(QLearner qLearner, GridProvider gridProvider) {
-        qLearner.initializeQ();
-        qLearner.setRewardsMatrix(QLearner.getState(gridProvider.SIZE / 2, gridProvider.SIZE / 2, gridProvider.SIZE), 1000);
-
-        for (int i = 0; i < 200; i++) {
-            qLearner.generateRandomPath(10);
-        }
-        qLearner.addBasicPath();
-        //to prevent going to 0,0
-        qLearner.generateRandomPath(100, 0);
-        qLearner.execute();
     }
 
     public void run(){
