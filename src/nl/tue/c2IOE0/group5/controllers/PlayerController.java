@@ -196,29 +196,33 @@ public class PlayerController implements Controller,Listener {
                 case GLFW_KEY_LEFT_CONTROL:
                     if (leftMouseButton) {
                         Vector2i pos = gridProvider.getActiveCell();
-                        if (gridProvider.getCell(pos.x(),pos.y()).getTower() == null) {
-                            buildTower(true);
+                        if (pos != null) { //there is actually an activecellxxxxxxxxxxxxxxxxx
+                            if (gridProvider.getCell(pos.x(), pos.y()).getTower() == null) {
+                                buildTower(true);
+                            }
                         }
                     }
                     break;
                 case GLFW_KEY_X:
                     Vector2i pos = gridProvider.getActiveCell();
-                    if (gridProvider.getCell(pos.x(),pos.y()).getTower() != null) {
-                        Cell cellTower = gridProvider.getCell(pos.x,pos.y());
+                    if (pos != null) { //there is an activecell
+                        if (gridProvider.getCell(pos.x(), pos.y()).getTower() != null) {
+                            Cell cellTower = gridProvider.getCell(pos.x, pos.y());
 
-                        if (cellTower.getTower().getType().getValue() != 0) { //Don't sell your own castle you gobsmack ;)
-                            //Refund some percentage of money
-                            double refundPercentage = 1d;
-                            int price = cellTower.getTower().getPrice();
-                            double towerHealth = cellTower.getTower().getHealth();
-                            double maxTowerHealth = cellTower.getTower().maxHealth;
-                            double valueHealth = towerHealth/maxTowerHealth;
-                            addBudget((int) (price * refundPercentage * valueHealth));
-                            System.out.println("Selling tower: " + cellTower.getTower().getType().toString() + " for: " + (price * valueHealth) + " With health: " + towerHealth + "/" + maxTowerHealth + " healthPortion: " + valueHealth);
+                            if (cellTower.getTower().getType().getValue() != 0) { //Don't sell your own castle you gobsmack ;)
+                                //Refund some percentage of money
+                                double refundPercentage = 1d;
+                                int price = cellTower.getTower().getPrice();
+                                double towerHealth = cellTower.getTower().getHealth();
+                                double maxTowerHealth = cellTower.getTower().maxHealth;
+                                double valueHealth = towerHealth / maxTowerHealth;
+                                addBudget((int) (price * refundPercentage * valueHealth));
+                                System.out.println("Selling tower: " + cellTower.getTower().getType().toString() + " for: " + (price * valueHealth) + " With health: " + towerHealth + "/" + maxTowerHealth + " healthPortion: " + valueHealth);
 
-                            //Kill Tower
-                            cellTower.getTower().die();
-                            cellTower.update();
+                                //Kill Tower
+                                cellTower.getTower().die();
+                                cellTower.update();
+                            }
                         }
                     }
                     break;
