@@ -136,11 +136,7 @@ public class Cell extends GameObject {
                 setModelView(renderer);
                 renderer.drawBlackAsAlpha();
                 renderer.noDirectionalLight();
-                if (color != activeColor) {
-                    renderer.ambientLight(new Vector3f(0, 0, 0));
-                } else {
-                    renderer.ambientLight(color);
-                }
+                renderer.ambientLight(color);
             }
         });
     }
