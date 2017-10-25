@@ -20,16 +20,11 @@ public class GameSimulatorTest {
     @Test
     public void getDestructionScore() throws Exception {
         long start = System.currentTimeMillis();
-        Engine simulator = new Engine();
-        simulator.addProvider(new AnimationProvider());
-        simulator.addProvider(new BackgroundProvider());
-        GameSimulator sim = new GameSimulator(simulator, 13, 9);
+        GameSimulator sim = new GameSimulator(true, s -> s.getProvider(TowerProvider.class).getMainTower().isDead(),13, 9);
         sim.init();
-        simulator.getCamera().setPosition(sim.getGridProvider().SIZE/2, sim.getGridProvider().SIZE, sim.getGridProvider().SIZE/2);
-        simulator.getCamera().setRotation(90, 0, 0);
         sim.placeTower(TowerType.CANNON, 6, 7);
 
-        for(int i = 0; i < 10; i++) {
+        for(int i = 0; i < 100; i++) {
             sim.spawnEnemy(EnemyType.DRILL);
         }
 
@@ -37,7 +32,7 @@ public class GameSimulatorTest {
 
         float score = sim.getDestructionScore();
         System.out.println("Score: " + score);
-        assertTrue(score > 0 && score < 1);
+        assertTrue(score > 0 && score <= 1);
     }
 
 }

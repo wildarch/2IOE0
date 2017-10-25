@@ -115,6 +115,7 @@ public abstract class AbstractTower extends GameObject {
     }
 
     public void takeDamage(double damage) {
+        System.err.println("Taking damage: " + damage);
         health -= damage;
         if (health <= 0) {
             die();

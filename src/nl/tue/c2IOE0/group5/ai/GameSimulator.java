@@ -2,6 +2,7 @@ package nl.tue.c2IOE0.group5.ai;
 
 import nl.tue.c2IOE0.group5.ai.data.GridAnalyzer;
 import nl.tue.c2IOE0.group5.enemies.EnemyType;
+import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.Simulator;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
 import nl.tue.c2IOE0.group5.providers.*;
@@ -11,14 +12,14 @@ import org.joml.Vector2i;
 import java.io.IOException;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class GameSimulator {
     private static final double QLEARNER_GAMMA = 0.1;
     private static final int Q_LEARNER_ITERATIONS = 100;
 
-    private final Simulator simulator;
-
+    private Simulator simulator;
     private QLearner qLearner;
     private EnemyProvider enemyProvider = new EnemyProvider();
     private TowerProvider towerProvider = new TowerProvider();
@@ -35,6 +36,29 @@ public class GameSimulator {
 
 
     public GameSimulator(Simulator simulator, int gridSize, int playSize) {
+        setup(simulator,gridSize, playSize);
+    }
+
+    public GameSimulator(Engine engine, int gridSize, int playSize) {
+        setup(engine, gridSize, playSize);
+    }
+
+    public GameSimulator(boolean render, Predicate<Simulator> stopCondition, int gridSize, int playSize) {
+        if(render) {
+            setup(new Engine(stopCondition), gridSize, playSize);
+        }
+        else {
+            setup(new Simulator(stopCondition), gridSize, playSize);
+        }
+    }
+
+    private void setup(Engine engine, int gridSize, int playSize) {
+        setup((Simulator) engine, gridSize, playSize);
+        engine.addProvider(new AnimationProvider());
+        engine.addProvider(new BackgroundProvider());
+    }
+
+    private void setup(Simulator simulator, int gridSize, int playSize) {
         this.simulator = simulator;
         this.gridProvider = new GridProvider(gridSize, playSize);
         this.gridAnalyzer = new GridAnalyzer(gridProvider);
@@ -55,6 +79,11 @@ public class GameSimulator {
         //TODO should this really run before towers have been spawned??
         trainQLearner();
         towerProvider.putMainTower();
+        if (simulator instanceof Engine) {
+            Engine engine = (Engine) simulator;
+            engine.getCamera().setPosition(getGridProvider().SIZE/2, getGridProvider().SIZE, getGridProvider().SIZE/2);
+            engine.getCamera().setRotation(90, 0, 0);
+        }
     }
 
     public void spawnEnemy(EnemyType type) {
