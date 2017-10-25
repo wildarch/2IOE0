@@ -135,6 +135,7 @@ public class Cell extends GameObject {
             if (!isBorderCell()) { //only draw when this cell is activated
                 setModelView(renderer);
                 renderer.drawBlackAsAlpha();
+                renderer.noDirectionalLight();
                 if (color != activeColor) {
                     renderer.ambientLight(new Vector3f(0, 0, 0));
                 } else {

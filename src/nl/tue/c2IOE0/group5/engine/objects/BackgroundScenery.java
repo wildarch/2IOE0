@@ -21,7 +21,7 @@ public class BackgroundScenery extends GameObject {
         Mesh island = renderer.linkMesh("/models/background/island.obj");
         Material islandMaterial = new Material("/models/background/island.png");
         island.setMaterial(islandMaterial);
-
+        island.setCastShadows(false);
         Mesh water = renderer.linkMesh("/models/background/water.obj");
         Material waterMaterial = new Material("/models/background/water.png");
         water.setMaterial(waterMaterial);
@@ -29,7 +29,7 @@ public class BackgroundScenery extends GameObject {
 
         renderer.linkMesh(island, () -> {
             setModelView(renderer);
-            renderer.drawNoShadow();
+           // renderer.drawNoShadow();
         });
         renderer.linkMesh(water, () -> {
             setModelView(renderer, new Vector3f(0f, 0.85f, 0f));

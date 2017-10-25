@@ -167,6 +167,7 @@ public class Renderer implements Cleanable {
         // Create uniform for special lighting conditions for background elements
         sceneShader.createUniform("background");
         sceneShader.createUniform("blackAsAlpha");
+        sceneShader.createUniform("directionalLightOff");
 
 
 
@@ -302,14 +303,9 @@ public class Renderer implements Cleanable {
     public void noDirectionalLight() {
         if (task == Task.DEPTH_MAP) return;
 
-        DirectionalLight directionalLightOff = new DirectionalLight(
-                new Vector3f(),
-                new Vector3f(),
-                0f
-        );
-        sceneShader.setDirectionalLight(directionalLightOff);
+        sceneShader.setUniform("directionalLightOff", 1);
         modifiers.push(() ->
-                sceneShader.setDirectionalLight(directionalLight));
+                sceneShader.setUniform("directionalLightOff", 0));
     }
 
     /**

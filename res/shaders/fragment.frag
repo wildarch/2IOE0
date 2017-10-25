@@ -56,6 +56,7 @@ uniform int isSkybox;
 uniform int depthMapEnabled;
 uniform int background;
 uniform int blackAsAlpha;
+uniform int directionalLightOff;
 
 vec4 ambientC;
 vec4 diffuseC;
@@ -145,12 +146,15 @@ float calcShadow(vec4 position)
 void main()
 {
     if (isSkybox == 0 && background == 0) {
+        vec4 diffuseSpecularComponent = vec4(0.0, 0.0, 0.0, 0.0);
         setupColours(material, outTexture);
+        if (directionalLightOff == 0) {
 
-        vec4 diffuseSpecularComponent = calcDirectionalLight(directionalLight, mvVertexPosition, mvVertexNormal);
-        for (int i=0; i < MAX_POINT_LIGHTS; i++) {
-            if ( pointLights[i].intensity > 0 ) {
-                diffuseSpecularComponent += calcPointLight(pointLights[i], mvVertexPosition, mvVertexNormal);
+            diffuseSpecularComponent = calcDirectionalLight(directionalLight, mvVertexPosition, mvVertexNormal);
+            for (int i=0; i < MAX_POINT_LIGHTS; i++) {
+                if ( pointLights[i].intensity > 0 ) {
+                    diffuseSpecularComponent += calcPointLight(pointLights[i], mvVertexPosition, mvVertexNormal);
+                }
             }
         }
         float shadow;
