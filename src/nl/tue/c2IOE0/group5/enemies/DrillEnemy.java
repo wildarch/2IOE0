@@ -27,7 +27,7 @@ import static nl.tue.c2IOE0.group5.util.Angle.rotateVector;
 public class DrillEnemy extends Enemy implements Animatable {
 
     private final static int MAXHEALTH = 20;
-    private final static float SPEED = 0.7f;
+    private final static float SPEED = 1.2f;
     private final static int ATTACKSPEED = 100;
     private final static int DAMAGE = 4;
 
