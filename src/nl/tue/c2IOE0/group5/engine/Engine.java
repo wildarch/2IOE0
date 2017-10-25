@@ -26,6 +26,8 @@ public class Engine extends Simulator {
     private InputHandler inputHandler;
     private Camera camera;
 
+    private boolean hudEnabled = true;
+
     protected List<Controller> controllers;
     private Timer renderTimer;
 
@@ -115,7 +117,9 @@ public class Engine extends Simulator {
             renderer.render();
 
             // draw the hud
-            hud.draw(window, renderer);
+            if (hudEnabled) {
+                hud.draw(window, renderer);
+            }
         }
 
         // sync up frame rate as desired
@@ -174,6 +178,10 @@ public class Engine extends Simulator {
 
     public Hud getHud() {
         return hud;
+    }
+
+    public void toggleHud() {
+        hudEnabled = !hudEnabled;
     }
 
     public boolean isPaused() {

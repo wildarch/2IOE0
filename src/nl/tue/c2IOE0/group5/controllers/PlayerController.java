@@ -149,6 +149,8 @@ public class PlayerController implements Controller,Listener {
             case GLFW_KEY_ESCAPE:
                 engine.pause(true);
                 break;
+            case GLFW_KEY_H:
+                engine.toggleHud();
         }
     }
 
