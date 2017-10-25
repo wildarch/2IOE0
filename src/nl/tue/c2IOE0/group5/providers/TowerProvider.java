@@ -153,7 +153,7 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
     public void update() {
         if (engine != null && engine.isPaused()) return;
         objects.stream().forEach(t -> {
-            if (t instanceof MainTower && t.isDead()) {
+            if (t instanceof MainTower && t.isDead() && uiProvider != null) {
                 uiProvider.die();
             }
         });
