@@ -113,7 +113,8 @@ public class DrillEnemy extends Enemy implements Animatable {
     private void rotateAndSet(Renderer renderer, Vector3f offset) {
         final Vector3f wheelOffset = offset.mul(getScale());
         final Vector3f displacement = rotateVector(wheelOffset, new Vector3f(0, -1, 0), getRotation().y + 90);
-        if(!attacking) displacement.add(interpolator.getOffset(renderTimer.getTime() - loopTimer.getTime()));
+        final Vector3f interpolatorOffset = interpolator.getOffset(renderTimer.getTime() - loopTimer.getTime());
+        if(!attacking) displacement.add(interpolatorOffset);
         setModelView(renderer, displacement);
     }
 }

@@ -1,5 +1,6 @@
 package nl.tue.c2IOE0.group5.providers;
 
+import nl.tue.c2IOE0.group5.controllers.AiController;
 import nl.tue.c2IOE0.group5.controllers.PlayerController;
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.MouseEvent;
@@ -12,6 +13,7 @@ import nl.tue.c2IOE0.group5.userinterface.*;
 import org.joml.Vector2i;
 import org.joml.Vector4f;
 
+import static org.lwjgl.nanovg.NanoVG.NVG_ALIGN_CENTER;
 import static org.lwjgl.nanovg.NanoVG.NVG_ALIGN_LEFT;
 import static org.lwjgl.nanovg.NanoVG.NVG_ALIGN_RIGHT;
 
@@ -37,6 +39,7 @@ public class UIProvider implements Provider<Engine> {
     private UIElement mainHealth;
 
     private UIText playerBudget;
+    private UIText waveIndicator;
     private UIElement[] deadScreen;
 
     private final static String[] creditTextfield =
@@ -73,11 +76,9 @@ public class UIProvider implements Provider<Engine> {
         mainHealth = new UIText(0, 20, NVG_ALIGN_RIGHT,
                 () -> String.format("Health: %d", towerProvider.getMainTower().getHealth()));
 
-        /*
-        playerBudget = new UIText(10, 40, 100, 20,
-                () -> "Budget: " +playerController.getBudget()
-        );
-        */
+        AiController aiController = engine.getController(AiController.class);
+        waveIndicator = new UIText(0, 40, NVG_ALIGN_CENTER,
+                () -> "Wave: " + aiController.getBigWaves());
 
         UIElement dead = new MenuTextField("You are dead", creditTextfield, TEXTFIELD_WIDTH, TEXTFIELD_HEIGHT);
         MenuButton deadQuitButton = new MenuButton("Quit", (event) -> {
@@ -92,6 +93,7 @@ public class UIProvider implements Provider<Engine> {
                 buildBar.draw(hud);
                 budget.draw(hud);
                 mainHealth.draw(hud);
+                waveIndicator.draw(hud);
             } else {
                 for (UIElement element : deadScreen) {
                     element.draw(hud);
@@ -153,7 +155,8 @@ public class UIProvider implements Provider<Engine> {
         budget.setY(window.getHeight() - budget.getHeight() - MARGIN);
         mainHealth.setX(window.getWidth() - mainHealth.getWidth() - MARGIN);
         mainHealth.setY(window.getHeight() - mainHealth.getHeight() - MARGIN);
-
+        waveIndicator.setX(window.getWidth()/2);
+        waveIndicator.setY(2*MARGIN);
     }
 
     public void select(Class<? extends AbstractTower> tower) {

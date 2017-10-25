@@ -29,7 +29,7 @@ public class AiController implements Controller {
     private static long WAVE_TIME = 5000; // 5 seconds
     private int BIG_WAVE_SIZE = 2;
     private int SMALL_WAVE_SIZE = 1;
-    private static int BUFFER_SAMPLE_SIZE = 100;
+    private static int BUFFER_SAMPLE_SIZE = 10;
 
     private int wave = 0;
     private EnemyProvider enemyProvider;
@@ -97,6 +97,10 @@ public class AiController implements Controller {
             wave++;
             nextWaveTime = loopTimer.getTime() + WAVE_TIME;
         }
+    }
+
+    public int getBigWaves() {
+        return wave / NR_SUB_WAVES;
     }
 
     private void wave(final boolean big) {
