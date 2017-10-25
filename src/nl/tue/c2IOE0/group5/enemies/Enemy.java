@@ -62,6 +62,8 @@ public abstract class Enemy extends GameObject implements Drawable {
         this.offset = new Vector3f(0);
         this.damage = damage;
         this.playerController = playerController;
+
+        System.out.println("Final target: " + targetPositions.get(targetPositions.size()-1).toString());
     }
 
     public abstract EnemyType getType();
@@ -75,6 +77,8 @@ public abstract class Enemy extends GameObject implements Drawable {
         boolean targetReached = interpolator.targetReached();
         if(targetReached) {
             targetPositions.remove(0);
+            System.out.println("Reached: " + getCurrentCell());
+            System.out.println("Targets to go: " + targetPositions.size());
             if(targetPositions.isEmpty()) {
                 return;
             }
@@ -86,7 +90,6 @@ public abstract class Enemy extends GameObject implements Drawable {
         if (tower == null || (targetReached && attacking)) {
             // Road is clear, move ahead
             attacking = false;
-            //System.out.println("Set target position!");
             interpolator.setTarget(targetPosition);
             interpolator.update(targetTime);
         } else {
@@ -160,6 +163,7 @@ public abstract class Enemy extends GameObject implements Drawable {
         if (playerController != null) {
             playerController.addBudget(getDieReward());
         }
+        System.out.println("Dead!");
         onDie();
     }
 

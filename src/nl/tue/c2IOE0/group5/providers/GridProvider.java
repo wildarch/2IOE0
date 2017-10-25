@@ -12,12 +12,16 @@ import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
 import nl.tue.c2IOE0.group5.towers.TowerConnection;
 import nl.tue.c2IOE0.group5.towers.WallTower;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * A class providing the grid.
@@ -368,6 +372,10 @@ public class GridProvider extends ObjectProvider<Cell> {
 
     @Override
     public void draw(Window window, Renderer renderer) {
-
     }
+
+    public Stream<Cell> stream() {
+        return objects.stream();
+    }
+
 }

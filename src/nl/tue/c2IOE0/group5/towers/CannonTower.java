@@ -78,10 +78,4 @@ public class CannonTower extends AbstractTower {
         renderer.unlinkMesh(iBaseMesh);
         renderer.unlinkMesh(iCannonMesh);
     }
-
-    @Override
-    public int getMaxHealth() {
-        return MAX_HEALTH;
-    }
-
 }

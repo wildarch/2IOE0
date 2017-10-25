@@ -45,6 +45,7 @@ public class Engine extends Simulator {
      */
     @Override
     public void init() throws ShaderException, IOException {
+        if(isInitialized()) return;
         renderTimer.init();
         window.init();
         renderer.init(window);

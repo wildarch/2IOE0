@@ -36,7 +36,7 @@ public class TowerConnectionProvider extends ObjectProvider<TowerConnection> {
 
     @Override
     public void update() {
-        if (engine == null || engine.isPaused()) return;
+        if (engine != null && engine.isPaused()) return;
         super.update();
     }
 

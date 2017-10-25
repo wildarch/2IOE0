@@ -9,7 +9,7 @@ public class MainTower extends AbstractTower {
     private static final int RANGE = 2;
     private static final int MAX_LEVEL = 1;
     private static final int MAX_HEALTH = 1000;
-    private static final int PRICE = 0;
+    private static final int PRICE = 1000000;
 
     private Renderer renderer;
     private InstancedMesh iMesh;
@@ -32,11 +32,7 @@ public class MainTower extends AbstractTower {
         //renderer.unlinkMesh(mesh, render, shadowRender);
         renderer.unlinkMesh(iMesh);
         //When the main tower dies, game should end
-    }
-
-    @Override
-    public int getMaxHealth() {
-        return MAX_HEALTH;
+        System.out.println("Main tower died!!");
     }
 
     @Override

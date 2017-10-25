@@ -49,11 +49,6 @@ public class WallTower extends AbstractTower {
     }
 
     @Override
-    public int getMaxHealth() {
-        return MAX_HEALTH;
-    }
-
-    @Override
     public TowerType getType() {
         return TowerType.WALL;
     }

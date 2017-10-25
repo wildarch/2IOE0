@@ -79,9 +79,4 @@ public class RocketTower extends AbstractTower {
         renderer.unlinkMesh(iBaseMesh);
         renderer.unlinkMesh(iRocketMesh);
     }
-
-    @Override
-    public int getMaxHealth() {
-        return MAX_HEALTH;
-    }
 }

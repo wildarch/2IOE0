@@ -25,7 +25,7 @@ public class BulletProvider extends ObjectProvider<Bullet> {
 
     @Override
     public void update() {
-        if (engine == null || engine.isPaused()) return;
+        if (engine != null && engine.isPaused()) return;
         objects.removeIf(Bullet::isDone);
         super.update();
     }

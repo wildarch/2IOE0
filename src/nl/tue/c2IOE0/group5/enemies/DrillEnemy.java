@@ -64,6 +64,7 @@ public class DrillEnemy extends Enemy implements Animatable {
 
     @Override
     protected void onDie() {
+        if(renderer == null) return;
         renderer.unlinkMesh(body);
         renderer.unlinkMesh(wheel);
         renderer.unlinkMesh(drill);

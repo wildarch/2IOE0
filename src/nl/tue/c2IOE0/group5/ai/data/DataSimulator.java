@@ -1,5 +1,6 @@
 package nl.tue.c2IOE0.group5.ai.data;
 
+import nl.tue.c2IOE0.group5.ai.GameSimulator;
 import nl.tue.c2IOE0.group5.ai.QLearner;
 import nl.tue.c2IOE0.group5.enemies.EnemyType;
 import nl.tue.c2IOE0.group5.engine.Simulator;
@@ -107,71 +108,32 @@ public class DataSimulator {
     }
 
     private double simulate(final TowerType[][] grid, final EnemyType[] buffer, final double trust){
-        Simulator simulator = new Simulator(new Predicate<Simulator>() {
-            @Override
-            public boolean test(Simulator simulator) {
-                return true;
-            }
-        });
-
-        EnemyProvider ep = new EnemyProvider();
-        TowerProvider tp = new TowerProvider();
-        GridProvider gp = new GridProvider(totalSize, playSize);
-        BulletProvider bp = new BulletProvider();
-        TowerConnectionProvider tcp = new TowerConnectionProvider();
-
-        simulator.addProviders(new Provider[]{
-            ep,
-            tp,
-            gp,
-            bp,
-            tcp
-        });
-
+        Simulator sim = new Simulator(s -> true);
+        GameSimulator simulator = new GameSimulator(sim, totalSize, playSize);
         try {
             simulator.init();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to simulate because of exception: " + e.getMessage(), e);
         }
-
-        assert simulator.isInitialized();
-
-        QLearner routingLearner = new QLearner(totalSize, 1000, 0.1);
-        trainQLearner(routingLearner, gp);
 
         for (EnemyType type : buffer) {
-            int index = random.nextInt(7);
-            Cell startCell = gp.getCell(routingLearner.getOptimalNSpawnStates(7)[index]);
-            Vector2i start = startCell.getGridPosition();
-            List<Integer> path = routingLearner.getOptimalPath(startCell.getGridPosition());
-            List<Vector2i> targets = path.stream().map(p -> QLearner.getPoint(p, totalSize)).collect(Collectors.toList());
-            ep.putEnemy(type, start, targets, routingLearner);
+            simulator.spawnEnemy(type);
         }
-
-        tp.putMainTower();
 
         for (int x = 0; x < playSize; x++){
             for (int y = 0; y < playSize; y++){
-                if (grid[x][y] != null){
-                    AbstractTower tower;
-                    switch (grid[x][y]){
-                        default:
-                            tower = new MainTower(tp);
-                            break;
-                    }
-
-                    gp.placePlayFieldTower(x, y, tower);
+                TowerType type = grid[x][y];
+                if (type != null) {
+                    simulator.placeTower(type, x, y);
                 }
             }
         }
-
         try {
             simulator.run();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to simulate because of exception: " + e.getMessage(), e);
         }
-
-        return 0;
+        return simulator.getDestructionScore();
     }
 
     private void trainQLearner(QLearner qLearner, GridProvider gridProvider) {
