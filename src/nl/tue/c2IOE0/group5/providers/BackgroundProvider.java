@@ -21,7 +21,7 @@ public class BackgroundProvider implements Provider<Engine> {
     @Override
     public void init(Engine engine) {
         this.camera = engine.getCamera();
-        this.skybox = new Skybox("/skybox/skybox.obj", "/skybox/skybox.png");
+        this.skybox = new Skybox("/skybox/skybox.obj", "/skybox/skyboxspace.png");
         this.skybox.setScale(1000f);
         this.skybox.init(engine.getRenderer());
         this.backgroundScenery = new BackgroundScenery(engine.getProvider(GridProvider.class).SIZE);
