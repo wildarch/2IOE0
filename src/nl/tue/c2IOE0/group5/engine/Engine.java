@@ -13,6 +13,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * @author Jorren Hendriks.
@@ -28,8 +29,17 @@ public class Engine extends Simulator {
     protected List<Controller> controllers;
     private Timer renderTimer;
 
+    public Engine(Predicate<Simulator> stopCondition) {
+        super(stopCondition);
+        setup();
+    }
+
     public Engine() {
         super(sim -> ((Engine) sim).getWindow().shouldClose());
+        setup();
+    }
+
+    private void setup() {
         renderTimer = new Timer();
         window = new Window("Tower Defence", 1600, 900, true, new Window.Options());
         renderer = new Renderer();
@@ -45,6 +55,7 @@ public class Engine extends Simulator {
      */
     @Override
     public void init() throws ShaderException, IOException {
+        if(isInitialized()) return;
         renderTimer.init();
         window.init();
         renderer.init(window);

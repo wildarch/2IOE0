@@ -3,7 +3,6 @@ package nl.tue.c2IOE0.group5.towers;
 import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
-import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.providers.TowerProvider;
 
 /**
@@ -44,13 +43,9 @@ public class WallTower extends AbstractTower {
 
     @Override
     protected void onDie() {
+        if(renderer == null) return;
         //renderer.unlinkMesh(mesh, render, shadowRender);
         renderer.unlinkMesh(iMesh);
-    }
-
-    @Override
-    public int getMaxHealth() {
-        return MAX_HEALTH;
     }
 
     @Override

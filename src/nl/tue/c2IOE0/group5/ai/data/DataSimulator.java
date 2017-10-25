@@ -1,23 +1,14 @@
 package nl.tue.c2IOE0.group5.ai.data;
 
-import nl.tue.c2IOE0.group5.ai.QLearner;
+import nl.tue.c2IOE0.group5.ai.GameSimulator;
 import nl.tue.c2IOE0.group5.enemies.EnemyType;
-import nl.tue.c2IOE0.group5.engine.Simulator;
-import nl.tue.c2IOE0.group5.engine.provider.Provider;
-import nl.tue.c2IOE0.group5.providers.*;
-import nl.tue.c2IOE0.group5.towers.AbstractTower;
-import nl.tue.c2IOE0.group5.towers.MainTower;
+import nl.tue.c2IOE0.group5.providers.EnemyProvider;
 import nl.tue.c2IOE0.group5.towers.TowerType;
-import org.joml.Vector2i;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * TowerDefence
@@ -28,8 +19,13 @@ public class DataSimulator {
     private final boolean[] activeThreads;
     private final INDArray inputs;
     private final INDArray outputs;
-    private final int playSize, totalSize, borderSize, nrTowers, nrDeployTypes, bufferSize, numThreads;
-    private final Random random = new Random();
+    private final int playSize;
+    private final int totalSize;
+    private final int nrTowers;
+    private final int nrDeployTypes;
+    private final int bufferSize;
+    private final int numThreads;
+    private final int borderSize;
 
     public DataSimulator(int numThreads, final INDArray inputs, int playSize, int borderSize, int nrTowers,
                          int nrDeployTypes, int bufferSize){
@@ -81,9 +77,6 @@ public class DataSimulator {
                             EnemyType[] buffer = converter.getBuffer();
                             double trust = converter.getqTrust();
 
-                            assert grid != null;
-                            assert buffer != null;
-
                             double result;
 
                             try {
@@ -93,7 +86,8 @@ public class DataSimulator {
                                 result = 0;
                             }
 
-                            System.out.println("T: " + threadIndex + "; I: " + r + "; R: " + result + ";");
+                            System.out.println("Thread: " + threadIndex + "; Iteration: " + r +
+                                "; Result: " + result + "; Done: " + Math.round(((r - rowStart) / (double)(rowEnd - rowStart)) * 1000.0) / 10 + "%;");
 
                             outputs.putScalar(r, 0, result);
                         }
@@ -107,90 +101,46 @@ public class DataSimulator {
     }
 
     private double simulate(final TowerType[][] grid, final EnemyType[] buffer, final double trust){
-        Simulator simulator = new Simulator(new Predicate<Simulator>() {
-            @Override
-            public boolean test(Simulator simulator) {
-                return true;
-            }
-        });
-
-        EnemyProvider ep = new EnemyProvider();
-        TowerProvider tp = new TowerProvider();
-        GridProvider gp = new GridProvider(totalSize, playSize);
-        BulletProvider bp = new BulletProvider();
-        TowerConnectionProvider tcp = new TowerConnectionProvider();
-
-        simulator.addProviders(new Provider[]{
-            ep,
-            tp,
-            gp,
-            bp,
-            tcp
-        });
+        //Simulator sim = new Simulator(s -> true);
+        GameSimulator simulator = new GameSimulator(false, sim -> sim.getProvider(EnemyProvider.class)
+            .getEnemies().stream().filter(e -> !e.isDead()).count() == 0, totalSize, playSize);
 
         try {
             simulator.init();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to simulate because of exception: " + e.getMessage(), e);
         }
-
-        assert simulator.isInitialized();
-
-        QLearner routingLearner = new QLearner(totalSize, 1000, 0.1);
-        trainQLearner(routingLearner, gp);
 
         for (EnemyType type : buffer) {
-            int index = random.nextInt(7);
-            Cell startCell = gp.getCell(routingLearner.getOptimalNSpawnStates(7)[index]);
-            Vector2i start = startCell.getGridPosition();
-            List<Integer> path = routingLearner.getOptimalPath(startCell.getGridPosition());
-            List<Vector2i> targets = path.stream().map(p -> QLearner.getPoint(p, totalSize)).collect(Collectors.toList());
-            ep.putEnemy(type, start, targets, routingLearner);
+            simulator.spawnEnemy(type);
         }
-
-        tp.putMainTower();
 
         for (int x = 0; x < playSize; x++){
             for (int y = 0; y < playSize; y++){
-                if (grid[x][y] != null){
-                    AbstractTower tower;
-                    switch (grid[x][y]){
-                        default:
-                            tower = new MainTower(tp);
-                            break;
-                    }
-
-                    gp.placePlayFieldTower(x, y, tower);
+                TowerType type = grid[x][y];
+                if (type != null && type != TowerType.CASTLE) {
+                    simulator.placeTower(type, x + borderSize, y + borderSize);
                 }
             }
         }
-
         try {
             simulator.run();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to simulate because of exception: " + e.getMessage(), e);
         }
-
-        return 0;
-    }
-
-    private void trainQLearner(QLearner qLearner, GridProvider gridProvider) {
-        qLearner.initializeQ();
-        qLearner.setRewardsMatrix(QLearner.getState(gridProvider.SIZE / 2, gridProvider.SIZE / 2, gridProvider.SIZE), 1000);
-
-        for (int i = 0; i < 200; i++) {
-            qLearner.generateRandomPath(10);
-        }
-        qLearner.addBasicPath();
-        //to prevent going to 0,0
-        qLearner.generateRandomPath(100, 0);
-        qLearner.execute();
+        return simulator.getDestructionScore();
     }
 
     public void run(){
         for (int i = 0; i < threads.length; i++){
             activeThreads[i] = true;
             threads[i].start();
+        }
+    }
+
+    public void stop(){
+        for (int i = 0; i < threads.length; i++){
+            activeThreads[i] = false;
         }
     }
 

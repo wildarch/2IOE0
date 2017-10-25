@@ -75,13 +75,8 @@ public class CannonTower extends AbstractTower {
 
     @Override
     protected void onDie() {
+        if(renderer == null) return;
         renderer.unlinkMesh(iBaseMesh);
         renderer.unlinkMesh(iCannonMesh);
     }
-
-    @Override
-    public int getMaxHealth() {
-        return MAX_HEALTH;
-    }
-
 }

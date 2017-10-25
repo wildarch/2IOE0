@@ -25,12 +25,13 @@ public class BasicEnemy extends Enemy {
 
     @Override
     protected void onDie() {
+        if(renderer == null) return;
         renderer.unlinkMesh(iMeshBody);
     }
 
     @Override
     public EnemyType getType() {
-        return EnemyType.DROID;
+        return EnemyType.BASIC;
     }
 
     @Override
@@ -38,9 +39,7 @@ public class BasicEnemy extends Enemy {
         setScale(0.05f);
         Mesh body = renderer.linkMesh("/models/enemies/basicEnemy/body.obj");
         body.setMaterial(new Material("/general/orange.png"));
-        iMeshBody = renderer.linkMesh(body, () -> {
-            setModelView(renderer, drawOffset);
-        });
+        iMeshBody = renderer.linkMesh(body, () -> setModelView(renderer, drawOffset));
         this.renderer = renderer;
     }
 }

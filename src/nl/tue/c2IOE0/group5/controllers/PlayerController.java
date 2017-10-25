@@ -93,8 +93,12 @@ public class PlayerController implements Controller,Listener {
     public void init(Engine engine) {
         // you can initialize resources here, e.g.
         this.engine = engine;
-        this.menuProvider = engine.getProvider(MenuProvider.class);
-        this.uiProvider = engine.getProvider(UIProvider.class);
+        try {
+            this.menuProvider = engine.getProvider(MenuProvider.class);
+            this.uiProvider = engine.getProvider(UIProvider.class);
+        } catch (IllegalArgumentException e) {
+            System.err.println("No menu or ui provider");
+        }
         this.gridProvider = engine.getProvider(GridProvider.class);
         this.towerProvider = engine.getProvider(TowerProvider.class);
 
@@ -203,7 +207,7 @@ public class PlayerController implements Controller,Listener {
                             double refundPercentage = 0.8d;
                             int price = cellTower.getTower().getPrice();
                             double towerHealth = cellTower.getTower().getHealth();
-                            double maxTowerHealth = cellTower.getTower().getMaxHealth();
+                            double maxTowerHealth = cellTower.getTower().maxHealth;
                             double valueHealth = towerHealth/maxTowerHealth;
                             addBudget((int) (price * refundPercentage * valueHealth));
 //                            System.out.println("Selling tower: " + cellTower.getTower().getType().toString() + " for: " + (price * valueHealth) + " With health: " + towerHealth + "/" + maxTowerHealth + " healthPortion: " + valueHealth);

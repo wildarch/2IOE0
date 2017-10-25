@@ -27,7 +27,7 @@ public abstract class AbstractTower extends GameObject {
     private int range;
     private int level = 1;
     private final int maxLevel;
-    private final int maxHealth;
+    public final int maxHealth;
     private int health;
     private EnemyProvider enemyProvider;
     private BulletProvider bulletProvider;
@@ -35,13 +35,12 @@ public abstract class AbstractTower extends GameObject {
     private long timeToDoDamage;
     private Timer loopTimer;
     private HealthBolletje healthBolletje;
-    private final int attackTime;
-    private final float bulletSpeed;
-    private final int bulletDamage;
+    public final int attackTime;
+    public final float bulletSpeed;
+    public final int bulletDamage;
     private float healthHeight;
     private float bulletOffset;
 
-    private Mesh mesh;
     private Cell cell;
     private Renderer renderer;
 
@@ -65,7 +64,9 @@ public abstract class AbstractTower extends GameObject {
         this.bulletDamage = bulletDamage;
         this.healthHeight = healthHeight;
         this.bulletOffset = bulletOffset;
-        startTime = renderTimer.getTime();
+        if(renderTimer != null) {
+            startTime = renderTimer.getTime();
+        }
     }
 
     /**
@@ -133,6 +134,7 @@ public abstract class AbstractTower extends GameObject {
     }
 
     public void takeDamage(double damage) {
+        System.err.println("Taking damage: " + damage);
         health -= damage;
         if (health <= 0) {
             die();
@@ -169,8 +171,6 @@ public abstract class AbstractTower extends GameObject {
         }
     }
 
-    public abstract int getMaxHealth();
-
     protected void attack(Enemy e) {
         Bullet b = new Bullet(bulletSpeed, bulletDamage, bulletOffset, e, this, loopTimer, renderTimer).init(renderer);
         bulletProvider.addBullet(b);
@@ -191,7 +191,6 @@ public abstract class AbstractTower extends GameObject {
     }
 
     protected void setMesh(Mesh m) {
-        mesh = m;
     }
 
     protected class HealthBolletje extends GameObject {

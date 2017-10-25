@@ -19,9 +19,9 @@ public class Cell extends GameObject {
 
     //the position in the grid
     private Vector2i position;
-    private Vector3f defaultColor = new Vector3f(0.3f);
-    private Vector3f activeColor = new Vector3f(1f, 1f, 0f);
-    private Vector3f rangeColor = new Vector3f(0f, 0f, 1f);
+    private Vector3f defaultColor = new Vector3f(0.1f);
+    private Vector3f activeColor = new Vector3f(0.5f, 0.5f, 0f);
+    private Vector3f rangeColor = new Vector3f(0f, 0f, 0.5f);
     private Vector3f color;
     private boolean showRange = false;
 
@@ -42,18 +42,18 @@ public class Cell extends GameObject {
         //initialize textures
         switch (cellType) {
             case BASE:
-                defaultColor = new Vector3f(0f, 0.3f, 0f);
+                defaultColor = new Vector3f(0f, 0.1f, 0f);
                 break;
             case BORDER:
-                defaultColor = new Vector3f(0.3f, 0f, 0f);
+                defaultColor = new Vector3f(0.1f, 0f, 0f);
                 break;
             case SPAWN:
-                defaultColor = new Vector3f(0.3f);
+                defaultColor = new Vector3f(0.1f);
                 break;
         }
         color = defaultColor;
         this.deactivate();
-        this.setPosition(x*this.getScale(), -0.5f, y*this.getScale());
+        this.setPosition(x*this.getScale(), -0.495f, y*this.getScale());
     }
 
     //set the texture of this cell to activated
@@ -91,7 +91,7 @@ public class Cell extends GameObject {
         } else {
             this.tower = t;
             t.setCell(this);
-            t.setPosition(this.getPosition().add(0, 0.5f, 0f));
+            t.setPosition(this.getPosition().add(0, 0.495f, 0f));
         }
     }
 
@@ -140,5 +140,11 @@ public class Cell extends GameObject {
     @Override
     public void update() {
         // I'm a lazy motherfucker
+    }
+
+    @Override
+    public String toString() {
+        Vector2i pos = getGridPosition();
+        return "(" + pos.x + ", " + pos.y + ")";
     }
 }

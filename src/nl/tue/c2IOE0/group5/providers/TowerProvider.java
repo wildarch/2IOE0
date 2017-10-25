@@ -34,7 +34,6 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
         gridProvider = engine.getProvider(GridProvider.class);
         enemyProvider = engine.getProvider(EnemyProvider.class);
         bulletProvider = engine.getProvider(BulletProvider.class);
-        uiProvider = engine.getProvider(UIProvider.class);
         loopTimer = engine.getGameloopTimer();
         gameStarted = false;
     }
@@ -56,6 +55,11 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
 
     @Override
     public void renderInit(Engine engine) {
+        try {
+            this.uiProvider = engine.getProvider(UIProvider.class);
+        } catch(IllegalArgumentException err) {
+            System.err.println("UIProvider not found");
+        }
         this.engine = engine;
         Renderer renderer = engine.getRenderer();
         //preload all meshes to avoid mid game slowdowns
@@ -103,11 +107,15 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
         //placing tower succesfull!
 
         //subtract the price
-        if (all().contains(towertype)) {
+        if (engine != null && all().contains(towertype)) {
             AbstractTower.MetaData metaData = AbstractTower.getMetaData(towertype);
             int price = metaData.price;
-            PlayerController playerController = engine.getController(PlayerController.class);
-            playerController.addBudget(-price);
+            try {
+                PlayerController playerController = engine.getController(PlayerController.class);
+                playerController.addBudget(-price);
+            } catch (IllegalArgumentException err) {
+                System.err.println("PlayerController not found");
+            }
         }
 
         return true;
@@ -135,9 +143,9 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
 
     @Override
     public void update() {
-        if (engine == null || engine.isPaused()) return;
+        if (engine != null && engine.isPaused()) return;
         objects.stream().forEach(t -> {
-            if (t instanceof MainTower && t.isDead()) {
+            if (t instanceof MainTower && t.isDead() && uiProvider != null) {
                 uiProvider.die();
             }
         });

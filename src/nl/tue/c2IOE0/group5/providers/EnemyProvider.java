@@ -33,7 +33,11 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
         gridProvider = engine.getProvider(GridProvider.class);
         if(engine instanceof Engine) {
             Engine e = (Engine) engine;
-            playerController = e.getController(PlayerController.class);
+            try {
+                playerController = e.getController(PlayerController.class);
+            } catch (IllegalArgumentException err) {
+                System.err.println("No PlayerController found");
+            }
         }
     }
 
@@ -61,7 +65,7 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
     public void putEnemy(EnemyType type, Vector2i initialPosition, List<Vector2i> targets, QLearner qlearner) {
         final Enemy newEnemy;
         switch (type) {
-            case DROID:
+            case BASIC:
                 newEnemy = new BasicEnemy(
                         loopTimer,
                         renderTimer,
@@ -97,13 +101,10 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
                 newEnemy = new Enemy(loopTimer, renderTimer, gridProvider,
                         initialPosition, targets, 10, 1, 1, 300, qlearner, playerController)
                 {
-                    public EnemyType getType(){ return EnemyType.DROID; }
+                    public EnemyType getType(){ return EnemyType.BASIC; }
                     protected void onDie(){ renderer.unlinkMesh(iMeshBody); }
                 };
         }
-//        System.out.println("EnemyProvider.putEnemy(): spawn " + newEnemy.getClass().getSimpleName() +
-//                " at (" + initialPosition.x + ", " + initialPosition.y + ")");
-
         objects.add(newEnemy.init(getRenderer()));
     }
 
@@ -122,7 +123,7 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
 
     @Override
     public void update() {
-        if (engine == null || engine.isPaused()) return;
+        if (engine != null && engine.isPaused()) return;
         objects.removeIf(Enemy::isDead);
         super.update();
 
