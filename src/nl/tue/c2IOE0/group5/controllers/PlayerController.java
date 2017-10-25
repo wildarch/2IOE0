@@ -349,7 +349,7 @@ public class PlayerController implements Controller,Listener {
 
     private void buildTower(boolean hold){
         gridProvider.click();
-        if (hold){
+        if (hold && prevTower != null){
             AbstractTower.MetaData metaData = AbstractTower.getMetaData(prevTower);
             int price = metaData.price;
             if (price > budget) {
