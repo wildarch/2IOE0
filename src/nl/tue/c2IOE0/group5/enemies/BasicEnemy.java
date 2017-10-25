@@ -30,7 +30,7 @@ public class BasicEnemy extends Enemy {
 
     @Override
     public EnemyType getType() {
-        return EnemyType.DROID;
+        return EnemyType.BASIC;
     }
 
     @Override

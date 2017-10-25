@@ -6,7 +6,7 @@ package nl.tue.c2IOE0.group5.enemies;
  * culled by Geert van ieperen
  */
 public enum EnemyType {
-    DROID,
+    BASIC,
     WALKER,
     DRILL;
 

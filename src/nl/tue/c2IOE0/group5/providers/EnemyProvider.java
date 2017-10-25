@@ -65,7 +65,7 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
     public void putEnemy(EnemyType type, Vector2i initialPosition, List<Vector2i> targets, QLearner qlearner) {
         final Enemy newEnemy;
         switch (type) {
-            case DROID:
+            case BASIC:
                 newEnemy = new BasicEnemy(
                         loopTimer,
                         renderTimer,
@@ -101,7 +101,7 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
                 newEnemy = new Enemy(loopTimer, renderTimer, gridProvider,
                         initialPosition, targets, 10, 1, 1, 300, qlearner, playerController)
                 {
-                    public EnemyType getType(){ return EnemyType.DROID; }
+                    public EnemyType getType(){ return EnemyType.BASIC; }
                     protected void onDie(){ renderer.unlinkMesh(iMeshBody); }
                 };
         }
