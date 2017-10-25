@@ -167,16 +167,6 @@ public class GridProvider extends ObjectProvider<Cell> {
         towerConnectionProvider.addTowerConnection(tower);
     }
 
-    public void destroyConnectingTower(int x, int y) {
-        TowerConnection tower = towerconnections[x][y];
-        if (tower == null) {
-            throw new NullPointerException("Connecting tower being removed at " + x + ", " + y + " does not exist");
-        }
-        tower.destroy();
-        towerconnections[x][y] = null;
-        towerConnectionProvider.deleteTowerConnection(tower);
-    }
-
     public void placePlayFieldTower(int x, int y, AbstractTower tower){
         if (x < 0 || x >= PLAYFIELDSIZE || y < 0 || y >= PLAYFIELDSIZE) {
             throw new ArrayIndexOutOfBoundsException("The coordinates of this cell are outside the grid.");
@@ -221,18 +211,22 @@ public class GridProvider extends ObjectProvider<Cell> {
                 throw new ArrayIndexOutOfBoundsException("Walltower was on the edge of the grid, should not be possible.");
             }
             //check for surrounding towers
-            if (getCell(x-1, y).getTower() instanceof WallTower) {
-                destroyConnectingTower(2*x-1, 2*y);
+            destroyIfWalltower(x+1, y);
+            destroyIfWalltower(x, y+1);
+            destroyIfWalltower(x-1, y);
+            destroyIfWalltower(x, y-1);
+        }
+    }
+
+    private void destroyIfWalltower(int x, int y) {
+        if (getCell(x, y).getTower() instanceof WallTower) {
+            TowerConnection tower = towerconnections[2*x][2*y];
+            if (tower == null) {
+                throw new NullPointerException("Connecting tower being removed at " + 2*x + ", " + 2*y + " does not exist");
             }
-            if (getCell(x+1, y).getTower() instanceof WallTower) {
-                destroyConnectingTower(2*x+1, 2*y);
-            }
-            if (getCell(x, y-1).getTower() instanceof WallTower) {
-                destroyConnectingTower(2*x, 2*y-1);
-            }
-            if (getCell(x, y+1).getTower() instanceof WallTower) {
-                destroyConnectingTower(2*x, 2*y+1);
-            }
+            tower.destroy();
+            towerconnections[2*x][2*y] = null;
+            towerConnectionProvider.deleteTowerConnection(tower);
         }
     }
 
@@ -312,7 +306,7 @@ public class GridProvider extends ObjectProvider<Cell> {
                     }
                 }
             }
-        } else if (activeCell == rangedCell){
+        } else {
             deRangeAll();
             rangedCell = null;
         }
@@ -321,12 +315,16 @@ public class GridProvider extends ObjectProvider<Cell> {
     private boolean inRange(AbstractTower t, Cell c) {
         Cell tc = t.getCell();
         int range = t.getRange();
-        int dist = Math.abs(tc.getGridPosition().x() - c.getGridPosition().x()) + Math.abs(tc.getGridPosition().y() - c.getGridPosition().y());
+        int dist = manDist(tc, c);
 
         if (dist <= range) {
             return true;
         }
         return false;
+    }
+
+    public static int manDist(Cell a, Cell b) {
+        return Math.abs(a.getGridPosition().x() - b.getGridPosition().x()) + Math.abs(a.getGridPosition().y() - b.getGridPosition().y());
     }
 
     private void deRangeAll() {

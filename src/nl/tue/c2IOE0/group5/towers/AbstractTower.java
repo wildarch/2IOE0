@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static nl.tue.c2IOE0.group5.providers.GridProvider.manDist;
+
 public abstract class AbstractTower extends GameObject {
 
     private static final int FALL_TIME = 500; // milliseconds
@@ -143,7 +145,7 @@ public abstract class AbstractTower extends GameObject {
     private void attack() {
         List<Enemy> inRange = enemyProvider.getEnemies().stream().filter(this::isInRange).collect(Collectors.toList());
         Optional<Enemy> e = inRange.stream()
-                .min(Comparator.comparingDouble(a -> this.cell.getGridPosition().distance(a.getCurrentCell().getGridPosition())));
+                .min(Comparator.comparingDouble(a -> manDist(a.getCurrentCell(), this.cell)));
         if (e.isPresent()) {
             Enemy closest = e.get();
             attack(closest);
@@ -159,7 +161,7 @@ public abstract class AbstractTower extends GameObject {
 
     private boolean isInRange(Enemy e) {
         Cell enemyCell = e.getCurrentCell();
-        return this.cell.getGridPosition().distance(enemyCell.getGridPosition()) <= range;
+        return manDist(enemyCell, this.cell) <= range;
     }
 
     @Override
