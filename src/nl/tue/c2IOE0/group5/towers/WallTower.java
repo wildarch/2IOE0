@@ -37,6 +37,7 @@ public class WallTower extends AbstractTower {
         iMesh = renderer.linkMesh(mesh, () -> {
             setModelView(renderer, getPositionOffset());
             renderer.boink(getBounceDegree(), mesh);
+            renderer.ambientLight(getDamageColor());
         });
         this.renderer = renderer;
     }

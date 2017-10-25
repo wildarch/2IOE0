@@ -36,6 +36,8 @@ public class Mesh {
 
     private boolean render;
 
+    private boolean castShadows = true;
+
     public Mesh(float[] positions, float[] texCoords, float[] normals, int[] indices) {
         FloatBuffer posBuffer = null;
         FloatBuffer texBuffer = null;
@@ -111,6 +113,13 @@ public class Mesh {
             maxBoundingBox.y = Math.max(maxBoundingBox.y, y);
             maxBoundingBox.z = Math.max(maxBoundingBox.z, z);
         }
+    }
+
+    public void setCastShadows(boolean value) {
+        castShadows = value;
+    }
+    public boolean CastShadows() {
+        return castShadows;
     }
 
     public boolean isTextured() {

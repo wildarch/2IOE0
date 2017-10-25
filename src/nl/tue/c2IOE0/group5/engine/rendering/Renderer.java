@@ -509,7 +509,9 @@ public class Renderer implements Cleanable {
         depthShader.setUniform("orthoProjectionMatrix", orthoProjMatrix);
 
         instancedMeshes.forEach((mesh, consumers) -> {
-            renderAll(mesh, consumers.stream().map(InstancedMesh::getRender));
+            if (mesh.CastShadows()) {
+                renderAll(mesh, consumers.stream().map(InstancedMesh::getRender));
+            }
         });
 
         // Unbind

@@ -14,9 +14,9 @@ import java.util.List;
 public class BasicEnemy extends Enemy {
 
     private static final float SPEED = 0.4f;
-    private static final long ATTACKSPEED = 2000;
-    private static final int MAX_HEALTH = 30;
-    private final static int DAMAGE = 10;
+    private static final long ATTACKSPEED = 1500;
+    private static final int MAX_HEALTH = 40;
+    private final static int DAMAGE = 20;
 
     public BasicEnemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider,
                       Vector2i initialPosition, List<Vector2i> targetPositions, QLearner qlearner, PlayerController playerController) {

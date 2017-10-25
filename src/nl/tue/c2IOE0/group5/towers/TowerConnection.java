@@ -30,7 +30,7 @@ public class TowerConnection extends GameObject {
         setPosition(position);
         setRotation(0, rotation, 0);
         setScale(1f);
-        startTime = renderTimer.getTime();
+        startTime = renderTimer.getTime() + 1000;
     }
 
     @Override
