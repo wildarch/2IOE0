@@ -42,7 +42,7 @@ public class Bullet extends GameObject implements Drawable {
         interpolator.setTarget(targetPosition);
         interpolator.update(loopTimer.getElapsedTime());
         //boolean targetReached = interpolator.update(loopTimer.getTime());                 //doesn't seem to work as I expect it to work
-        if (interpolator.targetReached()) {
+        if (interpolator.targetReached() || this.target.isDead()) {
             target.getDamage(damage);
             isDone = true; //target is hit and this bullet should be removed
             if(renderer != null) renderer.unlinkMesh(iMesh); //stop drawing this bullet

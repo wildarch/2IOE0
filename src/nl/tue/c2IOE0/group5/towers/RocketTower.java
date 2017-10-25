@@ -16,7 +16,7 @@ public class RocketTower extends AbstractTower {
     private static final int RANGE = 2;
     private static final int MAX_LEVEL = 1;
     private static final int MAX_HEALTH = 30;
-    private static final int ATTACK_TIME = 2000;
+    private static final int ATTACK_TIME = 2100;
     private static final float BULLET_SPEED = 1.5f;
     private static final int BULLET_DAMAGE = 20;
     private static final int PRICE = 100;

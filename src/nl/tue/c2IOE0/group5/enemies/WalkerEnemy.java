@@ -25,7 +25,7 @@ import static nl.tue.c2IOE0.group5.util.Angle.rotateVector;
  */
 public class WalkerEnemy extends Enemy implements Animatable {
 
-    private final static int MAXHEALTH = 100;
+    private final static int MAXHEALTH = 60;
     private final static float SPEED = 0.3f;
     private final static int ATTACKSPEED = 100;
     private final static int DAMAGE = 1;

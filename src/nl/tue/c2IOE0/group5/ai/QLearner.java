@@ -2,9 +2,7 @@ package nl.tue.c2IOE0.group5.ai;
 
 import org.joml.Vector2i;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * @author Tom Peters
@@ -396,18 +394,18 @@ public class QLearner extends Thread {
      * @return the best n spawnstates
      */
     public Vector2i[] getOptimalNSpawnStates(int n) {
-        int[] maxQ = new int[n];
+        double[] maxQ = new double[n];
         int[] maxStates = new int[n];
         for (int i = 0; i < n; i++) {
             maxQ[i] = 0;
             maxStates[i] = 0;
         }
 
-        for (int i : outerStates) {
+        for (int outerState : outerStates) {
             for (int j = 0; j < n; j++) {
-                if (getMaximumAction(i) >= maxQ[j]) {
-                    maxQ[j] = getMaximumAction(i);
-                    maxStates[j] = i;
+                if (Q[outerState][getMaximumAction(outerState)] >= maxQ[j]) {
+                    maxQ[j] = Q[outerState][getMaximumAction(outerState)];
+                    maxStates[j] = outerState;
                     break; // it is already in the array, so continue with the next element
                 }
             }
