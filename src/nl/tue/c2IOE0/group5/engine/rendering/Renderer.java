@@ -50,6 +50,8 @@ public class Renderer implements Cleanable {
 
     private DirectionalLight directionalLight;
 
+    private Vector3f ambientLight;
+
     private Task task;
     private enum Task {
         SCENE,
@@ -173,7 +175,8 @@ public class Renderer implements Cleanable {
 
 
         // Initialize some fields
-        sceneShader.setAmbientLight(new Vector3f(0.3f, 0.3f, 0.3f));
+        ambientLight = new Vector3f(0.1f, 0.1f, 0.1f);
+        sceneShader.setAmbientLight(ambientLight);
         directionalLight = new DirectionalLight(
                 new Vector3f(1f, 1f, 1f),
                 new Vector3f(0.78f, 0.4f, 0.66f),
@@ -292,7 +295,7 @@ public class Renderer implements Cleanable {
     public void ambientLight(Vector3f color) {
         if (task == Task.DEPTH_MAP) return;
 
-        sceneShader.setUniform("ambientLight", color);
+        sceneShader.setUniform("ambientLight", color.add(ambientLight));
         modifiers.push(() ->
                 sceneShader.setUniform("ambientLight", sceneShader.getAmbientLight()));
     }
