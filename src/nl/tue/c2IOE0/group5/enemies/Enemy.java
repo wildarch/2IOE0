@@ -69,7 +69,7 @@ public abstract class Enemy extends GameObject implements Drawable {
     @Override
     public void update() {
         if (!targetPositions.isEmpty()) {
-            long targetTime = interpolator.update(loopTimer.getElapsedTime());
+            //long targetTime = interpolator.update(loopTimer.getElapsedTime());
             boolean targetReached = interpolator.targetReached();
             if (targetReached) {
                 targetPositions.remove(0);
@@ -81,12 +81,12 @@ public abstract class Enemy extends GameObject implements Drawable {
             Cell targetCell = gridProvider.getCell(targetPositions.get(0));
             AbstractTower tower = targetCell.getTower();
             Vector3f targetPosition = targetCell.getPosition().add(0, 0.5f, 0).add(offset.toImmutable());
-            if (tower == null || (targetReached && attacking)) {
+            interpolator.setTarget(targetPosition);
+            if (tower == null) {
                 // Road is clear, move ahead
                 attacking = false;
                 //System.out.println("Set target position!");
-                interpolator.setTarget(targetPosition);
-                interpolator.update(targetTime);
+                interpolator.update(loopTimer.getElapsedTime());
             } else {
                 // Destroy the tower first
                 attacking = true;
