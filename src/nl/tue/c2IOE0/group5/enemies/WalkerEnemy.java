@@ -29,7 +29,7 @@ public class WalkerEnemy extends Enemy implements Animatable {
     private final static float SPEED = 0.3f;
     private final static int ATTACKSPEED = 100;
     private final static int DAMAGE = 1;
-    public static final int DIE_REWARD = 30;
+    public static final int DIE_REWARD = 20;
 
     private InstancedMesh body;
     private InstancedMesh head;

@@ -13,7 +13,7 @@ import org.joml.Vector3f;
 public class RocketTower extends AbstractTower {
 
 
-    private static final int RANGE = 4;
+    private static final int RANGE = 2;
     private static final int MAX_LEVEL = 1;
     private static final int MAX_HEALTH = 30;
     private static final int ATTACK_TIME = 2000;

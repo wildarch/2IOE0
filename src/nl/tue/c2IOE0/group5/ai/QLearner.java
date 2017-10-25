@@ -398,7 +398,6 @@ public class QLearner extends Thread {
     public Vector2i[] getOptimalNSpawnStates(int n) {
         int[] maxQ = new int[n];
         int[] maxStates = new int[n];
-        List<Integer> equalBestStates = new ArrayList<>();
         for (int i = 0; i < n; i++) {
             maxQ[i] = 0;
             maxStates[i] = 0;
@@ -408,24 +407,25 @@ public class QLearner extends Thread {
             for (int j = 0; j < n; j++) {
                 if (getMaximumAction(i) >= maxQ[j]) {
                     maxQ[j] = getMaximumAction(i);
-                    equalBestStates.add(i);
+                    maxStates[j] = i;
                     break; // it is already in the array, so continue with the next element
                 }
             }
         }
-        //pick a couple of random ones
-        Random r = new Random();
-        for (int i = 0; i < n; i++) {
-            int random = r.nextInt(equalBestStates.size());
-            maxStates[i] = equalBestStates.get(random);
-            equalBestStates.remove(random);
-        }
-
         Vector2i[] results = new Vector2i[n];
         for (int i = 0; i < n; i++) {
             results[i] = new Vector2i(getPoint(maxStates[i], gridSize));
         }
         return results;
+    }
+
+    /**
+     * Gets the reward for a specific cell on x, y
+     */
+    public int getReward(int x, int y) {
+        int state = getState(x, y);
+        int neighbour = getStatesAdjacent(state).get(0);
+        return rewards[neighbour][state];
     }
 
 }

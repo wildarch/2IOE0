@@ -65,7 +65,7 @@ public class PlayerController implements Controller,Listener {
     private float minX;
     private float minY = 0.1f;
     private float minZ;
-    private int budget = 200;
+    private int budget = 100;
 
     public PlayerController() {
     }

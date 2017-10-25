@@ -138,7 +138,9 @@ public class AiController implements Controller {
             System.out.println(size + " wave at " + loopTimer.getTime());
 
             for (EnemyType enemy : selectedBuffer) {
-                Cell startCell = gridProvider.getCell(qLearner.getOptimalSpawnState());
+                Random r = new Random();
+                int random = r.nextInt(8);
+                Cell startCell = gridProvider.getCell(qLearner.getOptimalNSpawnStates(8)[random]);
                 Vector2i start = startCell.getGridPosition();
                 List<Integer> path = qLearner.getOptimalPath(startCell.getGridPosition());
                 enemyProvider.putEnemy(
