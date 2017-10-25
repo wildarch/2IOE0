@@ -2,7 +2,7 @@ package nl.tue.c2IOE0.group5.ai.data;
 
 import nl.tue.c2IOE0.group5.ai.GameSimulator;
 import nl.tue.c2IOE0.group5.enemies.EnemyType;
-import nl.tue.c2IOE0.group5.engine.Simulator;
+import nl.tue.c2IOE0.group5.providers.EnemyProvider;
 import nl.tue.c2IOE0.group5.towers.TowerType;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
@@ -86,7 +86,8 @@ public class DataSimulator {
                                 result = 0;
                             }
 
-                            System.out.println("Thread: " + threadIndex + "; Iteration: " + r + "; Result: " + result + ";");
+                            System.out.println("Thread: " + threadIndex + "; Iteration: " + r +
+                                "; Result: " + result + "; Done: " + Math.round(((r - rowStart) / (double)(rowEnd - rowStart)) * 1000.0) / 10 + "%;");
 
                             outputs.putScalar(r, 0, result);
                         }
@@ -100,8 +101,10 @@ public class DataSimulator {
     }
 
     private double simulate(final TowerType[][] grid, final EnemyType[] buffer, final double trust){
-        Simulator sim = new Simulator(s -> true);
-        GameSimulator simulator = new GameSimulator(sim, totalSize, playSize);
+        //Simulator sim = new Simulator(s -> true);
+        GameSimulator simulator = new GameSimulator(false, sim -> sim.getProvider(EnemyProvider.class)
+            .getEnemies().stream().filter(e -> !e.isDead()).count() == 0, totalSize, playSize);
+
         try {
             simulator.init();
         } catch (IOException e) {
@@ -115,7 +118,7 @@ public class DataSimulator {
         for (int x = 0; x < playSize; x++){
             for (int y = 0; y < playSize; y++){
                 TowerType type = grid[x][y];
-                if (type != null) {
+                if (type != null && type != TowerType.CASTLE) {
                     simulator.placeTower(type, x + borderSize, y + borderSize);
                 }
             }
@@ -132,6 +135,12 @@ public class DataSimulator {
         for (int i = 0; i < threads.length; i++){
             activeThreads[i] = true;
             threads[i].start();
+        }
+    }
+
+    public void stop(){
+        for (int i = 0; i < threads.length; i++){
+            activeThreads[i] = false;
         }
     }
 
