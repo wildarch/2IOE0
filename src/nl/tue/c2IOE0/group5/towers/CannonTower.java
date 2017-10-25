@@ -1,11 +1,9 @@
 package nl.tue.c2IOE0.group5.towers;
 
 import nl.tue.c2IOE0.group5.enemies.Enemy;
-import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
-import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.providers.TowerProvider;
 import org.joml.Vector3f;
 
@@ -17,11 +15,11 @@ public class CannonTower extends AbstractTower {
 
     private static final int RANGE = 3;
     private static final int MAX_LEVEL = 1;
-    private static final int MAX_HEALTH = 50;
-    private static final int ATTACK_TIME = 1000;
-    private static final float BULLET_SPEED = 3f;
-    private static final int BULLET_DAMAGE = 10;
-    private static final int PRICE = 100;
+    private static final int MAX_HEALTH = 75;
+    private static final int ATTACK_TIME = 130;
+    private static final float BULLET_SPEED = 8f;
+    private static final int BULLET_DAMAGE = 1;
+    private static final int PRICE = 50;
 
     public static MetaData metadata = new MetaData();
     static {
@@ -77,13 +75,8 @@ public class CannonTower extends AbstractTower {
 
     @Override
     protected void onDie() {
+        if(renderer == null) return;
         renderer.unlinkMesh(iBaseMesh);
         renderer.unlinkMesh(iCannonMesh);
     }
-
-    @Override
-    public int getMaxHealth() {
-        return MAX_HEALTH;
-    }
-
 }

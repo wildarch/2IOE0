@@ -46,7 +46,7 @@ public class Bullet extends GameObject implements Drawable {
         if (targetReached || target.isDead()) {
             target.getDamage(damage);
             isDone = true; //target is hit and this bullet should be removed
-            renderer.unlinkMesh(iMesh); //stop drawing this bullet
+            if(renderer != null) renderer.unlinkMesh(iMesh); //stop drawing this bullet
             return;
         }
         this.setRotation(interpolator.getDirection());
@@ -56,7 +56,7 @@ public class Bullet extends GameObject implements Drawable {
     public void renderInit(Renderer renderer) {
         setScale(0.05f);
         Mesh bullet = renderer.linkMesh("/models/items/bullet4.obj");
-        bullet.setMaterial(new Material("/square.png"));
+        bullet.setMaterial(new Material("/general/square.png"));
         iMesh = renderer.linkMesh(bullet, () -> {
             setModelView(renderer, drawOffset);
             renderer.ambientLight(color);

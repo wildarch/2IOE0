@@ -4,7 +4,6 @@ import nl.tue.c2IOE0.group5.enemies.Enemy;
 import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Mesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
-import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.providers.TowerProvider;
 import org.joml.Vector3f;
 
@@ -17,10 +16,10 @@ public class RocketTower extends AbstractTower {
     private static final int RANGE = 5;
     private static final int MAX_LEVEL = 1;
     private static final int MAX_HEALTH = 30;
-    private static final int ATTACK_TIME = 1;
-    private static final float BULLET_SPEED = 3f;
-    private static final int BULLET_DAMAGE = 1;
-    private static final int PRICE = 50;
+    private static final int ATTACK_TIME = 1200;
+    private static final float BULLET_SPEED = 2f;
+    private static final int BULLET_DAMAGE = 8;
+    private static final int PRICE = 100;
 
     public static MetaData metadata = new MetaData();
     static {
@@ -76,13 +75,9 @@ public class RocketTower extends AbstractTower {
 
     @Override
     protected void onDie() {
+        if(renderer == null) return;
         //renderer.unlinkMesh(mesh, render, shadowRender);
         renderer.unlinkMesh(iBaseMesh);
         renderer.unlinkMesh(iRocketMesh);
-    }
-
-    @Override
-    public int getMaxHealth() {
-        return MAX_HEALTH;
     }
 }

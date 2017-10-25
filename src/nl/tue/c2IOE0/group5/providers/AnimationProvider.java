@@ -40,7 +40,7 @@ public class AnimationProvider implements Provider<Engine> {
 
     @Override
     public void update() {
-        if (engine == null || engine.isPaused()) return;
+        if (engine != null && engine.isPaused()) return;
         targets.removeIf(AnimatedObjectRecord::mustBeRemoved);
     }
 }

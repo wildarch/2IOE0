@@ -141,4 +141,10 @@ public class Cell extends GameObject {
     public void update() {
         // I'm a lazy motherfucker
     }
+
+    @Override
+    public String toString() {
+        Vector2i pos = getGridPosition();
+        return "(" + pos.x + ", " + pos.y + ")";
+    }
 }

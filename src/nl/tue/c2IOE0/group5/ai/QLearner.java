@@ -329,6 +329,7 @@ public class QLearner extends Thread {
         }
         List<Integer> optimalPath = new ArrayList<>();
         optimalPath.add(state);
+        optimalPath.add(state);
         int nextState = policy[state];
         while (nextState != state && !optimalPath.contains(nextState)) {
             state = nextState;
@@ -350,6 +351,7 @@ public class QLearner extends Thread {
         int x = getPoint(state).x();
         int y = getPoint(state).y();
         List<Integer> path = new ArrayList<>();
+        path.add(state);
         path.add(state);
         if (x < gridSize / 2) { //do the horizontal stuff
             while (x < gridSize / 2) {

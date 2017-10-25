@@ -14,9 +14,9 @@ import java.util.List;
 public class BasicEnemy extends Enemy {
 
     private static final float SPEED = 0.4f;
-    private static final long ATTACKSPEED = 500;
-    private static final int MAX_HEALTH = 10;
-    private final static int DAMAGE = 4;
+    private static final long ATTACKSPEED = 2000;
+    private static final int MAX_HEALTH = 30;
+    private final static int DAMAGE = 10;
 
     public BasicEnemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider,
                       Vector2i initialPosition, List<Vector2i> targetPositions, QLearner qlearner, PlayerController playerController) {
@@ -25,22 +25,21 @@ public class BasicEnemy extends Enemy {
 
     @Override
     protected void onDie() {
+        if(renderer == null) return;
         renderer.unlinkMesh(iMeshBody);
     }
 
     @Override
     public EnemyType getType() {
-        return EnemyType.DROID;
+        return EnemyType.BASIC;
     }
 
     @Override
     public void renderInit(Renderer renderer) {
         setScale(0.05f);
         Mesh body = renderer.linkMesh("/models/enemies/basicEnemy/body.obj");
-        body.setMaterial(new Material("/orange.png"));
-        iMeshBody = renderer.linkMesh(body, () -> {
-            setModelView(renderer, drawOffset);
-        });
+        body.setMaterial(new Material("/general/orange.png"));
+        iMeshBody = renderer.linkMesh(body, () -> setModelView(renderer, drawOffset));
         this.renderer = renderer;
     }
 }

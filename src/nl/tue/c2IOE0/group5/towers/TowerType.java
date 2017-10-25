@@ -7,11 +7,7 @@ package nl.tue.c2IOE0.group5.towers;
 public enum TowerType {
     CASTLE(0),
     WALL(1),
-    LASER(2),
-    FREEZE(3),
     ROCKET(4),
-    SHOTGUN(5),
-    NUCLEAR(6),
     CANNON(7);
 
     private final int value;
@@ -26,5 +22,20 @@ public enum TowerType {
 
     public static int getSize(){
         return TowerType.values().length;
+    }
+
+    public Class<? extends AbstractTower> getTowerClass() {
+        switch(this) {
+            case CASTLE:
+                return MainTower.class;
+            case WALL:
+                return WallTower.class;
+            case CANNON:
+                return CannonTower.class;
+            case ROCKET:
+                return RocketTower.class;
+            default:
+                throw new RuntimeException("Tower type " + this.name() + " does not have a corresponding class");
+        }
     }
 }

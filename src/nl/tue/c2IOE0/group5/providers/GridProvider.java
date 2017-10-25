@@ -12,12 +12,16 @@ import nl.tue.c2IOE0.group5.engine.rendering.shader.Material;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
 import nl.tue.c2IOE0.group5.towers.TowerConnection;
 import nl.tue.c2IOE0.group5.towers.WallTower;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * A class providing the grid.
@@ -162,9 +166,11 @@ public class GridProvider extends ObjectProvider<Cell> {
     public void placeConnectingTower(int x, int y, boolean rotate) {
         Vector3f position = new Vector3f(((float) x ) / 2.0f, 0f, ((float) y ) / 2.0f);
         float rotation = rotate ? 0f : 90f;
-        TowerConnection tower = new TowerConnection(position, rotation, getRenderer(), getEngine().getRenderLoopTimer()).init(getRenderer());
-        towerconnections[x][y] = tower;
-        towerConnectionProvider.addTowerConnection(tower);
+        if(getRenderer() != null) {
+            TowerConnection tower = new TowerConnection(position, rotation, getRenderer(), getEngine().getRenderLoopTimer()).init(getRenderer());
+            towerconnections[x][y] = tower;
+            towerConnectionProvider.addTowerConnection(tower);
+        }
     }
 
     public void destroyConnectingTower(int x, int y) {
@@ -368,6 +374,10 @@ public class GridProvider extends ObjectProvider<Cell> {
 
     @Override
     public void draw(Window window, Renderer renderer) {
-
     }
+
+    public Stream<Cell> stream() {
+        return objects.stream();
+    }
+
 }

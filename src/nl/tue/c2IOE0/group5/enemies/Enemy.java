@@ -86,7 +86,6 @@ public abstract class Enemy extends GameObject implements Drawable {
         if (tower == null || (targetReached && attacking)) {
             // Road is clear, move ahead
             attacking = false;
-            //System.out.println("Set target position!");
             interpolator.setTarget(targetPosition);
             interpolator.update(targetTime);
         } else {
@@ -160,6 +159,7 @@ public abstract class Enemy extends GameObject implements Drawable {
         if (playerController != null) {
             playerController.addBudget(getDieReward());
         }
+        System.out.println("Dead!");
         onDie();
     }
 
