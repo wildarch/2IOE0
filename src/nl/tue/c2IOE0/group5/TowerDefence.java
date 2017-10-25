@@ -44,7 +44,7 @@ public class TowerDefence {
         }
         engine.addControllers(new Controller[] {
                 new PlayerController(),
-                new AiController(new File("res/networks/network_trained1.zip"))
+                new AiController(new File("res/networks/network_b10_training.zip"))
         });
         try {
             engine.run();
