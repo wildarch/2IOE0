@@ -43,6 +43,7 @@ public class AiController implements Controller {
 
     private ComputationGraph network;
     private final File networkFile;
+    private final Random random = new Random();
 
     private boolean gameStarted = false;
 
@@ -99,8 +100,6 @@ public class AiController implements Controller {
     }
 
     private void wave(final boolean big) {
-        final Random r = new Random();
-
         new Thread(() -> {
             InputConverter converter;
 
@@ -111,7 +110,7 @@ public class AiController implements Controller {
             double sampleScore;
             for (int i = 0; i < BUFFER_SAMPLE_SIZE; i++){
                 for (int j = 0; j < sampleBuffer.length; j++){
-                    EnemyType t = EnemyType.values()[r.nextInt(EnemyType.getSize())];
+                    EnemyType t = EnemyType.values()[random.nextInt(EnemyType.getSize())];
                     sampleBuffer[j] = t;
                 }
 
