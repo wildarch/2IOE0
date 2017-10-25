@@ -128,6 +128,7 @@ public class DataSimulator {
         } catch (IOException e) {
             throw new RuntimeException("Failed to simulate because of exception: " + e.getMessage(), e);
         }
+
         return simulator.getDestructionScore();
     }
 

@@ -23,9 +23,9 @@ public class GridAnalyzer {
      * A measure of destruction since `start()`
      * @return A score between 0 and 1
      */
-    public float getDestructionScore() {
-        int endScore = getTotalTowerScore();
-        return 1 - (endScore / startScore);
+    public double getDestructionScore() {
+        double endScore = getTotalTowerScore();
+        return 1.0 - (endScore / startScore);
     }
 
     /**

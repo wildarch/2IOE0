@@ -106,7 +106,7 @@ public class GameSimulator {
         simulator.run();
     }
 
-    public float getDestructionScore() {
+    public double getDestructionScore() {
         return gridAnalyzer.getDestructionScore();
     }
 
