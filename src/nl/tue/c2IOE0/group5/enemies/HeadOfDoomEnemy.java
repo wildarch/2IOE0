@@ -32,7 +32,7 @@ public class HeadOfDoomEnemy extends Enemy {
 
     @Override
     public EnemyType getType() {
-        return EnemyType.BOSS;
+        return EnemyType.BASIC;
     }
 
     @Override
