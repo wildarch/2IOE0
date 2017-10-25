@@ -216,7 +216,8 @@ public abstract class AbstractTower extends GameObject {
         @Override
         public void renderInit(Renderer renderer) {
             Mesh mesh = renderer.linkMesh("/models/items/health.obj");
-            mesh.setMaterial(new Material("/general/square.png"));
+            mesh.setCastShadows(false);
+            mesh.setMaterial(new Material("/general/white.png"));
             iMesh = renderer.linkMesh(mesh, () -> {
                 setModelView(renderer);
                 renderer.ambientLight(color);
