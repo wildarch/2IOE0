@@ -34,7 +34,7 @@ public class GridAnalyzer {
      */
     private int getTotalTowerScore() {
         return getTowers()
-                .mapToInt(AbstractTower::getPrice)
+                .mapToInt(t -> t.getPrice() * (t.getHealth() / t.maxHealth))
                 .sum();
     }
 
