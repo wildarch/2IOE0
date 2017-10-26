@@ -131,7 +131,8 @@ public abstract class Enemy extends GameObject implements Drawable {
     private long timeToDoDamage;
     private void doDamage(AbstractTower tower) {
         double factor = 1;
-        if (this instanceof WalkerEnemy && tower instanceof WallTower) factor = 2; //walkers do double the damage to walls
+        if (this instanceof WalkerEnemy && tower instanceof WallTower) factor = 100; //walkers do double the damage to walls
+        if (this instanceof BasicEnemy && tower instanceof WallTower) factor = 0;
         if (timeToDoDamage < loopTimer.getTime()) {
             tower.takeDamage(damage*factor);
             timeToDoDamage = loopTimer.getTime() + attackSpeed;

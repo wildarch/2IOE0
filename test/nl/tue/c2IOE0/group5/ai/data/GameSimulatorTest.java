@@ -50,4 +50,9 @@ public class GameSimulatorTest {
         assertTrue(score > 0 && score <= 1);
     }
 
+
+    @Test
+    public void towers(){
+        //AiController
+    }
 }

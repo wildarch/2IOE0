@@ -99,37 +99,43 @@ public class AiController implements Controller {
         }
     }
 
-    private void wave(final boolean big) {
-        new Thread(() -> {
-            InputConverter converter;
+    public EnemyType[] generateBuffer(boolean big){
+        InputConverter converter;
 
-            EnemyType[] sampleBuffer = new EnemyType[big ? BIG_WAVE_SIZE : SMALL_WAVE_SIZE];
+        EnemyType[] sampleBuffer = new EnemyType[big ? BIG_WAVE_SIZE : SMALL_WAVE_SIZE];
 
-            EnemyType[] selectedBuffer = null;
-            double bufferScore = Double.NEGATIVE_INFINITY;
-            double sampleScore;
-            for (int i = 0; i < BUFFER_SAMPLE_SIZE; i++){
-                for (int j = 0; j < sampleBuffer.length; j++){
-                    EnemyType t = EnemyType.values()[random.nextInt(EnemyType.getSize())];
-                    sampleBuffer[j] = t;
-                }
-
-                if(network != null){
-                    converter = InputConverter.fromGameState(gridProvider, 1, sampleBuffer);
-                    converter.convert();
-                    INDArray aiInput = converter.getInput();
-                    INDArray aiOutput = network.outputSingle(false, aiInput);
-                    sampleScore = aiOutput.getDouble(0, 0);
-                } else {
-                    sampleScore = 0;
-                }
-
-                if(sampleScore > bufferScore){
-                    selectedBuffer = Arrays.copyOf(sampleBuffer, sampleBuffer.length);
-                }
+        EnemyType[] selectedBuffer = null;
+        double bufferScore = Double.NEGATIVE_INFINITY;
+        double sampleScore;
+        for (int i = 0; i < BUFFER_SAMPLE_SIZE; i++){
+            for (int j = 0; j < sampleBuffer.length; j++){
+                EnemyType t = EnemyType.values()[random.nextInt(EnemyType.getSize())];
+                sampleBuffer[j] = t;
             }
 
-            if(selectedBuffer == null) throw new NullPointerException("selectedBuffer == null");
+            if(network != null){
+                converter = InputConverter.fromGameState(gridProvider, 1, sampleBuffer);
+                converter.convert();
+                INDArray aiInput = converter.getInput();
+                INDArray aiOutput = network.outputSingle(false, aiInput);
+                sampleScore = aiOutput.getDouble(0, 0);
+            } else {
+                sampleScore = 0;
+            }
+
+            if(sampleScore > bufferScore){
+                selectedBuffer = Arrays.copyOf(sampleBuffer, sampleBuffer.length);
+            }
+        }
+
+        if(selectedBuffer == null) throw new NullPointerException("selectedBuffer == null");
+
+        return selectedBuffer;
+    }
+
+    private void wave(final boolean big) {
+        new Thread(() -> {
+            EnemyType[] selectedBuffer = generateBuffer(big);
 
             // Do a wave!
             String size = big ? "Big  " : "Small";
