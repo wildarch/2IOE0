@@ -72,8 +72,17 @@ public class AiController implements Controller {
     }
 
     public void resetAI(){
-        wave = 0;
         trainQLearner();
+        wave = 0;
+        NR_SUB_WAVES = 5;
+        WAVE_TIME = 5000; // 5 seconds
+        BIG_WAVE_SIZE = 2;
+        SMALL_WAVE_SIZE = 1;
+        BUFFER_SAMPLE_SIZE = 10;
+
+        wave = 0;
+        nextWaveTime = 0;
+        nextWaveTime = loopTimer.getTime() + WAVE_TIME * 2;
     }
 
     public void startGame(){
