@@ -173,6 +173,9 @@ public class PlayerController implements Controller,Listener {
             case GLFW_KEY_3:
                 uiProvider.select(WallTower.class);
                 break;
+            case GLFW_KEY_B:
+                addBudget(1000000);
+                break;
         }
     }
 
@@ -208,9 +211,9 @@ public class PlayerController implements Controller,Listener {
         //Set all parameters for the player back to init
         if (gridProvider.getCell(6,6).getTower() != null) {
             gridProvider.getCell(6, 6).getTower().setHealth(200);
-        } else {
-            towerProvider.buildTower(6,6, towerProvider.getMainTower().getClass());
         }
+        towerProvider.buildTower(6,6, towerProvider.getMainTower().getClass());
+
         update();
         engine.setScoreTimer();
 
