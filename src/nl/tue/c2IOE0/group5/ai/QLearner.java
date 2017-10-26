@@ -156,7 +156,7 @@ public class QLearner extends Thread {
             }
         }
         converged = false;
-        setRewardsMatrix(getState(gridSize / 2, gridSize / 2, gridSize), Integer.MAX_VALUE); //set the middle to the max
+        setRewardsMatrix(getState(gridSize / 2, gridSize / 2, gridSize), 100000); //set the middle to the max
     }
 
 
@@ -327,16 +327,15 @@ public class QLearner extends Thread {
         }
         List<Integer> optimalPath = new ArrayList<>();
         optimalPath.add(state);
-        optimalPath.add(state);
         int nextState = policy[state];
         while (nextState != state && !optimalPath.contains(nextState)) {
             state = nextState;
             optimalPath.add(state);
             nextState = policy[state];
         }
-        if (optimalPath.get(optimalPath.size() - 1) != getState(gridSize / 2, gridSize / 2)) {
+        /*if (optimalPath.get(optimalPath.size() - 1) != getState(gridSize / 2, gridSize / 2)) {
             return getBasicPath(state);
-        }
+        }*/
         return optimalPath;
     }
 
@@ -349,7 +348,6 @@ public class QLearner extends Thread {
         int x = getPoint(state).x();
         int y = getPoint(state).y();
         List<Integer> path = new ArrayList<>();
-        path.add(state);
         path.add(state);
         if (x < gridSize / 2) { //do the horizontal stuff
             while (x < gridSize / 2) {

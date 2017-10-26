@@ -162,6 +162,7 @@ public class AiController implements Controller {
                 );
             }
         }).run();
+        qLearner.updateRewardsMatrix(QLearner.getState(gridProvider.SIZE / 2, gridProvider.SIZE / 2, gridProvider.SIZE), 1000); //to make sure they still go to the middle
     }
 
     private void trainQLearner() {
