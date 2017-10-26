@@ -17,10 +17,11 @@ public class BasicEnemy extends Enemy {
     private static final long ATTACKSPEED = 1500;
     private static final int MAX_HEALTH = 40;
     private final static int DAMAGE = 20;
+    public static final int DIE_REWARD = 15;
 
     public BasicEnemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider,
                       Vector2i initialPosition, List<Vector2i> targetPositions, QLearner qlearner, PlayerController playerController) {
-        super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, MAX_HEALTH, DAMAGE, SPEED, ATTACKSPEED, qlearner, playerController);
+        super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, MAX_HEALTH, DAMAGE, SPEED, ATTACKSPEED, qlearner, playerController, DIE_REWARD);
     }
 
     @Override

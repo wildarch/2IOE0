@@ -13,10 +13,10 @@ import org.joml.Vector3f;
 public class RocketTower extends AbstractTower {
 
 
-    private static final int RANGE = 5;
+    private static final int RANGE = 2;
     private static final int MAX_LEVEL = 1;
     private static final int MAX_HEALTH = 30;
-    private static final int ATTACK_TIME = 2000;
+    private static final int ATTACK_TIME = 2100;
     private static final float BULLET_SPEED = 1.5f;
     private static final int BULLET_DAMAGE = 20;
     private static final int PRICE = 100;
@@ -64,7 +64,6 @@ public class RocketTower extends AbstractTower {
         iBaseMesh = renderer.linkMesh(baseMesh, () -> {
             setModelView(renderer, getPositionOffset());
             renderer.boink(getBounceDegree(), baseMesh, rocketMesh);
-            System.out.println(this.damage);
             renderer.ambientLight(getDamageColor());
         });
         iRocketMesh = renderer.linkMesh(rocketMesh, () -> {

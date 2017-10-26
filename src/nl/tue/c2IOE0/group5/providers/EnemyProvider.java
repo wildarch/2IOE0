@@ -98,12 +98,15 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
                 );
                 break;
             default:
-                newEnemy = new Enemy(loopTimer, renderTimer, gridProvider,
-                        initialPosition, targets, 10, 1, 1, 300, qlearner, playerController)
-                {
-                    public EnemyType getType(){ return EnemyType.BASIC; }
-                    protected void onDie(){ renderer.unlinkMesh(iMeshBody); }
-                };
+                newEnemy = new HeadOfDoomEnemy(
+                        loopTimer,
+                        renderTimer,
+                        gridProvider,
+                        initialPosition,
+                        targets, qlearner,
+                        playerController
+                );
+                break;
         }
         objects.add(newEnemy.init(getRenderer()));
     }
@@ -131,6 +134,7 @@ public class EnemyProvider extends ObjectProvider<Enemy> {
 
     @Override
     public void draw(Window window, Renderer renderer) {
+        if (engine != null && engine.isPaused()) return;
         objects.forEach(enemy -> enemy.draw(window, renderer));
     }
 }

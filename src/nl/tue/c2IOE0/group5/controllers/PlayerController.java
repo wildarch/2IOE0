@@ -1,5 +1,7 @@
 package nl.tue.c2IOE0.group5.controllers;
 
+import nl.tue.c2IOE0.group5.enemies.Enemy;
+import nl.tue.c2IOE0.group5.enemies.EnemyType;
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.controller.Controller;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.Event;
@@ -10,9 +12,14 @@ import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.providers.*;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
+import nl.tue.c2IOE0.group5.towers.CannonTower;
+import nl.tue.c2IOE0.group5.towers.RocketTower;
+import nl.tue.c2IOE0.group5.towers.WallTower;
 import nl.tue.c2IOE0.group5.util.Angle;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
+
+import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -27,8 +34,10 @@ public class PlayerController implements Controller,Listener {
     private UIProvider uiProvider;
     private GridProvider gridProvider;
     private TowerProvider towerProvider;
+    private EnemyProvider enemyProvider;
     private Camera camera;
     private Renderer renderer;
+
     private float oldx = 0;
     private float oldy = 0;
     private float oldmx = 0;
@@ -65,7 +74,7 @@ public class PlayerController implements Controller,Listener {
     private float minX;
     private float minY = 0.1f;
     private float minZ;
-    private int budget = 200;
+    private int budget = 100;
 
     public PlayerController() {
     }
@@ -101,6 +110,7 @@ public class PlayerController implements Controller,Listener {
         }
         this.gridProvider = engine.getProvider(GridProvider.class);
         this.towerProvider = engine.getProvider(TowerProvider.class);
+        this.enemyProvider = engine.getProvider(EnemyProvider.class);
 
         cameraDistance = gridProvider.SIZE/2;
         invertedXaxis = engine.getWindow().getOptions().invertedXAxis;
@@ -149,6 +159,18 @@ public class PlayerController implements Controller,Listener {
             case GLFW_KEY_ESCAPE:
                 engine.pause(true);
                 break;
+            case GLFW_KEY_H:
+                engine.toggleHud();
+                break;
+            case GLFW_KEY_1:
+                uiProvider.select(CannonTower.class);
+                break;
+            case GLFW_KEY_2:
+                uiProvider.select(RocketTower.class);
+                break;
+            case GLFW_KEY_3:
+                uiProvider.select(WallTower.class);
+                break;
         }
     }
 
@@ -161,7 +183,51 @@ public class PlayerController implements Controller,Listener {
             case GLFW_KEY_LEFT_CONTROL:
                 uiProvider.select(null);
                 break;
+            case GLFW_KEY_R:
+                resetGame();
+                break;
+            case GLFW_KEY_P:
+                gridProvider.getCell(6,6).getTower().die();
+                break;
         }
+    }
+
+    public void resetGame(){
+        System.out.println("Resetting Game");
+        //Reset Playing field
+        for (int x = 0; x <= gridProvider.SIZE-1; x++ ) {
+            for (int y = 0; y <= gridProvider.SIZE-1; y++ ) {
+                if (gridProvider.getCell(x, y).getTower() != null && gridProvider.getCell(x,y).getTower().getType().getValue() != 0){ //Don't delete main Tower
+                    gridProvider.getCell(x,y).getTower().die();
+                }
+            }
+        }
+
+        //Set all parameters for the player back to init
+        if (gridProvider.getCell(6,6).getTower() != null) {
+            gridProvider.getCell(6, 6).getTower().setHealth(200);
+        } else {
+            towerProvider.buildTower(6,6, towerProvider.getMainTower().getClass());
+        }
+        update();
+        engine.setScoreTimer();
+
+        gridProvider.resetKills(EnemyType.DRILL);
+        gridProvider.resetKills(EnemyType.BASIC);
+        gridProvider.resetKills(EnemyType.WALKER);
+
+        //Set all parameters for the AI back to init.
+        List<Enemy> enemies = enemyProvider.getEnemies();
+        for (int i = 0; i<enemies.size(); i++){
+            enemies.get(i).die();
+        }
+        engine.getController(AiController.class).resetAI();
+        engine.getController(AiController.class).startGame();
+
+        budget = 100;
+
+        //Back to the menu Screen
+        engine.pause(true);
     }
 
     @Override
@@ -192,7 +258,7 @@ public class PlayerController implements Controller,Listener {
                 case GLFW_KEY_LEFT_CONTROL:
                     if (leftMouseButton) {
                         Vector2i pos = gridProvider.getActiveCell();
-                        if (pos != null) { //there is actually an activecellxxxxxxxxxxxxxxxxx
+                        if (pos != null) { //there is actually an activecell
                             if (gridProvider.getCell(pos.x(), pos.y()).getTower() == null) {
                                 buildTower(true);
                             }
@@ -205,7 +271,7 @@ public class PlayerController implements Controller,Listener {
                         if (gridProvider.getCell(pos.x(), pos.y()).getTower() != null) {
                             Cell cellTower = gridProvider.getCell(pos.x, pos.y());
 
-                            if (cellTower.getTower().getType().getValue() != 0) { //Don't sell your own castle you gobsmack ;)
+                            if (cellTower.getTower().getType().getValue() != 0) { //Don't sell your own castle ;)
                                 //Refund some percentage of money
                                 double refundPercentage = 0.8d;
                                 int price = cellTower.getTower().getPrice();
@@ -213,7 +279,7 @@ public class PlayerController implements Controller,Listener {
                                 double maxTowerHealth = cellTower.getTower().maxHealth;
                                 double valueHealth = towerHealth / maxTowerHealth;
                                 addBudget((int) (price * refundPercentage * valueHealth));
-//                            System.out.println("Selling tower: " + cellTower.getTower().getType().toString() + " for: " + (price * valueHealth) + " With health: " + towerHealth + "/" + maxTowerHealth + " healthPortion: " + valueHealth);
+//                              System.out.println("Selling tower: " + cellTower.getTower().getType().toString() + " for: " + (price * valueHealth) + " With health: " + towerHealth + "/" + maxTowerHealth + " healthPortion: " + valueHealth);
 
                                 //Kill Tower
                                 cellTower.getTower().die();
@@ -349,8 +415,17 @@ public class PlayerController implements Controller,Listener {
 
     private void buildTower(boolean hold){
         gridProvider.click();
-        if (hold){
-            uiProvider.select(prevTower);
+        if (hold && prevTower != null){
+            AbstractTower.MetaData metaData = AbstractTower.getMetaData(prevTower);
+            int price = metaData.price;
+            if (price > budget) {
+                uiProvider.select(null);
+            } else {
+                Vector2i pos = gridProvider.getActiveCell();
+                if (pos != null) {
+                    towerProvider.buildTower(pos.x, pos.y, prevTower);
+                }
+            }
         }
         if (uiProvider.getSelected() != null) {
             Vector2i pos = gridProvider.getActiveCell();

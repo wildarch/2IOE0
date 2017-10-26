@@ -1,6 +1,8 @@
 package nl.tue.c2IOE0.group5.providers;
 
 import nl.tue.c2IOE0.group5.ai.QLearner;
+import nl.tue.c2IOE0.group5.enemies.EnemyType;
+import nl.tue.c2IOE0.group5.controllers.AiController;
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.Simulator;
 import nl.tue.c2IOE0.group5.engine.objects.Camera;
@@ -27,6 +29,8 @@ import java.util.stream.Stream;
  */
 public class GridProvider extends ObjectProvider<Cell> {
 
+    private boolean vQLearner = true;
+
     //total size of the grid (including spawn cells). Change this to change the total grid
     public final int SIZE;
     //size of the grid in which towers can be placed
@@ -42,9 +46,56 @@ public class GridProvider extends ObjectProvider<Cell> {
 
     private TowerConnectionProvider towerConnectionProvider;
 
+    private AiController controller;
+
     //the cell currently active (pointed to)
     private Cell activeCell;
     private Cell rangedCell;
+
+    //
+    private int killsDrill = 0;
+    private int killsBasic = 0;
+    private int killsWalker = 0;
+    private int kills = 0;
+
+    public int getKills(EnemyType enemyType){
+        if (enemyType == EnemyType.DRILL) {
+            return killsDrill;
+        }
+        if (enemyType == EnemyType.BASIC) {
+            return killsBasic;
+        }
+        if (enemyType == EnemyType.WALKER) {
+            return killsWalker;
+        }
+        return kills;
+    }
+
+    public void addKill(EnemyType enemyType){
+        if (enemyType == EnemyType.DRILL) {
+            killsDrill++;
+        }
+        if (enemyType == EnemyType.BASIC) {
+            killsBasic++;
+        }
+        if (enemyType == EnemyType.WALKER) {
+            killsWalker++;
+        }
+        kills++;
+    }
+
+    public void resetKills(EnemyType enemyType){
+        if (enemyType == EnemyType.DRILL) {
+            killsDrill = 0;
+        }
+        if (enemyType == EnemyType.BASIC) {
+            killsBasic = 0;
+        }
+        if (enemyType == EnemyType.BASIC) {
+            killsWalker = 0;
+        }
+        kills = 0;
+    }
 
     public GridProvider(){
         this(13, 9);
@@ -63,6 +114,14 @@ public class GridProvider extends ObjectProvider<Cell> {
         super.init(engine);
 
         towerConnectionProvider = engine.getProvider(TowerConnectionProvider.class);
+
+        if (engine instanceof Engine){
+            try {
+                controller = getEngine().getController(AiController.class);
+            } catch (IllegalArgumentException ignored) {
+                ignored.printStackTrace();
+            }
+        }
 
         // Create the player base cells
         int bordersize = (SIZE - PLAYFIELDSIZE - 1)/2;
@@ -370,7 +429,13 @@ public class GridProvider extends ObjectProvider<Cell> {
 
     @Override
     public void update() {
-
+        if(controller == null) return;
+        objects.forEach(cell -> {
+            if (!cell.isBorderCell()) {
+                int reward = controller.getQLearner().getReward(cell.getGridPosition());
+                cell.setQReward(reward, vQLearner);
+            }
+        });
     }
 
     @Override
@@ -379,6 +444,10 @@ public class GridProvider extends ObjectProvider<Cell> {
 
     public Stream<Cell> stream() {
         return objects.stream();
+    }
+
+    public void setQLearnerValue(boolean b) {
+        vQLearner = b;
     }
 
 }

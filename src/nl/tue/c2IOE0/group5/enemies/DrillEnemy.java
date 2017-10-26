@@ -26,10 +26,11 @@ import static nl.tue.c2IOE0.group5.util.Angle.rotateVector;
  */
 public class DrillEnemy extends Enemy implements Animatable {
 
-    private final static int MAXHEALTH = 20;
-    private final static float SPEED = 1.2f;
+    private final static int MAXHEALTH = 10;
+    private final static float SPEED = 1.3f;
     private final static int ATTACKSPEED = 100;
     private final static int DAMAGE = 4;
+    public static final int DIE_REWARD = 10;
 
     private InstancedMesh body;
     private InstancedMesh drill;
@@ -44,7 +45,7 @@ public class DrillEnemy extends Enemy implements Animatable {
 
     public DrillEnemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider, Vector2i initialPosition,
                       List<Vector2i> targetPositions, QLearner qlearner, AnimationProvider animationProvider, PlayerController playerController) {
-        super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, MAXHEALTH, DAMAGE, SPEED, ATTACKSPEED, qlearner, playerController);
+        super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, MAXHEALTH, DAMAGE, SPEED, ATTACKSPEED, qlearner, playerController, DIE_REWARD);
         setScale(0.03f);
 
         this.animationProvider = animationProvider;
@@ -112,7 +113,8 @@ public class DrillEnemy extends Enemy implements Animatable {
     private void rotateAndSet(Renderer renderer, Vector3f offset) {
         final Vector3f wheelOffset = offset.mul(getScale());
         final Vector3f displacement = rotateVector(wheelOffset, new Vector3f(0, -1, 0), getRotation().y + 90);
-        if(!attacking) displacement.add(interpolator.getOffset(renderTimer.getTime() - loopTimer.getTime()));
+        final Vector3f interpolatorOffset = interpolator.getOffset(renderTimer.getTime() - loopTimer.getTime());
+        if(!attacking) displacement.add(interpolatorOffset);
         setModelView(renderer, displacement);
     }
 }

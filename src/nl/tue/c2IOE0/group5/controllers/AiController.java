@@ -29,7 +29,7 @@ public class AiController implements Controller {
     private static long WAVE_TIME = 5000; // 5 seconds
     private int BIG_WAVE_SIZE = 2;
     private int SMALL_WAVE_SIZE = 1;
-    private static int BUFFER_SAMPLE_SIZE = 100;
+    private static int BUFFER_SAMPLE_SIZE = 10;
 
     private int wave = 0;
     private EnemyProvider enemyProvider;
@@ -71,6 +71,11 @@ public class AiController implements Controller {
         isPaused = engine::isPaused;
     }
 
+    public void resetAI(){
+        wave = 0;
+        trainQLearner();
+    }
+
     public void startGame(){
         nextWaveTime = loopTimer.getTime() + WAVE_TIME * 2;
         gameStarted = true;
@@ -97,6 +102,14 @@ public class AiController implements Controller {
             wave++;
             nextWaveTime = loopTimer.getTime() + WAVE_TIME;
         }
+    }
+
+    public int getBigWaves() {
+        return wave / NR_SUB_WAVES;
+    }
+
+    public QLearner getQLearner() {
+        return qLearner;
     }
 
     public EnemyType[] generateBuffer(boolean big){
@@ -142,7 +155,9 @@ public class AiController implements Controller {
             System.out.println(size + " wave at " + loopTimer.getTime());
 
             for (EnemyType enemy : selectedBuffer) {
-                Cell startCell = gridProvider.getCell(qLearner.getOptimalSpawnState());
+                Random r = new Random();
+                int random = r.nextInt(5);
+                Cell startCell = gridProvider.getCell(qLearner.getOptimalNSpawnStates(5)[random]);
                 Vector2i start = startCell.getGridPosition();
                 List<Integer> path = qLearner.getOptimalPath(startCell.getGridPosition());
                 enemyProvider.putEnemy(

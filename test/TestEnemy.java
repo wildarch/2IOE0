@@ -15,7 +15,7 @@ public class TestEnemy extends Enemy {
 
     public TestEnemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider,
                      Vector2i initialPosition, List<Vector2i> targetPositions, int maxHealth, QLearner qlearner, PlayerController playerController) {
-        super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, maxHealth, DAMAGE, SPEED, ATTACKSPEED, qlearner, playerController);
+        super(loopTimer, renderTimer, gridProvider, initialPosition, targetPositions, maxHealth, DAMAGE, SPEED, ATTACKSPEED, qlearner, playerController, 100);
     }
 
 

@@ -1,5 +1,6 @@
 package nl.tue.c2IOE0.group5.providers;
 
+import nl.tue.c2IOE0.group5.ai.QLearner;
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
@@ -16,6 +17,9 @@ public class Cell extends GameObject {
 
     //the tower on this cell
     AbstractTower tower;
+
+    private Vector3f qReward = new Vector3f();
+    private boolean vQLearn = true;
 
     //the position in the grid
     private Vector2i position;
@@ -42,7 +46,7 @@ public class Cell extends GameObject {
         //initialize textures
         switch (cellType) {
             case BASE:
-                defaultColor = new Vector3f(0f, 0.1f, 0f);
+                defaultColor = new Vector3f(0f, 0f, 0f);
                 break;
             case BORDER:
                 defaultColor = new Vector3f(0.1f, 0f, 0f);
@@ -129,11 +133,26 @@ public class Cell extends GameObject {
         return this.position;
     }
 
+    public void setQReward(int i, boolean b) {
+        float part = Math.max(0f, (float) i / -1000f);
+
+        this.qReward.x = part;
+        this.vQLearn = b;
+    }
+
     @Override
     public void renderInit(Renderer renderer) {
         renderer.linkMesh("/models/cell/cell.obj", () -> {
-            setModelView(renderer);
-            renderer.ambientLight(color);
+            if (!isBorderCell()) { //only draw when this cell is activated
+                setModelView(renderer);
+                renderer.drawBlackAsAlpha();
+                renderer.noDirectionalLight();
+                if (vQLearn) {
+                    renderer.ambientLight(new Vector3f(qReward).add(color));
+                } else {
+                    renderer.ambientLight(color);
+                }
+            }
         });
     }
 

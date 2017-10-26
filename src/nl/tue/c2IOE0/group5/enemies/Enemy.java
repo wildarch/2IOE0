@@ -2,6 +2,7 @@ package nl.tue.c2IOE0.group5.enemies;
 
 import nl.tue.c2IOE0.group5.ai.QLearner;
 import nl.tue.c2IOE0.group5.controllers.PlayerController;
+import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
 import nl.tue.c2IOE0.group5.engine.objects.PositionInterpolator;
@@ -10,6 +11,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.providers.Cell;
+import nl.tue.c2IOE0.group5.providers.EnemyProvider;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
 import nl.tue.c2IOE0.group5.towers.WallTower;
@@ -21,6 +23,7 @@ import java.util.List;
 
 public abstract class Enemy extends GameObject implements Drawable {
 
+    private final int onDieReward;
     private final int maxHealth;
     private final float speed;
     private final long attackSpeed;
@@ -47,7 +50,7 @@ public abstract class Enemy extends GameObject implements Drawable {
     public Enemy(Timer loopTimer, Timer renderTimer, GridProvider gridProvider,
                  Vector2i initialPosition, List<Vector2i> targetPositions,
                  int maxHealth, int damage, float speed, long attackSpeed, QLearner qlearner,
-                 PlayerController playerController) {
+                 PlayerController playerController, int onDieReward) {
         this.qLearner = qlearner;
         this.gridProvider = gridProvider;
         this.maxHealth = maxHealth;
@@ -62,6 +65,7 @@ public abstract class Enemy extends GameObject implements Drawable {
         this.offset = new Vector3f(0);
         this.damage = damage;
         this.playerController = playerController;
+        this.onDieReward = onDieReward;
     }
 
     public abstract EnemyType getType();
@@ -131,8 +135,10 @@ public abstract class Enemy extends GameObject implements Drawable {
     private long timeToDoDamage;
     private void doDamage(AbstractTower tower) {
         double factor = 1;
+
         if (this instanceof WalkerEnemy && tower instanceof WallTower) factor = 100; //walkers do double the damage to walls
-        if (this instanceof BasicEnemy && tower instanceof WallTower) factor = 0;
+        if (this instanceof BasicEnemy && tower instanceof WallTower) factor = 0.5;
+
         if (timeToDoDamage < loopTimer.getTime()) {
             tower.takeDamage(damage*factor);
             timeToDoDamage = loopTimer.getTime() + attackSpeed;
@@ -161,10 +167,13 @@ public abstract class Enemy extends GameObject implements Drawable {
             playerController.addBudget(getDieReward());
         }
         onDie();
+
+        gridProvider.addKill(this.getType());
+        System.out.println("Enemy died: " + this.getType().toString());
     }
 
     private int getDieReward() {
-        return (int) (maxHealth * attackSpeed / 1000);
+        return onDieReward;
     }
 
     protected abstract void onDie();
@@ -175,8 +184,8 @@ public abstract class Enemy extends GameObject implements Drawable {
 
     public Cell getCurrentCell() {
         Vector3f position = this.getPosition();
-        int x = (int)position.x();
-        int y = (int)position.z();
+        int x = (int)(position.x() + 0.5f);
+        int y = (int)(position.z() + 0.5f);
         return gridProvider.getCell(x, y);
     }
 }

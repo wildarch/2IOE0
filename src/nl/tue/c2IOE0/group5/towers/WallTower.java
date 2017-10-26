@@ -13,7 +13,7 @@ public class WallTower extends AbstractTower {
 
     private static final int RANGE = 0;
     private static final int MAX_LEVEL = 1;
-    private static final int MAX_HEALTH = 100;
+    private static final int MAX_HEALTH = 250;
     private static final int PRICE = 30;
 
     public static MetaData metadata = new MetaData();

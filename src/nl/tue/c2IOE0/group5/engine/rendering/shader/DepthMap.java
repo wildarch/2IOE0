@@ -9,19 +9,17 @@ import static org.lwjgl.opengl.GL30.*;
  */
 public class DepthMap {
 
-    /*
-    public int width = 4096;
-    public int height = 4096;
-    */
-    //Has to be a multiple of 2 to be run on intel graphics!
-    public int width = 1024;
-    public int height = 1024;
+
+    public int width;
+    public int height;
 
     private int depthFboID;
 
     private Texture depthMap;
 
-    public DepthMap() {
+    public DepthMap(int size) {
+        width = size;
+        height = size;
         // Create an FBO to render the depth map
         depthFboID = glGenFramebuffers();
 
