@@ -1,6 +1,7 @@
 package nl.tue.c2IOE0.group5.providers;
 
 import nl.tue.c2IOE0.group5.ai.QLearner;
+import nl.tue.c2IOE0.group5.enemies.EnemyType;
 import nl.tue.c2IOE0.group5.controllers.AiController;
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.Simulator;
@@ -50,6 +51,51 @@ public class GridProvider extends ObjectProvider<Cell> {
     //the cell currently active (pointed to)
     private Cell activeCell;
     private Cell rangedCell;
+
+    //
+    private int killsDrill = 0;
+    private int killsBasic = 0;
+    private int killsWalker = 0;
+    private int kills = 0;
+
+    public int getKills(EnemyType enemyType){
+        if (enemyType == EnemyType.DRILL) {
+            return killsDrill;
+        }
+        if (enemyType == EnemyType.BASIC) {
+            return killsBasic;
+        }
+        if (enemyType == EnemyType.WALKER) {
+            return killsWalker;
+        }
+        return kills;
+    }
+
+    public void addKill(EnemyType enemyType){
+        if (enemyType == EnemyType.DRILL) {
+            killsDrill++;
+        }
+        if (enemyType == EnemyType.BASIC) {
+            killsBasic++;
+        }
+        if (enemyType == EnemyType.WALKER) {
+            killsWalker++;
+        }
+        kills++;
+    }
+
+    public void resetKills(EnemyType enemyType){
+        if (enemyType == EnemyType.DRILL) {
+            killsDrill = 0;
+        }
+        if (enemyType == EnemyType.BASIC) {
+            killsBasic = 0;
+        }
+        if (enemyType == EnemyType.BASIC) {
+            killsWalker = 0;
+        }
+        kills = 0;
+    }
 
     public GridProvider(){
         this(13, 9);

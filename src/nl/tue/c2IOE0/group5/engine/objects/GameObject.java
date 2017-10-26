@@ -8,7 +8,6 @@ import org.joml.Vector3f;
  * @author Yoeri Poels, Jorren Hendriks
  */
 public abstract class GameObject extends Positionable implements Updatable {
-
     private float scale;
 
     public GameObject() {

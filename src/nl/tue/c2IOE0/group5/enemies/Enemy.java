@@ -2,6 +2,7 @@ package nl.tue.c2IOE0.group5.enemies;
 
 import nl.tue.c2IOE0.group5.ai.QLearner;
 import nl.tue.c2IOE0.group5.controllers.PlayerController;
+import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
 import nl.tue.c2IOE0.group5.engine.objects.PositionInterpolator;
@@ -10,6 +11,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.providers.Cell;
+import nl.tue.c2IOE0.group5.providers.EnemyProvider;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
 import nl.tue.c2IOE0.group5.towers.WallTower;
@@ -162,6 +164,9 @@ public abstract class Enemy extends GameObject implements Drawable {
             playerController.addBudget(getDieReward());
         }
         onDie();
+
+        gridProvider.addKill(this.getType());
+        System.out.println("Enemy died: " + this.getType().toString());
     }
 
     private int getDieReward() {

@@ -25,6 +25,7 @@ public class Engine extends Simulator {
     private Hud hud;
     private InputHandler inputHandler;
     private Camera camera;
+    private long scoreTime;
 
     private boolean hudEnabled = true;
 
@@ -194,6 +195,14 @@ public class Engine extends Simulator {
 
     public Timer getRenderLoopTimer(){
         return renderTimer;
+    }
+
+    public void setScoreTimer(){
+        this.scoreTime = System.currentTimeMillis();
+    }
+
+    public long getScoreTimer(){
+        return scoreTime;
     }
 
     public Renderer getRenderer() {

@@ -2,6 +2,7 @@ package nl.tue.c2IOE0.group5.providers;
 
 import nl.tue.c2IOE0.group5.controllers.AiController;
 import nl.tue.c2IOE0.group5.controllers.PlayerController;
+import nl.tue.c2IOE0.group5.enemies.EnemyType;
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.MouseEvent;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
@@ -37,19 +38,25 @@ public class UIProvider implements Provider<Engine> {
     private UIButton buildBar;
     private UIElement budget;
     private UIElement mainHealth;
+    private boolean firstTime = true;
+    private int enemyTypeDrill = 0;
+    private int enemyTypeBasic = 0;
+    private int enemyTypeWalker = 0;
 
     private UIText playerBudget;
     private UIText waveIndicator;
     private UIElement[] deadScreen;
+    private long scoreTrack = 0;
+    private long loseTime;
 
-    private final static String[] creditTextfield =
+    private final static  String[] creditTextfield =
             (       "You did a good job.\n" +
                     "Defended the tower well.\n" +
                     "But in the end,\n" +
                     "you lost.\n" +
                     "Good luck with the rest of your life.\n" +
                     "\n" +
-                    "Produced by TU/entertainment"
+                    "Produced by TU/entertainment."
             ).split("\n");
 
 
@@ -61,10 +68,12 @@ public class UIProvider implements Provider<Engine> {
 
     private boolean dead = false;
     private Engine engine;
+    private GridProvider gridProvider;
 
     @Override
     public void init(Engine engine) {
         this.engine = engine;
+        this.gridProvider = engine.getProvider(GridProvider.class);
         this.hud = engine.getHud();
         this.window = engine.getWindow();
         this.towerProvider = engine.getProvider(TowerProvider.class);
@@ -95,15 +104,51 @@ public class UIProvider implements Provider<Engine> {
                 mainHealth.draw(hud);
                 waveIndicator.draw(hud);
             } else {
+
+                if (scoreTrack == 0) {
+                    enemyTypeWalker = gridProvider.getKills(EnemyType.WALKER);
+                    enemyTypeBasic = gridProvider.getKills(EnemyType.BASIC);
+                    enemyTypeDrill = gridProvider.getKills(EnemyType.DRILL);
+                    scoreTrack = (System.currentTimeMillis() - engine.getScoreTimer());
+                }
+
+                if (firstTime) {
+                    firstTime = false;
+                    loseTime = System.currentTimeMillis();
+                }
+
+                String[] scoreString =
+                        ("Time survived: " + Long.toString(scoreTrack / 1000) + "." + Long.toString(scoreTrack % 100) + "s \n" +
+                                "Drill Enemies Killed: " + enemyTypeDrill + " \n" +
+                                "Basic Enemies Killed: " + enemyTypeBasic + " \n" +
+                                "Walker Enemies Killed: " + enemyTypeWalker + " \n"
+                        ).split("\n");
+                System.out.println(enemyTypeWalker);
+                System.out.println(enemyTypeBasic);
+                System.out.println(enemyTypeDrill);
+                UIElement score = new MenuTextField("Score", scoreString, TEXTFIELD_WIDTH, TEXTFIELD_HEIGHT);
+
                 for (UIElement element : deadScreen) {
                     element.draw(hud);
                 }
-                MenuPositioner pos = new MenuPositioner((window.getWidth()/2), HEIGHT_FROM_TOP, MARGIN);
+
+                MenuPositioner pos = new MenuPositioner((window.getWidth() / 2), HEIGHT_FROM_TOP, MARGIN);
+                MenuPositioner qos = new MenuPositioner((window.getWidth() / 2), HEIGHT_FROM_TOP, MARGIN);
+
+                Vector2i q = qos.place(score, true);
+                score.setX(q.x - score.getWidth() / 2);
+                score.setY(q.y + TEXTFIELD_HEIGHT + 10);
+                score.draw(hud);
 
                 for (UIElement element : deadScreen) {
                     Vector2i p = pos.place(element, true);
                     element.setX(p.x - element.getWidth()/2);
                     element.setY(p.y);
+                }
+                if (System.currentTimeMillis() > loseTime + 2500){
+                    firstTime = true;
+                    this.dead = false;
+                    playerController.resetGame();
                 }
             }
         });

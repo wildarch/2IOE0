@@ -71,6 +71,11 @@ public class AiController implements Controller {
         isPaused = engine::isPaused;
     }
 
+    public void resetAI(){
+        wave = 0;
+        trainQLearner();
+    }
+
     public void startGame(){
         nextWaveTime = loopTimer.getTime() + WAVE_TIME * 2;
         gameStarted = true;

@@ -162,6 +162,10 @@ public abstract class AbstractTower extends GameObject {
         return health;
     }
 
+    public void setHealth(int health) {
+        this.health = health;
+    }
+
     public boolean isDead() {
         return health == 0;
     }

@@ -46,6 +46,7 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
         if(gameStarted) return;
 
         putMainTower();
+        engine.setScoreTimer();
 //        buildTower(7, 8, WallTower.class);
 //        buildTower(6, 8, WallTower.class);
 //        buildTower(8, 8, RocketTower.class);
