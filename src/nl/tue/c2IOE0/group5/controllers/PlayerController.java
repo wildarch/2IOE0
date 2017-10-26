@@ -207,12 +207,7 @@ public class PlayerController implements Controller,Listener {
         }
 
         //Set all parameters for the player back to init
-        if (gridProvider.getCell(6,6).getTower() != null) {
-            gridProvider.getCell(6, 6).getTower().setHealth(200);
-        }
-        towerProvider.buildTower(6,6, towerProvider.getMainTower().getClass());
-
-        update();
+        towerProvider.putMainTower();
         engine.setScoreTimer();
 
         gridProvider.resetKills(EnemyType.DRILL);

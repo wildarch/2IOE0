@@ -136,6 +136,7 @@ public class TowerProvider extends ObjectProvider<AbstractTower> {
         mainTower = new MainTower(this).init(getRenderer());
         gridProvider.placeTower(x, x, mainTower);
         objects.add(mainTower);
+        engine.getProvider(UIProvider.class).setMainTower(mainTower);
     }
 
     public MainTower getMainTower() {
