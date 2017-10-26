@@ -1,11 +1,9 @@
 package nl.tue.c2IOE0.group5.controllers;
 
-import nl.tue.c2IOE0.group5.enemies.DrillEnemy;
 import nl.tue.c2IOE0.group5.enemies.Enemy;
 import nl.tue.c2IOE0.group5.enemies.EnemyType;
 import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.controller.Controller;
-import nl.tue.c2IOE0.group5.controllers.AiController;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.Event;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.Listener;
 import nl.tue.c2IOE0.group5.engine.controller.input.events.MouseEvent;
@@ -13,16 +11,16 @@ import nl.tue.c2IOE0.group5.engine.objects.Camera;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.providers.*;
-import nl.tue.c2IOE0.group5.towers.*;
+import nl.tue.c2IOE0.group5.towers.AbstractTower;
+import nl.tue.c2IOE0.group5.towers.CannonTower;
+import nl.tue.c2IOE0.group5.towers.RocketTower;
+import nl.tue.c2IOE0.group5.towers.WallTower;
 import nl.tue.c2IOE0.group5.util.Angle;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
-import sun.applet.Main;
 
-import java.io.IOException;
 import java.util.List;
 
-import static java.lang.Long.SIZE;
 import static org.lwjgl.glfw.GLFW.*;
 
 /**
@@ -173,6 +171,9 @@ public class PlayerController implements Controller,Listener {
             case GLFW_KEY_3:
                 uiProvider.select(WallTower.class);
                 break;
+            case GLFW_KEY_B:
+                addBudget(1000000);
+                break;
         }
     }
 
@@ -208,9 +209,9 @@ public class PlayerController implements Controller,Listener {
         //Set all parameters for the player back to init
         if (gridProvider.getCell(6,6).getTower() != null) {
             gridProvider.getCell(6, 6).getTower().setHealth(200);
-        } else {
-            towerProvider.buildTower(6,6, towerProvider.getMainTower().getClass());
         }
+        towerProvider.buildTower(6,6, towerProvider.getMainTower().getClass());
+
         update();
         engine.setScoreTimer();
 

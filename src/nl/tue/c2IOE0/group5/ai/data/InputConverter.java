@@ -175,7 +175,7 @@ public class InputConverter {
                 positionId = x * gridSize * nrTowers + y * nrTowers;
                 tower = grid.getCell(x, y).getTower();
                 if(tower != null){
-                    towerId = tower.getType().getValue();
+                    towerId = tower.getType().ordinal();
                     result[positionId + towerId] = 1;
                 }
             }

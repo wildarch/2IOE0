@@ -115,7 +115,13 @@ public class GridProvider extends ObjectProvider<Cell> {
 
         towerConnectionProvider = engine.getProvider(TowerConnectionProvider.class);
 
-        controller = getEngine().getController(AiController.class);
+        if (engine instanceof Engine){
+            try {
+                controller = getEngine().getController(AiController.class);
+            } catch (IllegalArgumentException ignored) {
+                ignored.printStackTrace();
+            }
+        }
 
         // Create the player base cells
         int bordersize = (SIZE - PLAYFIELDSIZE - 1)/2;
@@ -423,6 +429,7 @@ public class GridProvider extends ObjectProvider<Cell> {
 
     @Override
     public void update() {
+        if(controller == null) return;
         objects.forEach(cell -> {
             if (!cell.isBorderCell()) {
                 int reward = controller.getQLearner().getReward(cell.getGridPosition());

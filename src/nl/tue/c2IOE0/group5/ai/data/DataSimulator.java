@@ -3,6 +3,7 @@ package nl.tue.c2IOE0.group5.ai.data;
 import nl.tue.c2IOE0.group5.ai.GameSimulator;
 import nl.tue.c2IOE0.group5.enemies.EnemyType;
 import nl.tue.c2IOE0.group5.providers.EnemyProvider;
+import nl.tue.c2IOE0.group5.providers.TowerProvider;
 import nl.tue.c2IOE0.group5.towers.TowerType;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
@@ -102,8 +103,19 @@ public class DataSimulator {
 
     private double simulate(final TowerType[][] grid, final EnemyType[] buffer, final double trust){
         //Simulator sim = new Simulator(s -> true);
-        GameSimulator simulator = new GameSimulator(false, sim -> sim.getProvider(EnemyProvider.class)
-            .getEnemies().stream().filter(e -> !e.isDead()).count() == 0, totalSize, playSize);
+        long start = System.currentTimeMillis();
+        GameSimulator simulator = new GameSimulator(false, sim -> {
+            if(System.currentTimeMillis() - start > 5000){
+                System.out.println(Arrays.toString(sim.getProvider(EnemyProvider.class).getEnemies().stream().filter(e -> !e.isDead()).toArray()));
+                System.out.println(Arrays.deepToString(grid));
+                System.out.println(Arrays.toString(buffer));
+                //sim.getProvider(TowerProvider.class).gridProvider.
+                throw new IllegalStateException("stopcondition blocking" );
+            }
+
+            return sim.getProvider(EnemyProvider.class)
+                .getEnemies().stream().filter(e -> !e.isDead()).count() == 0 || sim.getProvider(TowerProvider.class).getMainTower().isDead();
+        }, totalSize, playSize);
 
         try {
             simulator.init();

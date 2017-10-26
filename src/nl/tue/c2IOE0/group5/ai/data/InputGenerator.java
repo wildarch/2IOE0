@@ -173,7 +173,7 @@ public class InputGenerator {
         for (int x = 0; x < gridSize; x++){
             for (int y = 0; y < gridSize; y++){
                 //this cell contains a tower
-                int towerType = r.nextInt(nrTowers);
+                int towerType = r.nextInt(nrTowers - 1) + 1;
 
                 //tower levels are disabled
                 double towerLevel = 1;//r.nextInt(nrTowerLevels) / (double)nrTowerLevels;

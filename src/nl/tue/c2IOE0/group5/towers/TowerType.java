@@ -7,8 +7,8 @@ package nl.tue.c2IOE0.group5.towers;
 public enum TowerType {
     CASTLE(0),
     WALL(1),
-    ROCKET(4),
-    CANNON(7);
+    ROCKET(2),
+    CANNON(3);
 
     private final int value;
 

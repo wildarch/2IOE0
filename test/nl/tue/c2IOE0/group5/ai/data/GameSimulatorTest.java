@@ -2,7 +2,6 @@ package nl.tue.c2IOE0.group5.ai.data;
 
 import nl.tue.c2IOE0.group5.ai.GameSimulator;
 import nl.tue.c2IOE0.group5.enemies.EnemyType;
-import nl.tue.c2IOE0.group5.providers.EnemyProvider;
 import nl.tue.c2IOE0.group5.providers.TowerProvider;
 import nl.tue.c2IOE0.group5.towers.TowerType;
 import org.junit.Test;
@@ -49,4 +48,9 @@ public class GameSimulatorTest {
         assertTrue(score > 0 && score < 1);
     }
 
+
+    @Test
+    public void towers(){
+        //AiController
+    }
 }
