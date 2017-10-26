@@ -126,7 +126,8 @@ public class UIProvider implements Provider<Engine> {
                 System.out.println(enemyTypeWalker);
                 System.out.println(enemyTypeBasic);
                 System.out.println(enemyTypeDrill);
-                UIElement score = new MenuTextField("Score", scoreString, TEXTFIELD_WIDTH, TEXTFIELD_HEIGHT);
+                int ScoreHeight = 235;
+                UIElement score = new MenuTextField("Score", scoreString, TEXTFIELD_WIDTH, ScoreHeight);
 
                 for (UIElement element : deadScreen) {
                     element.draw(hud);
