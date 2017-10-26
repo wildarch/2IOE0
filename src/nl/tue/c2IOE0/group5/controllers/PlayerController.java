@@ -181,16 +181,16 @@ public class PlayerController implements Controller,Listener {
     public void onKeyReleased(Event event) {
         switch (event.getSubject()) {
             case GLFW_KEY_C:
-                toggleCameraMode();
+                //toggleCameraMode();
                 break;
             case GLFW_KEY_LEFT_CONTROL:
                 uiProvider.select(null);
                 break;
             case GLFW_KEY_R:
-                resetGame();
+                //resetGame();
                 break;
             case GLFW_KEY_P:
-                gridProvider.getCell(6,6).getTower().die();
+                //gridProvider.getCell(6,6).getTower().die();
                 break;
         }
     }
