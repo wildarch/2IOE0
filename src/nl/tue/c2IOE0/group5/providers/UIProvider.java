@@ -10,6 +10,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.Hud;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
+import nl.tue.c2IOE0.group5.towers.MainTower;
 import nl.tue.c2IOE0.group5.userinterface.*;
 import org.joml.Vector2i;
 import org.joml.Vector4f;
@@ -48,6 +49,8 @@ public class UIProvider implements Provider<Engine> {
     private UIElement[] deadScreen;
     private long scoreTrack = 0;
     private long loseTime;
+    private MainTower mainTower;
+
 
     private final static  String[] creditTextfield =
             (       "You did a good job.\n" +
@@ -77,13 +80,12 @@ public class UIProvider implements Provider<Engine> {
         this.hud = engine.getHud();
         this.window = engine.getWindow();
         this.towerProvider = engine.getProvider(TowerProvider.class);
-
         buildBar = new Buildbar(80, 120, this);
         PlayerController playerController = engine.getController(PlayerController.class);
         budget = new UIText(0, 20, NVG_ALIGN_LEFT,
                 () -> String.format("Budget: %d", playerController.getBudget()));
         mainHealth = new UIText(0, 20, NVG_ALIGN_RIGHT,
-                () -> String.format("Health: %d/%d", towerProvider.getMainTower().getHealth(), towerProvider.getMainTower().maxHealth));
+                () -> String.format("Health: %d/%d", mainTower.getHealth(), towerProvider.getMainTower().maxHealth));
         AiController aiController = engine.getController(AiController.class);
         waveIndicator = new UIText(0, 40, NVG_ALIGN_CENTER,
                 () -> "Wave: " + aiController.getBigWaves());
@@ -153,6 +155,10 @@ public class UIProvider implements Provider<Engine> {
                 }
             }
         });
+    }
+
+    public void setMainTower(MainTower mainTower) {
+        this.mainTower = mainTower;
     }
 
     public void die() {

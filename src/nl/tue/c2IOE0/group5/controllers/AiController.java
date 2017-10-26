@@ -79,10 +79,9 @@ public class AiController implements Controller {
         BIG_WAVE_SIZE = 2;
         SMALL_WAVE_SIZE = 1;
         BUFFER_SAMPLE_SIZE = 10;
-
         wave = 0;
-        nextWaveTime = 0;
-        nextWaveTime = loopTimer.getTime() + WAVE_TIME * 2;
+
+        gameStarted = false;
     }
 
     public void startGame(){
