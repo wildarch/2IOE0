@@ -2,7 +2,6 @@ package nl.tue.c2IOE0.group5.enemies;
 
 import nl.tue.c2IOE0.group5.ai.QLearner;
 import nl.tue.c2IOE0.group5.controllers.PlayerController;
-import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.objects.GameObject;
 import nl.tue.c2IOE0.group5.engine.objects.PositionInterpolator;
@@ -11,7 +10,6 @@ import nl.tue.c2IOE0.group5.engine.rendering.InstancedMesh;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
 import nl.tue.c2IOE0.group5.providers.Cell;
-import nl.tue.c2IOE0.group5.providers.EnemyProvider;
 import nl.tue.c2IOE0.group5.providers.GridProvider;
 import nl.tue.c2IOE0.group5.towers.AbstractTower;
 import nl.tue.c2IOE0.group5.towers.WallTower;
@@ -136,7 +134,7 @@ public abstract class Enemy extends GameObject implements Drawable {
     private void doDamage(AbstractTower tower) {
         double factor = 1;
 
-        if (this instanceof WalkerEnemy && tower instanceof WallTower) factor = 100; //walkers do double the damage to walls
+        if (this instanceof WalkerEnemy && tower instanceof WallTower) factor = 3; //walkers do double the damage to walls
         if (this instanceof BasicEnemy && tower instanceof WallTower) factor = 0.5;
 
         if (timeToDoDamage < loopTimer.getTime()) {
