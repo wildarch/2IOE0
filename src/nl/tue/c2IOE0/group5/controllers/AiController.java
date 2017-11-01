@@ -181,7 +181,7 @@ public class AiController implements Controller {
 
     private void trainQLearner() {
         int noIterations = 1000;
-        double gamma = 0.1d;
+        double gamma = 0.2d;
 
         qLearner = new QLearner(gridProvider.SIZE, noIterations, gamma);
         qLearner.initializeQ();

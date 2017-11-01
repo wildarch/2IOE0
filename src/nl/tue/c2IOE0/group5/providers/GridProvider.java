@@ -406,7 +406,7 @@ public class GridProvider extends ObjectProvider<Cell> {
     /**
      * A helper method to show the qlearner output, by first deactivating all the cells and then activating the cells on the path
      */
-    private void deactivateAll() {
+    public void deactivateAll() {
         for (int x = 0; x < SIZE; x++) {
             for (int y = 0; y < SIZE; y++) {
                 getCell(x, y).deactivate();
@@ -436,6 +436,12 @@ public class GridProvider extends ObjectProvider<Cell> {
                 cell.setQReward(reward, vQLearner);
             }
         });
+        if (vQLearner) {
+            QLearner qlearner = controller.getQLearner();
+            if (qlearner == null || activeCell == null) return;
+            List<Integer> path = qlearner.getOptimalPath(QLearner.getState(activeCell.getGridPosition(), SIZE));
+            drawPath(path);
+        }
     }
 
     @Override

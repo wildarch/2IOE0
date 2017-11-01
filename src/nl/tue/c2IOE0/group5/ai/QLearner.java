@@ -1,6 +1,8 @@
 package nl.tue.c2IOE0.group5.ai;
 
+import nl.tue.c2IOE0.group5.providers.GridProvider;
 import org.joml.Vector2i;
+import org.lwjgl.opengl.GLXARBRobustnessApplicationIsolation;
 
 import java.util.*;
 
@@ -333,9 +335,12 @@ public class QLearner extends Thread {
             optimalPath.add(state);
             nextState = policy[state];
         }
-        /*if (optimalPath.get(optimalPath.size() - 1) != getState(gridSize / 2, gridSize / 2)) {
-            return getBasicPath(state);
-        }*/
+        if (optimalPath.get(optimalPath.size() - 1) != getState(gridSize / 2, gridSize / 2)) {  //they start to cuddle in a corner
+            int middlestate = getState(gridSize /2 , gridSize / 2);
+            updateRewardsMatrix(middlestate, rewards[middlestate-1][middlestate]/10);      //increase the reward for the middle square by 10%
+            System.err.println(rewards[getState(gridSize /2 , gridSize / 2 + 1)][getState(gridSize /2 , gridSize / 2)]);
+            return getBasicPath(state);                                                            //and return a basic path
+        }
         return optimalPath;
     }
 
