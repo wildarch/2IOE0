@@ -338,7 +338,6 @@ public class QLearner extends Thread {
         if (optimalPath.get(optimalPath.size() - 1) != getState(gridSize / 2, gridSize / 2)) {  //they start to cuddle in a corner
             int middlestate = getState(gridSize /2 , gridSize / 2);
             updateRewardsMatrix(middlestate, rewards[middlestate-1][middlestate]/10);      //increase the reward for the middle square by 10%
-            System.err.println(rewards[getState(gridSize /2 , gridSize / 2 + 1)][getState(gridSize /2 , gridSize / 2)]);
             return getBasicPath(state);                                                            //and return a basic path
         }
         return optimalPath;
