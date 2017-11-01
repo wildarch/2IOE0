@@ -14,8 +14,8 @@ import org.deeplearning4j.util.ModelSerializer;
 import org.joml.Vector2i;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -42,12 +42,12 @@ public class AiController implements Controller {
     BooleanSupplier isPaused;
 
     private ComputationGraph network;
-    private final File networkFile;
+    private final InputStream networkFile;
     private final Random random = new Random();
 
     private boolean gameStarted = false;
 
-    public AiController(File networkFile) {
+    public AiController(InputStream networkFile) {
         this.networkFile = networkFile;
     }
 
@@ -59,7 +59,7 @@ public class AiController implements Controller {
 
         new Thread(() -> {
             try {
-                if(networkFile != null && networkFile.exists() && networkFile.canRead()){
+                if(networkFile != null){
                     network = ModelSerializer.restoreComputationGraph(networkFile);
                 }
             } catch (IOException e) {

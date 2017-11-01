@@ -6,10 +6,12 @@ import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
+import nl.tue.c2IOE0.group5.util.Resource;
 
 import javax.sound.sampled.*;
-import java.io.File;
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * @author Tom Peters
@@ -33,8 +35,8 @@ public class MusicProvider extends Thread implements Provider<Engine>,Cleanable 
         this.engine = engine;
         if (!on) return;
         try {
-            String file = "res/SICCMIXX.wav";
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(file));
+            InputStream fileStream = new BufferedInputStream(Resource.get("/music/SICCMIXX.wav"));
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(fileStream);
             AudioFormat format = audioInputStream.getFormat();
             long frames = audioInputStream.getFrameLength();
             this.duration = (long)((frames+0.0) / format.getFrameRate()); //in seconds

@@ -125,21 +125,11 @@
             <artifactId>deeplearning4j-core</artifactId>
             <version>${dl4j.version}</version>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.nd4j</groupId>-->
-            <!--<artifactId>nd4j-cuda-7.5</artifactId>-->
-            <!--<version>${dl4j.version}</version>-->
-        <!--</dependency>-->
         <dependency>
         <groupId>org.nd4j</groupId>
         <artifactId>nd4j-native</artifactId>
         <version>${dl4j.version}</version>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.nd4j</groupId>-->
-            <!--<artifactId>nd4j-cuda-7.5-platform</artifactId>-->
-            <!--<version>${dl4j.version}</version>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
@@ -217,6 +207,19 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+                    <!-- Additional configuration. -->
+                </configuration>
             </plugin>
         </plugins>
         <pluginManagement>
