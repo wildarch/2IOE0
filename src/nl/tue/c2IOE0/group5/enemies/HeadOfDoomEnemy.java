@@ -15,6 +15,7 @@ import java.util.List;
  * @author Geert van Ieperen
  *         created on 25-10-2017.
  */
+@Deprecated
 public class HeadOfDoomEnemy extends Enemy {
 
     private final static int MAXHEALTH = 1000;
