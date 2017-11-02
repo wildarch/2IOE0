@@ -150,7 +150,21 @@ public class PlayerController implements Controller,Listener {
 
     @Override
     public void onKeyPressed(Event event) {
-        if (engine.isPaused()) return;
+        if (engine.isPaused()) {
+            //limited controls when paused
+            switch (event.getSubject()) {
+                case GLFW_KEY_H:
+                    engine.toggleHud();
+                    break;
+                case GLFW_KEY_ESCAPE:
+                    engine.pause(false);
+                    gridProvider.deactivateAll();
+                    //needed if escape is used to start the game initially
+                    towerProvider.startGame();
+                    break;
+            }
+            return;
+        }
 
         switch (event.getSubject()) {
             case GLFW_KEY_L:
