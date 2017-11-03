@@ -146,6 +146,7 @@ public class AiController implements Controller {
 
             if(sampleScore > bufferScore){
                 selectedBuffer = Arrays.copyOf(sampleBuffer, sampleBuffer.length);
+                bufferScore = sampleScore;
             }
         }
 

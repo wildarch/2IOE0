@@ -9,6 +9,7 @@ import nl.tue.c2IOE0.group5.providers.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * @author Jorren Hendriks
@@ -17,15 +18,19 @@ public class TowerDefence {
 
     public static void main(String[] args) {
         boolean music = true;
+        boolean trained = true;
         if(args.length > 0) {
-            if(args[0].equals("--no-music")) {
+            if(Arrays.stream(args).anyMatch(str -> str.equals("--no-music"))){
                 music = false;
             }
+            if(Arrays.stream(args).anyMatch(str -> str.equals("--untrained"))){
+                trained = false;
+            }
         }
-        runGame(music);
+        runGame(music, trained);
     }
 
-    public static void runGame(boolean music) {
+    public static void runGame(boolean music, boolean trained) {
         Engine engine = new Engine();
         engine.addProviders(new Provider[] {
                 new MenuProvider(),
@@ -44,7 +49,7 @@ public class TowerDefence {
         }
         engine.addControllers(new Controller[] {
                 new PlayerController(),
-                new AiController(new File("res/networks/network_b10_training_wall_f100.zip"))
+                new AiController(new File(trained ? "res/networks/network_b10_f100_training_v2.zip" : "res/networks/network_b10_notraining_v2.zip"))
         });
         try {
             engine.run();
