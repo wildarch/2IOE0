@@ -4,7 +4,6 @@ import nl.tue.c2IOE0.group5.engine.objects.Animatable;
 
 /**
  * @author Geert van Ieperen
- *         created on 13-10-2017.
  * This class tracks the progress of the animation of the target, and handles changes in animation.
  * Has some properties of Decorator and Adapter pattern (i guess)
  */

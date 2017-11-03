@@ -20,6 +20,7 @@ import static org.lwjgl.nanovg.NanoVG.NVG_ALIGN_LEFT;
 import static org.lwjgl.nanovg.NanoVG.NVG_ALIGN_RIGHT;
 
 /**
+ * Provider responsible for managing all in-game Hud elements
  * @author Jorren
  */
 public class UIProvider implements Provider<Engine> {
@@ -98,6 +99,7 @@ public class UIProvider implements Provider<Engine> {
         });
         deadScreen = new UIElement[]{dead, deadQuitButton};
 
+        // Create the hud and register all elements that should be drawn in it
         hud.create(() -> {
             if (engine.isPaused()) return;
             if (!this.dead) {
@@ -125,9 +127,6 @@ public class UIProvider implements Provider<Engine> {
                                 "Basic Enemies Killed: " + enemyTypeBasic + " \n" +
                                 "Walker Enemies Killed: " + enemyTypeWalker + " \n"
                         ).split("\n");
-                System.out.println(enemyTypeWalker);
-                System.out.println(enemyTypeBasic);
-                System.out.println(enemyTypeDrill);
                 int ScoreHeight = 235;
                 UIElement score = new MenuTextField("Score", scoreString, TEXTFIELD_WIDTH, ScoreHeight);
 
@@ -184,14 +183,6 @@ public class UIProvider implements Provider<Engine> {
             }
             return false;
         }
-    }
-
-    private int bottom(int y) {
-        return window.getHeight() - y;
-    }
-
-    private int right(int x) {
-        return window.getWidth() - x;
     }
 
     @Override

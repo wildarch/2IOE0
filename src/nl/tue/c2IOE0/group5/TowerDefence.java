@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.Arrays;
 
 /**
+ * Main class of the game.
+ * Prepares the engine and adds the relevant providers and controllers.
  * @author Jorren Hendriks
  */
 public class TowerDefence {

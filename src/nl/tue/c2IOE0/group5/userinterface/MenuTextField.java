@@ -9,7 +9,6 @@ import static org.lwjgl.nanovg.NanoVG.NVG_ALIGN_TOP;
 
 /**
  * @author Geert van Ieperen
- *         created on 17-10-2017.
  * a field with the make-up of a menubutton, automatically including title and back-button
  */
 public class MenuTextField extends UIElement {

@@ -21,6 +21,11 @@ import org.joml.Vector3f;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Base class for all enemies.
+ * Handles movement, rendering and interaction with the environment.
+ * @author Daan de Graaf
+ */
 public abstract class Enemy extends GameObject implements Drawable {
 
     private final int onDieReward;
@@ -71,7 +76,7 @@ public abstract class Enemy extends GameObject implements Drawable {
     public abstract EnemyType getType();
 
     /**
-     * Move the enemy and attack if necesary
+     * Move the enemy and attack if necessary
      */
     @Override
     public void update() {

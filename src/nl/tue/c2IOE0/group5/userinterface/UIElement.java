@@ -4,6 +4,7 @@ import nl.tue.c2IOE0.group5.engine.rendering.HudElement;
 import org.joml.Vector2i;
 
 /**
+ * Generic UI element that can be drawn in the hud.
  * @author Jorren Hendriks.
  */
 public abstract class UIElement implements HudElement {

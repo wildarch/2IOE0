@@ -18,6 +18,10 @@ import java.util.stream.Collectors;
 
 import static nl.tue.c2IOE0.group5.providers.GridProvider.manDist;
 
+/**
+ * Abstract base class for common functionality of all towers.
+ * @author Tom Peters
+ */
 public abstract class AbstractTower extends GameObject {
 
     private static final int FALL_TIME = 500; // milliseconds
@@ -212,8 +216,6 @@ public abstract class AbstractTower extends GameObject {
     private void attack() {
         if (attackTime == -1) return;
         List<Enemy> inRange = enemyProvider.getEnemies().stream().filter(this::isInRange).collect(Collectors.toList());
-        //System.err.println("Enemies: " + enemyProvider.countEnemies());
-        //System.err.println("In range: " + inRange.size());
         Optional<Enemy> e = inRange.stream()
                 .min(Comparator.comparingDouble(a -> manDist(a.getCurrentCell(), this.cell)));
         if (e.isPresent()) {
@@ -238,14 +240,12 @@ public abstract class AbstractTower extends GameObject {
      */
     private boolean isInRange(Enemy e) {
         Cell enemyCell = e.getCurrentCell();
-        //System.err.println("enemy: " + enemyCell.getGridPosition() + ", this: " + this.cell.getGridPosition() + ", dist: " + manDist(enemyCell, this.cell));
         return manDist(enemyCell, this.cell) <= range;
     }
 
     @Override
     public void update() {
         if (timeToDoDamage < loopTimer.getTime()) {
-            //System.err.println("Attack!");
             attack();
             timeToDoDamage = loopTimer.getTime() + attackTime;
         }
