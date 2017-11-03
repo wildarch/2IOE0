@@ -30,6 +30,7 @@ public class QLearner extends Thread {
 
     private Double[][] Q;
 
+    // A basic path covering every state
     private static final Integer[] basicPath = {
             1,2,3,4,5,6,7,8,9,10,11,12,
             25,24,23,22,21,20,19,18,17,16,15,14,13,
@@ -47,7 +48,9 @@ public class QLearner extends Thread {
     };
 
     /**
-     * @param gridSize obvious
+     * @param gridSize obvious.
+     * @param noIterations the amount of iterations per path
+     * @param gamma the learning quotient
      */
     public QLearner(int gridSize, int noIterations, double gamma) {
         this.gamma = gamma;
@@ -76,8 +79,15 @@ public class QLearner extends Thread {
 
     public void setGamma(double gamma) {this.gamma = gamma;}
 
+    /**
+     * Check if the Q learner has converged
+     * @return whether or  not the Q learner has converged
+     */
     public boolean isConverged() {return this.converged;}
 
+    /**
+     * Initialize the Q matrix based on the reward matrix
+     */
     public void initializeQ() {
         if (rewards != null);
 
@@ -95,6 +105,9 @@ public class QLearner extends Thread {
         converged = false;
     }
 
+    /**
+     * Do Q learning in a different thread
+     */
     @Override
     public void run() {
         boolean convergedLocal = false;
@@ -116,7 +129,7 @@ public class QLearner extends Thread {
     private volatile int nrofThreads = 0;
     private Thread first;
     /**
-     * @return Whether or not the Q Learner has converged and is done learning for this specific rewards matrix
+     * Start a new Thread to learn, upto a maximum amount of threads
      */
     public void execute() {
         if (first == null) {
@@ -135,12 +148,16 @@ public class QLearner extends Thread {
         }
     }
 
+    /**
+     * A setter method for the number of iterations per path
+     * @param noIterations
+     */
     public void setNoIterations(int noIterations) {
         this.noIterations = noIterations;
     }
 
     /**
-     * Initialize the rewards matrix
+     * Initialize the rewards matrix in a grid like fashion
      */
     private void makeRewardMatrix() {
         this.rewards = new Integer[gridSize*gridSize][gridSize*gridSize];
@@ -161,7 +178,11 @@ public class QLearner extends Thread {
         setRewardsMatrix(getState(gridSize / 2, gridSize / 2, gridSize), 100000); //set the middle to the max
     }
 
-
+    /**
+     * Set the reward for entering a specific state
+     * @param state the state to enter
+     * @param reward the reward for entering that state
+     */
     public void setRewardsMatrix(int state, int reward) {
         List<Integer> neighbours = getStatesAdjacent(state);
         for (int neighbour : neighbours) {
@@ -170,6 +191,11 @@ public class QLearner extends Thread {
         converged = false;
     }
 
+    /**
+     * Increase the reward for entering a specific state
+     * @param state the state to enter
+     * @param rewardAdd the reward to add to the reward already gained by entering this state
+     */
     public void updateRewardsMatrix(int state, int rewardAdd) {
         List<Integer> neighbours = getStatesAdjacent(state);
         for (int neighbour : neighbours) {
@@ -183,26 +209,61 @@ public class QLearner extends Thread {
         converged = false;
     }
 
+    /**
+     * Convert a grid position to a Q learner state
+     * @param x
+     * @param y
+     * @param gridSize
+     * @return the Q learner state
+     */
     public static int getState(int x, int y, int gridSize) {
         return x + gridSize * y;
     }
 
+    /**
+     * Convert a grid position to a Q learner state
+     * @param x
+     * @param y
+     * @return the Q learner state
+     */
     public int getState(int x, int y){
         return getState(x, y, gridSize);
     }
 
+    /**
+     * Convert a grid position to a Q learner state
+     * @param p
+     * @param gridSize
+     * @return the Q learner state
+     */
     public static int getState(Vector2i p, int gridSize) {
         return getState(p.x(), p.y(), gridSize);
     }
 
+    /**
+     * Convert a grid position to a Q learner state
+     * @param p
+     * @return the Q learner state
+     */
     public int getState(Vector2i p){
         return getState(p, gridSize);
     }
 
+    /**
+     * Convert a Q learner state to a grid position
+     * @param state
+     * @param gridSize
+     * @return the grid position
+     */
     public static Vector2i getPoint(int state, int gridSize) {
         return new Vector2i(state % gridSize, state / gridSize);
     }
 
+    /**
+     * Convert a Q learner state tot a grid position
+     * @param state
+     * @return the grid position
+     */
     public Vector2i getPoint(int state){
         return getPoint(state, gridSize);
     }
@@ -273,11 +334,20 @@ public class QLearner extends Thread {
         return max;
     }
 
+    /**
+     * Generate a random path through the grid
+     * @param length the length of the random path
+     */
     public void generateRandomPath(int length) {
         Random r = new Random();
         generateRandomPath(length, r.nextInt(gridSize * gridSize - 1));
     }
 
+    /**
+     * Generate a random path through the grid starting at a specific state
+     * @param length the length of the path
+     * @param startState the state to start in
+     */
     public void generateRandomPath(int length, int startState) {
         Integer[] path = new Integer[length];
         Random r = new Random();
@@ -297,14 +367,24 @@ public class QLearner extends Thread {
         paths.add(path);
     }
 
+    /**
+     * Add a path to the paths to try
+     * @param path the path to add
+     */
     public void addPath(Integer[] path) {
         paths.add(path);
     }
 
+    /**
+     * Add the basic path defined up top to the paths to try
+     */
     public void addBasicPath() {
         addPath(basicPath);
     }
 
+    /**
+     * Delete all the paths from the paths to try.
+     */
     public void deletePaths() {
         paths = new ArrayList<>();
     }
@@ -379,12 +459,17 @@ public class QLearner extends Thread {
         return path;
     }
 
-    public List<Integer> getOptimalPath(Vector2i state) {
-        return getOptimalPath(getState(state, gridSize));
+    /**
+     * Get the optimal path for a specific grid position
+     * @param p the grid position to get the optimal path from
+     * @return A list containing the optimal path
+     */
+    public List<Integer> getOptimalPath(Vector2i p) {
+        return getOptimalPath(getState(p, gridSize));
     }
 
     /**
-     * Return the spawn location with the best Q learner options
+     * Return the spawn location with the best Q value
      */
     public Vector2i getOptimalSpawnState() {
         return getOptimalNSpawnStates(1)[0];
