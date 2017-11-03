@@ -63,7 +63,7 @@ public abstract class GameObject extends Positionable implements Updatable {
      * @param scaleOffset The offset for the scale.
      */
     protected void setModelView(Renderer renderer, Vector3f posOffset, Vector3f rotOffset, Vector3f scaleOffset) {
-        renderer.setMatrix(getPosition().add(posOffset), getRotation().add(rotOffset), new Vector3f(scale).add(scaleOffset));
+        renderer.setMatrix(getPosition().add(posOffset), getRotation().add(rotOffset), new Vector3f(scale).mul(scaleOffset));
     }
 
     /**

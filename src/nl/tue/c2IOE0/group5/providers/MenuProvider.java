@@ -79,6 +79,7 @@ public class MenuProvider implements Provider<Engine>, Clickable {
         UIButton startGame = new MenuButton("Start Game", (event) -> {
             engine.pause(false);
             towerProvider.startGame();
+            gridProvider.deactivateAll();
         });
         UIButton options = new MenuButton("Options", (event) -> activeElements = optionMenu);
         {
@@ -101,6 +102,9 @@ public class MenuProvider implements Provider<Engine>, Clickable {
             UIButton visualize = new MenuButton("Visualize", (event -> activeElements = visualizeMenu));
             {
                 UIButton qLearner = new MenuToggle("QLearner", (b) -> gridProvider.setQLearnerValue(b));
+                //initialize to disabled
+                ((MenuToggle)qLearner).setValue(false);
+                gridProvider.setQLearnerValue(false);
                 UIButton backVisualize = new MenuButton("Back", (event -> activeElements = optionMenu));
                 visualizeMenu = new UIButton[]{qLearner, backVisualize};
             }

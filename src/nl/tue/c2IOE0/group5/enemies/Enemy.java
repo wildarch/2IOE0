@@ -70,6 +70,9 @@ public abstract class Enemy extends GameObject implements Drawable {
 
     public abstract EnemyType getType();
 
+    /**
+     * Move the enemy and attack if necesary
+     */
     @Override
     public void update() {
         if (!targetPositions.isEmpty()) {
@@ -100,6 +103,9 @@ public abstract class Enemy extends GameObject implements Drawable {
         setRotation(interpolator.getDirection(), rotationOffset);
     }
 
+    /**
+     * Set the offset, so units do not go to the centre of a tile
+     */
     private void setOffset() {
        offset.set(
                 jitter(),
@@ -108,6 +114,10 @@ public abstract class Enemy extends GameObject implements Drawable {
         );
     }
 
+    /**
+     * Calculate a random jitter
+     * @return a random float to use as offset
+     */
     private float jitter() {
         return (float) (Math.random()-0.5f) * Cell.CELL_SIZE * 0.5f;
     }
@@ -133,6 +143,11 @@ public abstract class Enemy extends GameObject implements Drawable {
     }
 
     private long timeToDoDamage;
+
+    /**
+     * Do damage to a tower
+     * @param tower the tower to damage
+     */
     private void doDamage(AbstractTower tower) {
         double factor = 1;
 
@@ -145,6 +160,10 @@ public abstract class Enemy extends GameObject implements Drawable {
         }
     }
 
+    /**
+     * Get damage from a tower
+     * @param damage the amount of damage to get
+     */
     public void getDamage(int damage) {
         health -= damage;
         if (health <= 0) {
@@ -160,6 +179,9 @@ public abstract class Enemy extends GameObject implements Drawable {
         }
     }
 
+    /**
+     * Let this unit die.
+     */
     public void die() {
         if(dead) return;
         dead = true;
@@ -172,16 +194,29 @@ public abstract class Enemy extends GameObject implements Drawable {
         System.out.println("Enemy died: " + this.getType().toString());
     }
 
+    /**
+     * Get the reward the player gets when this units dies.
+     * @return
+     */
     private int getDieReward() {
         return onDieReward;
     }
 
+    /**
+     * To be called when the units dies. For example to unlink meshes.
+     */
     protected abstract void onDie();
 
+    /**
+     * @return Whether or not this unit is dead.
+     */
     public boolean isDead() {
         return dead;
     }
 
+    /**
+     * @return the cell the unit is currently on.
+     */
     public Cell getCurrentCell() {
         Vector3f position = this.getPosition();
         int x = (int)(position.x() + 0.5f);

@@ -6,8 +6,8 @@ import nl.tue.c2IOE0.group5.engine.Engine;
 import nl.tue.c2IOE0.group5.engine.controller.Controller;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
 import nl.tue.c2IOE0.group5.providers.*;
+import nl.tue.c2IOE0.group5.util.Resource;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -49,7 +49,7 @@ public class TowerDefence {
         }
         engine.addControllers(new Controller[] {
                 new PlayerController(),
-                new AiController(new File(trained ? "res/networks/network_b10_f100_training_v2.zip" : "res/networks/network_b10_notraining_v2.zip"))
+                new AiController(Resource.get(trained ? "res/networks/network_b10_f100_training_v2.zip" : "res/networks/network_b10_notraining_v2.zip"))
         });
         try {
             engine.run();

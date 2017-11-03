@@ -86,6 +86,12 @@ public abstract class AbstractTower extends GameObject {
         return metaData;
     }
 
+    /**
+     * Whenever the position of the tower should be set, its Health indicator should also be positioned
+     * @param x The new x-coordinate of the object.
+     * @param y The new y-coordinate of the object.
+     * @param z The new z-coordinate of the object.
+     */
     @Override
     public void setPosition(float x, float y, float z) {
         super.setPosition(x, y, z);
@@ -93,6 +99,10 @@ public abstract class AbstractTower extends GameObject {
         healthBolletje.setPosition(x, y + healthHeight, z);
     }
 
+    /**
+     * Whenever the position of the tower should be set, its Health indicator should also be positioned
+     * @param p new coordinates of the object
+     */
     @Override
     public void setPosition(Vector3f p) {
         super.setPosition(p);
@@ -100,9 +110,18 @@ public abstract class AbstractTower extends GameObject {
         healthBolletje.setPosition(p.add(0, healthHeight, 0));
     }
 
+    /**
+     * Set the cell this tower is on.
+     * @param cell the cell this tower is on
+     */
     public void setCell(Cell cell) {
         this.cell = cell;
     }
+
+    /**
+     * Gets the cell this tower is on
+     * @return the cell this tower is on
+     */
     public Cell getCell() {return this.cell;}
 
     /**
@@ -138,6 +157,10 @@ public abstract class AbstractTower extends GameObject {
         takeDamage((double)damage);
     }
 
+    /**
+     * Reduce health by given damage
+     * @param damage Damage to incur
+     */
     public void takeDamage(double damage) {
         health -= damage;
         this.damage = (float) Math.min(this.damage + 100f * damage / (double) maxHealth, 1f);
@@ -146,6 +169,9 @@ public abstract class AbstractTower extends GameObject {
         }
     }
 
+    /**
+     * Let this tower die
+     */
     public void die() {
         health = 0;
         gridProvider.destroyTower(cell.getGridPosition().x(), cell.getGridPosition().y());
@@ -153,6 +179,9 @@ public abstract class AbstractTower extends GameObject {
         onDie();
     }
 
+    /**
+     * To be called when the tower dies. For example to unlink meshes.
+     */
     protected abstract void onDie();
 
     /**
@@ -162,14 +191,24 @@ public abstract class AbstractTower extends GameObject {
         return health;
     }
 
+    /**
+     * Set the health of this tower
+     * @param health the health of this tower
+     */
     public void setHealth(int health) {
         this.health = health;
     }
 
+    /**
+     * @return Whether or not this tower is dead.
+     */
     public boolean isDead() {
         return health == 0;
     }
 
+    /**
+     * Attack a the unit that is closest and in range
+     */
     private void attack() {
         if (attackTime == -1) return;
         List<Enemy> inRange = enemyProvider.getEnemies().stream().filter(this::isInRange).collect(Collectors.toList());
@@ -183,11 +222,20 @@ public abstract class AbstractTower extends GameObject {
         }
     }
 
+    /**
+     * Attack a specific enemy
+     * @param e the enemy to attack
+     */
     protected void attack(Enemy e) {
         Bullet b = new Bullet(bulletSpeed, bulletDamage, bulletOffset, e, this, loopTimer, renderTimer).init(renderer);
         bulletProvider.addBullet(b);
     }
 
+    /**
+     * Calculate whether or not {@link Enemy} e is in range
+     * @param e the Enemy to check
+     * @return Whether or not this Enemy e is in the range of this tower
+     */
     private boolean isInRange(Enemy e) {
         Cell enemyCell = e.getCurrentCell();
         //System.err.println("enemy: " + enemyCell.getGridPosition() + ", this: " + this.cell.getGridPosition() + ", dist: " + manDist(enemyCell, this.cell));
@@ -205,9 +253,9 @@ public abstract class AbstractTower extends GameObject {
         damage = Math.max(damage - 0.1f, 0f);
     }
 
-    protected void setMesh(Mesh m) {
-    }
-
+    /**
+     * A health indicator hovering above the tower
+     */
     protected class HealthBolletje extends GameObject {
 
         final float MAX_SIZE = 0.15f;
@@ -250,6 +298,9 @@ public abstract class AbstractTower extends GameObject {
         }
     }
 
+    /**
+     * Metadata to be used in the hud
+     */
     public static class MetaData {
         public String name;
         public String icon;

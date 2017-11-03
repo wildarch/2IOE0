@@ -24,7 +24,7 @@ public class Resource {
 
     public static String load(String fileName) throws IOException {
         String result;
-        try (InputStream in = Resource.class.getClass().getResourceAsStream(fileName);
+        try (InputStream in = get(fileName);
              Scanner scanner = new Scanner(in, "UTF-8")) {
             result = scanner.useDelimiter("\\A").next();
         } catch(NullPointerException e) {
@@ -35,13 +35,17 @@ public class Resource {
 
     public static List<String> readAllLines(String fileName) throws IOException {
         List<String> list = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(Resource.class.getClass().getResourceAsStream(fileName)))) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(get(fileName)))) {
             String line;
             while ((line = br.readLine()) != null) {
                 list.add(line);
             }
         }
         return list;
+    }
+
+    public static InputStream get(String fileName) {
+        return Resource.class.getResourceAsStream(fileName);
     }
 
     public static int[] listIntToArray(List<Integer> list) {
@@ -68,7 +72,7 @@ public class Resource {
                 while (fc.read(buffer) != -1);
             }
         } else {
-            try (InputStream source = Resource.class.getResourceAsStream(resource);
+            try (InputStream source = get(resource);
                     ReadableByteChannel rbc = Channels.newChannel(source)) {
                 buffer = createByteBuffer(bufferSize);
 

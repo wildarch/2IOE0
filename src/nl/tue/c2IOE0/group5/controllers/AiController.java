@@ -14,8 +14,8 @@ import org.deeplearning4j.util.ModelSerializer;
 import org.joml.Vector2i;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -42,12 +42,12 @@ public class AiController implements Controller {
     BooleanSupplier isPaused;
 
     private ComputationGraph network;
-    private final File networkFile;
+    private final InputStream networkFile;
     private final Random random = new Random();
 
     private boolean gameStarted = false;
 
-    public AiController(File networkFile) {
+    public AiController(InputStream networkFile) {
         this.networkFile = networkFile;
     }
 
@@ -59,7 +59,7 @@ public class AiController implements Controller {
 
         new Thread(() -> {
             try {
-                if(networkFile != null && networkFile.exists() && networkFile.canRead()){
+                if(networkFile != null){
                     network = ModelSerializer.restoreComputationGraph(networkFile);
                 }
             } catch (IOException e) {
@@ -71,6 +71,9 @@ public class AiController implements Controller {
         isPaused = engine::isPaused;
     }
 
+    /**
+     * Resets the AI. Trains the Q Learner again and set all values of the AI back to the starting values
+     */
     public void resetAI(){
         trainQLearner();
         wave = 0;
@@ -84,6 +87,9 @@ public class AiController implements Controller {
         gameStarted = false;
     }
 
+    /**
+     * Called when starting the game
+     */
     public void startGame(){
         nextWaveTime = loopTimer.getTime() + WAVE_TIME * 2;
         gameStarted = true;
@@ -112,14 +118,23 @@ public class AiController implements Controller {
         }
     }
 
+    /**
+     * @return The number of big waves that have spawned.
+     */
     public int getBigWaves() {
         return wave / NR_SUB_WAVES;
     }
 
+    /**
+     * @return The instance of the Q Learner
+     */
     public QLearner getQLearner() {
         return qLearner;
     }
 
+    /**
+     * Generate a new buffer to spawn according to the rules trained by the neural net
+     */
     public EnemyType[] generateBuffer(boolean big){
         InputConverter converter;
 
@@ -155,6 +170,10 @@ public class AiController implements Controller {
         return selectedBuffer;
     }
 
+    /**
+     * Spawn a new wave
+     * @param big true if it should be a big wave, false if it should be a small wave.
+     */
     private void wave(final boolean big) {
         new Thread(() -> {
             EnemyType[] selectedBuffer = generateBuffer(big);
@@ -180,9 +199,12 @@ public class AiController implements Controller {
         qLearner.updateRewardsMatrix(QLearner.getState(gridProvider.SIZE / 2, gridProvider.SIZE / 2, gridProvider.SIZE), 1000); //to make sure they still go to the middle
     }
 
+    /**
+     * Initialize a new Q Learner and train it.
+     */
     private void trainQLearner() {
         int noIterations = 1000;
-        double gamma = 0.1d;
+        double gamma = 0.2d;
 
         qLearner = new QLearner(gridProvider.SIZE, noIterations, gamma);
         qLearner.initializeQ();

@@ -6,10 +6,12 @@ import nl.tue.c2IOE0.group5.engine.Timer;
 import nl.tue.c2IOE0.group5.engine.provider.Provider;
 import nl.tue.c2IOE0.group5.engine.rendering.Renderer;
 import nl.tue.c2IOE0.group5.engine.rendering.Window;
+import nl.tue.c2IOE0.group5.util.Resource;
 
 import javax.sound.sampled.*;
-import java.io.File;
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * @author Tom Peters
@@ -33,8 +35,8 @@ public class MusicProvider extends Thread implements Provider<Engine>,Cleanable 
         this.engine = engine;
         if (!on) return;
         try {
-            String file = "res/SICCMIXX.wav";
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(file));
+            InputStream fileStream = new BufferedInputStream(Resource.get("/music/SICCMIXX.wav"));
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(fileStream);
             AudioFormat format = audioInputStream.getFormat();
             long frames = audioInputStream.getFrameLength();
             this.duration = (long)((frames+0.0) / format.getFrameRate()); //in seconds
@@ -49,6 +51,9 @@ public class MusicProvider extends Thread implements Provider<Engine>,Cleanable 
         }
     }
 
+    /**
+     * Check every update cycle if there should start a new clip playing. A new clip starts after 2 times the time of the original clip
+     */
     @Override
     public void update() {
         if (timeToPlay < loopTimer.getTime()) { //start again after 2 times the duration
@@ -57,6 +62,9 @@ public class MusicProvider extends Thread implements Provider<Engine>,Cleanable 
         }
     }
 
+    /**
+     * Toggle the music on or off
+     */
     private boolean on = true;
     public void toggle() {
         if (on) {
@@ -68,6 +76,10 @@ public class MusicProvider extends Thread implements Provider<Engine>,Cleanable 
         }
     }
 
+    /**
+     * Set the basic volume of the music
+     * @param percentage The volume in percentages
+     */
     public void setBaseVolume(float percentage) {
         this.baseVolume = percentage * (maxVolume - minVolume) + minVolume;
         fadeVolumeTo(baseVolume, true);
@@ -81,6 +93,12 @@ public class MusicProvider extends Thread implements Provider<Engine>,Cleanable 
     private Thread fadeThread = new Thread();
     private volatile boolean cancelled = false;
 
+    /**
+     * Fade the volume to a specific value
+     * @param value the value to fade to
+     * @param overridePrevious Whether or not the previous fade should be overridden.
+     *                         This should be the case in for example the menu
+     */
     public void fadeVolumeTo(float value, boolean overridePrevious) {
         currentVolume = gainControl.getValue();
         if (!fading && currentVolume != value && !overridePrevious) {  //prevent running it twice
@@ -100,6 +118,9 @@ public class MusicProvider extends Thread implements Provider<Engine>,Cleanable 
         }
     }
 
+    /**
+     * The actual fading of the volume, using a thread
+     */
     @Override
     public void run() {
         fading = true;
@@ -151,10 +172,17 @@ public class MusicProvider extends Thread implements Provider<Engine>,Cleanable 
 
     }
 
+    /**
+     * @return Whether or not the music is currently playing
+     */
     public boolean isOn() {
         return on;
     }
 
+    /**
+     * Wait for a thread to finish.
+     * @param t
+     */
     private void waitForMusicThread(Thread t) {
         try {
             t.join();
@@ -164,6 +192,9 @@ public class MusicProvider extends Thread implements Provider<Engine>,Cleanable 
         }
     }
 
+    /**
+     * Cleanup all threads to prevent music from playing a little bit after the main program closed.
+     */
     @Override
     public void cleanup() {
         if (clip != null)
