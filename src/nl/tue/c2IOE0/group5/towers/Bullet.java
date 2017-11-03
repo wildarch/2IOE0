@@ -32,6 +32,9 @@ public class Bullet extends GameObject implements Drawable {
         this.renderTimer = renderTimer;
     }
 
+    /**
+     * @return Whether or not this bullet hit its target
+     */
     public boolean isDone() {
         return isDone;
     }

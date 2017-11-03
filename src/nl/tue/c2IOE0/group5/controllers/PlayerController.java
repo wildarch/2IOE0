@@ -79,6 +79,9 @@ public class PlayerController implements Controller,Listener {
     public PlayerController() {
     }
 
+    /**
+     * Switch between the two camera modes
+     */
     public void toggleCameraMode(){
         lockedCameraMode = !lockedCameraMode;
         freeCameraMode = !freeCameraMode;
